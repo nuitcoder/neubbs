@@ -4,14 +4,10 @@
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
          version="3.0">
 
-    <display-name>neubbs</display-name>        <!--项目名称-->
-    <welcome-file-list>
-        <welcome-file>index</welcome-file>  <!--启动项目的访问首页-->
-    </welcome-file-list>
+    <display-name>neubbs</display-name>
     <session-config>
-        <session-timeout>15</session-timeout> <!-- 设置Session的时间为15分钟【不设置的话Tomcat默认是30分钟】 -->
+        <session-timeout>15</session-timeout>
     </session-config>
-
 
     <!-- 加载Spring和Mybatis的配置文件 -->
     <context-param>
@@ -19,7 +15,7 @@
         <param-value>classpath:spring-mybatis.xml</param-value>
     </context-param>
 
-    <!--web应用的启动和顺序：listener->filter->servlet-->
+    <!-- web应用的启动和顺序：listener->filter->servlet -->
     <!-- Spring监听器 -->
     <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
@@ -37,45 +33,27 @@
         <async-supported>true</async-supported>
         <init-param>
             <param-name>encoding</param-name>
-            <param-value>UTF-8</param-value> <!-- UTF-8编码 -->
+            <param-value>UTF-8</param-value>
         </init-param>
     </filter>
     <filter-mapping>
         <filter-name>encodingFilter</filter-name>
-        <url-pattern>/*</url-pattern>      <!--可添加相应后缀.如 *.do-->
+        <url-pattern>/*</url-pattern>
     </filter-mapping>
 
-    <!--&lt;!&ndash;Intex过滤器&ndash;&gt;-->
-    <!--<filter>-->
-        <!--<filter-name>IndexFilter</filter-name>-->
-        <!--<filter-class>com.blog.controller.filter.IndexFilter</filter-class>-->
-        <!--<init-param>-->
-            <!--<param-name>ableFilter</param-name>&lt;!&ndash;过滤器是否生效(YES | NO)&ndash;&gt;-->
-            <!--<param-value>YES</param-value>-->
-        <!--</init-param>-->
-    <!--</filter>-->
-    <!--<filter-mapping>-->
-        <!--<filter-name>IndexFilter</filter-name>-->
-        <!--<url-pattern>/index.jsp</url-pattern>       &lt;!&ndash;设置 filter 所拦截的请求路径(过滤器关联的URL)  /*[路径映射],*.[扩展],/[default servlet]&ndash;&gt;-->
-        <!--<dispatcher>REQUEST</dispatcher>        &lt;!&ndash;四种过滤器,可以设置的值:REQUEST,INCLUDE,FORWARD,ERROR&ndash;&gt;-->
-    <!--</filter-mapping>-->
-
-
-
-    <!--Spring的前置控制器(拦截所有请求-将请求分发到相应的Controller处理) -->
+    <!-- Spring的前置控制器(拦截所有请求-将请求分发到相应的 Controller 处理) -->
     <servlet>
         <servlet-name>SpringMVC</servlet-name>
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
         <init-param>
             <param-name>contextConfigLocation</param-name>
-            <param-value>classpath:spring-applicationContext.xml</param-value> <!--在webapp路径下则不用加classpath-->
+            <param-value>classpath:spring-applicationContext.xml</param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
         <async-supported>true</async-supported>
     </servlet>
     <servlet-mapping>
         <servlet-name>SpringMVC</servlet-name>
-        <!-- 此处可以可以配置成*.do，对应struts的后缀习惯 -->
         <url-pattern>/</url-pattern>
     </servlet-mapping>
 </web-app>
