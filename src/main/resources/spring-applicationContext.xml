@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:aop="http://www.springframework.org/schema/aop"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+                            http://www.springframework.org/schema/beans/spring-beans-3.1.xsd    
+                            http://www.springframework.org/schema/context    
+                            http://www.springframework.org/schema/context/spring-context-3.1.xsd    
+                            http://www.springframework.org/schema/mvc    
+                            http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+	<!-- 自动扫描(扫描指定包下有Spring的相关注解的类,则把他们注册为bean)【配置式和注解式会同时生效】 -->
+	<context:component-scan base-package="org.neusoft.neubbs" />
+
+	<!--开启注解-->
+	<mvc:annotation-driven />
+
+	<!-- 将静态资源的处理经由Spring MVC框架交回Web应用服务器处理-->
+	<mvc:default-servlet-handler/>
+	<!-- 由Spring MVC框架自己处理静态资源，并添加一些有用的附加值功能-->
+	<!--<mvc:resources location="/css/" mapping="/css/**"/>-->
+	<!--<mvc:resources location="/extend/" mapping="/extend/**"/>-->
+	<!--<mvc:resources location="/frame/" mapping="/frame/**"/>-->
+	<!--<mvc:resources location="/img/" mapping="/img/**"/>-->
+	<!--<mvc:resources location="/js/" mapping="/js/**"/>-->
+
+
+	<!--配置拦截器 -->
+	<!--<mvc:interceptors>-->
+		<!--<mvc:interceptor>&lt;!&ndash;首页拦截器&ndash;&gt;-->
+			<!--<mvc:mapping path="/index"/>&lt;!&ndash;如果只写一个*，则不能拦截类似/*/*的请求。静态资源的请求需要判断不进行拦截 &ndash;&gt;-->
+			<!--<bean class="com.blog.controller.interceptor.IndexInterceptor"></bean>-->
+		<!--</mvc:interceptor>-->
+	<!--</mvc:interceptors>-->
+
+
+	<!-- 视图解析器[URL = http://localhost:8080/My_Blog/"prefix" + 用户输入 + "suffix"]-->
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/jsp/" />	<!-- 前缀(默认在webapp路径下) -->
+		<property name="suffix" value=".jsp" />		<!-- 后缀 -->
+	</bean>
+
+
+	<!-- 配置文件上传，如果没有使用文件上传可以不用配置，当然如果不配，那么配置文件中也不必引入上传组件包 -->
+	<bean id="multipartResolver"
+		  class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="defaultEncoding" value="utf-8" />	   <!-- 默认编码[需要与jsp页面的默认编码相同] -->
+		<property name="maxUploadSize" value="10485760000" />  <!-- 文件大小最大值 -->
+		<property name="maxInMemorySize" value="40960" /> 	   <!-- 内存中的最大值 -->
+	</bean>
+
+</beans>

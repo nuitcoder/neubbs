@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+
+<!-- 论坛User表映射文件 -->
+<mapper namespace="org.neusoft.neubbs.dao.IUserDao" ><!--指定dao包下的dao接口-->
+        <!-- ************************************************1.定义************************************************ -->
+        <resultMap id="UserResult_Map" type="org.neusoft.neubbs.entity.User" ><!-- 结果集 -->
+            <id column="u_id" property="id" javaType="int" jdbcType="INTEGER" />
+            <result column="u_name" property="name" javaType="String" jdbcType="VARCHAR" />
+            <result column="u_password" property="password" javaType="String" jdbcType="VARCHAR" />
+            <result column="u_sex" property="sex" javaType="String" jdbcType="VARCHAR" />
+            <result column="u_birthday" property="birthday" javaType="String" jdbcType="VARCHAR" />
+            <result column="u_address" property="address" javaType="String" jdbcType="VARCHAR" />
+            <result column="u_phone" property="phone" javaType="String" jdbcType="VARCHAR" />
+            <result column="u_email" property="email" javaType="String" jdbcType="VARCHAR" />
+            <result column="u_registertime" property="registertime" javaType="java.sql.Date" jdbcType="DATE" />
+        </resultMap>
+        <sql id="UserColumn_List" > <!-- 列名集合 -->
+            u_id,u_name,u_password,u_sex,u_birthday,u_address,u_phone,u_email,u_registertime
+        </sql>
+
+
+
+        <!-- ************************************************2.数据操作(增删查改)************************************************ -->
+        <insert id="insertUser" parameterType="org.neusoft.neubbs.entity.User"> <!--插入用户-->
+            INSERT INTO user (u_name,u_password,u_email)
+                VALUES (#{name,jdbcType=VARCHAR},
+                        #{password,jdbcType=VARCHAR},
+                        #{email,jdbcType=VARCHAR})
+        </insert>
+
+
+        <delete id="deleteUserById" parameterType="java.lang.Integer" >  <!--删除用户-->
+            DELETE FROM user WHERE u_id = #{id,jdbcType=INTEGER}
+        </delete>
+
+
+        <select id="selectUserById" parameterType="java.lang.Integer" resultMap="UserResult_Map"  ><!--id查询用户-->
+            SELECT <include refid="UserColumn_List" /> FROM user
+              where u_id = #{id,jdbcType=INTEGER}
+        </select>
+        <select id="selectUserByName" parameterType="java.lang.String" resultMap="UserResult_Map"  ><!--姓名查询用户-->
+            SELECT <include refid="UserColumn_List" />  FROM user
+              WHERE  u_name = #{username}
+        </select>
+        <select id="selectUserByNameGetMap" parameterType="java.lang.String" resultType="java.util.HashMap"><!--查询用户唯一性( //MySQL是默认不区分大小写的)-->
+            SELECT u_name FROM user WHERE u_name = #{username}
+        </select>
+
+
+        <update id="updateUser" parameterType="org.neusoft.neubbs.entity.User" > <!--更新用户(有变化则更新)-->
+            UPDATE user
+                <set >
+                    <if test="name != null" >u_name = #{name,jdbcType=VARCHAR},</if>
+                    <if test="password != null" >u_password = #{password,jdbcType=VARCHAR},</if>
+                    <if test="sex != null" >u_sex = #{sex,jdbcType=VARCHAR},</if>
+                    <if test="birthday != null" >u_birthday = #{birthday,jdbcType=VARCHAR},</if>
+                    <if test="address != null" >u_address = #{address,jdbcType=VARCHAR},</if>
+                    <if test="phone != null" >u_phone = #{phone,jdbcType=VARCHAR},</if>
+                    <if test="email != null" >u_email = #{email,jdbcType=VARCHAR},</if>
+                </set>
+            WHERE u_id = #{id,jdbcType=INTEGER}
+        </update>
+
+
+</mapper>
