@@ -44,7 +44,7 @@
             SELECT <include refid="UserColumn_List" />  FROM user
               WHERE  u_name = #{username}
         </select>
-        <select id="selectUserByNameGetMap" parameterType="java.lang.String" resultType="java.util.HashMap"><!--查询用户唯一性( //MySQL是默认不区分大小写的)-->
+        <select id="selectUsernameMapByName" parameterType="java.lang.String" resultType="java.util.HashMap"><!--查询用户唯一性( //MySQL是默认不区分大小写的)-->
             SELECT u_name FROM user WHERE u_name = #{username}
         </select>
 

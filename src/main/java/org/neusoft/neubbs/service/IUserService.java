@@ -14,7 +14,7 @@ public interface IUserService{
 
     public User selectUserById(Integer id);
     public User selectUserByName(String name);
-    public String selectOneUserByName(String name);
+    public String selectOneUsernameByName(String name);
 
     public String updateUser(User user);
 }

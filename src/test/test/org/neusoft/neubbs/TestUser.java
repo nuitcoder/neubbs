@@ -70,8 +70,8 @@ public class TestUser {
      * 测试查询用户名唯一性
      */
     @Test
-    public void testSelectOnlyUser(){
-        String result = userService.selectByNameOnlyUser("SUVAN");
+    public void testSelectOneUsernameByName(){
+        String result = userService.selectOneUsernameByName("SUVAN");
         logger.info("查询结果 - >" + result);
     }
 

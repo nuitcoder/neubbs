@@ -19,7 +19,7 @@ public interface IUserDao {
     User selectUserByName(String name);
 
     // 返回一条记录是 Map<字段名, 字段值>, 多条记录 List<Map<字段名, 字段值>>
-    Map<String,String> selectUserByNameGetMap(String name);
+    Map<String,String> selectUsernameMapByName(String name);
 
     int updateUser(User user);
 }
