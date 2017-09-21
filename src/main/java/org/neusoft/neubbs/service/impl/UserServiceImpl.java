@@ -48,11 +48,6 @@ public class UserServiceImpl implements IUserService {
     public String selectOneUserByName(String name){
         Map<String,String> map = userDao.selectUserByNameGetMap(name);
 
-       //遍历Map
-       // for(Map.Entry<String,String> entry:map.entrySet()){
-       //     System.out.println("\n健：" + entry.getKey() + "----值：" +entry.getValue());
-       // }
-
         if(map != null){
             return "用户名已经存在,请重新输入！";
         }
