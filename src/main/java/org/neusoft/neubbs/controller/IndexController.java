@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
  * 论坛总控制器
  */
 @Controller
-public class BBSController {
+public class IndexController {
 
 	/**
 	 * 获取项目根目录
@@ -18,18 +18,24 @@ public class BBSController {
 	 * @return String
 	 */
 	private String getBastPath(HttpServletRequest request) {
-		return request.getScheme() + "://"
-				+ request.getServerName() + ":"
-				+ request.getServerPort()
-				+ request.getContextPath() + "/";
+		String url = "";
+		url += request.getScheme() + "://" + request.getServerName();
+
+		int port = request.getServerPort();
+		if (port != 80) {
+			url += ":" + port;
+		}
+
+		url += request.getContextPath();
+		return url;
 	}
 	
 
 	/**
 	 * 首页跳转
-	 * @param request
-	 * @param model
-	 * @return
+	 * @param request HttpServletRequest
+	 * @param model Model
+	 * @return String
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/index")
