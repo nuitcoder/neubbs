@@ -23,14 +23,13 @@ public class BBSController {
 				+ request.getServerPort()
 				+ request.getContextPath() + "/";
 	}
-
-
-	/*首页跳转*/
+	
 
 	/**
-	 * 跳转到 index.jsp
-	 * @param request HttpServletRequest
-	 * @param model Model
+	 * 首页跳转
+	 * @param request
+	 * @param model
+	 * @return
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/index")

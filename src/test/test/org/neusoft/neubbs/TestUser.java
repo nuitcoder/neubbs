@@ -27,6 +27,7 @@ public class TestUser {
     IUserService userService;
 
 
+
     @Test/*测试插入用户*/
     public void testInsertUser(){
         User user = new User();
@@ -37,6 +38,7 @@ public class TestUser {
         String result = userService.insertUser(user);
         logger.info(result + "----"+JSON.toJSONString(user));  //打印语句
     }
+
 
 
     @Test /*测试删除用户*/
