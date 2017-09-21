@@ -7,37 +7,37 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * 论坛总控制器【控制页面跳转】
+ * 论坛总控制器
  */
 @Controller
 public class BBSController {
 
-
-
-	/************************************返回视图(一级页面)*****************************************/
-	/*获取项目根路径*/
+	/**
+	 * 获取项目根目录
+	 * @param request HttpServletRequest
+	 * @return String
+	 */
 	private String getBastPath(HttpServletRequest request) {
-		//项目根路径：http://localhost:8080/blog
-		return request.getScheme() + "://" +
-				request.getServerName() + ":" +
-				request.getServerPort() +
-				request.getContextPath() + "/";
+		return request.getScheme() + "://"
+				+ request.getServerName() + ":"
+				+ request.getServerPort()
+				+ request.getContextPath() + "/";
 	}
 
 
 	/*首页跳转*/
+
+	/**
+	 * 跳转到 index.jsp
+	 * @param request HttpServletRequest
+	 * @param model Model
+	 * @throws Exception
+	 */
 	@RequestMapping(value = "/index")
 	public String index(HttpServletRequest request, Model model) throws Exception {
-		//1.获取数据
-
-		//2.设置Model
 		String basePath = getBastPath(request);
-		model.addAttribute("basePath", basePath);//项目根路径
+		model.addAttribute("basePath", basePath);
 
-
-		//3.跳到index.jsp
 		return "../../index";
 	}
-
-
 }

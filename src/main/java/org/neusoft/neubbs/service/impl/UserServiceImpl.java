@@ -10,17 +10,13 @@ import java.util.Map;
 
 
 /**
- * 【业务逻辑层】UserService接口实现类
- *
- * @Author Suvan
- * @Date 2017-09-21
+ * UserService 接口实现类
  */
 @Service("userService")
 public class UserServiceImpl implements IUserService {
 
     @Resource
     protected IUserDao userDao;   //配置文件自动注入
-
 
     public String insertUser(User user){
         int result = userDao.insertUser(user);
@@ -32,7 +28,7 @@ public class UserServiceImpl implements IUserService {
     }
 
     public String deleteUserById(Integer id){
-        int result = userDao.deleteUserById(id); //根据id删除用户
+        int result = userDao.deleteUserById(id);
 
         if(result == 0){
             return "删除失败.";
@@ -48,8 +44,9 @@ public class UserServiceImpl implements IUserService {
     public User selectUserByName(String name){
         return userDao.selectUserByName(name);
     }
-    public String selectByNameOnlyUser(String name){
-        Map<String,String> map = userDao.selectUserByNameGetMap(name);  //查询单个用户名是否唯一
+
+    public String selectOneUserByName(String name){
+        Map<String,String> map = userDao.selectUserByNameGetMap(name);
 
        //遍历Map
        // for(Map.Entry<String,String> entry:map.entrySet()){
@@ -65,7 +62,6 @@ public class UserServiceImpl implements IUserService {
 
     public String updateUser(User user){
         int result = userDao.updateUser(user);
-
 
         if(result == 0){
             return "更新失败";
