@@ -3,65 +3,63 @@
 
 
 <!-- 论坛User表映射文件 -->
-<mapper namespace="org.neusoft.neubbs.dao.IUserDao" ><!--指定dao包下的dao接口-->
-        <!-- ************************************************1.定义************************************************ -->
-        <resultMap id="UserResult_Map" type="org.neusoft.neubbs.entity.User" ><!-- 结果集 -->
-            <id column="u_id" property="id" javaType="int" jdbcType="INTEGER" />
-            <result column="u_name" property="name" javaType="String" jdbcType="VARCHAR" />
-            <result column="u_password" property="password" javaType="String" jdbcType="VARCHAR" />
-            <result column="u_sex" property="sex" javaType="String" jdbcType="VARCHAR" />
-            <result column="u_birthday" property="birthday" javaType="String" jdbcType="VARCHAR" />
-            <result column="u_address" property="address" javaType="String" jdbcType="VARCHAR" />
-            <result column="u_phone" property="phone" javaType="String" jdbcType="VARCHAR" />
-            <result column="u_email" property="email" javaType="String" jdbcType="VARCHAR" />
-            <result column="u_registertime" property="registertime" javaType="java.sql.Date" jdbcType="DATE" />
-        </resultMap>
-        <sql id="UserColumn_List" > <!-- 列名集合 -->
-            u_id,u_name,u_password,u_sex,u_birthday,u_address,u_phone,u_email,u_registertime
-        </sql>
+<mapper namespace="org.neusoft.neubbs.dao.IUserDAO" ><!--指定DAO接口-->
+    <!-- ************************************************1.定义************************************************ -->
+    <resultMap id="UserResultMap" type="org.neusoft.neubbs.entity.UserDO" ><!-- 结果集 -->
+        <id column="fu_id" property="id" javaType="int" jdbcType="INTEGER" />
+        <result column="fu_name" property="name" javaType="String" jdbcType="VARCHAR" />
+        <result column="fu_password" property="password" javaType="String" jdbcType="VARCHAR" />
+        <result column="fu_sex" property="sex" javaType="String" jdbcType="VARCHAR" />
+        <result column="fu_birthday" property="birthday" javaType="String" jdbcType="VARCHAR" />
+        <result column="fu_phone" property="phone" javaType="String" jdbcType="VARCHAR" />
+        <result column="fu_email" property="email" javaType="String" jdbcType="VARCHAR" />
+        <result column="fu_address" property="address" javaType="String" jdbcType="VARCHAR" />
+
+        <!--注册时间,设置DATE会丢失hms精度-->
+        <result column="fu_createtime" property="createtime" javaType="java.util.Date" jdbcType="TIMESTAMP" />
+    </resultMap>
+
+    <sql id="UserColumnName" >
+        fu_id,fu_name,fu_password,fu_sex,fu_birthday,fu_phone,fu_email,fu_address,fu_createtime
+    </sql>
 
 
 
-        <!-- ************************************************2.数据操作(增删查改)************************************************ -->
-        <insert id="insertUser" parameterType="org.neusoft.neubbs.entity.User"> <!--插入用户-->
-            INSERT INTO user (u_name,u_password,u_email)
-                VALUES (#{name,jdbcType=VARCHAR},
-                        #{password,jdbcType=VARCHAR},
-                        #{email,jdbcType=VARCHAR})
-        </insert>
+    <!-- ************************************************2.数据操作(增删查改)************************************************ -->
+    <insert id="saveUserByUser" parameterType="org.neusoft.neubbs.entity.UserDO">
+        INSERT INTO forum_user(fu_name,fu_password,fu_email)
+        VALUES (#{name,jdbcType=VARCHAR},
+        #{password,jdbcType=VARCHAR},
+        #{email,jdbcType=VARCHAR})
+    </insert>
 
 
-        <delete id="deleteUserById" parameterType="java.lang.Integer" >  <!--删除用户-->
-            DELETE FROM user WHERE u_id = #{id,jdbcType=INTEGER}
-        </delete>
+    <delete id="removeUserById" parameterType="java.lang.Integer" >
+        DELETE FROM forum_user WHERE fu_id = #{id,jdbcType=INTEGER}
+    </delete>
 
 
-        <select id="selectUserById" parameterType="java.lang.Integer" resultMap="UserResult_Map"  ><!--id查询用户-->
-            SELECT <include refid="UserColumn_List" /> FROM user
-              where u_id = #{id,jdbcType=INTEGER}
-        </select>
-        <select id="selectUserByName" parameterType="java.lang.String" resultMap="UserResult_Map"  ><!--姓名查询用户-->
-            SELECT <include refid="UserColumn_List" />  FROM user
-              WHERE  u_name = #{username}
-        </select>
-        <select id="selectUsernameMapByName" parameterType="java.lang.String" resultType="java.util.HashMap"><!--查询用户唯一性( //MySQL是默认不区分大小写的)-->
-            SELECT u_name FROM user WHERE u_name = #{username}
-        </select>
+    <select id="getUserById" parameterType="java.lang.Integer" resultMap="UserResultMap"  >
+        SELECT <include refid="UserColumnName" /> FROM forum_user
+        WHERE fu_id = #{id,jdbcType=INTEGER}
+    </select>
 
 
-        <update id="updateUser" parameterType="org.neusoft.neubbs.entity.User" > <!--更新用户(有变化则更新)-->
-            UPDATE user
-                <set >
-                    <if test="name != null" >u_name = #{name,jdbcType=VARCHAR},</if>
-                    <if test="password != null" >u_password = #{password,jdbcType=VARCHAR},</if>
-                    <if test="sex != null" >u_sex = #{sex,jdbcType=VARCHAR},</if>
-                    <if test="birthday != null" >u_birthday = #{birthday,jdbcType=VARCHAR},</if>
-                    <if test="address != null" >u_address = #{address,jdbcType=VARCHAR},</if>
-                    <if test="phone != null" >u_phone = #{phone,jdbcType=VARCHAR},</if>
-                    <if test="email != null" >u_email = #{email,jdbcType=VARCHAR},</if>
-                </set>
-            WHERE u_id = #{id,jdbcType=INTEGER}
-        </update>
+    <update id="updateUserByUser" parameterType="org.neusoft.neubbs.entity.UserDO" >
+        UPDATE forum_user
+        <set >
+            <if test="name != null" >fu_name = #{name,jdbcType=VARCHAR},</if>
+            <if test="password != null" >fu_password = #{password,jdbcType=VARCHAR},</if>
+            <if test="sex != null" >fu_sex = #{sex,jdbcType=VARCHAR},</if>
+            <if test="birthday != null" >fu_birthday = #{birthday,jdbcType=VARCHAR},</if>
+            <if test="phone != null" >fu_phone = #{phone,jdbcType=VARCHAR},</if>
+            <if test="email != null" >fu_email = #{email,jdbcType=VARCHAR},</if>
+            <if test="address != null" >fu_address = #{address,jdbcType=VARCHAR},</if>
+        </set>
+        WHERE fu_id = #{id,jdbcType=INTEGER}
+    </update>
 
-
+    <update id="truncateUserTable">
+        TRUNCATE TABLE ${tableName} <!--传入表名要用$-->
+    </update>
 </mapper>

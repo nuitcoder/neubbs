@@ -1,66 +1,61 @@
 package org.neusoft.neubbs.service.impl;
 
-import org.neusoft.neubbs.dao.IUserDao;
-import org.neusoft.neubbs.entity.User;
+import org.neusoft.neubbs.constant.DBRequestStatus;
+import org.neusoft.neubbs.dao.IUserDAO;
+import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.service.IUserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
-import java.util.Map;
 
-
-/**
- * UserService 接口实现类
- */
 @Service("userService")
 public class UserServiceImpl implements IUserService {
 
-    @Resource
-    protected IUserDao userDao;   //配置文件自动注入
+    @Autowired
+    protected IUserDAO userDAO;
 
-    public String insertUser(User user){
-        int result = userDao.insertUser(user);
-
-        if(result == 0){
-            return "插入失败";
-        }
-        return "成功插入！";
-    }
-
-    public String deleteUserById(Integer id){
-        int result = userDao.deleteUserById(id);
+    @Override
+    public String saveUserByUser(UserDO user){
+        int result = userDAO.saveUserByUser(user);
 
         if(result == 0){
-            return "删除失败.";
+            return DBRequestStatus.INSERT_FAIL;
         }
-
-        return "成功删除！";
+        return DBRequestStatus.INSERT_SUCCESS;
     }
 
-    public User selectUserById(Integer id){
-        return userDao.selectUserById(id);
-    }
-
-    public User selectUserByName(String name){
-        return userDao.selectUserByName(name);
-    }
-
-    public String selectOneUsernameByName(String name){
-        Map<String,String> map = userDao.selectUsernameMapByName(name);
-
-        if(map != null){
-            return "用户名已经存在,请重新输入！";
-        }
-
-        return "用户唯一";
-    }
-
-    public String updateUser(User user){
-        int result = userDao.updateUser(user);
+    @Override
+    public String removeUserById(Integer id){
+        int result = userDAO.removeUserById(id);
 
         if(result == 0){
-            return "更新失败";
+            return DBRequestStatus.DETELE_FAIL;
         }
-        return "更新成功";
+        return DBRequestStatus.DETELE_SUCCESS;
+    }
+
+    @Override
+    public UserDO getUserById(Integer id){
+        return userDAO.getUserById(id);
+    }
+
+    @Override
+    public String updateUserByUser(UserDO user){
+        int result = userDAO.updateUserByUser(user);
+
+        if(result == 0){
+            return DBRequestStatus.UPDATE_FAIL;
+        }
+        return DBRequestStatus.UPDATE_SUCCESS;
+    }
+
+    @Override
+    public String truncateUserTable(String table){
+        int result = userDAO.truncateUserTable(table);
+
+        if(result == 0){
+            return DBRequestStatus.TRUNCATE_FAIL;
+        }
+        return DBRequestStatus.TRUNCATE_SUCCESS;
     }
 }

@@ -1,20 +1,18 @@
 package org.neusoft.neubbs.service;
 
-import org.neusoft.neubbs.entity.User;
+import org.neusoft.neubbs.entity.UserDO;
 
-/**
- * UserService接口
- */
+
+
 public interface IUserService{
 
-    public String insertUser(User user);
+    public String saveUserByUser(UserDO user);
 
-    public String deleteUserById(Integer id);
+    public String removeUserById(Integer id);
 
+    public UserDO getUserById(Integer id);
 
-    public User selectUserById(Integer id);
-    public User selectUserByName(String name);
-    public String selectOneUsernameByName(String name);
+    public String updateUserByUser(UserDO user);
 
-    public String updateUser(User user);
+    public String truncateUserTable(String table);
 }

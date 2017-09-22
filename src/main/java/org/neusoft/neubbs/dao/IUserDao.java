@@ -1,25 +1,20 @@
 package org.neusoft.neubbs.dao;
 
-import org.neusoft.neubbs.entity.User;
-
-import java.util.Map;
+import org.apache.ibatis.annotations.Param;
+import org.neusoft.neubbs.entity.UserDO;
 
 
 /**
  * IUserDAO 接口对象
  */
-public interface IUserDao {
+public interface IUserDAO {
 
-    int insertUser(User user);
+    int saveUserByUser(UserDO user);
 
-    int deleteUserById(Integer id);
+    int removeUserById(Integer id);
 
-    User selectUserById(Integer id);
+    UserDO getUserById(Integer id);
 
-    User selectUserByName(String name);
-
-    // 返回一条记录是 Map<字段名, 字段值>, 多条记录 List<Map<字段名, 字段值>>
-    Map<String,String> selectUsernameMapByName(String name);
-
-    int updateUser(User user);
+    int updateUserByUser(UserDO user);
+    int truncateUserTable(@Param("tableName") String tableName);
 }
