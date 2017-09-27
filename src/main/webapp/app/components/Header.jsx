@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React from 'react'
 import styled from 'styled-components'
 
 const Warpper = styled.header`
@@ -7,14 +7,10 @@ const Warpper = styled.header`
   background-color: #ddd;
 `
 
-class Header extends Component {
-  render() {
-    return (
-      <Warpper id="header">
-        header
-      </Warpper>
-    )
-  }
-}
+const Header = () => (
+  <Warpper id="header">
+    header
+  </Warpper>
+)
 
 export default Header

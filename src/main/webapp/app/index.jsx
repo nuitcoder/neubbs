@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React from 'react'
 import ReactDOM from 'react-dom'
 import { createStore, combineReducers } from 'redux'
 import { Provider } from 'react-redux'
@@ -12,7 +12,7 @@ import Topics from './layouts/Topics'
 
 const reducer = combineReducers({
   ...reducers,
-  routing: routerReducer
+  routing: routerReducer,
 })
 
 const store = createStore(reducer)
@@ -22,9 +22,9 @@ ReactDOM.render(
   <Provider store={store}>
     <Router history={history}>
       <Route path="/" component={App}>
-        <IndexRoute component={Topics}/>
+        <IndexRoute component={Topics} />
       </Route>
     </Router>
   </Provider>,
-  document.getElementById('root')
+  document.getElementById('root'),
 );
