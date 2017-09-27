@@ -3,7 +3,6 @@ package org.neusoft.neubbs.service;
 import org.neusoft.neubbs.entity.UserDO;
 
 
-
 public interface IUserService{
 
     public String saveUserByUser(UserDO user);

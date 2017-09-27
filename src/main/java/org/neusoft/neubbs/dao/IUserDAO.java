@@ -2,11 +2,10 @@ package org.neusoft.neubbs.dao;
 
 import org.apache.ibatis.annotations.Param;
 import org.neusoft.neubbs.entity.UserDO;
+import org.springframework.stereotype.Repository;
 
 
-/**
- * IUserDAO 接口对象
- */
+@Repository
 public interface IUserDAO {
 
     int saveUserByUser(UserDO user);

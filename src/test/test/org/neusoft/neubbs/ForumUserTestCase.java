@@ -12,13 +12,13 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
- *  测试腾讯云服务器 neubbs 的数据库表
+ *  neubbs:forum_user   TestCase
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:spring-mybatis.xml"})
-public class TestUser {
+public class ForumUserTestCase {
 
-    private static Logger logger = Logger.getLogger(TestUser.class);
+    private static Logger logger = Logger.getLogger(ForumUserTestCase.class);
 
     @Autowired
     IUserService userService;
@@ -35,7 +35,7 @@ public class TestUser {
         user.setEmail("test@test.com");
 
         String result = userService.saveUserByUser(user);
-        logger.info(result + "----" + JSON.toJSONString(user));  //打印语句
+        logger.info(result + " => " + JSON.toJSONString(user));  //打印语句
     }
 
     /**
@@ -44,7 +44,7 @@ public class TestUser {
     @Test
     public void testgetUserById(){
         UserDO user = userService.getUserById(1);
-        logger.info("查询数据:"+JSON.toJSONString(user));
+        logger.info(JSON.toJSONString(user));
     }
 
     /**
@@ -59,7 +59,7 @@ public class TestUser {
 
         // 进行更新
         String result = userService.updateUserByUser(user);
-        logger.info(result);
+        logger.info(result + " => " + JSON.toJSONString(user));
     }
 
     /**
