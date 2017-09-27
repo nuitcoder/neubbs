@@ -8,7 +8,7 @@ import { syncHistoryWithStore, routerReducer } from 'react-router-redux'
 import * as reducers from './reducers'
 
 import App from './App'
-import Home from './layouts/Home'
+import Topics from './layouts/Topics'
 
 const reducer = combineReducers({
   ...reducers,
@@ -22,7 +22,7 @@ ReactDOM.render(
   <Provider store={store}>
     <Router history={history}>
       <Route path="/" component={App}>
-        <IndexRoute component={Home}/>
+        <IndexRoute component={Topics}/>
       </Route>
     </Router>
   </Provider>,
