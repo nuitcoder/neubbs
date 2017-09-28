@@ -48,6 +48,15 @@ public class ForumUserTestCase {
     }
 
     /**
+     * 测试name查询用户
+     */
+    @Test
+    public void testgetUserByName(){
+        UserDO user = userService.getUserByName("oneuser");
+        logger.info(JSON.toJSONString(user));
+    }
+
+    /**
      * 测试更新用户
      */
     @Test

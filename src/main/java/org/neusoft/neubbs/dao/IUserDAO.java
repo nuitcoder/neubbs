@@ -13,6 +13,7 @@ public interface IUserDAO {
     int removeUserById(Integer id);
 
     UserDO getUserById(Integer id);
+    UserDO getUserByName(String name);
 
     int updateUserByUser(UserDO user);
     int truncateUserTable(@Param("tableName") String tableName);

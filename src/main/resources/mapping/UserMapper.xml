@@ -28,9 +28,9 @@
     <!-- ************************************************2.数据操作(增删查改)************************************************ -->
     <insert id="saveUserByUser" parameterType="org.neusoft.neubbs.entity.UserDO">
         INSERT INTO forum_user(fu_name,fu_password,fu_email)
-        VALUES (#{name,jdbcType=VARCHAR},
-        #{password,jdbcType=VARCHAR},
-        #{email,jdbcType=VARCHAR})
+            VALUES (#{name,jdbcType=VARCHAR},
+                    #{password,jdbcType=VARCHAR},
+                    #{email,jdbcType=VARCHAR})
     </insert>
 
 
@@ -39,13 +39,17 @@
     </delete>
 
 
-    <select id="getUserById" parameterType="java.lang.Integer" resultMap="UserResultMap"  >
-        SELECT <include refid="UserColumnName" /> FROM forum_user
-        WHERE fu_id = #{id,jdbcType=INTEGER}
+    <select id="getUserById" parameterType="java.lang.Integer" resultMap="UserResultMap">
+        SELECT <include refid="UserColumnName"/> FROM forum_user
+          WHERE fu_id = #{id,jdbcType=INTEGER}
+    </select>
+    <select id="getUserByName" parameterType="java.lang.String" resultMap="UserResultMap">
+        SELECT <include refid="UserColumnName"/> FROM forum_user
+          WHERE fu_name = #{name,jdbcType=VARCHAR}
     </select>
 
 
-    <update id="updateUserByUser" parameterType="org.neusoft.neubbs.entity.UserDO" >
+    <update id="updateUserByUser" parameterType="org.neusoft.neubbs.entity.UserDO">
         UPDATE forum_user
         <set >
             <if test="name != null" >fu_name = #{name,jdbcType=VARCHAR},</if>
@@ -56,7 +60,7 @@
             <if test="email != null" >fu_email = #{email,jdbcType=VARCHAR},</if>
             <if test="address != null" >fu_address = #{address,jdbcType=VARCHAR},</if>
         </set>
-        WHERE fu_id = #{id,jdbcType=INTEGER}
+          WHERE fu_id = #{id,jdbcType=INTEGER}
     </update>
 
     <update id="truncateUserTable">
