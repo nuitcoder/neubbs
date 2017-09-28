@@ -176,6 +176,7 @@
       <artifactId>jackson-core-asl</artifactId>
       <version>1.9.13</version>
     </dependency>
+
     <!-- SpringMVC文件上传包 -->
     <dependency>
       <groupId>commons-fileupload</groupId>
@@ -193,6 +194,17 @@
       <version>1.9</version>
     </dependency>
 
+    <!--Token鉴权依赖-->
+    <!--<dependency>-->
+      <!--<groupId>org.jboss</groupId>-->
+      <!--<artifactId>jandex</artifactId>-->
+      <!--<version>1.1.0.Final</version>-->
+    <!--</dependency>-->
+    <!--<dependency>-->
+      <!--<groupId>com.scienjus</groupId>-->
+      <!--<artifactId>spring-authorization-manager</artifactId>-->
+      <!--&lt;!&ndash;<version>1.0-SNAPSHOT</version>&ndash;&gt;-->
+    <!--</dependency>-->
   </dependencies>
 
 

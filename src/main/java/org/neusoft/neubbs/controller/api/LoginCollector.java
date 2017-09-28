@@ -19,9 +19,6 @@ import java.util.Map;
 
 /**
  * Login Api
- *
- * @Author Suvan
- * @Date 2017-09-27-22:40
  */
 @Controller
 @RequestMapping("/api")
@@ -42,11 +39,11 @@ public class LoginCollector {
         String loginStatus = CookieUtils.getCookieValue(request,UserInfo.LOGINSTATE);
         if(loginStatus != null){
             String cookieUsername = CookieUtils.getCookieValue(request,UserInfo.USERNAME);
-
             if(cookieUsername != null){
-                LoginJsonDO dataLoginJson = userService.getLoginJsonByName(username);
-                if(dataLoginJson.getModel() != null) {
-                    return dataLoginJson;
+                LoginJsonDO dataLoginJson = userService.getLoginJsonByName(cookieUsername);
+
+                if(dataLoginJson.getModel() != null){
+                    return dataLoginJson;//成功返回用户数据
                 }
             }
         }
