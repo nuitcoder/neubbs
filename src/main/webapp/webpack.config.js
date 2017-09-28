@@ -1,5 +1,5 @@
-const path = require('path');
-const webpack = require('webpack');
+const path = require('path')
+const webpack = require('webpack')
 
 module.exports = {
   entry: './app/index.jsx',
@@ -10,11 +10,11 @@ module.exports = {
   module: {
     loaders: [{
       test: /\.(js|jsx)$/,
-      exclude: /(node_modules|public)/,
-      loader: "babel-loader"
+      exclude: /node_modules/,
+      loader: 'babel-loader',
     }, {
       test: /\.json$/,
-      loader: 'json-loader'
+      loader: 'json-loader',
     }],
   },
   resolve: {
@@ -25,4 +25,4 @@ module.exports = {
   plugins: [
     new webpack.NoErrorsPlugin(),
   ],
-};
+}

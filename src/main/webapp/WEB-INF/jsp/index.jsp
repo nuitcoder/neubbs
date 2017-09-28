@@ -13,7 +13,7 @@
   <c:url var="home" value="/" scope="request" />
   <spring:url value="/resources/css/" var="css" />
   <spring:url value="/resources/js/" var="js" />
-  <link rel="stylesheet" href="${css}/style.css">
+  <link rel="stylesheet" href="${css}/normalize.css">
 </head>
 <body>
   <div id="root"></div>
