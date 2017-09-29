@@ -1,4 +1,4 @@
-package test.org.neusoft.neubbs;
+package test.org.neusoft.neubbs.db;
 
 import com.alibaba.fastjson.JSON;
 import org.apache.log4j.Logger;
@@ -12,17 +12,16 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
- *  neubbs:forum_user   TestCase
+ *  IUserService 测试用例 ， forum_user 数据表的 CURD
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:spring-mybatis.xml"})
-public class ForumUserTestCase {
+public class IUserServiceTestCase {
 
-    private static Logger logger = Logger.getLogger(ForumUserTestCase.class);
+    private static Logger logger = Logger.getLogger(IUserServiceTestCase.class);
 
     @Autowired
     IUserService userService;
-
 
     /**
      * 测试插入用户
@@ -30,9 +29,9 @@ public class ForumUserTestCase {
     @Test
     public void testSaveUserByUser(){
         UserDO user = new UserDO();
-        user.setName("oneuser");
-        user.setPassword("12345");
-        user.setEmail("test@test.com");
+            user.setName("oneuser");
+            user.setPassword("12345");
+            user.setEmail("test@test.com");
 
         String result = userService.saveUserByUser(user);
         logger.info(result + " => " + JSON.toJSONString(user));  //打印语句
@@ -63,8 +62,8 @@ public class ForumUserTestCase {
     public void testUpdateUserByUser(){
         // ID 查询
         UserDO user = userService.getUserById(1);
-        user.setName("TestUpdateUser");
-        user.setPassword("Password");
+            user.setName("TestUpdateUser");
+            user.setPassword("Password");
 
         // 进行更新
         String result = userService.updateUserByUser(user);
@@ -81,31 +80,29 @@ public class ForumUserTestCase {
         logger.info(result);
     }
 
-
     /**
      * 测试删减表
      */
     @Ignore
     public void truncateUserTable(){
         UserDO user1 = new UserDO();
-        user1.setName("小明");
-        user1.setPassword("12345");
-        user1.setEmail("test@test.com");
+            user1.setName("小明");
+            user1.setPassword("12345");
+            user1.setEmail("test@test.com");
         UserDO user2 = new UserDO();
-        user2.setName("小红");
-        user2.setPassword("12345");
-        user2.setEmail("test@test.com");
+            user2.setName("小红");
+            user2.setPassword("12345");
+            user2.setEmail("test@test.com");
 
         userService.saveUserByUser(user1);
         userService.truncateUserTable("forum_user");
         userService.saveUserByUser(user2);
 
         UserDO user = userService.getUserById(1);
-        if("小红".equals(user.getName())){
-            logger.info("删减成功,删减后id为1的用户,为添加后的小红！");
-        }else{
-            logger.info("删减失败！");
-        }
-
+            if("小红".equals(user.getName())){
+                logger.info("删减成功,删减后id为1的用户,为添加后的小红！");
+            }else{
+                logger.info("删减失败！");
+            }
     }
 }

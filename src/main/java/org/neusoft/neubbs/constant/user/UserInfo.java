@@ -14,10 +14,6 @@ public interface UserInfo {
     String ADDRESS = "address";
     String CREATETIME = "createtime";
 
-    String LOGINSTATE = "loginState";
-    String LOGINSTATE_YES = "true";
-    String LOGINSTATE_NO = "false";
-
     String DATE_FORMATE = "yyyy-MM-dd HH:mm:ss";
 
     String NEUBBS_COOKIENAME = "neubbsCookieName";

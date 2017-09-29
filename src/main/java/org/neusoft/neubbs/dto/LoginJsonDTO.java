@@ -1,11 +1,11 @@
-package org.neusoft.neubbs.entity.json;
+package org.neusoft.neubbs.dto;
 
 import java.util.Map;
 
 /**
- * LoginJsonDO
+ * 登录JSON 数据传输对象
  */
-public class LoginJsonDO {
+public class LoginJsonDTO {
     private Boolean status;
 
     private String message;

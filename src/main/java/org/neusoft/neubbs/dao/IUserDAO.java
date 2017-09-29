@@ -4,7 +4,9 @@ import org.apache.ibatis.annotations.Param;
 import org.neusoft.neubbs.entity.UserDO;
 import org.springframework.stereotype.Repository;
 
-
+/**
+ * UserMapper.xml映射接口
+ */
 @Repository
 public interface IUserDAO {
 

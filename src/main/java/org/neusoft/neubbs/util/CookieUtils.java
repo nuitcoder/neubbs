@@ -1,9 +1,14 @@
 package org.neusoft.neubbs.util;
 
+import org.neusoft.neubbs.constant.login.CookieInfo;
+
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+/**
+ * Cookie 工具类
+ */
 public class CookieUtils {
     /**
      * 插入Cookie
@@ -14,9 +19,9 @@ public class CookieUtils {
     public static void saveCookie(HttpServletResponse response,
                                     String cookieName,String cookieValue){
         Cookie cookie = new Cookie(cookieName,cookieValue);
-            cookie.setMaxAge(60 * 60 * 24 * 7);
-            cookie.setPath("/");
-            cookie.setHttpOnly(true);
+            cookie.setMaxAge(CookieInfo.MAXAGE_SERVENDAY);
+            cookie.setPath(CookieInfo.PATH);
+            cookie.setHttpOnly(CookieInfo.HTTPONLY_TRUE);
 
         response.addCookie(cookie);
     }
@@ -31,9 +36,9 @@ public class CookieUtils {
                                         String cookieName){
         for(Cookie cookie : request.getCookies()){
             if(cookieName.equals(cookie.getName())){
-                cookie.setMaxAge(0);//周期设为0,即是删除
-                cookie.setPath("/");
-                cookie.setHttpOnly(true);
+                cookie.setMaxAge(CookieInfo.MAXAGE_ZERO);//有效时间设为0,即是删除
+                cookie.setPath(CookieInfo.PATH);
+                cookie.setHttpOnly(CookieInfo.HTTPONLY_TRUE);
 
                 response.addCookie(cookie);
                 break;
@@ -48,9 +53,9 @@ public class CookieUtils {
     public static void printCookie(HttpServletRequest request){
         int count = 1;
         for(Cookie cookie: request.getCookies()){
-            System.out.println((count++) + " : "
-                                + "CookieName = " + cookie.getName()
-                                + ";\tCookieValue = " + cookie.getValue());
+            System.out.println("\n" + (count++) + " : "
+                                + cookie.getName() + "---"
+                                + cookie.getValue());
         }
     }
 

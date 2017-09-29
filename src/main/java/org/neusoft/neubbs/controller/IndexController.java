@@ -5,7 +5,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
- * 论坛总控制器
+ * 首页控制器
  */
 @Controller
 public class IndexController {

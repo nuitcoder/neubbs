@@ -1,11 +1,13 @@
 package org.neusoft.neubbs.controller.api;
 
-import org.neusoft.neubbs.constant.AjaxRequestStatus;
+import org.neusoft.neubbs.constant.ajax.AjaxRequestStatus;
 import org.neusoft.neubbs.constant.login.LoginInfo;
 import org.neusoft.neubbs.constant.user.UserInfo;
-import org.neusoft.neubbs.entity.json.LoginJsonDO;
+import org.neusoft.neubbs.controller.annotation.LoginAuthorization;
+import org.neusoft.neubbs.dto.LoginJsonDTO;
 import org.neusoft.neubbs.service.IUserService;
 import org.neusoft.neubbs.util.CookieUtils;
+import org.neusoft.neubbs.util.TokenUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,7 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
 /**
- * Login Api
+ * 登录接口
  */
 @Controller
 @RequestMapping("/api")
@@ -30,25 +32,13 @@ public class LoginCollector {
 
     @RequestMapping(value="/login",method = RequestMethod.GET)
     @ResponseBody
-    public LoginJsonDO loginCheck(@RequestParam(value="username",required = false)String username,
-                                  @RequestParam(value="password",required = false)String password,
-                                    HttpServletRequest request, HttpServletResponse response)
+    @LoginAuthorization
+    public LoginJsonDTO loginCheck(@RequestParam(value="username",required = false)String username,
+                                   @RequestParam(value="password",required = false)String password,
+                                   HttpServletRequest request, HttpServletResponse response)
                                         throws Exception{
-
-        //判断是否自动登录
-        String loginStatus = CookieUtils.getCookieValue(request,UserInfo.LOGINSTATE);
-        if(loginStatus != null){
-            String cookieUsername = CookieUtils.getCookieValue(request,UserInfo.USERNAME);
-            if(cookieUsername != null){
-                LoginJsonDO dataLoginJson = userService.getLoginJsonByName(cookieUsername);
-
-                if(dataLoginJson.getModel() != null){
-                    return dataLoginJson;//成功返回用户数据
-                }
-            }
-        }
-
-        LoginJsonDO loginJson = new LoginJsonDO();//数据传输对象暂存
+        //定义数据传输对象
+        LoginJsonDTO loginJson = new LoginJsonDTO();
 
         //空判断
         if(username == null || username.length() <= 0){
@@ -61,7 +51,7 @@ public class LoginCollector {
         }
 
         //用户是否存在判断
-        LoginJsonDO dataLoginJson = userService.getLoginJsonByName(username);
+        LoginJsonDTO dataLoginJson = userService.getLoginJsonByName(username);
         if(dataLoginJson.getModel() == null) {
             return dataLoginJson;
         }
@@ -75,10 +65,10 @@ public class LoginCollector {
 
         //用户密码通过验证
         if(username.equals(userInfoMap.get(UserInfo.USERNAME)) && password.equals(userInfoMap.get(UserInfo.PASSWORD))){
-            //Cookie自动登录
-            CookieUtils.saveCookie(response,UserInfo.USERNAME,username);
-            CookieUtils.saveCookie(response,UserInfo.LOGINSTATE,UserInfo.LOGINSTATE_YES);//登录状态
-            CookieUtils.printCookie(request);//打印本地Cookie,包含JSESSIONID,Idea-7ca706b7,loginState
+            //获取Token，储存进本地Cookie
+            String token = TokenUtils.createToken(username);
+            CookieUtils.saveCookie(response,LoginInfo.AUTHORIZATION,token);
+            //CookieUtils.printCookie(request);//本地打印Cookie测试
         }
 
         return dataLoginJson;

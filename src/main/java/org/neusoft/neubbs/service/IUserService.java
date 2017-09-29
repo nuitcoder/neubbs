@@ -1,9 +1,11 @@
 package org.neusoft.neubbs.service;
 
 import org.neusoft.neubbs.entity.UserDO;
-import org.neusoft.neubbs.entity.json.LoginJsonDO;
+import org.neusoft.neubbs.dto.LoginJsonDTO;
 
-
+/**
+ *forum_user表 业务操作接口
+ */
 public interface IUserService{
 
     public String saveUserByUser(UserDO user);
@@ -12,7 +14,7 @@ public interface IUserService{
 
     public UserDO getUserById(Integer id);
     public UserDO getUserByName(String name);
-    public LoginJsonDO getLoginJsonByName(String name);
+    public LoginJsonDTO getLoginJsonByName(String name);
 
     public String updateUserByUser(UserDO user);
 

@@ -1,4 +1,4 @@
-package org.neusoft.neubbs.constant;
+package org.neusoft.neubbs.constant.db;
 
 /**
  * 数据库请求状态

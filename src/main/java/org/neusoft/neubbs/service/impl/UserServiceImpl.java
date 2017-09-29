@@ -1,12 +1,12 @@
 package org.neusoft.neubbs.service.impl;
 
-import org.neusoft.neubbs.constant.AjaxRequestStatus;
-import org.neusoft.neubbs.constant.DBRequestStatus;
+import org.neusoft.neubbs.constant.ajax.AjaxRequestStatus;
+import org.neusoft.neubbs.constant.db.DBRequestStatus;
 import org.neusoft.neubbs.constant.login.LoginInfo;
 import org.neusoft.neubbs.constant.user.UserInfo;
 import org.neusoft.neubbs.dao.IUserDAO;
+import org.neusoft.neubbs.dto.LoginJsonDTO;
 import org.neusoft.neubbs.entity.UserDO;
-import org.neusoft.neubbs.entity.json.LoginJsonDO;
 import org.neusoft.neubbs.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,7 +15,9 @@ import java.text.SimpleDateFormat;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-
+/**
+ * IUserService 实现类
+ */
 @Service("userServiceImpl")
 public class UserServiceImpl implements IUserService {
 
@@ -51,8 +53,8 @@ public class UserServiceImpl implements IUserService {
         return userDAO.getUserByName(name);
     }
     @Override
-    public LoginJsonDO getLoginJsonByName(String name){
-        LoginJsonDO dataLoginJson = new LoginJsonDO();
+    public LoginJsonDTO getLoginJsonByName(String name){
+        LoginJsonDTO dataLoginJson = new LoginJsonDTO();
         UserDO user = userDAO.getUserByName(name);
 
         if(user == null){
