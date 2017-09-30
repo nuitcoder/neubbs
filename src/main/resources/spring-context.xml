@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+                        http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+                        http://www.springframework.org/schema/context
+                        http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+
+	<!-- 自动扫描（用于jUnit测试） -->
+	<context:component-scan base-package="org.neusoft.neubbs" />
+
+	<!-- 注入配置文件 -->
+	<bean id="propertyConfigurer"
+		  class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:jdbc.properties</value>
+				<value>classpath:redis.properties</value>
+			</list>
+		</property>
+	</bean>
+
+	<!-- 导入 spring-redis-context.xml 配置文件 -->
+	<import resource="classpath:spring-mybatis-context.xml" />
+
+	<!-- 导入 spring-redis-context.xml 配置文件 -->
+	<import resource="classpath:spring-redis-context.xml" />
+</beans>

@@ -1,11 +1,8 @@
 package org.neusoft.neubbs.service.impl;
 
-import org.neusoft.neubbs.constant.ajax.AjaxRequestStatus;
 import org.neusoft.neubbs.constant.db.DBRequestStatus;
-import org.neusoft.neubbs.constant.login.LoginInfo;
 import org.neusoft.neubbs.constant.user.UserInfo;
 import org.neusoft.neubbs.dao.IUserDAO;
-import org.neusoft.neubbs.dto.LoginJsonDTO;
 import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,29 +50,25 @@ public class UserServiceImpl implements IUserService {
         return userDAO.getUserByName(name);
     }
     @Override
-    public LoginJsonDTO getLoginJsonByName(String name){
-        LoginJsonDTO dataLoginJson = new LoginJsonDTO();
+    public Map<String,String> listUserInfoByName(String name){
         UserDO user = userDAO.getUserByName(name);
 
-        if(user == null){
-            dataLoginJson.put(AjaxRequestStatus.SUCCESS, LoginInfo.USER_NOEXIT);
-        }else{
-            Map<String,String> params = new LinkedHashMap<String, String>();
-                params.put(UserInfo.ID,String.valueOf(user.getId()));
-                params.put(UserInfo.USERNAME,user.getName());
-                params.put(UserInfo.PASSWORD,user.getPassword());
-                params.put(UserInfo.SEX,user.getSex());
-                params.put(UserInfo.BIRTHDAY,user.getBirthday());
-                params.put(UserInfo.PHONE,user.getPhone());
-                params.put(UserInfo.ADDRESS,user.getAddress());
+        Map<String, String> userInfoMap = null;
+        if(user != null) {
+            userInfoMap = new LinkedHashMap<String, String>();
+                userInfoMap.put(UserInfo.ID, String.valueOf(user.getId()));
+                userInfoMap.put(UserInfo.USERNAME, user.getName());
+                userInfoMap.put(UserInfo.PASSWORD, user.getPassword());
+                userInfoMap.put(UserInfo.SEX, user.getSex());
+                userInfoMap.put(UserInfo.BIRTHDAY, user.getBirthday());
+                userInfoMap.put(UserInfo.PHONE, user.getPhone());
+                userInfoMap.put(UserInfo.ADDRESS, user.getAddress());
 
-                SimpleDateFormat sdf = new SimpleDateFormat(UserInfo.DATE_FORMATE);
-                params.put(UserInfo.CREATETIME,sdf.format(user.getCreatetime()));
-
-            dataLoginJson.put(AjaxRequestStatus.SUCCESS,LoginInfo.USER_AUTHENTICATE,params);
+            SimpleDateFormat sdf = new SimpleDateFormat(UserInfo.DATE_FORMATE);
+            userInfoMap.put(UserInfo.CREATETIME, sdf.format(user.getCreatetime()));
         }
 
-        return dataLoginJson;
+        return userInfoMap;
     }
 
     @Override

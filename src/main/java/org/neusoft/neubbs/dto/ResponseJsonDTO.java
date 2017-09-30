@@ -5,12 +5,18 @@ import java.util.Map;
 /**
  * 登录JSON 数据传输对象
  */
-public class LoginJsonDTO {
+public class ResponseJsonDTO {
     private Boolean status;
 
     private String message;
     private Map<String,String> model;
 
+    /**
+     * 参数一次注入
+     *
+     * @param status
+     * @param message
+     */
     public void put(Boolean status,String message){
         this.status = status;
         this.message = message;

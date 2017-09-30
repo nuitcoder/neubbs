@@ -10,6 +10,7 @@ public interface LoginInfo {
 
     String USER_NOEXIT = "数据库中不存在该用户";
     String USER_AUTHENTICATE = "用户帐号密码通过验证,登录成功";
+    String USER_GETINFO = "成功获取用户信息";
 
     String LOGINSTATE = "loginState";
     String LOGINSTATE_YES = "true";
@@ -21,6 +22,7 @@ public interface LoginInfo {
     String AUTOMATICLOGIN_ON = "ON";
 
     String AUTHORIZATION = "Authorization";
+    String NO_VISITAUTHORIZATION = "无访问权限";
 
     String TOKEN = "toekn";
 }

@@ -1,21 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:context="http://www.springframework.org/schema/context"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans
-                        http://www.springframework.org/schema/beans/spring-beans-3.1.xsd  
-                        http://www.springframework.org/schema/context  
-                        http://www.springframework.org/schema/context/spring-context-3.1.xsd">
-
-
-	<!-- 自动扫描（用于jUnit测试） -->
-	<context:component-scan base-package="org.neusoft.neubbs" />
-
-	<!-- 注入jdbc.properties文件 -->
-	<bean id="propertyConfigurer"
-		  class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-		<property name="location" value="classpath:jdbc.properties" />
-	</bean>
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+                       	   http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
 	<!-- 配置数据源（dbcp连接池） -->
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
@@ -37,13 +24,11 @@
 		<property name="mapperLocations" value="classpath:/mapping/*.xml" /><!-- 指定路径所有xml -->
 	</bean>
 
-
 	 <!--注入DAO and SQL会话工厂-->
 	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
 		<property name="basePackage" value="org.neusoft.neubbs.dao" />					<!-- DAO接口所在包名，Spring会自动查找其下的类 -->
 		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />	<!-- 注入sqlSessionFactory -->
 	</bean>
-
 
 	<!-- 配置事务管理器 -->
 	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">

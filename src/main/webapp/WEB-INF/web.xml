@@ -10,15 +10,21 @@
 
     <!-- SSM框架默认配置 -->
     <context-param>
-        <param-name>contextConfigLocation</param-name>
-        <param-value>classpath:spring-mybatis.xml</param-value><!-- 加载spring-mybatis.xml -->
+        <param-name>contextConfigLocation</param-name><!-- Spring环境参数全局变量 -->
+        <param-value>classpath:spring-context.xml</param-value>
     </context-param>
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class> <!-- Spring监听器,根据 contextConfigLocation 变量加载配置文件 -->
+    </listener>
+    <listener>
+        <listener-class>org.springframework.web.util.IntrospectorCleanupListener</listener-class> <!-- 防止Spring内存溢出监听器 -->
+    </listener>
     <servlet>
         <servlet-name>DispatcherServlet</servlet-name>
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class><!--Spring容器总控制器,将请求分发给Controller-->
         <init-param>
             <param-name>contextConfigLocation</param-name>
-            <param-value>classpath:spring-applicationContext.xml</param-value><!-- 加载spring-applicationContext.xml -->
+            <param-value>classpath:spring-mvc.xml</param-value><!-- SpringMVC 配置文件（设置DispatcherServlet） -->
         </init-param>
         <load-on-startup>1</load-on-startup>
         <async-supported>true</async-supported>
@@ -27,12 +33,6 @@
         <servlet-name>DispatcherServlet</servlet-name>
         <url-pattern>/</url-pattern>
     </servlet-mapping>
-    <listener>
-        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class> <!-- Spring监听器 -->
-    </listener>
-    <listener>
-        <listener-class>org.springframework.web.util.IntrospectorCleanupListener</listener-class> <!-- 防止Spring内存溢出监听器 -->
-    </listener>
 
     <!-- 自定义listener,filter,intercepter -->
     <filter>

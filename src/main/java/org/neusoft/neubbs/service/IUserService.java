@@ -1,7 +1,8 @@
 package org.neusoft.neubbs.service;
 
 import org.neusoft.neubbs.entity.UserDO;
-import org.neusoft.neubbs.dto.LoginJsonDTO;
+
+import java.util.Map;
 
 /**
  *forum_user表 业务操作接口
@@ -14,7 +15,7 @@ public interface IUserService{
 
     public UserDO getUserById(Integer id);
     public UserDO getUserByName(String name);
-    public LoginJsonDTO getLoginJsonByName(String name);
+    public Map<String,String> listUserInfoByName(String name);
 
     public String updateUserByUser(UserDO user);
 

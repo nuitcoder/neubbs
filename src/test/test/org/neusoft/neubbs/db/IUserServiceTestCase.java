@@ -15,7 +15,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  *  IUserService 测试用例 ， forum_user 数据表的 CURD
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:spring-mybatis.xml"})
+@ContextConfiguration(locations = {"classpath:spring-context.xml"})
 public class IUserServiceTestCase {
 
     private static Logger logger = Logger.getLogger(IUserServiceTestCase.class);
