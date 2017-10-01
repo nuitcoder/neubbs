@@ -7,19 +7,11 @@
                         http://www.springframework.org/schema/context
                         http://www.springframework.org/schema/context/spring-context-3.1.xsd">
 
-	<!-- 自动扫描（用于jUnit测试） -->
+	<!-- 自动扫描（根据注解，自动注入相应Bean） -->
 	<context:component-scan base-package="org.neusoft.neubbs" />
 
-	<!-- 注入配置文件 -->
-	<bean id="propertyConfigurer"
-		  class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-		<property name="locations">
-			<list>
-				<value>classpath:jdbc.properties</value>
-				<value>classpath:redis.properties</value>
-			</list>
-		</property>
-	</bean>
+	<!-- 导入全部配置文件（不能在单独配置文件内,分别声明bean注入，Spring仅能有1个PropertyPlaceholderConfigurer ） -->
+	<context:property-placeholder location="classpath*:*.properties"/>
 
 	<!-- 导入 spring-redis-context.xml 配置文件 -->
 	<import resource="classpath:spring-mybatis-context.xml" />

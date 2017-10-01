@@ -1,4 +1,4 @@
-package test.org.neusoft.neubbs.db;
+package test.org.neusoft.neubbs.util;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -8,7 +8,6 @@ import java.util.Map;
  *forum_user表 业务操作接口
  */
 public interface IUserService{
-
     public String saveUserByUser(UserDO user);
 
     public String removeUserById(Integer id);

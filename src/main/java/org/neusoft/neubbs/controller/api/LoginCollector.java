@@ -2,15 +2,21 @@ package org.neusoft.neubbs.controller.api;
 
 import org.neusoft.neubbs.constant.ajax.AjaxRequestStatus;
 import org.neusoft.neubbs.constant.login.LoginInfo;
+import org.neusoft.neubbs.constant.login.RedisInfo;
 import org.neusoft.neubbs.constant.user.UserInfo;
 import org.neusoft.neubbs.controller.annotation.LoginAuthorization;
 import org.neusoft.neubbs.dto.ResponseJsonDTO;
+import org.neusoft.neubbs.service.IRedisService;
 import org.neusoft.neubbs.service.IUserService;
 import org.neusoft.neubbs.util.CookieUtils;
 import org.neusoft.neubbs.util.TokenUtils;
+import org.neusoft.neubbs.util.utilentity.TokenDO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -25,6 +31,8 @@ public class LoginCollector {
 
     @Autowired
     IUserService userService;
+    @Autowired
+    IRedisService redisService;
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     @ResponseBody
@@ -61,9 +69,15 @@ public class LoginCollector {
         //用户密码通过验证
         if (username.equals(userInfoMap.get(UserInfo.USERNAME)) && password.equals(userInfoMap.get(UserInfo.PASSWORD))) {
             //获取Token，储存进本地Cookie
-            String token = TokenUtils.createToken(username);
-            CookieUtils.saveCookie(response, LoginInfo.AUTHORIZATION, token);
+            TokenDO tokenDO = TokenUtils.createToken(username);
+            CookieUtils.saveCookie(response, LoginInfo.AUTHORIZATION, tokenDO.getToken());
             //CookieUtils.printCookie(request);//本地打印Cookie测试
+
+            //Redis储存键值对
+            redisService.saveByKeyValueTime(tokenDO.getTokenname() , "这里要放序列化对象", RedisInfo.EXPIRE_TIME_SERVER_DAY);
+
+            //持久化到MySQL(用于备份，防止服务器宕机)
+
         }
 
         return responseJson;

@@ -27,7 +27,11 @@ public interface TokenInfo {
     String SET_ISSUEDAT = "";
     String SET_EXPIRESAT = "";
 
-    String CLAIM_USERNAME = "username";
+    String CLAIM_TOKENNAME = "tokenname";
 
     String SECRET_KEY = "this neubbs is best";
+
+    String TOKEN_ALREADEXPIRE = "token已经过期，请重新登录";
+
+    long EXPIRE_TIME_SERVEN_DAY = 1000 * 60 * 60 * 24 * 7;
 }
