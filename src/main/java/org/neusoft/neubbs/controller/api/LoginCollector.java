@@ -2,15 +2,18 @@ package org.neusoft.neubbs.controller.api;
 
 import org.neusoft.neubbs.constant.ajax.AjaxRequestStatus;
 import org.neusoft.neubbs.constant.login.LoginInfo;
-import org.neusoft.neubbs.constant.login.RedisInfo;
+import org.neusoft.neubbs.constant.db.RedisInfo;
+import org.neusoft.neubbs.constant.login.TokenInfo;
+import org.neusoft.neubbs.constant.secret.JWTTokenSecret;
 import org.neusoft.neubbs.constant.user.UserInfo;
 import org.neusoft.neubbs.controller.annotation.LoginAuthorization;
 import org.neusoft.neubbs.dto.ResponseJsonDTO;
 import org.neusoft.neubbs.service.IRedisService;
 import org.neusoft.neubbs.service.IUserService;
 import org.neusoft.neubbs.util.CookieUtils;
+import org.neusoft.neubbs.util.JsonUtils;
 import org.neusoft.neubbs.util.TokenUtils;
-import org.neusoft.neubbs.util.utilentity.TokenDO;
+import org.neusoft.neubbs.entity.token.TokenDO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,7 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
 /**
- * 登录接口
+ *  登录，注销 api
  */
 @Controller
 @RequestMapping("/api")
@@ -34,12 +37,21 @@ public class LoginCollector {
     @Autowired
     IRedisService redisService;
 
+    /**
+     * 登录接口
+     * @param username
+     * @param password
+     * @param request
+     * @param response
+     * @return
+     * @throws Exception
+     */
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     @ResponseBody
     public ResponseJsonDTO login(@RequestParam(value = "username", required = false) String username,
                                  @RequestParam(value = "password", required = false) String password,
-                                 HttpServletRequest request, HttpServletResponse response)
-            throws Exception {
+                                    HttpServletRequest request, HttpServletResponse response)
+                                        throws Exception {
         //定义响应数据传输对象
         ResponseJsonDTO responseJson = new ResponseJsonDTO();
 
@@ -68,43 +80,52 @@ public class LoginCollector {
 
         //用户密码通过验证
         if (username.equals(userInfoMap.get(UserInfo.USERNAME)) && password.equals(userInfoMap.get(UserInfo.PASSWORD))) {
+            //构建数据传输对象
+            responseJson.put(AjaxRequestStatus.SUCCESS, LoginInfo.USER_AUTHENTICATE, userInfoMap);
+
             //获取Token，储存进本地Cookie
             TokenDO tokenDO = TokenUtils.createToken(username);
-            CookieUtils.saveCookie(response, LoginInfo.AUTHORIZATION, tokenDO.getToken());
+            CookieUtils.saveCookie(response, TokenInfo.AUTHENTICATION, tokenDO.getToken());
+            //System.out.println("JWT username :" + tokenDO.getTokenname());//打印JWT加密的username
             //CookieUtils.printCookie(request);//本地打印Cookie测试
 
             //Redis储存键值对
-            redisService.saveByKeyValueTime(tokenDO.getTokenname() , "这里要放序列化对象", RedisInfo.EXPIRE_TIME_SERVER_DAY);
+            String userInfoJSON = JsonUtils.getObjectJSONString(userInfoMap);
+            redisService.saveByKeyValueTime(tokenDO.getTokenname(), userInfoJSON, RedisInfo.EXPIRETIME_SERVER_DAY);
 
-            //持久化到MySQL(用于备份，防止服务器宕机)
+            //持久化到MySQL(用于备份，防止服务器宕机)【未实现，可在下面写业务逻辑】
 
         }
 
         return responseJson;
     }
 
+    /**
+     * 注销用户
+     * @param request
+     * @param response
+     * @return
+     * @throws Exception
+     */
     @LoginAuthorization
     @RequestMapping(value = "/logout", method = RequestMethod.GET)
     @ResponseBody
-    public ResponseJsonDTO logout(HttpServletRequest request,HttpServletResponse response){
+    public ResponseJsonDTO logout(HttpServletRequest request,HttpServletResponse response) throws Exception{
+        //Reids清空缓存
+        String token = CookieUtils.getCookieValue(request, TokenInfo.AUTHENTICATION);
+        String username = TokenUtils.verifyToken(token, JWTTokenSecret.SECRET_KEY);//解密获取用户
+        redisService.removeByKey(username);
+
+        //删除Cookie
+        CookieUtils.removeCookie(request, response, TokenInfo.AUTHENTICATION);
+        //CookieUtils.printCookie(request);//打印测试
+
+        //删除MySQL记录【未实现，可以在此添加业务逻辑】
+
+        //构建JSON提示信息
         ResponseJsonDTO responseJson = new ResponseJsonDTO();
-            //CookieUtils.removeCookie(request, response, LoginInfo.AUTHORIZATION);
-        return responseJson;
-    }
+        responseJson.put(AjaxRequestStatus.SUCCESS, LoginInfo.LOGOUT_SUCCESS);
 
-
-    @LoginAuthorization
-    @RequestMapping(value = "/get/userinfo",method = RequestMethod.GET)
-    @ResponseBody
-    public ResponseJsonDTO getUserInfo(@RequestParam(value = "username",required = false)String username){
-        ResponseJsonDTO responseJson = new ResponseJsonDTO();
-            Map<String,String> userInfoMap = userService.listUserInfoByName(username);
-            if(userInfoMap == null){
-                responseJson.put(AjaxRequestStatus.FAIL, LoginInfo.USER_NOEXIT);
-                return responseJson;
-            }
-
-            responseJson.put(AjaxRequestStatus.SUCCESS, LoginInfo.USER_GETINFO, userInfoMap);
         return responseJson;
     }
 }

@@ -6,10 +6,10 @@ import org.junit.runners.JUnit4;
 import redis.clients.jedis.Jedis;
 
 /**
- * RedisUtils 测试用用例
+ *  测试 Java 内 Redis 的 Jedis 扩展库
  */
 @RunWith(JUnit4.class)
-public class RedisUtilsTestCase {
+public class RedisJedisTestCase {
     /**
      * 测试Reids key-value 插入，查询，设置过期时间
      */

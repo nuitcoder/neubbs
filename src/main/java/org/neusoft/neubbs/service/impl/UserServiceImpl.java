@@ -1,6 +1,6 @@
 package org.neusoft.neubbs.service.impl;
 
-import org.neusoft.neubbs.constant.db.DBRequestStatus;
+import org.neusoft.neubbs.constant.db.MySQLRequestStatus;
 import org.neusoft.neubbs.constant.user.UserInfo;
 import org.neusoft.neubbs.dao.IUserDAO;
 import org.neusoft.neubbs.entity.UserDO;
@@ -26,9 +26,9 @@ public class UserServiceImpl implements IUserService {
         int result = userDAO.saveUserByUser(user);
 
         if(result == 0){
-            return DBRequestStatus.INSERT_FAIL;
+            return MySQLRequestStatus.INSERT_FAIL;
         }
-        return DBRequestStatus.INSERT_SUCCESS;
+        return MySQLRequestStatus.INSERT_SUCCESS;
     }
 
     @Override
@@ -36,9 +36,9 @@ public class UserServiceImpl implements IUserService {
         int result = userDAO.removeUserById(id);
 
         if(result == 0){
-            return DBRequestStatus.DETELE_FAIL;
+            return MySQLRequestStatus.DETELE_FAIL;
         }
-        return DBRequestStatus.DETELE_SUCCESS;
+        return MySQLRequestStatus.DETELE_SUCCESS;
     }
 
     @Override
@@ -76,9 +76,9 @@ public class UserServiceImpl implements IUserService {
         int result = userDAO.updateUserByUser(user);
 
         if(result == 0){
-            return DBRequestStatus.UPDATE_FAIL;
+            return MySQLRequestStatus.UPDATE_FAIL;
         }
-        return DBRequestStatus.UPDATE_SUCCESS;
+        return MySQLRequestStatus.UPDATE_SUCCESS;
     }
 
     @Override
@@ -86,8 +86,8 @@ public class UserServiceImpl implements IUserService {
         int result = userDAO.truncateUserTable(table);
 
         if(result == 0){
-            return DBRequestStatus.TRUNCATE_FAIL;
+            return MySQLRequestStatus.TRUNCATE_FAIL;
         }
-        return DBRequestStatus.TRUNCATE_SUCCESS;
+        return MySQLRequestStatus.TRUNCATE_SUCCESS;
     }
 }

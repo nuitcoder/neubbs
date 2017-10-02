@@ -3,7 +3,7 @@ package org.neusoft.neubbs.dto;
 import java.util.Map;
 
 /**
- * 登录JSON 数据传输对象
+ * response JSON 数据传输对象
  */
 public class ResponseJsonDTO {
     private Boolean status;

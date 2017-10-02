@@ -3,7 +3,7 @@ package org.neusoft.neubbs.constant.db;
 /**
  * 数据库请求状态
  */
-public interface DBRequestStatus {
+public interface MySQLRequestStatus {
 
     String INSERT_SUCCESS = "插入成功";
     String DETELE_SUCCESS  = "删除成功";

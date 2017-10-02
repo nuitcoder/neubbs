@@ -27,11 +27,11 @@ public interface TokenInfo {
     String SET_ISSUEDAT = "";
     String SET_EXPIRESAT = "";
 
-    String CLAIM_TOKENNAME = "tokenname";
+    String CLAIM_USERNAME = " username";
 
-    String SECRET_KEY = "this neubbs is best";
+    String AUTHENTICATION = "Authentication"; //Cookie 名和 response 的 Header
 
-    String TOKEN_ALREADEXPIRE = "token已经过期，请重新登录";
+    String CLIENT_TOKEN_ALREAD_EXPIRE = "客户端 token 已经过期，请重新登录";
 
-    long EXPIRE_TIME_SERVEN_DAY = 1000 * 60 * 60 * 24 * 7;
+    long EXPIRETIME_SERVEN_DAY = 604800000; //1000 * 60 * 60 * * 24 * 7 ms
 }

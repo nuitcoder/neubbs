@@ -7,7 +7,8 @@ import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.neusoft.neubbs.constant.login.TokenInfo;
-import org.neusoft.neubbs.util.utilentity.TokenDO;
+import org.neusoft.neubbs.constant.secret.JWTTokenSecret;
+import org.neusoft.neubbs.entity.token.TokenDO;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
@@ -35,11 +36,10 @@ public class TokenUtils {
 
         //签发时间,与过期时间
         long iat = System.currentTimeMillis();
-        long ext = iat + TokenInfo.EXPIRE_TIME_SERVEN_DAY;//过期则无法解密
+        long ext = iat + TokenInfo.EXPIRETIME_SERVEN_DAY;//过期则无法解密
         //long ext = iat + 1;//测试过期token是否无效
 
         //设置Playload,且使用HS256加密,生成token
-        String tokenname = username + ext;//关键信息名字
         String token  = JWT.create()
                             .withHeader(headerMap)
                             .withIssuer(TokenInfo.SET_ISSUER)
@@ -47,11 +47,12 @@ public class TokenUtils {
                             .withAudience(TokenInfo.SET_AUDIENCE)
                             .withIssuedAt(new Date(iat))
                             .withExpiresAt(new Date(ext))
-                                .withClaim(TokenInfo.CLAIM_TOKENNAME,tokenname)
-                                    .sign(Algorithm.HMAC256(TokenInfo.SECRET_KEY));
+                                .withClaim(TokenInfo.CLAIM_USERNAME, username)
+                                    .sign(Algorithm.HMAC256(JWTTokenSecret.SECRET_KEY));
 
+       //构建Token实体类
        TokenDO tokenDO = new TokenDO();
-            tokenDO.setTokenname(tokenname);
+            tokenDO.setTokenname(username);
             tokenDO.setExpireTime(ext);
             tokenDO.setToken(token);
 
@@ -67,25 +68,23 @@ public class TokenUtils {
      * @throws Exception
      */
     public static String verifyToken(String token, String secretKey){
-        //解密HS256算法
         JWTVerifier verifier = null;
         DecodedJWT decodedJWT = null;
         try{
             //解密HS256算法
-            verifier = JWT.require(Algorithm.HMAC256(secretKey))
+             verifier = JWT.require(Algorithm.HMAC256(secretKey))
                             .build();
 
             //解码Base5
             decodedJWT = verifier.verify(token);
-        }catch (UnsupportedEncodingException ue){
-
-        }catch (TokenExpiredException tee){
+        }catch (UnsupportedEncodingException ue){}
+         catch (TokenExpiredException tee){
             //token过期
             return null;
         }
 
-        //获取用户名
-        Claim claim = decodedJWT.getClaim(TokenInfo.CLAIM_TOKENNAME);
+        //获取 Playload 的 username
+        Claim claim = decodedJWT.getClaim(TokenInfo.CLAIM_USERNAME);
         return claim.asString();
     }
 }

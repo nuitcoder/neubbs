@@ -37,7 +37,7 @@
     <!-- 自定义listener,filter,intercepter -->
     <filter>
         <filter-name>LoginTokenFilter</filter-name>
-        <filter-class>org.neusoft.neubbs.controller.filter.LoginTokenFilter</filter-class>
+        <filter-class>org.neusoft.neubbs.controller.filter.AddResponseHeaderTokenFilter</filter-class>
     </filter>
     <filter-mapping>
         <filter-name>LoginTokenFilter</filter-name>

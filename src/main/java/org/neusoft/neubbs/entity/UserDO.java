@@ -4,7 +4,7 @@ package org.neusoft.neubbs.entity;
 import java.util.Date;
 
 /**
- *  forum_user表 实体类
+ *  对应forum_user表 数据对象
  */
 public class UserDO {
 

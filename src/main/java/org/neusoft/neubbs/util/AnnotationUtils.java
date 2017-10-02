@@ -14,7 +14,7 @@ public class AnnotationUtils {
      * @param handler
      * @return
      */
-    public static Boolean checkMethodAnnotation(Object handler,Class t){
+    public static Boolean hasMethodAnnotation(Object handler,Class t){
          //不是方法级跳过
         if(!(handler instanceof HandlerMethod)){
             return true;

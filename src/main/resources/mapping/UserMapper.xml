@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 
-
 <!-- 论坛User表映射文件 -->
 <mapper namespace="org.neusoft.neubbs.dao.IUserDAO" ><!--指定DAO接口-->
     <!-- ************************************************1.定义************************************************ -->

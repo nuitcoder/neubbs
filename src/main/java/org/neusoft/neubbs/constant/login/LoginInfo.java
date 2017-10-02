@@ -9,20 +9,10 @@ public interface LoginInfo {
     String PASSWORD_ERROR = "该用户密码不正确！";
 
     String USER_NOEXIT = "数据库中不存在该用户";
-    String USER_AUTHENTICATE = "用户帐号密码通过验证,登录成功";
-    String USER_GETINFO = "成功获取用户信息";
+    String USER_AUTHENTICATE = "用户帐号密码通过验证,登录成功，将在7天内自动登录";
+    String USER_GETINFO_SUCCESS = "成功获取用户信息";
 
-    String LOGINSTATE = "loginState";
-    String LOGINSTATE_YES = "true";
-    String LOGINSTATE_NO = "false";
-    String LOGINSTATE_SUCCESS = "登录成功";
-    String LOGINSTATE_FAIL = "登录失败";
+    String NO_VISITAUTHORIZATION = "无访问权限，请登录后再操作api";
 
-    String AUTOMATICLOGIN = "automaticLogin"; //自动登录
-    String AUTOMATICLOGIN_ON = "ON";
-
-    String AUTHORIZATION = "Authorization";
-    String NO_VISITAUTHORIZATION = "无访问权限";
-
-    String TOKEN = "toekn";
+    String LOGOUT_SUCCESS = "注销成功";
 }

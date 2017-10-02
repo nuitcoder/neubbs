@@ -1,6 +1,6 @@
 package org.neusoft.neubbs.controller.filter;
 
-import org.neusoft.neubbs.constant.login.LoginInfo;
+import org.neusoft.neubbs.constant.login.TokenInfo;
 import org.neusoft.neubbs.util.CookieUtils;
 
 import javax.servlet.*;
@@ -9,9 +9,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- *  LoginToken 过滤器
+ *  在 Response 的 Header 添加 Authentication: token（获取本地Cookie）
  */
-public class LoginTokenFilter implements Filter {
+public class AddResponseHeaderTokenFilter implements Filter {
     /**
      * 初始化
      *
@@ -35,16 +35,18 @@ public class LoginTokenFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest)req;
         HttpServletResponse response = (HttpServletResponse)resp;
 
+
         //response Header 添加 Authorization参数
-        String authorization = CookieUtils.getCookieValue(request,LoginInfo.AUTHORIZATION);
+        String authorization = CookieUtils.getCookieValue(request, TokenInfo.AUTHENTICATION);
         if(authorization != null){
-            response.addHeader(LoginInfo.AUTHORIZATION,authorization);
+            response.addHeader(TokenInfo.AUTHENTICATION, authorization);
         }else{
-            response.addHeader(LoginInfo.AUTHORIZATION,null);
+            response.addHeader(TokenInfo.AUTHENTICATION, null);
         }
 
         chain.doFilter(request,response);//放行
     }
+
 
     /**
      * 销毁

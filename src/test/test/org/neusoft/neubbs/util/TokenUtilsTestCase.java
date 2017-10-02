@@ -3,9 +3,9 @@ package test.org.neusoft.neubbs.util;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-import org.neusoft.neubbs.constant.login.TokenInfo;
+import org.neusoft.neubbs.constant.secret.JWTTokenSecret;
+import org.neusoft.neubbs.entity.token.TokenDO;
 import org.neusoft.neubbs.util.TokenUtils;
-import org.neusoft.neubbs.util.utilentity.TokenDO;
 
 /**
  * TokenUtils类 测试用例
@@ -23,13 +23,14 @@ public class TokenUtilsTestCase {
         try {
             //获取加密token
             tokenDO = TokenUtils.createToken("suvan");
+            System.out.println("tokenname :" + tokenDO.getTokenname());
             System.out.println("token:" + tokenDO.getToken());
 
             //休眠1s，让token失效
             Thread.sleep(1000);
 
             //根据密钥，解密token，获取用户名
-            tokenName = TokenUtils.verifyToken(tokenDO.getToken(), TokenInfo.SECRET_KEY);
+            tokenName = TokenUtils.verifyToken(tokenDO.getToken(), JWTTokenSecret.SECRET_KEY);
             if(tokenName == null){
                 System.out.println("token已经过期，无法解密");
             }else{

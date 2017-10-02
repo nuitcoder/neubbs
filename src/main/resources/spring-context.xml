@@ -10,8 +10,16 @@
 	<!-- 自动扫描（根据注解，自动注入相应Bean） -->
 	<context:component-scan base-package="org.neusoft.neubbs" />
 
-	<!-- 导入全部配置文件（不能在单独配置文件内,分别声明bean注入，Spring仅能有1个PropertyPlaceholderConfigurer ） -->
-	<context:property-placeholder location="classpath*:*.properties"/>
+	<!-- 注入配置文件 -->
+	<bean id="propertyConfigurer"
+		  class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:jdbc.properties</value>
+				<value>classpath:redis.properties</value>
+			</list>
+		</property>
+	</bean>
 
 	<!-- 导入 spring-redis-context.xml 配置文件 -->
 	<import resource="classpath:spring-mybatis-context.xml" />

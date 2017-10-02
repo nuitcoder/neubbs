@@ -1,7 +1,7 @@
 package org.neusoft.neubbs.service;
 
 /**
- * Redis key-value 增删查改
+ * Redis数据库 Service接口
  */
 public interface IRedisService {
     public void saveByKeyValue(String key, String value);

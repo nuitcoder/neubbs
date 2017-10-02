@@ -40,8 +40,8 @@
 	<!-- 配置拦截器 -->
 	<mvc:interceptors>
 		<mvc:interceptor>
-			<mvc:mapping path="/**" /><!-- 所有api均执行拦截 -->
-			<bean class="org.neusoft.neubbs.controller.intercepter.LoginTokenInterceptor"></bean>
+			<mvc:mapping path="/api/**" /><!-- 所有api均执行拦截 -->
+			<bean class="org.neusoft.neubbs.controller.intercepter.ApiTokenInterceptor"></bean>
 		</mvc:interceptor>
 	</mvc:interceptors>
 </beans>

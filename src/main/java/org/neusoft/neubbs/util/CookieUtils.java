@@ -19,7 +19,7 @@ public class CookieUtils {
     public static void saveCookie(HttpServletResponse response,
                                     String cookieName,String cookieValue){
         Cookie cookie = new Cookie(cookieName,cookieValue);
-            cookie.setMaxAge(CookieInfo.MAXAGE_SERVENDAY);
+            cookie.setMaxAge(CookieInfo.EXPIRETIME_SERVEN_DAY);
             cookie.setPath(CookieInfo.PATH);
             cookie.setHttpOnly(CookieInfo.HTTPONLY_TRUE);
 
@@ -36,7 +36,7 @@ public class CookieUtils {
                                         String cookieName){
         for(Cookie cookie : request.getCookies()){
             if(cookieName.equals(cookie.getName())){
-                cookie.setMaxAge(CookieInfo.MAXAGE_ZERO);//有效时间设为0,即是删除
+                cookie.setMaxAge(CookieInfo.EXPIRETIME_ZERO);//有效时间设为0,即是删除
                 cookie.setPath(CookieInfo.PATH);
                 cookie.setHttpOnly(CookieInfo.HTTPONLY_TRUE);
 
@@ -44,6 +44,22 @@ public class CookieUtils {
                 break;
             }
         }
+    }
+
+    /**
+     * 根据Cookie名，获取Cookie值
+     * @param request
+     * @param cookieName
+     * @return
+     */
+    public static String getCookieValue(HttpServletRequest request,String cookieName){
+        for(Cookie cookie: request.getCookies()){
+            if(cookieName.equals(cookie.getName())){
+                return cookie.getValue();
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -58,15 +74,4 @@ public class CookieUtils {
                                 + cookie.getValue());
         }
     }
-
-    public static String getCookieValue(HttpServletRequest request,String cookieName){
-        for(Cookie cookie: request.getCookies()){
-            if(cookieName.equals(cookie.getName())){
-                return cookie.getValue();
-            }
-        }
-
-        return null;
-    }
-
 }

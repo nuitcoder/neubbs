@@ -5,7 +5,7 @@ import org.neusoft.neubbs.entity.UserDO;
 import org.springframework.stereotype.Repository;
 
 /**
- * UserMapper.xml映射接口
+ * UserMapper.xml映射接口对象
  */
 @Repository
 public interface IUserDAO {

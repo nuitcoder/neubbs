@@ -16,6 +16,7 @@ public interface UserInfo {
 
     String DATE_FORMATE = "yyyy-MM-dd HH:mm:ss";
 
-    String NEUBBS_COOKIENAME = "neubbsCookieName";
-    String NEUBBS_COOKIEPASSWORD = "neubbsCookiePASSWORD";
+    String GET_USERINFO_USERNAME_NONUL = "获取用户信息，用户名不能为空";
+    String GETINFO_SUCCESS = "获取用户信息成功";
+
 }

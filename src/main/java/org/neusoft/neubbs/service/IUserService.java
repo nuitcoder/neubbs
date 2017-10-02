@@ -5,7 +5,7 @@ import org.neusoft.neubbs.entity.UserDO;
 import java.util.Map;
 
 /**
- *forum_user表 业务操作接口
+ * forum_user表 Service接口
  */
 public interface IUserService{
     public String saveUserByUser(UserDO user);

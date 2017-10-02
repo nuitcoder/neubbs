@@ -1,4 +1,4 @@
-package org.neusoft.neubbs.util.utilentity;
+package org.neusoft.neubbs.entity.token;
 
 /**
  * Token 实体类
