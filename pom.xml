@@ -16,7 +16,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <!-- spring版本号 -->
-    <spring.version>4.1.5.RELEASE</spring.version>
+    <spring.version>4.3.4.RELEASE</spring.version>
     <!-- mybatis版本号 -->
     <mybatis.version>3.2.6</mybatis.version>
     <!-- log4j日志文件管理包版本 -->
@@ -27,15 +27,6 @@
 
   <!-- 二.添加依赖 -->
   <dependencies>
-    <!-- jUnit测试框架 -->
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.11</version>
-      <!-- 表示开发的时候引入，发布的时候不会加载此包 -->
-      <scope>test</scope>
-    </dependency>
-
     <!-- Spring核心包 -->
     <dependency>
       <groupId>org.springframework</groupId>
@@ -79,7 +70,7 @@
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
-      <artifactId>spring-test</artifactId>
+      <artifactId>spring-test</artifactId><!-- Spring测试框架 -->
       <version>${spring.version}</version>
     </dependency>
 
@@ -192,6 +183,26 @@
       <groupId>commons-codec</groupId>
       <artifactId>commons-codec</artifactId>
       <version>1.9</version>
+    </dependency>
+
+    <!-- jUnit测试框架 -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.12</version>
+      <scope>test</scope> <!-- 表示开发的时候引入，发布的时候不会加载此包 -->
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId><!-- MockMvc 测试 Controller 的 api -->
+      <artifactId>mockito-core</artifactId>
+      <version>2.2.9</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish</groupId>
+      <artifactId>javax.el</artifactId>
+      <version>3.0.0</version>
+      <scope>test</scope>
     </dependency>
 
     <!--JWT库-->

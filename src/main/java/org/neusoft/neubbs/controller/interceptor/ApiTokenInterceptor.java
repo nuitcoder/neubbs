@@ -1,4 +1,4 @@
-package org.neusoft.neubbs.controller.intercepter;
+package org.neusoft.neubbs.controller.interceptor;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.neusoft.neubbs.constant.ajax.AjaxRequestStatus;

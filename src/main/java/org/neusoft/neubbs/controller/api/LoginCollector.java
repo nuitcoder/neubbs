@@ -1,19 +1,19 @@
 package org.neusoft.neubbs.controller.api;
 
 import org.neusoft.neubbs.constant.ajax.AjaxRequestStatus;
-import org.neusoft.neubbs.constant.login.LoginInfo;
 import org.neusoft.neubbs.constant.db.RedisInfo;
+import org.neusoft.neubbs.constant.login.LoginInfo;
 import org.neusoft.neubbs.constant.login.TokenInfo;
 import org.neusoft.neubbs.constant.secret.JWTTokenSecret;
 import org.neusoft.neubbs.constant.user.UserInfo;
 import org.neusoft.neubbs.controller.annotation.LoginAuthorization;
 import org.neusoft.neubbs.dto.ResponseJsonDTO;
+import org.neusoft.neubbs.entity.token.TokenDO;
 import org.neusoft.neubbs.service.IRedisService;
 import org.neusoft.neubbs.service.IUserService;
 import org.neusoft.neubbs.util.CookieUtils;
 import org.neusoft.neubbs.util.JsonUtils;
 import org.neusoft.neubbs.util.TokenUtils;
-import org.neusoft.neubbs.entity.token.TokenDO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -67,7 +67,7 @@ public class LoginCollector {
 
         //用户是否存在判断
         Map<String,String> userInfoMap = userService.listUserInfoByName(username);
-        if (userInfoMap == null) {
+        if (userInfoMap == null){
             responseJson.put(AjaxRequestStatus.FAIL,LoginInfo.USER_NOEXIT);
             return responseJson;
         }
