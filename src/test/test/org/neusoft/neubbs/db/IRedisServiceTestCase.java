@@ -1,6 +1,5 @@
 package test.org.neusoft.neubbs.db;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.neusoft.neubbs.service.IRedisService;
@@ -56,10 +55,8 @@ public class IRedisServiceTestCase {
     public void testSaveObjectForUser(){
         Map<String, String> userMap = userService.listUserInfoByName("oneuser");
 
-        try{
             String userJSON = JsonUtils.getObjectJSONString(userMap);
             System.out.println("JSON 格式 user对象 ：" + userJSON);
-        }catch (JsonProcessingException e){}
     }
 
     /**

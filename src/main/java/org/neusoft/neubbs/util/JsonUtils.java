@@ -16,9 +16,15 @@ public class JsonUtils {
      * @return
      * @throws JsonProcessingException
      */
-    public static String getObjectJSONString(Object obj) throws JsonProcessingException{
+    public static String getObjectJSONString(Object obj){
         ObjectMapper mapper = new ObjectMapper();
-        return mapper.writeValueAsString(obj);
+
+        String json = null;
+        try{
+            json = mapper.writeValueAsString(obj);
+        }catch (JsonProcessingException jpe){}
+
+        return json;
     }
 
     /**

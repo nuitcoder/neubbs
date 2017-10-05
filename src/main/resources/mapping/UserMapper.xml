@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-
-<!-- 论坛User表映射文件 -->
-<mapper namespace="org.neusoft.neubbs.dao.IUserDAO" ><!--指定DAO接口-->
-    <!-- ************************************************1.定义************************************************ -->
-    <resultMap id="UserResultMap" type="org.neusoft.neubbs.entity.UserDO" ><!-- 结果集 -->
-        <id column="fu_id" property="id" javaType="int" jdbcType="INTEGER" />
+<mapper namespace="org.neusoft.neubbs.dao.IUserDAO">
+    <resultMap id="UserMap" type="org.neusoft.neubbs.entity.UserDO">
+        <id column="fu_id" property="id" javaType="Integer" jdbcType="INTEGER" />
         <result column="fu_name" property="name" javaType="String" jdbcType="VARCHAR" />
         <result column="fu_password" property="password" javaType="String" jdbcType="VARCHAR" />
         <result column="fu_sex" property="sex" javaType="String" jdbcType="VARCHAR" />
@@ -13,56 +10,60 @@
         <result column="fu_phone" property="phone" javaType="String" jdbcType="VARCHAR" />
         <result column="fu_email" property="email" javaType="String" jdbcType="VARCHAR" />
         <result column="fu_address" property="address" javaType="String" jdbcType="VARCHAR" />
+        <result column="fu_rank" property="rank" javaType="String" jdbcType="VARCHAR" />
 
-        <!--注册时间,设置DATE会丢失hms精度-->
+        <!-- 设置 DATE 会丢失h:m:s精度 -->
         <result column="fu_createtime" property="createtime" javaType="java.util.Date" jdbcType="TIMESTAMP" />
     </resultMap>
 
-    <sql id="UserColumnName" >
-        fu_id,fu_name,fu_password,fu_sex,fu_birthday,fu_phone,fu_email,fu_address,fu_createtime
-    </sql>
 
-
-
-    <!-- ************************************************2.数据操作(增删查改)************************************************ -->
-    <insert id="saveUserByUser" parameterType="org.neusoft.neubbs.entity.UserDO">
-        INSERT INTO forum_user(fu_name,fu_password,fu_email)
-            VALUES (#{name,jdbcType=VARCHAR},
-                    #{password,jdbcType=VARCHAR},
-                    #{email,jdbcType=VARCHAR})
+    <insert id="saveUser" parameterType="org.neusoft.neubbs.entity.UserDO" useGeneratedKeys="true" keyProperty="fu_id">
+        INSERT INTO forum_user (fu_name,fu_password,fu_email)
+        VALUES (#{name, jdbcType = VARCHAR},
+        #{password, jdbcType = VARCHAR},
+        #{email, jdbcType = VARCHAR})
+        <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER"><!-- id from UserDO , After Do-->
+            SELECT LAST_INSERT_ID() AS fu_id
+        </selectKey>
     </insert>
 
-
-    <delete id="removeUserById" parameterType="java.lang.Integer" >
-        DELETE FROM forum_user WHERE fu_id = #{id,jdbcType=INTEGER}
+    <delete id="removeUserById" parameterType="java.lang.Integer">
+        DELETE FROM forum_user WHERE fu_id = #{id,jdbcType = INTEGER}
     </delete>
 
-
-    <select id="getUserById" parameterType="java.lang.Integer" resultMap="UserResultMap">
-        SELECT <include refid="UserColumnName"/> FROM forum_user
-          WHERE fu_id = #{id,jdbcType=INTEGER}
+    <select id="getUserById" parameterType="java.lang.Integer" resultMap="UserMap">
+        SELECT fu_id,fu_name,fu_password,fu_sex,fu_birthday,fu_phone,fu_email,fu_address,fu_rank,fu_createtime
+        FROM forum_user WHERE fu_id = #{id, jdbcType = INTEGER};
     </select>
-    <select id="getUserByName" parameterType="java.lang.String" resultMap="UserResultMap">
-        SELECT <include refid="UserColumnName"/> FROM forum_user
-          WHERE fu_name = #{name,jdbcType=VARCHAR}
+    <select id="getUserByName" parameterType="java.lang.String" resultMap="UserMap">
+        SELECT fu_id,fu_name,fu_password,fu_sex,fu_birthday,fu_phone,fu_email,fu_address,fu_rank,fu_createtime
+        FROM forum_user WHERE fu_name = #{name, jdbcType = VARCHAR};
+    </select>
+    <select id="getAllAdminUser" resultMap="UserMap"><!-- <![CDATA[ ]]>内容会被解析器忽略 -->
+        <![CDATA[
+               SELECT fu_id,fu_name,fu_password,fu_sex,fu_birthday,fu_phone,fu_email,fu_address,fu_rank,fu_createtime
+                 FROM forum_user WHERE fu_rank = 'admin';
+            ]]>
+    </select>
+    <select id="getAssignDateRegisterUserByYearMonth" resultMap="UserMap">
+        SELECT fu_id,fu_name,fu_password,fu_sex,fu_birthday,fu_phone,fu_email,fu_address,fu_rank,fu_createtime
+        FROM forum_user
+        WHERE YEAR(fu_createtime) = #{param1, jdbcType = INTEGER} AND MONTH(fu_createtime) = #{param2, jdbcType = INTEGER};
+    </select>
+    <select id="getAllUser" resultMap="UserMap">
+        SELECT fu_id,fu_name,fu_password,fu_sex,fu_birthday,fu_phone,fu_email,fu_address,fu_rank,fu_createtime
+        FROM forum_user;
     </select>
 
-
-    <update id="updateUserByUser" parameterType="org.neusoft.neubbs.entity.UserDO">
-        UPDATE forum_user
-        <set >
-            <if test="name != null" >fu_name = #{name,jdbcType=VARCHAR},</if>
-            <if test="password != null" >fu_password = #{password,jdbcType=VARCHAR},</if>
-            <if test="sex != null" >fu_sex = #{sex,jdbcType=VARCHAR},</if>
-            <if test="birthday != null" >fu_birthday = #{birthday,jdbcType=VARCHAR},</if>
-            <if test="phone != null" >fu_phone = #{phone,jdbcType=VARCHAR},</if>
-            <if test="email != null" >fu_email = #{email,jdbcType=VARCHAR},</if>
-            <if test="address != null" >fu_address = #{address,jdbcType=VARCHAR},</if>
-        </set>
-          WHERE fu_id = #{id,jdbcType=INTEGER}
+    <update id="updateUserPasswordById">
+        UPDATE forum_user SET fu_password = #{param1, jdbcType = VARCHAR}
+        WHERE fu_id = #{param2, jdbcType = INTEGER}
     </update>
-
+    <update id="updateUserRankById" parameterType="org.neusoft.neubbs.entity.UserDO">
+        UPDATE forum_user SET fu_rank = #{param1, jdbcType = VARCHAR}
+        WHERE fu_id = #{param2, jdbcType = INTEGER}
+    </update>
     <update id="truncateUserTable">
-        TRUNCATE TABLE ${tableName} <!--传入表名要用$-->
+        TRUNCATE TABLE ${tableName}
     </update>
 </mapper>

@@ -22,8 +22,8 @@ public class UserServiceImpl implements IUserService {
     protected IUserDAO userDAO;
 
     @Override
-    public String saveUserByUser(UserDO user){
-        int result = userDAO.saveUserByUser(user);
+    public String saveUser(UserDO user){
+        int result = userDAO.saveUser(user);
 
         if(result == 0){
             return MySQLRequestStatus.INSERT_FAIL;
@@ -71,23 +71,4 @@ public class UserServiceImpl implements IUserService {
         return userInfoMap;
     }
 
-    @Override
-    public String updateUserByUser(UserDO user){
-        int result = userDAO.updateUserByUser(user);
-
-        if(result == 0){
-            return MySQLRequestStatus.UPDATE_FAIL;
-        }
-        return MySQLRequestStatus.UPDATE_SUCCESS;
-    }
-
-    @Override
-    public String truncateUserTable(String table){
-        int result = userDAO.truncateUserTable(table);
-
-        if(result == 0){
-            return MySQLRequestStatus.TRUNCATE_FAIL;
-        }
-        return MySQLRequestStatus.TRUNCATE_SUCCESS;
-    }
 }

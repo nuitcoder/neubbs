@@ -1,6 +1,5 @@
 package org.neusoft.neubbs.entity;
 
-
 import java.util.Date;
 
 /**
@@ -9,6 +8,7 @@ import java.util.Date;
 public class UserDO {
 
     private Integer id;
+
     private String name;
     private String password;
     private String sex;
@@ -16,8 +16,13 @@ public class UserDO {
     private String phone;
     private String email;
     private String address;
+    private String rank;
+
     private Date createtime;
 
+    /**
+     * Getter
+     */
     public Integer getId(){
         return  id;
     }
@@ -42,10 +47,16 @@ public class UserDO {
     public String getAddress(){
         return address;
     }
+    public String getRank(){
+        return rank;
+    }
     public Date getCreatetime(){
         return createtime;
     }
 
+    /**
+     * Setter
+     */
     public void setId(Integer id) {
         this.id = id;
     }
@@ -69,6 +80,9 @@ public class UserDO {
     }
     public void setAddress(String address) {
         this.address = address;
+    }
+    public void setRank(String rank){
+        this.rank = rank;
     }
     public void setCreatetime(Date createtime) {
         this.createtime = createtime;
