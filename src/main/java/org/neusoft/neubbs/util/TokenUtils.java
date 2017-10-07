@@ -8,7 +8,7 @@ import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.neusoft.neubbs.constant.login.TokenInfo;
 import org.neusoft.neubbs.constant.secret.JWTTokenSecret;
-import org.neusoft.neubbs.entity.token.TokenDO;
+import org.neusoft.neubbs.entity.UserDO;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
@@ -17,19 +17,16 @@ import java.util.Map;
 
 /**
  * Token 工具类
- *
- * @Author Suvan
- * @Date 2017-09-28-14:46
  */
 public class TokenUtils {
+
     /**
-     * 根据用户名，生成token
-     *
-     * @param username
+     * 根据 UserDO 对象，构建token
+     * @param user
      * @return
      * @throws Exception
      */
-    public static TokenDO createToken(String username) throws Exception{ //设置Header
+    public static String createToken(UserDO user) throws Exception{
         Map<String,Object> headerMap = new HashMap<String, Object>();
             headerMap.put(TokenInfo.HEADER_ALG,TokenInfo.HS256);
             headerMap.put(TokenInfo.HEADER_TYP,TokenInfo.JWT);
@@ -47,16 +44,12 @@ public class TokenUtils {
                             .withAudience(TokenInfo.SET_AUDIENCE)
                             .withIssuedAt(new Date(iat))
                             .withExpiresAt(new Date(ext))
-                                .withClaim(TokenInfo.CLAIM_USERNAME, username)
+                                .withClaim(TokenInfo.CLAIM_ID, user.getId())
+                                .withClaim(TokenInfo.CLAIM_NAME, user.getName())
+                                .withClaim(TokenInfo.CLAIN_RANK, user.getRank())
                                     .sign(Algorithm.HMAC256(JWTTokenSecret.SECRET_KEY));
 
-       //构建Token实体类
-       TokenDO tokenDO = new TokenDO();
-            tokenDO.setTokenname(username);
-            tokenDO.setExpireTime(ext);
-            tokenDO.setToken(token);
-
-        return tokenDO;
+        return token;
     }
 
     /**
@@ -67,7 +60,7 @@ public class TokenUtils {
      * @return
      * @throws Exception
      */
-    public static String verifyToken(String token, String secretKey){
+    public static UserDO verifyToken(String token, String secretKey){
         JWTVerifier verifier = null;
         DecodedJWT decodedJWT = null;
         try{
@@ -84,7 +77,15 @@ public class TokenUtils {
         }
 
         //获取 Playload 的 username
-        Claim claim = decodedJWT.getClaim(TokenInfo.CLAIM_USERNAME);
-        return claim.asString();
+        Claim idClaim = decodedJWT.getClaim(TokenInfo.CLAIM_ID);
+        Claim nameClaim = decodedJWT.getClaim(TokenInfo.CLAIM_NAME);
+        Claim rankClaim = decodedJWT.getClaim(TokenInfo.CLAIN_RANK);
+
+        UserDO user = new UserDO();
+            user.setId(idClaim.asInt());
+            user.setName(nameClaim.asString());
+            user.setRank(rankClaim.asString());
+
+        return user;
     }
 }

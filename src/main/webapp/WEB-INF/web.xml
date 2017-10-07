@@ -36,13 +36,16 @@
 
     <!-- 自定义listener,filter,interceptor -->
     <filter>
-        <filter-name>LoginTokenFilter</filter-name>
+        <filter-name>AddResponseHeaderTokenFilter</filter-name>
         <filter-class>org.neusoft.neubbs.controller.filter.AddResponseHeaderTokenFilter</filter-class>
     </filter>
     <filter-mapping>
-        <filter-name>LoginTokenFilter</filter-name>
+        <filter-name>AddResponseHeaderTokenFilter</filter-name>
         <url-pattern>/*</url-pattern>
         <dispatcher>REQUEST</dispatcher>
+        <dispatcher>INCLUDE</dispatcher>
+        <dispatcher>FORWARD</dispatcher>
+        <dispatcher>ERROR</dispatcher>
     </filter-mapping>
 
 </web-app>

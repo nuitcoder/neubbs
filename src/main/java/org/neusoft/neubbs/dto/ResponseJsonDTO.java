@@ -1,5 +1,9 @@
 package org.neusoft.neubbs.dto;
 
+import org.neusoft.neubbs.constant.ajax.AjaxRequestStatus;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -7,25 +11,35 @@ import java.util.Map;
  */
 public class ResponseJsonDTO {
     private Boolean status;
-
     private String message;
-    private Map<String,String> model;
+    private List<Map<String, Object>> model;
+
+    /**
+     * Constructor
+     */
+    public ResponseJsonDTO(){
+        this.model = new ArrayList<Map<String, Object>>();
+    }
 
     /**
      * 参数一次注入
-     *
-     * @param status
-     * @param message
      */
     public void put(Boolean status,String message){
         this.status = status;
         this.message = message;
     }
-    public void put(Boolean ajaxStatus,String message,Map<String,String> model){
-        this.status = ajaxStatus;
+
+
+    public void putAjaxSuccess(String message){
+        this.status = AjaxRequestStatus.SUCCESS;
         this.message = message;
-        this.model = model;
     }
+    public void putAjaxFail(String message){
+        this.status = AjaxRequestStatus.FAIL;
+        this.message = message;
+    }
+
+
 
     /**
      *Getter
@@ -36,9 +50,10 @@ public class ResponseJsonDTO {
     public String getMessage(){
         return message;
     }
-    public Map<String,String> getModel(){
+    public List<Map<String, Object>> getModel(){
         return model;
     }
+
 
     /**
      * Setter
@@ -49,7 +64,7 @@ public class ResponseJsonDTO {
     public void setMessage(String message){
         this.message = message;
     }
-    public void setModel(Map<String,String> model){
+    public void setModel(List<Map<String, Object>> model){
         this.model = model;
     }
 }

@@ -2,17 +2,22 @@ package org.neusoft.neubbs.service;
 
 import org.neusoft.neubbs.entity.UserDO;
 
-import java.util.Map;
+import java.util.List;
 
 /**
- * forum_user表 Service接口
+ * 用户业务接口
  */
 public interface IUserService{
-    public String saveUser(UserDO user);
+    Integer registerUser(UserDO user);
 
-    public String removeUserById(Integer id);
+    Integer removeUser(Integer id);
 
-    public UserDO getUserById(Integer id);
-    public UserDO getUserByName(String name);
-    public Map<String,String> listUserInfoByName(String name);
+    UserDO getUserById(Integer id);
+    UserDO getUserByName(String name);
+    List<UserDO> getAllAdminUser();
+    List<UserDO> getAssiginDateRegisterUserByYearMonth(Integer year, Integer month);
+    List<UserDO> getAllUser();
+
+    Integer updateUserPasswordById(String password, Integer id);
+    Integer updateUserRankById(String rank, Integer id);
 }

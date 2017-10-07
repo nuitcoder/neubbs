@@ -8,11 +8,10 @@ public interface LoginInfo {
     String PASSWORD_NULL = "用户未输入密码,password为空";
     String PASSWORD_ERROR = "该用户密码不正确！";
 
-    String USER_NOEXIT = "数据库中不存在该用户";
-    String USER_AUTHENTICATE = "用户帐号密码通过验证,登录成功，将在7天内自动登录";
-    String USER_GETINFO_SUCCESS = "成功获取用户信息";
+    String NO_VISIT_AUTHORIZATION = "无访问权限，请登录后执行操作！";
 
-    String NO_VISITAUTHORIZATION = "无访问权限，请登录后再操作api";
+    String TOKEN_ALREAD_EXPIRE = "客户端 token，已经过期，请重新的登录";
 
-    String LOGOUT_SUCCESS = "注销成功";
+    String PASS_AUTHENTICATE_LOGIN_SUCCESS = "用户帐号密码通过验证,登录成功，将在7天内自动登录";
+    String LOGOUT_SUCCESS = "用户注销成功！";
 }

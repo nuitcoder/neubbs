@@ -1,74 +1,107 @@
 package org.neusoft.neubbs.service.impl;
 
-import org.neusoft.neubbs.constant.db.MySQLRequestStatus;
-import org.neusoft.neubbs.constant.user.UserInfo;
 import org.neusoft.neubbs.dao.IUserDAO;
 import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.text.SimpleDateFormat;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.List;
 
-/**
- * IUserService 实现类
- */
 @Service("userServiceImpl")
 public class UserServiceImpl implements IUserService {
 
     @Autowired
-    protected IUserDAO userDAO;
+    IUserDAO userDAO;
 
+    /**
+     * 注册用户
+     * @param user
+     * @return effectRow
+     */
     @Override
-    public String saveUser(UserDO user){
-        int result = userDAO.saveUser(user);
-
-        if(result == 0){
-            return MySQLRequestStatus.INSERT_FAIL;
-        }
-        return MySQLRequestStatus.INSERT_SUCCESS;
+    public Integer registerUser(UserDO user){
+        return userDAO.saveUser(user);
     }
 
-    @Override
-    public String removeUserById(Integer id){
-        int result = userDAO.removeUserById(id);
+    /**
+     * 删除用户
+     * @param id
+     * @return effectRow
+     */
+   @Override
+   public Integer removeUser(Integer id){
+       return userDAO.removeUserById(id);
+   }
 
-        if(result == 0){
-            return MySQLRequestStatus.DETELE_FAIL;
-        }
-        return MySQLRequestStatus.DETELE_SUCCESS;
-    }
+    /**
+     * 根据 id 查询用户信息
+     * @param id
+     * @return
+     */
+   @Override
+   public UserDO getUserById(Integer id){
+       return userDAO.getUserById(id);
+   }
 
-    @Override
-    public UserDO getUserById(Integer id){
-        return userDAO.getUserById(id);
-    }
-    @Override
-    public UserDO getUserByName(String name){
-        return userDAO.getUserByName(name);
-    }
-    @Override
-    public Map<String,String> listUserInfoByName(String name){
-        UserDO user = userDAO.getUserByName(name);
+    /**
+     * 根据 name 查询用户信息
+     * @param name
+     * @return
+     */
+   @Override
+   public UserDO getUserByName(String name){
+       return userDAO.getUserByName(name);
+   }
 
-        Map<String, String> userInfoMap = null;
-        if(user != null) {
-            userInfoMap = new LinkedHashMap<String, String>();
-                userInfoMap.put(UserInfo.ID, String.valueOf(user.getId()));
-                userInfoMap.put(UserInfo.USERNAME, user.getName());
-                userInfoMap.put(UserInfo.PASSWORD, user.getPassword());
-                userInfoMap.put(UserInfo.SEX, user.getSex());
-                userInfoMap.put(UserInfo.BIRTHDAY, user.getBirthday());
-                userInfoMap.put(UserInfo.PHONE, user.getPhone());
-                userInfoMap.put(UserInfo.ADDRESS, user.getAddress());
+    /**
+     * 获取所有管理员用户信息
+     * @return
+     */
+   @Override
+   public List<UserDO> getAllAdminUser(){
+       return userDAO.getAllAdminUser();
+   }
 
-            SimpleDateFormat sdf = new SimpleDateFormat(UserInfo.DATE_FORMATE);
-            userInfoMap.put(UserInfo.CREATETIME, sdf.format(user.getCreatetime()));
-        }
+    /**
+     * 获取指定日期注册用户
+     * @param year
+     * @param month
+     * @return
+     */
+   @Override
+   public List<UserDO> getAssiginDateRegisterUserByYearMonth(Integer year, Integer month){
+       return userDAO.getAssignDateRegisterUserByYearMonth(year, month);
+   }
 
-        return userInfoMap;
-    }
+    /**
+     * 获取所有用户信息
+     * @return
+     */
+   @Override
+   public List<UserDO> getAllUser(){
+       return userDAO.getAllUser();
+   }
 
+    /**
+     * 修改用户密码
+     * @param password
+     * @param id
+     * @return effectRow
+     */
+   @Override
+   public Integer updateUserPasswordById(String password, Integer id){
+       return userDAO.updateUserPasswordById(password, id);
+   }
+
+    /**
+     * 修改用户权限
+     * @param rank
+     * @param id
+     * @return effectRow
+     */
+   @Override
+   public Integer updateUserRankById(String rank, Integer id){
+       return userDAO.updateUserRankById(rank, id);
+   }
 }

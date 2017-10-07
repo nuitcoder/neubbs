@@ -2,6 +2,7 @@ package test.org.neusoft.neubbs.db;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.service.IRedisService;
 import org.neusoft.neubbs.service.IUserService;
 import org.neusoft.neubbs.util.JsonUtils;
@@ -53,9 +54,11 @@ public class IRedisServiceTestCase {
      */
     @Test
     public void testSaveObjectForUser(){
-        Map<String, String> userMap = userService.listUserInfoByName("oneuser");
+        UserDO user = userService.getUserByName("oneuser");
+        Map<String, Object> userInfoMap = JsonUtils.getMapByObject(user);
 
-            String userJSON = JsonUtils.getObjectJSONString(userMap);
+
+            String userJSON = JsonUtils.getJSONStringByObject(userInfoMap);
             System.out.println("JSON 格式 user对象 ：" + userJSON);
     }
 

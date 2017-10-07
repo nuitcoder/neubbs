@@ -42,11 +42,32 @@ public class IUserDAOTestCase {
     }
 
     /**
+     * 添加6个管理员
+     */
+    @Test
+    public void addSixAdminUser(){
+
+        String [] amdin = {"abonn","AnAndroidXiang","kayye","topLynch","Nancyshan","suvan"};
+        UserDO user = new UserDO();
+        for(String s: amdin){
+            user.setName(s);
+            user.setPassword("12345");
+            user.setEmail(s + "@s.com");
+
+            userDAO.saveUser(user);//注册用户，id会变化
+
+            userDAO.updateUserRankById("admin",user.getId());//修改用户权限i
+        }
+
+        System.out.println("管理员添加完毕");
+    }
+
+    /**
      * 删除用户
      */
     @Test
     public void testRemoveUserById(){
-        int effectRow = userDAO.removeUserById(24);
+        int effectRow = userDAO.removeUserById(1);
         System.out.println("受影响行数：" + effectRow);
     }
 
@@ -56,7 +77,7 @@ public class IUserDAOTestCase {
     @Test
     public void testGetUserById(){
         UserDO user = userDAO.getUserById(2);
-        System.out.println("id查询到用户：" + JsonUtils.getObjectJSONString(user));
+        System.out.println("id查询到用户：" + JsonUtils.getJSONStringByObject(user));
     }
 
     /**
@@ -64,8 +85,9 @@ public class IUserDAOTestCase {
      */
     @Test
     public void testGetUserByName(){
-        UserDO user = userDAO.getUserByName("hello");
-        System.out.println("name查询到用户：" + JsonUtils.getObjectJSONString(user));
+        UserDO user = userDAO.getUserByName("oo");
+        System.out.println(user);
+        System.out.println("name查询到用户：" + JsonUtils.getJSONStringByObject(user));
     }
 
     /**
@@ -76,7 +98,7 @@ public class IUserDAOTestCase {
         List<UserDO> userList = userDAO.getAllAdminUser();
         System.out.println("查询所有管理员：");
         for(UserDO user : userList){
-            System.out.println(JsonUtils.getObjectJSONString(user));
+            System.out.println(JsonUtils.getJSONStringByObject(user));
         }
     }
 
@@ -88,7 +110,7 @@ public class IUserDAOTestCase {
         List<UserDO> userList = userDAO.getAssignDateRegisterUserByYearMonth(2017,10);
         System.out.println("查询2017年10月份注册的用户：");
         for(UserDO user : userList){
-            System.out.println(JsonUtils.getObjectJSONString(user));
+            System.out.println(JsonUtils.getJSONStringByObject(user));
         }
     }
 
@@ -100,7 +122,7 @@ public class IUserDAOTestCase {
         List<UserDO> userList = userDAO.getAllUser();
         System.out.println("获取所有用户：");
         for(UserDO user : userList){
-            System.out.println(JsonUtils.getObjectJSONString(user));
+            System.out.println(JsonUtils.getJSONStringByObject(user));
         }
     }
 
@@ -109,7 +131,7 @@ public class IUserDAOTestCase {
      */
     @Test
     public void testUpdateUserPasswordById(){
-        int effectRow = userDAO.updateUserPasswordById("88888", 2);
+        int effectRow = userDAO.updateUserPasswordById("88888", 1);
         System.out.println("更新用户密码，影响行数：" + effectRow);
     }
 

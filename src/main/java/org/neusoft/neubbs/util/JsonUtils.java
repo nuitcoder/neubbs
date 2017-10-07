@@ -16,7 +16,7 @@ public class JsonUtils {
      * @return
      * @throws JsonProcessingException
      */
-    public static String getObjectJSONString(Object obj){
+    public static String getJSONStringByObject(Object obj){
         ObjectMapper mapper = new ObjectMapper();
 
         String json = null;
@@ -33,13 +33,31 @@ public class JsonUtils {
      * @return
      * @throws IOException
      */
-    public static Map<String, String> getMapByJSON(String json){
-        Map<String, String> map = null;
-
+    public static Map<String, Object> getMapByJSONString(String json){
         ObjectMapper mapper = new ObjectMapper();
+
+        Map<String, Object> map = null;
         try{
             map = mapper.readValue(json, Map.class);
         }catch (IOException ioe){}
+
+        return map;
+    }
+
+    /**
+     * 将 Object 对象转换成 Map<String, String> 格式
+     * @param obj
+     * @return
+     */
+    public static Map<String, Object> getMapByObject(Object obj){
+        ObjectMapper mapper = new ObjectMapper();
+        String json = null;
+        Map<String, Object> map = null;
+
+        try{
+            json = mapper.writeValueAsString(obj);
+            map = mapper.readValue(json, Map.class);
+        }catch (IOException e){}
 
         return map;
     }

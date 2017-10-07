@@ -1,14 +1,11 @@
 package org.neusoft.neubbs.controller.api;
 
-import org.neusoft.neubbs.constant.ajax.AjaxRequestStatus;
-import org.neusoft.neubbs.constant.db.RedisInfo;
 import org.neusoft.neubbs.constant.login.LoginInfo;
 import org.neusoft.neubbs.constant.login.TokenInfo;
-import org.neusoft.neubbs.constant.secret.JWTTokenSecret;
 import org.neusoft.neubbs.constant.user.UserInfo;
 import org.neusoft.neubbs.controller.annotation.LoginAuthorization;
 import org.neusoft.neubbs.dto.ResponseJsonDTO;
-import org.neusoft.neubbs.entity.token.TokenDO;
+import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.service.IRedisService;
 import org.neusoft.neubbs.service.IUserService;
 import org.neusoft.neubbs.util.CookieUtils;
@@ -38,7 +35,7 @@ public class LoginCollector {
     IRedisService redisService;
 
     /**
-     * 登录接口
+     * 输入 username password，登录
      * @param username
      * @param password
      * @param request
@@ -57,44 +54,39 @@ public class LoginCollector {
 
         //空判断
         if (username == null || username.length() <= 0) {
-            responseJson.put(AjaxRequestStatus.FAIL, LoginInfo.USERNAME_NULL);
+            responseJson.putAjaxFail(LoginInfo.USERNAME_NULL);
             return responseJson;
         }
         if (password == null || password.length() <= 0) {
-            responseJson.put(AjaxRequestStatus.FAIL, LoginInfo.PASSWORD_NULL);
+            responseJson.putAjaxFail(LoginInfo.PASSWORD_NULL);
             return responseJson;
         }
 
         //用户是否存在判断
-        Map<String,String> userInfoMap = userService.listUserInfoByName(username);
+        UserDO user = userService.getUserByName(username);
+        Map<String, Object> userInfoMap = JsonUtils.getMapByObject(user);
         if (userInfoMap == null){
-            responseJson.put(AjaxRequestStatus.FAIL,LoginInfo.USER_NOEXIT);
+            responseJson.putAjaxFail(UserInfo.DATABASE_NO_EXIST_USER);
             return responseJson;
         }
 
-        //指定用户密码判断
+        //用户密码判断
         if (!password.equals(userInfoMap.get(UserInfo.PASSWORD))) {
-            responseJson.put(AjaxRequestStatus.SUCCESS, LoginInfo.PASSWORD_ERROR);
+            responseJson.putAjaxFail(LoginInfo.PASSWORD_ERROR);
             return responseJson;
         }
+
 
         //用户密码通过验证
-        if (username.equals(userInfoMap.get(UserInfo.USERNAME)) && password.equals(userInfoMap.get(UserInfo.PASSWORD))) {
-            //构建数据传输对象
-            responseJson.put(AjaxRequestStatus.SUCCESS, LoginInfo.USER_AUTHENTICATE, userInfoMap);
-
+        if (username.equals(userInfoMap.get(UserInfo.NAME)) && password.equals(userInfoMap.get(UserInfo.PASSWORD))) {
             //获取Token，储存进本地Cookie
-            TokenDO tokenDO = TokenUtils.createToken(username);
-            CookieUtils.saveCookie(response, TokenInfo.AUTHENTICATION, tokenDO.getToken());
-            //System.out.println("JWT username :" + tokenDO.getTokenname());//打印JWT加密的username
-            //CookieUtils.printCookie(request);//本地打印Cookie测试
+            String token = TokenUtils.createToken(user);
+            CookieUtils.saveCookie(response, TokenInfo.AUTHENTICATION, token);
+            //System.out.println(token);//测试打印 token
+            //CookieUtils.printCookie(request);//测试打印 Cookie
 
-            //Redis储存键值对
-            String userInfoJSON = JsonUtils.getObjectJSONString(userInfoMap);
-            redisService.saveByKeyValueTime(tokenDO.getTokenname(), userInfoJSON, RedisInfo.EXPIRETIME_SERVER_DAY);
-
-            //持久化到MySQL(用于备份，防止服务器宕机)【未实现，可在下面写业务逻辑】
-
+            responseJson.putAjaxSuccess(LoginInfo.PASS_AUTHENTICATE_LOGIN_SUCCESS);
+            responseJson.getModel().add(userInfoMap);
         }
 
         return responseJson;
@@ -111,20 +103,12 @@ public class LoginCollector {
     @RequestMapping(value = "/logout", method = RequestMethod.GET)
     @ResponseBody
     public ResponseJsonDTO logout(HttpServletRequest request,HttpServletResponse response) throws Exception{
-        //Reids清空缓存
-        String token = CookieUtils.getCookieValue(request, TokenInfo.AUTHENTICATION);
-        String username = TokenUtils.verifyToken(token, JWTTokenSecret.SECRET_KEY);//解密获取用户
-        redisService.removeByKey(username);
-
         //删除Cookie
         CookieUtils.removeCookie(request, response, TokenInfo.AUTHENTICATION);
-        //CookieUtils.printCookie(request);//打印测试
-
-        //删除MySQL记录【未实现，可以在此添加业务逻辑】
 
         //构建JSON提示信息
         ResponseJsonDTO responseJson = new ResponseJsonDTO();
-        responseJson.put(AjaxRequestStatus.SUCCESS, LoginInfo.LOGOUT_SUCCESS);
+            responseJson.putAjaxSuccess(LoginInfo.LOGOUT_SUCCESS);
 
         return responseJson;
     }

@@ -33,6 +33,7 @@ CREATE TABLE `forum_user` (
   `fu_phone` VARCHAR(15) DEFAULT NULL,
   `fu_email` VARCHAR(50) NOT NULL,
   `fu_address` VARCHAR(50) DEFAULT NULL,
+  `fu_rank` VARCHAR(10) DEFAULT 'user',
   `fu_createtime` datetime DEFAULT CURRENT_TIMESTAMP,
    PRIMARY KEY (`fu_id`),
    UNIQUE KEY `fu_name` (`fu_name`)

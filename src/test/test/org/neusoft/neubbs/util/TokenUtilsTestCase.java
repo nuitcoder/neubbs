@@ -4,8 +4,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.neusoft.neubbs.constant.secret.JWTTokenSecret;
-import org.neusoft.neubbs.entity.token.TokenDO;
+import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.util.TokenUtils;
+
 
 /**
  * TokenUtils类 测试用例
@@ -18,23 +19,25 @@ public class TokenUtilsTestCase {
      */
     @Test
     public void testTokenEncryptionDecrypted(){
-        TokenDO tokenDO = null;
-        String tokenName = null;
+        UserDO user = new UserDO();
+        UserDO veruser = new UserDO();
+        String token = null;
+        String username = null;
         try {
             //获取加密token
-            tokenDO = TokenUtils.createToken("suvan");
-            System.out.println("tokenname :" + tokenDO.getTokenname());
-            System.out.println("token:" + tokenDO.getToken());
+            user.setName("testCast");
+            token = TokenUtils.createToken(user);
+            System.out.println("token:" + token);
 
             //休眠1s，让token失效
             Thread.sleep(1000);
 
             //根据密钥，解密token，获取用户名
-            tokenName = TokenUtils.verifyToken(tokenDO.getToken(), JWTTokenSecret.SECRET_KEY);
-            if(tokenName == null){
+            veruser = TokenUtils.verifyToken(token, JWTTokenSecret.SECRET_KEY);
+            if(veruser == null){
                 System.out.println("token已经过期，无法解密");
             }else{
-                System.out.println("tokenname: " + tokenName);
+                System.out.println("username: " + veruser.getName());
             }
         }catch (Exception e){
             e.printStackTrace();

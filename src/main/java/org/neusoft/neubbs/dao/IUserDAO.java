@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 /**
- * UserMapper.xml映射接口对象
+ * UserMapper.xml 映射接口
  */
 @Repository
 public interface IUserDAO {

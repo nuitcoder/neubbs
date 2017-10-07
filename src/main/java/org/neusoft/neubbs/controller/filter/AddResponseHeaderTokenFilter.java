@@ -12,19 +12,9 @@ import java.io.IOException;
  *  在 Response 的 Header 添加 Authentication: token（获取本地Cookie）
  */
 public class AddResponseHeaderTokenFilter implements Filter {
-    /**
-     * 初始化
-     *
-     * @param config
-     * @throws ServletException
-     */
-    public void init(FilterConfig config) throws ServletException {
-
-    }
 
     /**
      * 执行过滤器
-     *
      * @param req
      * @param resp
      * @param chain
@@ -35,23 +25,30 @@ public class AddResponseHeaderTokenFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest)req;
         HttpServletResponse response = (HttpServletResponse)resp;
 
+        //response Header 添加 Authorization 参数
+        if(response.getHeader(TokenInfo.AUTHENTICATION) == null){
 
-        //response Header 添加 Authorization参数
-        String authorization = CookieUtils.getCookieValue(request, TokenInfo.AUTHENTICATION);
-        if(authorization != null){
-            response.addHeader(TokenInfo.AUTHENTICATION, authorization);
-        }else{
-            response.addHeader(TokenInfo.AUTHENTICATION, null);
+            String authorization = CookieUtils.getCookieValue(request, TokenInfo.AUTHENTICATION);//Cookie 取出，没有则为 null
+            if(authorization != null){
+                response.addHeader(TokenInfo.AUTHENTICATION, authorization);
+            }
+
         }
 
-        chain.doFilter(request,response);//放行
+        //放行
+        chain.doFilter(request,response);
     }
 
 
     /**
+     * 初始化
+     * @param config
+     * @throws ServletException
+     */
+    public void init(FilterConfig config) throws ServletException {}
+
+    /**
      * 销毁
      */
-    public void destroy(){
-
-    }
+    public void destroy(){}
 }

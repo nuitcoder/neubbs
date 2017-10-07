@@ -1,5 +1,7 @@
 package org.neusoft.neubbs.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.util.Date;
 
 /**
@@ -50,6 +52,7 @@ public class UserDO {
     public String getRank(){
         return rank;
     }
+    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
     public Date getCreatetime(){
         return createtime;
     }

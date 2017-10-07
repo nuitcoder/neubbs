@@ -1,15 +1,17 @@
 package org.neusoft.neubbs.controller.interceptor;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.neusoft.neubbs.constant.ajax.AjaxRequestStatus;
 import org.neusoft.neubbs.constant.login.LoginInfo;
-import org.neusoft.neubbs.constant.db.RedisInfo;
 import org.neusoft.neubbs.constant.login.TokenInfo;
 import org.neusoft.neubbs.constant.secret.JWTTokenSecret;
+import org.neusoft.neubbs.constant.user.UserInfo;
+import org.neusoft.neubbs.controller.annotation.AdminRank;
 import org.neusoft.neubbs.controller.annotation.LoginAuthorization;
 import org.neusoft.neubbs.dto.ResponseJsonDTO;
+import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.service.IRedisService;
 import org.neusoft.neubbs.util.AnnotationUtils;
+import org.neusoft.neubbs.util.CookieUtils;
 import org.neusoft.neubbs.util.JsonUtils;
 import org.neusoft.neubbs.util.TokenUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,11 +41,16 @@ public class ApiTokenInterceptor implements HandlerInterceptor{
      */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {//handler（动态代理对象）
-        //检测登录权限
-        if(!this.checkLoginAuthroization(response,handler)){
-            //未通过登录检查
+        //登录验证
+        if(!this.doLoginAuthroization(response,handler)){
             return false;
         }
+
+        //管理员权限
+        if(!this.doAdminRank(request,response, handler)){
+            return false;
+        }
+
 
         return true;//拦截器放行
     }
@@ -70,53 +77,6 @@ public class ApiTokenInterceptor implements HandlerInterceptor{
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object obj, Exception exception) throws Exception {}
 
     /**
-     * @LoginAuthroization 登录权限验证
-     *
-     * @param response
-     * @param handler
-     * @return
-     * @throws Exception
-     */
-    private boolean checkLoginAuthroization(HttpServletResponse response, Object handler) throws  Exception{
-        boolean hasLoginAuthorization = AnnotationUtils.hasMethodAnnotation(handler,LoginAuthorization.class);
-        if(hasLoginAuthorization){
-            //方法存在@LoginAuthorization
-            //获取验证参数
-            String authroization = response.getHeader(TokenInfo.AUTHENTICATION);
-            if(authroization != null){
-
-                //解密客户端的 JWT ，判断是否过期
-                String tokenName = TokenUtils.verifyToken(authroization, JWTTokenSecret.SECRET_KEY);
-                if(tokenName == null){
-                    //客户端token过期
-                    redisService.removeByKey(tokenName); //清除Redis缓存
-
-                    //删除MySQL的forum_token表相应记录
-
-                    outFailJSONMessage(response, TokenInfo.CLIENT_TOKEN_ALREAD_EXPIRE);//输出token过期信息
-                    return false;
-                }
-
-                //判断redis是否存在相应token，判断判断服务端Redis内用户登录状态是否过期
-                String rediskey =  redisService.getValueByKey(tokenName);
-                if(rediskey == null){
-                    outFailJSONMessage(response, RedisInfo.USER_LOGINSTATE_ALREADYEXPIRE);//用户信息过期
-                    return false;
-                }
-
-                //通过登录验证，可以执行api
-                return true;
-            }else{
-                //未发现token，无权操作api
-                outFailJSONMessage(response, LoginInfo.NO_VISITAUTHORIZATION);
-                return false;
-            }
-        }
-
-        return true;//无需登录验证,直接放行
-    }
-
-    /**
      * 直接输出失败的JSON提示信息
      *
      * @param response
@@ -124,19 +84,83 @@ public class ApiTokenInterceptor implements HandlerInterceptor{
      * @throws JsonProcessingException
      * @throws IOException
      */
-    public void outFailJSONMessage(HttpServletResponse response,String failMessage) throws JsonProcessingException,IOException{
-        ResponseJsonDTO loginJson = new ResponseJsonDTO();
-            loginJson.put(AjaxRequestStatus.FAIL,failMessage);
+    public void outFailJSONMessage(HttpServletResponse response,String failMessage) throws IOException{
+        ResponseJsonDTO responseJson = new ResponseJsonDTO();
+            responseJson.putAjaxFail(failMessage);
 
-        String json = JsonUtils.getObjectJSONString(loginJson);
+        String json = JsonUtils.getJSONStringByObject(responseJson);
 
-        response.setHeader("ContentType", "text/html; charset=utf-8");
         response.setCharacterEncoding("utf-8");
-        response.setContentType("text/html; charset=utf-8");
+        response.setContentType("application/json;charset=UTF-8");
 
         PrintWriter writer = response.getWriter();
             writer.print(json);
             writer.flush();
             writer.close();
+    }
+
+
+
+
+    /**
+     * 执行登录验证
+     *
+     * @param response
+     * @param handler
+     * @return
+     * @throws Exception
+     */
+    private boolean doLoginAuthroization(HttpServletResponse response, Object handler) throws  Exception{
+        //检查 api 函数是否包含@LoginAuthroizatin
+        boolean hasLoginAuthorization = AnnotationUtils.hasMethodAnnotation(handler, LoginAuthorization.class);
+        if(hasLoginAuthorization){
+
+            //验证 Authroization 参数
+            String authroization = response.getHeader(TokenInfo.AUTHENTICATION);
+            if(authroization != null){
+
+                //验证客户端 Token 是否过期
+                UserDO user = TokenUtils.verifyToken(authroization, JWTTokenSecret.SECRET_KEY);// token 解密
+                if(user == null){
+                    outFailJSONMessage(response, LoginInfo.TOKEN_ALREAD_EXPIRE);
+                    return false;
+                }
+
+                return true;
+            }else{
+
+                //无登录，无权访问 api
+                outFailJSONMessage(response, LoginInfo.NO_VISIT_AUTHORIZATION);
+                return false;
+            }
+        }
+
+        //不存在@LoginAuthroization
+        return true;
+    }
+
+
+    /**
+     * 执行管理员权限验证
+     * @param response
+     * @param handler
+     * @throws Exception
+     */
+    public Boolean doAdminRank(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception{
+        boolean hasAdminRank = AnnotationUtils.hasMethodAnnotation(handler, AdminRank.class);
+        if(hasAdminRank){
+            String token = CookieUtils.getCookieValue(request,TokenInfo.AUTHENTICATION);
+            UserDO user = TokenUtils.verifyToken(token, JWTTokenSecret.SECRET_KEY);
+            if(TokenInfo.ADMIN_RANK.equals(user.getRank())){
+                return true;//管理员权限
+            }else{
+                //无管理员权限，无法访问api
+                outFailJSONMessage(response, UserInfo.RANK_NO_ENOUGH);
+                return false;
+            }
+        }
+
+        //不存在@AdminRank
+        return true;
     }
 }
