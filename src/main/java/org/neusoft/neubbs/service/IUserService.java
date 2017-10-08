@@ -18,6 +18,6 @@ public interface IUserService{
     List<UserDO> getAssiginDateRegisterUserByYearMonth(Integer year, Integer month);
     List<UserDO> getAllUser();
 
-    Integer updateUserPasswordById(String password, Integer id);
-    Integer updateUserRankById(String rank, Integer id);
+    Integer updateUserPasswordByName(String username, String password);
+    Integer updateUserRankByName(String username, String rank);
 }

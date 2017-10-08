@@ -55,15 +55,15 @@
         FROM forum_user;
     </select>
 
-    <update id="updateUserPasswordById">
-        UPDATE forum_user SET fu_password = #{param1, jdbcType = VARCHAR}
-        WHERE fu_id = #{param2, jdbcType = INTEGER}
+    <update id="updateUserPasswordByName">
+        UPDATE forum_user SET fu_password = #{param2, jdbcType = VARCHAR}
+        WHERE fu_name = #{param1, jdbcType = VARCHAR}
     </update>
-    <update id="updateUserRankById" parameterType="org.neusoft.neubbs.entity.UserDO">
-        UPDATE forum_user SET fu_rank = #{param1, jdbcType = VARCHAR}
-        WHERE fu_id = #{param2, jdbcType = INTEGER}
+    <update id="updateUserRankByName">
+        UPDATE forum_user SET fu_rank = #{param2, jdbcType = VARCHAR}
+        WHERE fu_name = #{param1, jdbcType = VARCHAR}
     </update>
-    <update id="truncateUserTable">
+    <update id="truncateUserTable"><!-- 删减表 -->
         TRUNCATE TABLE ${tableName}
     </update>
 </mapper>

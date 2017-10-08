@@ -20,6 +20,6 @@ public interface IUserDAO {
     List<UserDO> getAssignDateRegisterUserByYearMonth(Integer year, Integer month);
     List<UserDO> getAllUser();
 
-    int updateUserPasswordById(String password, Integer id);
-    int updateUserRankById(String rank, Integer id);
+    int updateUserPasswordByName(String username, String password);
+    int updateUserRankByName(String username, String rank);
 }

@@ -1,4 +1,4 @@
-package org.neusoft.neubbs.constant.pattern;
+package org.neusoft.neubbs.constant;
 
 /**
  * 正则表达式信息

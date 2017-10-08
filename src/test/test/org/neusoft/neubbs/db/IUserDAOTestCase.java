@@ -56,7 +56,7 @@ public class IUserDAOTestCase {
 
             userDAO.saveUser(user);//注册用户，id会变化
 
-            userDAO.updateUserRankById("admin",user.getId());//修改用户权限i
+            userDAO.updateUserRankByName("admin", user.getName());//修改用户权限
         }
 
         System.out.println("管理员添加完毕");
@@ -131,7 +131,7 @@ public class IUserDAOTestCase {
      */
     @Test
     public void testUpdateUserPasswordById(){
-        int effectRow = userDAO.updateUserPasswordById("88888", 1);
+        int effectRow = userDAO.updateUserPasswordByName("test", "88888");
         System.out.println("更新用户密码，影响行数：" + effectRow);
     }
 
@@ -140,7 +140,7 @@ public class IUserDAOTestCase {
      */
     @Test
     public void testUpdateUserRankById(){
-        int effectRow = userDAO.updateUserRankById("admin", 2);
+        int effectRow = userDAO.updateUserRankByName("test", "user");
         System.out.println("更新用户权限，影响行数：" + effectRow);
     }
 }

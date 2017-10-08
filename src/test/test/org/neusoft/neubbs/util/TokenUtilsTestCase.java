@@ -3,7 +3,7 @@ package test.org.neusoft.neubbs.util;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-import org.neusoft.neubbs.constant.secret.JWTTokenSecret;
+import org.neusoft.neubbs.constant.TokenInfo;
 import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.util.TokenUtils;
 
@@ -33,7 +33,7 @@ public class TokenUtilsTestCase {
             Thread.sleep(1000);
 
             //根据密钥，解密token，获取用户名
-            veruser = TokenUtils.verifyToken(token, JWTTokenSecret.SECRET_KEY);
+            veruser = TokenUtils.verifyToken(token, TokenInfo.SECRET_KEY);
             if(veruser == null){
                 System.out.println("token已经过期，无法解密");
             }else{

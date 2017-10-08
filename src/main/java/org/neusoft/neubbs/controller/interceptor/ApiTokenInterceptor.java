@@ -1,10 +1,10 @@
 package org.neusoft.neubbs.controller.interceptor;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.neusoft.neubbs.constant.login.LoginInfo;
-import org.neusoft.neubbs.constant.login.TokenInfo;
+import org.neusoft.neubbs.constant.LoginInfo;
+import org.neusoft.neubbs.constant.TokenInfo;
 import org.neusoft.neubbs.constant.secret.JWTTokenSecret;
-import org.neusoft.neubbs.constant.user.UserInfo;
+import org.neusoft.neubbs.constant.UserInfo;
 import org.neusoft.neubbs.controller.annotation.AdminRank;
 import org.neusoft.neubbs.controller.annotation.LoginAuthorization;
 import org.neusoft.neubbs.dto.ResponseJsonDTO;

@@ -1,6 +1,6 @@
 package org.neusoft.neubbs.controller.filter;
 
-import org.neusoft.neubbs.constant.login.TokenInfo;
+import org.neusoft.neubbs.constant.TokenInfo;
 import org.neusoft.neubbs.util.CookieUtils;
 
 import javax.servlet.*;

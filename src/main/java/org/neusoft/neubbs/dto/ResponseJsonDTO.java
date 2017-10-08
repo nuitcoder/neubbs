@@ -1,6 +1,6 @@
 package org.neusoft.neubbs.dto;
 
-import org.neusoft.neubbs.constant.ajax.AjaxRequestStatus;
+import org.neusoft.neubbs.constant.AjaxRequestStatus;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -6,8 +6,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import org.neusoft.neubbs.constant.login.TokenInfo;
-import org.neusoft.neubbs.constant.secret.JWTTokenSecret;
+import org.neusoft.neubbs.constant.TokenInfo;
 import org.neusoft.neubbs.entity.UserDO;
 
 import java.io.UnsupportedEncodingException;
@@ -47,7 +46,7 @@ public class TokenUtils {
                                 .withClaim(TokenInfo.CLAIM_ID, user.getId())
                                 .withClaim(TokenInfo.CLAIM_NAME, user.getName())
                                 .withClaim(TokenInfo.CLAIN_RANK, user.getRank())
-                                    .sign(Algorithm.HMAC256(JWTTokenSecret.SECRET_KEY));
+                                    .sign(Algorithm.HMAC256(TokenInfo.SECRET_KEY));
 
         return token;
     }

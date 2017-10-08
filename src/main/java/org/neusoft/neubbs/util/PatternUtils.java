@@ -1,6 +1,6 @@
 package org.neusoft.neubbs.util;
 
-import org.neusoft.neubbs.constant.pattern.PatternInfo;
+import org.neusoft.neubbs.constant.PatternInfo;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

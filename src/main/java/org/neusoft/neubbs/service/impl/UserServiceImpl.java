@@ -85,23 +85,23 @@ public class UserServiceImpl implements IUserService {
 
     /**
      * 修改用户密码
+     * @param username
      * @param password
-     * @param id
      * @return effectRow
      */
    @Override
-   public Integer updateUserPasswordById(String password, Integer id){
-       return userDAO.updateUserPasswordById(password, id);
+   public Integer updateUserPasswordByName(String username, String password){
+       return userDAO.updateUserPasswordByName(username, password);
    }
 
     /**
      * 修改用户权限
+     * @param username
      * @param rank
-     * @param id
      * @return effectRow
      */
    @Override
-   public Integer updateUserRankById(String rank, Integer id){
-       return userDAO.updateUserRankById(rank, id);
+   public Integer updateUserRankByName(String username, String rank){
+       return userDAO.updateUserRankByName(username, rank);
    }
 }

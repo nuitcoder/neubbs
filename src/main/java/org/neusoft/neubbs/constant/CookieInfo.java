@@ -1,4 +1,4 @@
-package org.neusoft.neubbs.constant.login;
+package org.neusoft.neubbs.constant;
 
 /**
  * Cookie信息

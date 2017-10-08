@@ -1,31 +1,65 @@
 package org.neusoft.neubbs.controller.api;
 
-import org.neusoft.neubbs.constant.user.UserInfo;
+import org.neusoft.neubbs.constant.UserInfo;
 import org.neusoft.neubbs.controller.annotation.AdminRank;
 import org.neusoft.neubbs.controller.annotation.LoginAuthorization;
 import org.neusoft.neubbs.dto.ResponseJsonDTO;
 import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.service.IUserService;
 import org.neusoft.neubbs.util.JsonUtils;
-import org.neusoft.neubbs.util.PatternUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 /**
  * 管理用户 api
  */
 @Controller
 @RequestMapping("/api")
-public class ManageUserCollector {
+public class UserInfoCollector {
 
     @Autowired
     IUserService userService;
+
+    /**
+     * 输入 username ，获取用户信息
+     * @param username
+     * @return
+     * @throws Exception
+     */
+    @LoginAuthorization @AdminRank
+    @RequestMapping(value = "/userinfo", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseJsonDTO getUserInfoByName(@RequestParam(value = "username", required = false)String username) throws Exception{
+        ResponseJsonDTO responseJson = new ResponseJsonDTO();
+
+        //空判断
+        if(username == null || username.length() < 0){
+            responseJson.putAjaxFail(UserInfo.GET_USERINFO_USERNAME_NONULL);
+            return responseJson;
+        }
+
+        //数据库获取数据
+        UserDO user = userService.getUserByName(username);
+        Map<String, Object> userInfoMap = JsonUtils.getMapByObject(user);
+        if(userInfoMap == null){
+            responseJson.putAjaxFail(UserInfo.DATABASE_NO_EXIST_USER);
+            return responseJson;
+        }
+
+        responseJson.putAjaxSuccess(UserInfo.GET_USERINFO_SUCCESS);
+        responseJson.getModel().add(userInfoMap);
+
+        return responseJson;
+    }
+
 
     /**
      * 输入 username password email，注册用户
@@ -34,7 +68,7 @@ public class ManageUserCollector {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/register")
+    @RequestMapping(value = "/userinfo/register")
     @ResponseBody
     public ResponseJsonDTO registerUser(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String username = request.getParameter(UserInfo.USERNAME);
@@ -43,16 +77,16 @@ public class ManageUserCollector {
 
         ResponseJsonDTO responseJson = new ResponseJsonDTO();
 
-        if (username == null) {
-            responseJson.putAjaxFail(UserInfo.REGISTER_USERNAME_NONULL);
+        if (username == null || username.length() == 0) {
+            responseJson.putAjaxFail(UserInfo.REGISTER_USER_USERNAME_NONULL);
             return responseJson;
         }
-        if (password == null) {
-            responseJson.putAjaxFail(UserInfo.REGISTER_PASSWORD_NONULL);
+        if (password == null || username.length() == 0) {
+            responseJson.putAjaxFail(UserInfo.REGISTER_USER_PASSWORD_NONULL);
             return responseJson;
         }
-        if (email == null) {
-            responseJson.putAjaxFail(UserInfo.REGISTER_EMAIL_NONULL);
+        if (email == null || username.length() == 0) {
+            responseJson.putAjaxFail(UserInfo.REGISTER_USER_EMAIL_NONULL);
             return responseJson;
         }
 
@@ -70,126 +104,84 @@ public class ManageUserCollector {
             user.setEmail(email);
         int effectRow = userService.registerUser(user);
         if (effectRow == 0) {
-            responseJson.putAjaxFail(UserInfo.REGISTER_FAIL);
+            responseJson.putAjaxFail(UserInfo.REGISTER_USER_FAIL);
             return responseJson;
         }
 
-        //注册成功返回新用户 id
+        //注册成功,会自动注入用户 id（用户自增）
         int newId = user.getId();
         user = userService.getUserById(newId);//根据 id 重新查询用户
 
         responseJson.getModel().add(JsonUtils.getMapByObject(user));
-        responseJson.putAjaxSuccess(UserInfo.REGISTER_SUCCESS);
+        responseJson.putAjaxSuccess(UserInfo.REGISTER_USER_SUCCESS);
         return responseJson;
     }
 
     /**
-     * 输入id，删除用户
-     * @param id
-     * @return
-     * @throws Exception
-     */
-    @LoginAuthorization @AdminRank
-    @RequestMapping(value = "/remove")
-    @ResponseBody
-    public ResponseJsonDTO removeUser(@RequestParam(value = "id", required = false)String id) throws Exception{
-        ResponseJsonDTO responseJson = new ResponseJsonDTO();
-
-        if(id == null){
-            responseJson.putAjaxFail(UserInfo.REMOVE_ID_NONULL);
-            return responseJson;
-        }
-
-        if(!PatternUtils.pureNumber(id)){
-            responseJson.putAjaxFail(UserInfo.ID_STYLE_ERROR_NO_PPURENUMBER);
-            return responseJson;
-        }
-
-        //删除用户
-        int effectRow = userService.removeUser(Integer.parseInt(id));
-        if (effectRow == 0) {
-            responseJson.putAjaxFail(UserInfo.DATABASE_NO_EXIST_USER);
-            return responseJson;
-        }
-
-        responseJson.putAjaxSuccess(UserInfo.REMOVE_SUCCESS);
-        return responseJson;
-    }
-
-    /**
-     * 输入 id，password ，修改用户密码
-     * @param id
+     * 输入 username，password ，修改用户密码
+     * @param username
      * @param password
      * @return
      * @throws Exception
      */
     @LoginAuthorization
-    @RequestMapping(value = "/update-password")
+    @RequestMapping(value = "/userinfo/update-password")
     @ResponseBody
-    public ResponseJsonDTO updateUserPasswordById(@RequestParam(value = "id", required = false)String id,
+    public ResponseJsonDTO updateUserPasswordById(@RequestParam(value = "username", required = false)String username,
                                                   @RequestParam(value = "password", required = false)String password) throws Exception{
         ResponseJsonDTO responseJson = new ResponseJsonDTO();
 
-        if(id == null){
-            responseJson.putAjaxFail(UserInfo.UPDATE_PASSWORD_ID_NONULL);
+        if(username == null || username.length() == 0 ){
+            responseJson.putAjaxFail(UserInfo.UPDATE_USER_PASSWORD_USERNAME_NONULL);
             return responseJson;
         }
-        if(password == null || password.length() <= 0){
-            responseJson.putAjaxFail(UserInfo.UPDATE_PASSWORD_PASSWORD_NONULL);
-        }
-
-        if(!PatternUtils.pureNumber(id)){
-            responseJson.putAjaxFail(UserInfo.ID_STYLE_ERROR_NO_PPURENUMBER);
+        if(password == null || password.length() == 0){
+            responseJson.putAjaxFail(UserInfo.UPDATE_USER_PASSWORD_PASSWORD_NONULL);
             return responseJson;
         }
 
         //更新用户密码
-        int effectRow = userService.updateUserPasswordById(password, Integer.parseInt(id));
+        int effectRow = userService.updateUserPasswordByName(username, password);
         if (effectRow == 0) {
             responseJson.putAjaxFail(UserInfo.DATABASE_NO_EXIST_USER);
             return responseJson;
         }
 
-        responseJson.putAjaxSuccess(UserInfo.ALTER_PASSWORD_SUCCESS);
+        responseJson.putAjaxSuccess(UserInfo.UPDATE_USER_PASSWORD_SUCCESS);
         return  responseJson;
     }
 
     /**
-     * 输入 id，rank ，修改用户权限
-     * @param id
+     * 输入 username rank ，修改用户权限
+     * @param username
      * @param rank
      * @return
      * @throws Exception
      */
     @LoginAuthorization @AdminRank
-    @RequestMapping(value = "/update-rank")
+    @RequestMapping(value = "/userinfo/update-rank")
     @ResponseBody
-    public ResponseJsonDTO updateUserRankById(@RequestParam(value = "id", required = false)String id,
+    public ResponseJsonDTO updateUserRankById(@RequestParam(value = "username", required = false)String username,
                                                   @RequestParam(value = "rank", required = false)String rank) throws Exception{
         ResponseJsonDTO responseJson = new ResponseJsonDTO();
 
-        if(id == null){
-            responseJson.putAjaxFail(UserInfo.UPDATE_RANK_ID_NONULL);
+        if(username == null || username.length() == 0){
+            responseJson.putAjaxFail(UserInfo.UPDATE_USER_RANK_USERNAME_NONULL);
             return responseJson;
         }
         if(rank == null || rank.length() <= 0){
-            responseJson.putAjaxFail(UserInfo.UPDATE_RANK_RANK_NONULL);
-            return responseJson;
-        }
-
-        if(!PatternUtils.pureNumber(id)){
-            responseJson.putAjaxFail(UserInfo.ID_STYLE_ERROR_NO_PPURENUMBER);
+            responseJson.putAjaxFail(UserInfo.UPDATE_USER_RANK_RANK_NONULL);
             return responseJson;
         }
 
         //更新用户密码
-        int effectRow = userService.updateUserRankById(rank, Integer.parseInt(id));
+        int effectRow = userService.updateUserRankByName(username, rank);
         if (effectRow == 0) {
             responseJson.putAjaxFail(UserInfo.DATABASE_NO_EXIST_USER);
             return responseJson;
         }
 
-        responseJson.putAjaxSuccess(UserInfo.ALTER_RANK_SUCCESS);
+        responseJson.putAjaxSuccess(UserInfo.UPDATE_USER_RANK_SUCCESS);
         return  responseJson;
     }
 }

@@ -1,4 +1,4 @@
-package org.neusoft.neubbs.constant.login;
+package org.neusoft.neubbs.constant;
 
 /**
  *  Token常量
@@ -27,12 +27,16 @@ public interface TokenInfo {
     String SET_ISSUEDAT = "";
     String SET_EXPIRESAT = "";
 
+    //Claim参数
     String CLAIM_NAME = "name";
     String CLAIM_ID = "id";
     String CLAIN_RANK = "rank";
 
+    long EXPIRETIME_SERVEN_DAY = 604800000; //时间：1000 * 60 * 60 * * 24 * 7 ms
+
     String AUTHENTICATION = "Authentication"; //Cookie 名和 response 的 Header
     String ADMIN_RANK = "admin";
 
-    long EXPIRETIME_SERVEN_DAY = 604800000; //1000 * 60 * 60 * * 24 * 7 ms
+    //token 密钥
+    String SECRET_KEY = "this neubbs is best";
 }

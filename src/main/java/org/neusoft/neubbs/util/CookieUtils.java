@@ -1,6 +1,6 @@
 package org.neusoft.neubbs.util;
 
-import org.neusoft.neubbs.constant.login.CookieInfo;
+import org.neusoft.neubbs.constant.CookieInfo;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
