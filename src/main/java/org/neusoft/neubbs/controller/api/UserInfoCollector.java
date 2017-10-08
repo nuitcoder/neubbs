@@ -34,32 +34,6 @@ public class UserInfoCollector {
      * @return
      * @throws Exception
      */
-    @LoginAuthorization @AdminRank
-    @RequestMapping(value = "/userinfo", method = RequestMethod.GET)
-    @ResponseBody
-    public ResponseJsonDTO getUserInfoByName(@RequestParam(value = "username", required = false)String username) throws Exception{
-        ResponseJsonDTO responseJson = new ResponseJsonDTO();
-
-        //空判断
-        if(username == null || username.length() < 0){
-            responseJson.putAjaxFail(UserInfo.GET_USERINFO_USERNAME_NONULL);
-            return responseJson;
-        }
-
-        //数据库获取数据
-        UserDO user = userService.getUserByName(username);
-        Map<String, Object> userInfoMap = JsonUtils.getMapByObject(user);
-        if(userInfoMap == null){
-            responseJson.putAjaxFail(UserInfo.DATABASE_NO_EXIST_USER);
-            return responseJson;
-        }
-
-        responseJson.putAjaxSuccess(UserInfo.GET_USERINFO_SUCCESS);
-        responseJson.getModel().add(userInfoMap);
-
-        return responseJson;
-    }
-
 
     /**
      * 输入 username password email，注册用户
@@ -68,7 +42,7 @@ public class UserInfoCollector {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/userinfo/register")
+    @RequestMapping(value = "/register")
     @ResponseBody
     public ResponseJsonDTO registerUser(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String username = request.getParameter(UserInfo.USERNAME);
@@ -99,9 +73,9 @@ public class UserInfoCollector {
 
         //注册操作
         user = new UserDO();
-            user.setName(username);
-            user.setPassword(password);
-            user.setEmail(email);
+        user.setName(username);
+        user.setPassword(password);
+        user.setEmail(email);
         int effectRow = userService.registerUser(user);
         if (effectRow == 0) {
             responseJson.putAjaxFail(UserInfo.REGISTER_USER_FAIL);
@@ -117,6 +91,32 @@ public class UserInfoCollector {
         return responseJson;
     }
 
+    @LoginAuthorization @AdminRank
+    @RequestMapping(value = "/user", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseJsonDTO getUserInfoByName(@RequestParam(value = "username", required = false)String username) throws Exception{
+        ResponseJsonDTO responseJson = new ResponseJsonDTO();
+
+        //空判断
+        if(username == null || username.length() < 0){
+            responseJson.putAjaxFail(UserInfo.GET_USERINFO_USERNAME_NONULL);
+            return responseJson;
+        }
+
+        //数据库获取数据
+        UserDO user = userService.getUserByName(username);
+        Map<String, Object> userInfoMap = JsonUtils.getMapByObject(user);
+        if(userInfoMap == null){
+            responseJson.putAjaxFail(UserInfo.DATABASE_NO_EXIST_USER);
+            return responseJson;
+        }
+
+        responseJson.putAjaxSuccess(UserInfo.GET_USERINFO_SUCCESS);
+        responseJson.getModel().add(userInfoMap);
+
+        return responseJson;
+    }
+
     /**
      * 输入 username，password ，修改用户密码
      * @param username
@@ -125,7 +125,7 @@ public class UserInfoCollector {
      * @throws Exception
      */
     @LoginAuthorization
-    @RequestMapping(value = "/userinfo/update-password")
+    @RequestMapping(value = "/user/update-password")
     @ResponseBody
     public ResponseJsonDTO updateUserPasswordById(@RequestParam(value = "username", required = false)String username,
                                                   @RequestParam(value = "password", required = false)String password) throws Exception{
@@ -159,7 +159,7 @@ public class UserInfoCollector {
      * @throws Exception
      */
     @LoginAuthorization @AdminRank
-    @RequestMapping(value = "/userinfo/update-rank")
+    @RequestMapping(value = "/user/update-rank")
     @ResponseBody
     public ResponseJsonDTO updateUserRankById(@RequestParam(value = "username", required = false)String username,
                                                   @RequestParam(value = "rank", required = false)String rank) throws Exception{
