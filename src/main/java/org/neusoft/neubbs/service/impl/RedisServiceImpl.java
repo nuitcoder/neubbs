@@ -40,7 +40,7 @@ public class RedisServiceImpl implements IRedisService{
     }
 
     @Override
-    public long getExpireTimeByKey(String key){
+    public Long getExpireTimeByKey(String key){
         return redisTemplate.getExpire(key,TimeUnit.MILLISECONDS);//返回毫秒类型
     }
 

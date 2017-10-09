@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- *  在 Response 的 Header 添加 Authentication: token（获取本地Cookie）
+ *  添加 Resposne Header Token 过滤器
  */
 public class AddResponseHeaderTokenFilter implements Filter {
 
@@ -27,10 +27,11 @@ public class AddResponseHeaderTokenFilter implements Filter {
 
         //response Header 添加 Authorization 参数
         if(response.getHeader(TokenInfo.AUTHENTICATION) == null){
-
+            //读取本地 Cookie
             String authorization = CookieUtils.getCookieValue(request, TokenInfo.AUTHENTICATION);//Cookie 取出，没有则为 null
             if(authorization != null){
                 response.addHeader(TokenInfo.AUTHENTICATION, authorization);
+
             }
 
         }

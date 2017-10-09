@@ -5,7 +5,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import java.util.Date;
 
 /**
- *  对应forum_user表 数据对象
+ *  forum_user表 领域对象
+ *  【Domain Object】
  */
 public class UserDO {
 

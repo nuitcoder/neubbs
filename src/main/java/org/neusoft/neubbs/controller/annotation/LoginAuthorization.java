@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- *  登录认证
+ *  登录认证注解 @LoginAuthorization
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)

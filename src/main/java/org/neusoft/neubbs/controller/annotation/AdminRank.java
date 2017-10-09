@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- *  管理员权限
+ *  管理员权限注解 @AdminRank
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)

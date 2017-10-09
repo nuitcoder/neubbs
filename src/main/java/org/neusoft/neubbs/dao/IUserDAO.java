@@ -6,20 +6,21 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 /**
- * UserMapper.xml 映射接口
+ * forum_user表 数据访问对象（UserMapper.xml 映射接口）
+ * 【Data Access Object】
  */
 @Repository
 public interface IUserDAO {
-    int saveUser(UserDO user);
+    Integer saveUser(UserDO user);
 
-    int removeUserById(Integer id);
+    Integer removeUserById(int id);
 
-    UserDO getUserById(Integer id);
+    UserDO getUserById(int id);
     UserDO getUserByName(String name);
     List<UserDO> getAllAdminUser();
-    List<UserDO> getAssignDateRegisterUserByYearMonth(Integer year, Integer month);
+    List<UserDO> getAssignDateRegisterUserByYearMonth(int year, int month);
     List<UserDO> getAllUser();
 
-    int updateUserPasswordByName(String username, String password);
-    int updateUserRankByName(String username, String rank);
+    Integer updateUserPasswordByName(String username, String password);
+    Integer updateUserRankByName(String username, String rank);
 }

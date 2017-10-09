@@ -44,4 +44,5 @@
 			<bean class="org.neusoft.neubbs.controller.interceptor.ApiTokenInterceptor"></bean>
 		</mvc:interceptor>
 	</mvc:interceptors>
+
 </beans>

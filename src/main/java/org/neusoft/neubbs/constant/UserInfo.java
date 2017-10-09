@@ -26,6 +26,15 @@ public interface UserInfo {
     //权限问题
     String RANK_NO_ENOUGH = "权限不足，无法调用 api";
 
+    //登录
+    String LOGIN_USERNAME_NULL = "用户未输入用户名,username为空";
+    String LOGIN_PASSWORD_NULL = "用户未输入密码,password为空";
+    String LOGIN_PASSWORD_ERROR = "该用户密码不正确！";
+    String LOGIN_PASS_AUTHENTICATE_LOGIN_SUCCESS = "用户帐号密码通过验证,登录成功，将在7天内自动登录";
+
+    //注销
+    String LOGOUT_SUCCESS = "用户注销成功！";
+
     //获取用户信息
     String GET_USERINFO_SUCCESS = "获取用户信息成功";
     String GET_USERINFO_FAIL = "获取用户信息失败";

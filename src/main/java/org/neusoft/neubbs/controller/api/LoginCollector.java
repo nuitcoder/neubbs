@@ -1,6 +1,6 @@
 package org.neusoft.neubbs.controller.api;
 
-import org.neusoft.neubbs.constant.LoginInfo;
+import org.neusoft.neubbs.constant.AjaxRequestStatus;
 import org.neusoft.neubbs.constant.TokenInfo;
 import org.neusoft.neubbs.constant.UserInfo;
 import org.neusoft.neubbs.controller.annotation.LoginAuthorization;
@@ -38,7 +38,6 @@ public class LoginCollector {
      * 输入 username password，登录
      * @param username
      * @param password
-     * @param request
      * @param response
      * @return
      * @throws Exception
@@ -47,33 +46,26 @@ public class LoginCollector {
     @ResponseBody
     public ResponseJsonDTO login(@RequestParam(value = "username", required = false) String username,
                                  @RequestParam(value = "password", required = false) String password,
-                                    HttpServletRequest request, HttpServletResponse response)
+                                    HttpServletResponse response)
                                         throws Exception {
-        //定义响应数据传输对象
-        ResponseJsonDTO responseJson = new ResponseJsonDTO();
-
         //空判断
         if (username == null || username.length() <= 0) {
-            responseJson.putAjaxFail(LoginInfo.USERNAME_NULL);
-            return responseJson;
+            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, UserInfo.LOGIN_USERNAME_NULL);
         }
         if (password == null || password.length() <= 0) {
-            responseJson.putAjaxFail(LoginInfo.PASSWORD_NULL);
-            return responseJson;
+            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, UserInfo.LOGIN_PASSWORD_NULL);
         }
 
         //用户是否存在判断
         UserDO user = userService.getUserByName(username);
         Map<String, Object> userInfoMap = JsonUtils.getMapByObject(user);
         if (userInfoMap == null){
-            responseJson.putAjaxFail(UserInfo.DATABASE_NO_EXIST_USER);
-            return responseJson;
+            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, UserInfo.DATABASE_NO_EXIST_USER);
         }
 
         //用户密码判断
         if (!password.equals(userInfoMap.get(UserInfo.PASSWORD))) {
-            responseJson.putAjaxFail(LoginInfo.PASSWORD_ERROR);
-            return responseJson;
+            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, UserInfo.LOGIN_PASSWORD_ERROR);
         }
 
 
@@ -84,12 +76,8 @@ public class LoginCollector {
             CookieUtils.saveCookie(response, TokenInfo.AUTHENTICATION, token);
             //System.out.println(token);//测试打印 token
             //CookieUtils.printCookie(request);//测试打印 Cookie
-
-            responseJson.putAjaxSuccess(LoginInfo.PASS_AUTHENTICATE_LOGIN_SUCCESS);
-            responseJson.getModel().add(userInfoMap);
         }
-
-        return responseJson;
+        return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, UserInfo.LOGIN_PASS_AUTHENTICATE_LOGIN_SUCCESS, userInfoMap);
     }
 
     /**
@@ -106,10 +94,6 @@ public class LoginCollector {
         //删除Cookie
         CookieUtils.removeCookie(request, response, TokenInfo.AUTHENTICATION);
 
-        //构建JSON提示信息
-        ResponseJsonDTO responseJson = new ResponseJsonDTO();
-            responseJson.putAjaxSuccess(LoginInfo.LOGOUT_SUCCESS);
-
-        return responseJson;
+        return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, UserInfo.LOGOUT_SUCCESS);
     }
 }
