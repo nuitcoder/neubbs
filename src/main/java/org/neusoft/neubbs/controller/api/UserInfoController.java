@@ -24,7 +24,7 @@ import java.util.Map;
  */
 @Controller
 @RequestMapping("/api")
-public class UserInfoCollector {
+public class UserInfoController {
 
     @Autowired
     IUserService userService;
@@ -36,7 +36,7 @@ public class UserInfoCollector {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/register")
+    @RequestMapping(value = "/register", method = RequestMethod.GET)
     @ResponseBody
     public ResponseJsonDTO registerUser(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String username = request.getParameter(UserInfo.USERNAME);
@@ -110,7 +110,7 @@ public class UserInfoCollector {
      * @throws Exception
      */
     @LoginAuthorization
-    @RequestMapping(value = "/user/update-password")
+    @RequestMapping(value = "/user/update-password", method = RequestMethod.GET)
     @ResponseBody
     public ResponseJsonDTO updateUserPasswordById(@RequestParam(value = "username", required = false)String username,
                                                   @RequestParam(value = "password", required = false)String password) throws Exception{
@@ -138,7 +138,7 @@ public class UserInfoCollector {
      * @throws Exception
      */
     @LoginAuthorization @AdminRank
-    @RequestMapping(value = "/user/update-rank")
+    @RequestMapping(value = "/user/update-rank", method = RequestMethod.GET)
     @ResponseBody
     public ResponseJsonDTO updateUserRankById(@RequestParam(value = "username", required = false)String username,
                                                   @RequestParam(value = "rank", required = false)String rank) throws Exception{

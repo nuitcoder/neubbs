@@ -29,14 +29,14 @@ import java.util.Map;
  */
 @Controller
 @RequestMapping("/api")
-public class LoginCollector {
+public class LoginController {
 
     @Autowired
     IUserService userService;
     @Autowired
     IRedisService redisService;
 
-    private static Logger logger = Logger.getLogger(LoginCollector.class);
+    private static Logger logger = Logger.getLogger(LoginController.class);
 
     /**
      * 输入 username password，登录

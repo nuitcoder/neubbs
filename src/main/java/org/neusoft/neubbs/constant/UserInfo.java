@@ -58,4 +58,22 @@ public interface UserInfo {
     String UPDATE_USER_RANK_FAIL = "更新用户权限失败";
     String UPDATE_USER_RANK_USERNAME_NONULL = "更新用户权限，username 不能为空";
     String UPDATE_USER_RANK_RANK_NONULL = "更新用户权限，rank 不能为空";
+
+    //发送邮箱验证码
+    String EMAILCODE = "emailcode";
+    String EMAILCODE_HOST = "smtp.qq.com";
+    String EMAILCODE_FROM_USERNAME = "526097449@qq.com";
+    String EMAILCODE_FROM_PASSWORD = "pxjkgvpuvtngbhbe";
+    String EMAILCODE_SMTP = "smtp";
+    String EMAILCODE_AUTH = "mail.smtp.auth";
+    String EMAILCODE_AUTH_TRUE = "true";
+    String EMAILCODE_SMTP_SOCKETFACTORY_CLASS = "mail.smtp.socketFactory.class";
+    String EMAILCODE_JAVAX_NET_SSL_SSLSOCKETFACTORY = "javax.net.ssl.SSLSocketFactory";
+    String EMAILCODE_SMTP_SOCKETFACTORY_PORT = "mail.smtp.socketFactory.port";
+    String EMAILCODE_SMTP_SSL_PROT = "465";
+    String EMAILCODE_TO_SUBJECT = "neubbs 邮箱验证码";
+    String EMAILCODE_TO_TEXT = "您好，您的邮箱验证码为: ";
+    String EMAILCODE_SUCCESS = "邮箱验证码,已成功发送到指定用户邮箱";
+    String EMAILCODE_FAIL = "获取邮箱验证码失败";
+    String EMAILCODE_EMAIL_NUNULL = "获取邮箱验证码，邮箱不能为空";
 }

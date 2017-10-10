@@ -221,6 +221,13 @@
       <version>2.6.0</version>
     </dependency>
 
+    <!--JavaMail包[发送邮件]-->
+    <dependency>
+      <groupId>javax.mail</groupId>
+      <artifactId>mail</artifactId>
+      <version>1.4.7</version>
+    </dependency>
+
   </dependencies>
 
   <build>

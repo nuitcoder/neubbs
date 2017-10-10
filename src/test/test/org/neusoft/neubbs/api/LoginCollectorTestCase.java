@@ -4,7 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.neusoft.neubbs.controller.api.LoginCollector;
+import org.neusoft.neubbs.controller.api.LoginController;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -27,7 +27,7 @@ public class LoginCollectorTestCase {
 
     @Before
     public void setup(){
-        this.mockMvc = MockMvcBuilders.standaloneSetup(new LoginCollector()).build();
+        this.mockMvc = MockMvcBuilders.standaloneSetup(new LoginController()).build();
     }
 
     @Test
