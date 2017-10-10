@@ -1,5 +1,5 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <!--neubbs项目Maven配置文件-->
   <modelVersion>4.0.0</modelVersion>
@@ -16,7 +16,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <!-- spring版本号 -->
-    <spring.version>4.3.4.RELEASE</spring.version>
+    <spring.version>4.1.7.RELEASE</spring.version>
     <!-- mybatis版本号 -->
     <mybatis.version>3.2.6</mybatis.version>
     <!-- log4j日志文件管理包版本 -->
@@ -80,44 +80,14 @@
       <artifactId>mybatis</artifactId>
       <version>${mybatis.version}</version>
     </dependency>
-
-    <!-- MyBatis/Spring包 -->
     <dependency>
-      <groupId>org.mybatis</groupId>
+      <groupId>org.mybatis</groupId>    <!-- MyBatis/Spring包 -->
       <artifactId>mybatis-spring</artifactId>
       <version>1.2.2</version>
     </dependency>
 
-    <!-- 导入java EE[7.0]包  -->
-    <dependency>
-      <groupId>javax</groupId>
-      <artifactId>javaee-api</artifactId>
-      <version>7.0</version>
-    </dependency>
 
-    <!-- 连接MySQL数据库驱动包 -->
-    <dependency>
-      <groupId>mysql</groupId>
-      <artifactId>mysql-connector-java</artifactId>
-      <version>5.1.30</version>
-    </dependency>
-
-    <!-- DBCP连接池包[用于applicationContext.xml中配置数据库] -->
-    <dependency>
-      <groupId>commons-dbcp</groupId>
-      <artifactId>commons-dbcp</artifactId>
-      <version>1.2.2</version>
-    </dependency>
-
-    <!-- JSTL标签类 -->
-    <dependency>
-      <groupId>jstl</groupId>
-      <artifactId>jstl</artifactId>
-      <version>1.2</version>
-    </dependency>
-
-    <!-- log4j日志文件管理包 -->
-    <!-- log start -->
+    <!-- log4j 日志框架包 -->
     <dependency>
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
@@ -138,10 +108,8 @@
       <artifactId>slf4j-log4j12</artifactId>
       <version>${slf4j.version}</version>
     </dependency>
-    <!-- log end -->
 
-
-    <!-- SpringMVC的JSON转换包[将entity对象自动转为json] -->
+    <!-- JSON 格式包（Spring MVC 默认支持） -->
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
@@ -168,7 +136,7 @@
       <version>1.9.13</version>
     </dependency>
 
-    <!-- SpringMVC文件上传包 -->
+    <!-- SpringMVC文件上传包（Spring 强制依赖） -->
     <dependency>
       <groupId>commons-fileupload</groupId>
       <artifactId>commons-fileupload</artifactId>
@@ -185,7 +153,35 @@
       <version>1.9</version>
     </dependency>
 
-    <!-- jUnit测试框架 -->
+    <!-- java EE[8.0]包  -->
+    <dependency>
+      <groupId>javax</groupId>
+      <artifactId>javaee-api</artifactId>
+      <version>8.0</version>
+    </dependency>
+
+    <!-- MySQL驱动包 -->
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+      <version>5.1.30</version>
+    </dependency>
+
+    <!-- DBCP 连接池包(在 spring-mybatis-context.xml 配置连接池 ) -->
+    <dependency>
+      <groupId>commons-dbcp</groupId>
+      <artifactId>commons-dbcp</artifactId>
+      <version>1.2.2</version>
+    </dependency>
+
+    <!-- JSTL 标签库 -->
+    <dependency>
+      <groupId>jstl</groupId>
+      <artifactId>jstl</artifactId>
+      <version>1.2</version>
+    </dependency>
+
+    <!-- jUnit 测试框架包 -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -205,7 +201,7 @@
       <scope>test</scope>
     </dependency>
 
-    <!--JWT库-->
+    <!-- JWT库（用于 api 权限验证，加密与解密） -->
     <dependency>
       <groupId>com.auth0</groupId>
       <artifactId>java-jwt</artifactId>
@@ -227,7 +223,6 @@
 
   </dependencies>
 
-
   <build>
     <finalName>neubbs</finalName>
     <plugins>
@@ -235,8 +230,8 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
-          <source>1.6</source>
-          <target>1.6</target>
+          <source>1.8</source>
+          <target>1.8</target>
         </configuration>
       </plugin>
     </plugins>

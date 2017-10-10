@@ -19,6 +19,7 @@
     <listener>
         <listener-class>org.springframework.web.util.IntrospectorCleanupListener</listener-class> <!-- 防止Spring内存溢出监听器 -->
     </listener>
+
     <servlet>
         <servlet-name>DispatcherServlet</servlet-name>
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class><!--Spring容器总控制器,将请求分发给Controller-->

@@ -1,6 +1,8 @@
 package org.neusoft.neubbs.controller.api;
 
+import org.apache.log4j.Logger;
 import org.neusoft.neubbs.constant.AjaxRequestStatus;
+import org.neusoft.neubbs.constant.LoggerInfo;
 import org.neusoft.neubbs.constant.TokenInfo;
 import org.neusoft.neubbs.constant.UserInfo;
 import org.neusoft.neubbs.controller.annotation.LoginAuthorization;
@@ -34,6 +36,8 @@ public class LoginCollector {
     @Autowired
     IRedisService redisService;
 
+    private static Logger logger = Logger.getLogger(LoginCollector.class);
+
     /**
      * 输入 username password，登录
      * @param username
@@ -48,6 +52,7 @@ public class LoginCollector {
                                  @RequestParam(value = "password", required = false) String password,
                                     HttpServletResponse response)
                                         throws Exception {
+
         //空判断
         if (username == null || username.length() <= 0) {
             return new ResponseJsonDTO(AjaxRequestStatus.FAIL, UserInfo.LOGIN_USERNAME_NULL);
@@ -68,7 +73,6 @@ public class LoginCollector {
             return new ResponseJsonDTO(AjaxRequestStatus.FAIL, UserInfo.LOGIN_PASSWORD_ERROR);
         }
 
-
         //用户密码通过验证
         if (username.equals(userInfoMap.get(UserInfo.NAME)) && password.equals(userInfoMap.get(UserInfo.PASSWORD))) {
             //获取Token，储存进本地Cookie
@@ -76,6 +80,8 @@ public class LoginCollector {
             CookieUtils.saveCookie(response, TokenInfo.AUTHENTICATION, token);
             //System.out.println(token);//测试打印 token
             //CookieUtils.printCookie(request);//测试打印 Cookie
+
+            logger.info(username + LoggerInfo.USER_LOGINNER_SUCCESS);
         }
         return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, UserInfo.LOGIN_PASS_AUTHENTICATE_LOGIN_SUCCESS, userInfoMap);
     }

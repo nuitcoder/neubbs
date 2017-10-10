@@ -8,6 +8,6 @@ import java.lang.annotation.Target;
 /**
  *  管理员权限注解 @AdminRank
  */
-@Target(ElementType.METHOD)
-@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD) //修饰方法
+@Retention(RetentionPolicy.RUNTIME) //运行时注解
 public @interface AdminRank {}

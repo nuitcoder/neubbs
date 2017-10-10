@@ -34,6 +34,7 @@ neubbs
 │  │  │              │  └─impl                                                                       
 │  │  │              └─util                                                                          
 │  │  ├─resources
+│  │  │  └─mapping
 │  │  │  │  jdbc.properties
 │  │  │  │  log4j.properties
 │  │  │  │  redis.properties
