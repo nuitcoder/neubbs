@@ -35,9 +35,7 @@ public class SendEmailController {
      */
     @RequestMapping(value = "/code", method = RequestMethod.GET)
     @ResponseBody
-    public ResponseJsonDTO emailCode(@RequestParam(value = "email", required = false)String email,
-                                        HttpServletRequest request, HttpServletResponse response)
-                                            throws Exception{
+    public ResponseJsonDTO emailCode(@RequestParam(value = "email", required = false)String email) throws Exception{
         if(email == null || email.length() == 0){
             return new ResponseJsonDTO(AjaxRequestStatus.FAIL, UserInfo.EMAILCODE_EMAIL_NUNULL);
         }

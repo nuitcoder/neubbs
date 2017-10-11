@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
 /**
@@ -32,13 +31,12 @@ public class UserInfoController {
     /**
      * 输入 username password email，注册用户
      * @param request
-     * @param response
      * @return
      * @throws Exception
      */
     @RequestMapping(value = "/register", method = RequestMethod.GET)
     @ResponseBody
-    public ResponseJsonDTO registerUser(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public ResponseJsonDTO registerUser(HttpServletRequest request) throws Exception {
         String username = request.getParameter(UserInfo.USERNAME);
         String password = request.getParameter(UserInfo.PASSWORD);
         String email = request.getParameter(UserInfo.EMAIL);

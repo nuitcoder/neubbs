@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.neusoft.neubbs.dao.ITopicDAO">
+   <resultMap id="TopicMap" type="org.neusoft.neubbs.entity.TopicDO">
+      <id column="ft_id" property="id" javaType="Integer" jdbcType="INTEGER" />
+      <result column="fu_id" property="userid" javaType="Integer" jdbcType="INTEGER" />
+      <result column="ft_category" property="category" javaType="String" jdbcType="VARCHAR" />
+      <result column="ft_title" property="title" javaType="String" jdbcType="VARCHAR" />
+      <result column="ft_comment" property="comment" javaType="String" jdbcType="VARCHAR" />
+      <result column="ft_lastreplytime" property="lastreplytime" javaType="java.util.Date" jdbcType="TIMESTAMP" />
+      <result column="ft_createtime" property="createtime" javaType="java.util.Date" jdbcType="TIMESTAMP" />
+   </resultMap>
+
+   
+   <insert id="saveTopic" parameterType="org.neusoft.neubbs.entity.TopicDO" useGeneratedKeys="true" keyProperty="ft_id">
+      INSERT INTO forum_topic (fu_id, ft_category, ft_title)
+      VALUES (#{userid, jdbcType = INTEGER},
+              #{category, jdbcType = VARCHAR},
+              #{title, jdbcType = VARCHAR})
+      <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+         SELECT LAST_INSERT_ID() AS ft_id
+      </selectKey>
+   </insert>
+
+   <delete id="removeTopicById" parameterType="java.lang.Integer">
+      DELETE FROM forum_topic WHERE ft_id = #{id, jdbcType = INTEGER}
+   </delete>
+
+   <select id="getTopicById" parameterType="java.lang.Integer" resultMap="TopicMap">
+      SELECT ft_id, fu_id, ft_category, ft_title, ft_comment, ft_lastreplytime, ft_createtime
+      FROM forum_topic WHERE ft_id = #{id, jdbcType = INTEGER}
+   </select>
+   <select id="listTopicByStartRowByCount" resultMap="TopicMap">
+      SELECT ft_id, fu_id, ft_category, ft_title, ft_comment, ft_lastreplytime, ft_createtime
+      FROM forum_topic LIMIT #{param1, jdbcType = INTEGER}, #{param2, jdbcType = INTEGER}
+   </select>
+
+   <update id="updateCategoryById">
+      UPDATE forum_topic SET ft_category = #{param2, jdbcType = VARCHAR}
+      WHERE ft_id = #{param1, jdbcType = INTEGER}
+   </update>
+   <update id="updateTitleById">
+      UPDATE forum_topic SET ft_title = #{param2, jdbcType = VARCHAR}
+      WHERE ft_id = #{param1, jdbcType = INTEGER}
+   </update>
+   <update id="updateCommentById" parameterType="java.lang.Integer">
+      UPDATE forum_topic SET ft_comment = ft_comment + 1
+      WHERE ft_id = #{id, jdbcType = INTEGER}
+   </update>
+   <update id="updateLastreplytimeById">
+      UPDATE forum_topic SET ft_lastreplytime = #{param2, jdbcType = TIMESTAMP}
+      WHERE ft_id = #{param1, jdbcType =INTEGER}
+   </update>
+</mapper>
+

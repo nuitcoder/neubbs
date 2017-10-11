@@ -1,10 +1,7 @@
 package org.neusoft.neubbs.controller.api;
 
 import org.apache.log4j.Logger;
-import org.neusoft.neubbs.constant.AjaxRequestStatus;
-import org.neusoft.neubbs.constant.LoggerInfo;
-import org.neusoft.neubbs.constant.TokenInfo;
-import org.neusoft.neubbs.constant.UserInfo;
+import org.neusoft.neubbs.constant.*;
 import org.neusoft.neubbs.controller.annotation.LoginAuthorization;
 import org.neusoft.neubbs.dto.ResponseJsonDTO;
 import org.neusoft.neubbs.entity.UserDO;
@@ -20,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
@@ -42,6 +40,7 @@ public class LoginController {
      * 输入 username password，登录
      * @param username
      * @param password
+     * @param request
      * @param response
      * @return
      * @throws Exception
@@ -50,7 +49,7 @@ public class LoginController {
     @ResponseBody
     public ResponseJsonDTO login(@RequestParam(value = "username", required = false) String username,
                                  @RequestParam(value = "password", required = false) String password,
-                                    HttpServletResponse response)
+                                    HttpServletRequest request,HttpServletResponse response)
                                         throws Exception {
 
         //空判断
@@ -81,6 +80,15 @@ public class LoginController {
             //System.out.println(token);//测试打印 token
             //CookieUtils.printCookie(request);//测试打印 Cookie
 
+            //在线登录人数+1
+            ServletContext application = request.getServletContext();
+            Integer onlineLoginUser = (Integer) application.getAttribute(CountInfo.ONLINE_LOGIN_USER);
+            if(onlineLoginUser == null){
+                onlineLoginUser = 0;
+            }
+            application.setAttribute(CountInfo.ONLINE_LOGIN_USER, ++onlineLoginUser);
+
+            //储存日志状态
             logger.info(username + LoggerInfo.USER_LOGINNER_SUCCESS);
         }
         return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, UserInfo.LOGIN_PASS_AUTHENTICATE_LOGIN_SUCCESS, userInfoMap);
@@ -99,6 +107,13 @@ public class LoginController {
     public ResponseJsonDTO logout(HttpServletRequest request,HttpServletResponse response) throws Exception{
         //删除Cookie
         CookieUtils.removeCookie(request, response, TokenInfo.AUTHENTICATION);
+
+        //在线登录人数-1
+        ServletContext application = request.getServletContext();
+        Integer onlineLoginUser = (Integer)application.getAttribute(CountInfo.ONLINE_LOGIN_USER);
+        if(onlineLoginUser != null){
+            application.setAttribute(CountInfo.ONLINE_LOGIN_USER, --onlineLoginUser);
+        }
 
         return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, UserInfo.LOGOUT_SUCCESS);
     }

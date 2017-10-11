@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- *  添加 Resposne Header Token 过滤器
+ *  添加 Resposne Header Token 过滤器（访问 /api/* 路径后的添加请求）
  */
 public class AddResponseHeaderTokenFilter implements Filter {
 
@@ -24,6 +24,9 @@ public class AddResponseHeaderTokenFilter implements Filter {
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws ServletException, IOException {
         HttpServletRequest request = (HttpServletRequest)req;
         HttpServletResponse response = (HttpServletResponse)resp;
+
+        //访问api，即创建 session(用于统计在线人数)
+        request.getSession(true);
 
         //response Header 添加 Authorization 参数
         if(response.getHeader(TokenInfo.AUTHENTICATION) == null){

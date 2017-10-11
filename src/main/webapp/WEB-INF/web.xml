@@ -13,11 +13,16 @@
         <param-name>contextConfigLocation</param-name><!-- Spring环境参数全局变量 -->
         <param-value>classpath:spring-context.xml</param-value>
     </context-param>
+
+    <!-- listener 配置信息要在 Filter 和 Servlet 之前，初始化最快，销毁最慢 -->
     <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class> <!-- Spring监听器,根据 contextConfigLocation 变量加载配置文件 -->
     </listener>
     <listener>
         <listener-class>org.springframework.web.util.IntrospectorCleanupListener</listener-class> <!-- 防止Spring内存溢出监听器 -->
+    </listener>
+    <listener>
+        <listener-class>org.neusoft.neubbs.controller.listener.OnlineVisitUserListener</listener-class><!-- 统计在线人数 -->
     </listener>
 
     <servlet>
@@ -35,18 +40,17 @@
         <url-pattern>/</url-pattern>
     </servlet-mapping>
 
-    <!-- 自定义listener,filter,interceptor -->
+    <!-- 添加 Response Header Token 过滤器 -->
     <filter>
         <filter-name>AddResponseHeaderTokenFilter</filter-name>
         <filter-class>org.neusoft.neubbs.controller.filter.AddResponseHeaderTokenFilter</filter-class>
     </filter>
     <filter-mapping>
         <filter-name>AddResponseHeaderTokenFilter</filter-name>
-        <url-pattern>/*</url-pattern>
-        <dispatcher>REQUEST</dispatcher>
+        <url-pattern>/api/*</url-pattern> <!--路径匹配，不会匹配到后缀型url（.jsp）【/*所有匹配，*.jsp后缀匹配，两者不可兼容 】-->
+        <dispatcher>REQUEST</dispatcher><!-- 直接访问时调用，默认值 -->
         <dispatcher>INCLUDE</dispatcher>
         <dispatcher>FORWARD</dispatcher>
-        <dispatcher>ERROR</dispatcher>
     </filter-mapping>
 
 </web-app>

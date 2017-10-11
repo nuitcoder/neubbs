@@ -20,15 +20,15 @@
     <insert id="saveUser" parameterType="org.neusoft.neubbs.entity.UserDO" useGeneratedKeys="true" keyProperty="fu_id">
         INSERT INTO forum_user (fu_name,fu_password,fu_email)
         VALUES (#{name, jdbcType = VARCHAR},
-        #{password, jdbcType = VARCHAR},
-        #{email, jdbcType = VARCHAR})
+                #{password, jdbcType = VARCHAR},
+                #{email, jdbcType = VARCHAR})
         <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER"><!-- id from UserDO , After Do-->
             SELECT LAST_INSERT_ID() AS fu_id
         </selectKey>
     </insert>
 
     <delete id="removeUserById" parameterType="java.lang.Integer">
-        DELETE FROM forum_user WHERE fu_id = #{id,jdbcType = INTEGER}
+        DELETE FROM forum_user WHERE fu_id = #{id, jdbcType = INTEGER}
     </delete>
 
     <select id="getUserById" parameterType="java.lang.Integer" resultMap="UserMap">

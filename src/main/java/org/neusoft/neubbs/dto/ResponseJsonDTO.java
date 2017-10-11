@@ -3,6 +3,7 @@ package org.neusoft.neubbs.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -26,6 +27,16 @@ public class ResponseJsonDTO {
     public ResponseJsonDTO(Boolean status, String message){
         this.status = status;
         this.message = message;
+    }
+    public ResponseJsonDTO(Boolean status, String message,String key, Object obj){
+        this.status = status;
+        this.message = message;
+        this.model = new ArrayList<Map<String, Object>>();
+
+        Map<String, Object> map = new HashMap<String, Object>();
+            map.put(key, obj);
+
+        this.model.add(map);
     }
     public ResponseJsonDTO(Boolean status, String message, Map<String, Object> map){
         this.status = status;
