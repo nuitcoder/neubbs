@@ -1,11 +1,11 @@
 import React, { Component } from 'react'
 
-class Topics extends Component {
+class Home extends Component {
   render() {
     return (
-      <span>Topics</span>
+      <span>HomePage</span>
     )
   }
 }
 
-export default Topics
+export default Home

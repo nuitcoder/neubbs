@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 
-import Header from './components/Header'
+import Header from './layouts/Header'
 
 const App = ({ children }) => (
   <div className="app">

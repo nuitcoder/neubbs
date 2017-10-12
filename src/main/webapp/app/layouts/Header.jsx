@@ -1,8 +1,8 @@
 import React from 'react'
 import styled from 'styled-components'
 
-import Logo from './header/Logo'
-import UserBar from './header/UserBar'
+import Logo from '../components/Logo'
+import UserBar from '../components/UserBar'
 
 const Warpper = styled.header`
   width: 100%;
