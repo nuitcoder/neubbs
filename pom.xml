@@ -1,33 +1,88 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-  <!--neubbs项目Maven配置文件-->
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>org.neusoft</groupId> <!--非盈利+组织名-->
-  <artifactId>neubbs</artifactId><!--项目名-->
-  <packaging>war</packaging><!--项目自动打包-->
-  <version>1.0-SNAPSHOT</version>
-  <name>neubbs Maven Webapp</name>
-  <url>http://maven.apache.org</url>
+  <!-- 项目描述 -->
+  <modelVersion>4.0.0</modelVersion>              <!-- POM 模型版本 -->
+  <groupId>org.neusoft</groupId>                  <!-- 非盈利 + 组织名（全球唯一）-->
+  <artifactId>neubbs</artifactId>                 <!-- 构件标识（不同项目唯一） -->
+  <packaging>war</packaging>                      <!-- 项目打包机制 -->
+  <version>1.0-SNAPSHOT</version>                 <!-- 项目当前版本号（主版本.次版本.增量版本-限定版本号，SNAPSHOT快照版本） -->
+  <name>neubbs Maven Webapp</name>                <!-- 项目名称（文档用途） -->
+  <url>https://github.com/nuitcoder/neubbs</url>  <!-- 项目主页URL（文档用途） -->
+  <description>东软校内论坛 Neubbs</description>   <!-- 项目描述 -->
 
+  <!-- 开发团队 -->
+  <developers>
+    <developer>
+      <id>ahonn</id>                              <!-- id（唯一标识）-->
+      <name>Ahonn</name>                          <!-- 名称 -->
+      <email></email>                             <!-- 邮箱 -->
+      <url>http://www.ahonn.me/</url>             <!-- 个人主页 -->
+      <organization>nuitcoder</organization>      <!-- 组织 -->
+    </developer>
+    <developer>
+      <id>AnAndroidXiang</id>
+      <name>AnAndroidXiang</name>
+      <organization>nuitcoder</organization>
+    </developer>
+    <developer>
+      <id>kayye</id>
+      <name>kayye</name>
+      <organization>nuitcoder</organization>
+    </developer>
+    <developer>
+      <id>topLynch</id>
+      <name>topLynch</name>
+      <organization>nuitcoder</organization>
+    </developer>
+    <developer>
+      <id>Nancyshan</id>
+      <name>Nancyshan</name>
+      <organization>nuitcoder</organization>
+    </developer>
+    <developer>
+      <id>suvan</id>
+      <name>Suvan-L</name>
+      <email>liushuwei0925@gmail.com</email>
+      <url>www.liushuwei.cn</url>
+      <organization>nuitcoder</organization>
+    </developer>
+  </developers>
 
-  <!-- 一.自定义参数 -->
+  <!-- 配置插件 -->
+  <build>
+    <finalName>neubbs</finalName>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId><!-- Java编译插件 -->
+        <configuration>
+          <source>1.8</source>  <!-- java源码版本 -->
+          <target>1.8</target>  <!-- java编译后版本 -->
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <!-- 自定义参数 -->
   <properties>
+    <!-- 项目编码 -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <!-- spring版本号 -->
+
+    <!-- 项目依赖版本参数(主要多依赖相同版本) -->
     <spring.version>4.1.7.RELEASE</spring.version>
-    <!-- mybatis版本号 -->
     <mybatis.version>3.2.6</mybatis.version>
-    <!-- log4j日志文件管理包版本 -->
+    <mybatis-spring.version>1.2.2</mybatis-spring.version>
     <slf4j.version>1.7.7</slf4j.version>
     <log4j.version>1.2.17</log4j.version>
+    <fasterxml.jackson.version>2.8.5</fasterxml.jackson.version>
+    <codehaus.jackson.version>1.9.13</codehaus.jackson.version>
   </properties>
 
-
-  <!-- 二.添加依赖 -->
+  <!-- 项目依赖 -->
   <dependencies>
-    <!-- Spring核心包 -->
+    <!-- Spring -->
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-core</artifactId>
@@ -70,76 +125,13 @@
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
-      <artifactId>spring-test</artifactId><!-- Spring测试框架 -->
+      <artifactId>spring-test</artifactId> <!-- Spring测试框架 -->
       <version>${spring.version}</version>
     </dependency>
 
-    <!-- MyBatis核心包 -->
-    <dependency>
-      <groupId>org.mybatis</groupId>
-      <artifactId>mybatis</artifactId>
-      <version>${mybatis.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.mybatis</groupId>    <!-- MyBatis/Spring包 -->
-      <artifactId>mybatis-spring</artifactId>
-      <version>1.2.2</version>
-    </dependency>
-
-
-    <!-- log4j 日志框架包 -->
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <version>${log4j.version}</version>
-    </dependency>
-    <dependency> <!-- 格式化对象，方便输出日志 -->
-      <groupId>com.alibaba</groupId>
-      <artifactId>fastjson</artifactId>
-      <version>1.1.41</version>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>${slf4j.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
-      <version>${slf4j.version}</version>
-    </dependency>
-
-    <!-- JSON 格式包（Spring MVC 默认支持） -->
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-core</artifactId>
-      <version>2.8.5</version>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-databind</artifactId>
-      <version>2.8.5</version>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-annotations</artifactId>
-      <version>2.8.5</version>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-mapper-asl</artifactId>
-      <version>1.9.13</version>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-core-asl</artifactId>
-      <version>1.9.13</version>
-    </dependency>
-
-    <!-- SpringMVC文件上传包（Spring 强制依赖） -->
     <dependency>
       <groupId>commons-fileupload</groupId>
-      <artifactId>commons-fileupload</artifactId>
+      <artifactId>commons-fileupload</artifactId>  <!-- SpringMVC文件上传包（Spring 强制依赖） -->
       <version>1.3.1</version>
     </dependency>
     <dependency>
@@ -153,35 +145,112 @@
       <version>1.9</version>
     </dependency>
 
-    <!-- java EE[8.0]包  -->
     <dependency>
-      <groupId>javax</groupId>
-      <artifactId>javaee-api</artifactId>
-      <version>8.0</version>
+      <groupId>org.springframework.data</groupId>
+      <artifactId>spring-data-redis</artifactId>    <!-- Spring整合Redis配置 -->
+      <version>1.4.2.RELEASE</version>
+    </dependency>
+    <dependency>
+      <groupId>redis.clients</groupId>
+      <artifactId>jedis</artifactId>   <!-- Jedis库（java 连接 Redis） -->
+      <version>2.6.0</version>
     </dependency>
 
-    <!-- MySQL驱动包 -->
+
+    <!-- MyBatis -->
+    <dependency>
+      <groupId>org.mybatis</groupId>
+      <artifactId>mybatis</artifactId>
+      <version>${mybatis.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.mybatis</groupId>    <!-- MyBatis/Spring -->
+      <artifactId>mybatis-spring</artifactId>
+      <version>${mybatis-spring.version}</version>
+    </dependency>
+
     <dependency>
       <groupId>mysql</groupId>
-      <artifactId>mysql-connector-java</artifactId>
+      <artifactId>mysql-connector-java</artifactId>   <!-- MySQL驱动包 -->
       <version>5.1.30</version>
     </dependency>
 
-    <!-- DBCP 连接池包(在 spring-mybatis-context.xml 配置连接池 ) -->
     <dependency>
       <groupId>commons-dbcp</groupId>
-      <artifactId>commons-dbcp</artifactId>
+      <artifactId>commons-dbcp</artifactId>    <!-- DBCP 连接池包(在 spring-mybatis-context.xml 配置连接池 ) -->
       <version>1.2.2</version>
     </dependency>
 
-    <!-- JSTL 标签库 -->
+
+    <!-- Log4j-->
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>${log4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
+
+    <!-- JSON  -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId><!-- （jackson 是 Spring 的基础 JSON包） -->
+      <version>${fasterxml.jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>${fasterxml.jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+      <version>${fasterxml.jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.jackson</groupId>
+      <artifactId>jackson-mapper-asl</artifactId>
+      <version>${codehaus.jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.jackson</groupId>
+      <artifactId>jackson-core-asl</artifactId>
+      <version>${codehaus.jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.alibaba</groupId>
+      <artifactId>fastjson</artifactId>
+      <version>1.1.41</version>
+    </dependency>
+
+    <!-- java EE  -->
+    <dependency>
+      <groupId>javax</groupId>
+      <artifactId>javaee-api</artifactId><!-- ja -->
+      <version>8.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.mail</groupId>
+      <artifactId>mail</artifactId>    <!--JavaMail包[发送邮件]-->
+      <version>1.4.7</version>
+    </dependency>
+
     <dependency>
       <groupId>jstl</groupId>
-      <artifactId>jstl</artifactId>
+      <artifactId>jstl</artifactId>    <!-- JSTL 标签库 -->
       <version>1.2</version>
     </dependency>
 
-    <!-- jUnit 测试框架包 -->
+    <!-- JUnit 4 -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -201,46 +270,13 @@
       <scope>test</scope>
     </dependency>
 
-    <!-- JWT库（用于 api 权限验证，加密与解密） -->
+    <!-- JWT(JSON Web Token) -->
     <dependency>
       <groupId>com.auth0</groupId>
-      <artifactId>java-jwt</artifactId>
+      <artifactId>java-jwt</artifactId><!-- jwt 库（用于 api 权限验证，加密与解密） -->
       <version>3.2.0</version>
-    </dependency>
-
-    <!-- Spring整合Redis配置 -->
-    <dependency>
-      <groupId>org.springframework.data</groupId>
-      <artifactId>spring-data-redis</artifactId>
-      <version>1.4.2.RELEASE</version>
-    </dependency>
-    <!-- Jedis库 -->
-    <dependency>
-      <groupId>redis.clients</groupId>
-      <artifactId>jedis</artifactId>
-      <version>2.6.0</version>
-    </dependency>
-
-    <!--JavaMail包[发送邮件]-->
-    <dependency>
-      <groupId>javax.mail</groupId>
-      <artifactId>mail</artifactId>
-      <version>1.4.7</version>
     </dependency>
 
   </dependencies>
 
-  <build>
-    <finalName>neubbs</finalName>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.8</source>
-          <target>1.8</target>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 </project>
