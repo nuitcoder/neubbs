@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router'
 import styled from 'styled-components'
 
 const Warpper = styled.div`
@@ -6,7 +7,7 @@ const Warpper = styled.div`
   float: left;
 `
 
-const Link = styled.a`
+const StyledLink = styled(Link)`
   float: left;
   padding: 15px;
   color: #dd4c4f;
@@ -16,9 +17,9 @@ const Link = styled.a`
 
 const Logo = () => (
   <Warpper>
-    <Link href="/">
+    <StyledLink to="/">
       Neubbs
-    </Link>
+    </StyledLink>
   </Warpper>
 )
 

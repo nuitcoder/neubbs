@@ -9,7 +9,7 @@ const Warpper = styled.header`
   height: 50px;
 `
 
-const Nav = styled.nav`
+const Navbar = styled.nav`
   height: inherit;
   margin-bottom: 15px;
   background-color: #fff;
@@ -19,12 +19,12 @@ const Nav = styled.nav`
 
 const Header = () => (
   <Warpper id="header">
-    <Nav>
+    <Navbar>
       <div className="container">
         <Logo />
         <UserBar />
       </div>
-    </Nav>
+    </Navbar>
   </Warpper>
 )
 

@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router'
 import styled from 'styled-components'
 
 const Warpper = styled.ul`
@@ -8,11 +9,11 @@ const Warpper = styled.ul`
   list-style: none;
 `
 
-const BarItem = styled.li`
+const ItemWarpper = styled.li`
   float: left;
 `
 
-const Link = styled.a`
+const StyledLink = styled(Link)`
   display: block;
   padding: 15px 10px;
   line-height: 20px;
@@ -21,12 +22,12 @@ const Link = styled.a`
 
 const UserBar = () => (
   <Warpper>
-    <BarItem>
-      <Link href="/account/register">注册</Link>
-    </BarItem>
-    <BarItem>
-      <Link href="/account/login">登录</Link>
-    </BarItem>
+    <ItemWarpper>
+      <StyledLink to="/account/register">注册</StyledLink>
+    </ItemWarpper>
+    <ItemWarpper>
+      <StyledLink to="/account/login">登录</StyledLink>
+    </ItemWarpper>
   </Warpper>
 )
 
