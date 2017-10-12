@@ -2,6 +2,15 @@
 东软校内 BBS
 
 # 技术栈
+## 前端
++ WebPack 1.13.2
++ React 15.4.0
++ React-Redux 5.0.6
++ React-Router 3.0.5
++ Styled-components 2.1.2
+
+详细依赖见 [package.json](./src/main/webapp/package.json)
+
 ## 后端
 + JDK1.8.0_65
 + Tomcat-8.0.41
