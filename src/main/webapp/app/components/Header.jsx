@@ -30,7 +30,7 @@ class Header extends Component {
 
     switch (eventKey) {
       case LOGIN_EVENT_KEY:
-        router.push('/account/register')
+        router.push('/account/login')
         break
       case REGISTER_EVENT_KEY:
         router.push('/account/register')
