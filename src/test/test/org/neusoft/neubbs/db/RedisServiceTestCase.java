@@ -17,7 +17,7 @@ import java.util.Map;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:spring-context.xml"})
-public class IRedisServiceTestCase {
+public class RedisServiceTestCase {
 
     @Autowired
     IRedisService redisService;
@@ -50,11 +50,11 @@ public class IRedisServiceTestCase {
     }
 
     /**
-     * 测试插入 key-value（无限期） 将 user 对象信息以 JSON 格式保存
+     * 测试插入 key-value（无限期） 将 count 对象信息以 JSON 格式保存
      */
     @Test
     public void testSaveObjectForUser(){
-        UserDO user = userService.getUserByName("oneuser");
+        UserDO user = userService.getUserInfoByName("oneuser");
         Map<String, Object> userInfoMap = JsonUtils.getMapByObject(user);
 
 

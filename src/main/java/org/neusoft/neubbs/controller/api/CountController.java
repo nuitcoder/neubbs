@@ -1,7 +1,7 @@
 package org.neusoft.neubbs.controller.api;
 
-import org.neusoft.neubbs.constant.AjaxRequestStatus;
-import org.neusoft.neubbs.constant.CountInfo;
+import org.neusoft.neubbs.constant.ajax.AjaxRequestStatus;
+import org.neusoft.neubbs.constant.count.CountInfo;
 import org.neusoft.neubbs.controller.annotation.AdminRank;
 import org.neusoft.neubbs.controller.annotation.LoginAuthorization;
 import org.neusoft.neubbs.dto.ResponseJsonDTO;
@@ -12,19 +12,21 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * 统计控制器
+ * 统计 api
+ *      1.在线访问人数
+ *      2.在线登录人数
  */
 @Controller
-@RequestMapping("/api")
+@RequestMapping("/api/count/")
 public class CountController {
     /**
-     * 获取在线访问人数
+     * 1.在线访问人数
      * @param request
-     * @return
+     * @return ResponseJsonDTO
      * @throws Exception
      */
     @LoginAuthorization @AdminRank
-    @RequestMapping(value = "/count/online/visit-user")
+    @RequestMapping(value = "/online-visit-user")
     @ResponseBody
     public ResponseJsonDTO onlineVisitUser(HttpServletRequest request) throws Exception{
         Integer onlineVisitUser = (Integer) request.getServletContext().getAttribute(CountInfo.ONLINE_VISIT_USER);
@@ -34,13 +36,13 @@ public class CountController {
     }
 
     /**
-     * 获取在线登录人数
+     * 2.在线登录人数
      * @param request
-     * @return
+     * @return ResponseJsonDTO
      * @throws Exception
      */
     @LoginAuthorization
-    @RequestMapping(value = "count/online/login-user")
+    @RequestMapping(value = "/online-login-user")
     @ResponseBody
     public ResponseJsonDTO onlineLoginUser(HttpServletRequest request) throws Exception{
         Integer onlineLoginUser = (Integer)request.getServletContext().getAttribute(CountInfo.ONLINE_LOGIN_USER);

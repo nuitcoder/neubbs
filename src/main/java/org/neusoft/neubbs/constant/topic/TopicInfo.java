@@ -1,4 +1,4 @@
-package org.neusoft.neubbs.constant;
+package org.neusoft.neubbs.constant.topic;
 
 /**
  * 主题信息

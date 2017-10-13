@@ -1,4 +1,4 @@
-package org.neusoft.neubbs.constant;
+package org.neusoft.neubbs.constant.log;
 
 /**
  * 日志常量

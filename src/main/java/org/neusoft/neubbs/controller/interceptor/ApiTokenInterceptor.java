@@ -1,7 +1,11 @@
 package org.neusoft.neubbs.controller.interceptor;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.neusoft.neubbs.constant.*;
+import org.neusoft.neubbs.constant.ajax.AjaxRequestStatus;
+import org.neusoft.neubbs.constant.ajax.ResponseStyleInfo;
+import org.neusoft.neubbs.constant.account.RankAuthorizationInfo;
+import org.neusoft.neubbs.constant.account.TokenInfo;
+import org.neusoft.neubbs.constant.account.AccountInfo;
 import org.neusoft.neubbs.controller.annotation.AdminRank;
 import org.neusoft.neubbs.controller.annotation.LoginAuthorization;
 import org.neusoft.neubbs.dto.ResponseJsonDTO;
@@ -149,7 +153,7 @@ public class ApiTokenInterceptor implements HandlerInterceptor{
                 return true;//管理员权限
             }else{
                 //无管理员权限，无法访问api
-                outFailJSONMessage(response, UserInfo.RANK_NO_ENOUGH);
+                outFailJSONMessage(response, AccountInfo.RANK_NO_ENOUGH);
                 return false;
             }
         }

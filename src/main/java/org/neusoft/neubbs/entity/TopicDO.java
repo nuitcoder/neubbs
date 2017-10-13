@@ -13,7 +13,7 @@ public class TopicDO {
     private String title;
     private String comment;
 
-    private Date lastreplaytime;
+    private Date lastreplytime;
     private Date createtime;
 
     /**
@@ -34,8 +34,8 @@ public class TopicDO {
     public String getComment(){
         return comment;
     }
-    public Date getLastreplaytime(){
-        return lastreplaytime;
+    public Date getLastreplytime(){
+        return lastreplytime;
     }
     private Date getCreatetime(){
         return createtime;
@@ -59,8 +59,8 @@ public class TopicDO {
     public void setComment(String comment){
         this.comment = comment;
     }
-    public void setLastreplaytime(Date lastreplaytime){
-        this.lastreplaytime = lastreplaytime;
+    public void setLastreplytime(Date lastreplytime){
+        this.lastreplytime = lastreplytime;
     }
     public void setCreatetime(Date createtime){
         this.createtime = createtime;

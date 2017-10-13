@@ -15,6 +15,8 @@ public interface ITopicDAO {
 
     Integer removeTopicById(int id);
 
+    Integer countTopic();
+    Integer getTopicMaxId();
     TopicDO getTopicById(int id);
     List<TopicDO> listTopicByStartRowByCount(int startRow, int count);
 

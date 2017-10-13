@@ -1,4 +1,4 @@
-package org.neusoft.neubbs.constant;
+package org.neusoft.neubbs.constant.account;
 
 /**
  *  Token 信息
@@ -23,7 +23,7 @@ public interface TokenInfo {
 
     String SET_ISSUER = "neubbs";
     String SET_SUBJECT =  "www.neubbs.com";
-    String SET_AUDIENCE = "user@neubbs.com";
+    String SET_AUDIENCE = "count@neubbs.com";
     String SET_ISSUEDAT = "";
     String SET_EXPIRESAT = "";
 

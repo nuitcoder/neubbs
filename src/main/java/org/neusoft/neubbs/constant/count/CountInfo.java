@@ -1,4 +1,4 @@
-package org.neusoft.neubbs.constant;
+package org.neusoft.neubbs.constant.count;
 
 /**
  * 统计信息

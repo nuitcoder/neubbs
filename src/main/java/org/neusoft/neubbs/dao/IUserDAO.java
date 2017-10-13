@@ -15,11 +15,12 @@ public interface IUserDAO {
 
     Integer removeUserById(int id);
 
+    Integer getUserMaxId();
     UserDO getUserById(int id);
     UserDO getUserByName(String name);
-    List<UserDO> getAllAdminUser();
-    List<UserDO> getAssignDateRegisterUserByYearMonth(int year, int month);
-    List<UserDO> getAllUser();
+    List<UserDO> listAllAdminUser();
+    List<UserDO> listAssignDateRegisterUserByYearMonth(int year, int month);
+    List<UserDO> listAllUser();
 
     Integer updateUserPasswordByName(String username, String password);
     Integer updateUserRankByName(String username, String rank);

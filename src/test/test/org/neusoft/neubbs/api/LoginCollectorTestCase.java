@@ -4,7 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.neusoft.neubbs.controller.api.LoginController;
+import org.neusoft.neubbs.controller.api.AccountController;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -27,12 +27,12 @@ public class LoginCollectorTestCase {
 
     @Before
     public void setup(){
-        this.mockMvc = MockMvcBuilders.standaloneSetup(new LoginController()).build();
+        this.mockMvc = MockMvcBuilders.standaloneSetup(new AccountController()).build();
     }
 
     @Test
     public void testLogin() throws Exception{
-         mockMvc.perform(get("/api/login")
+         mockMvc.perform(get("/api/account")
                             .contentType(MediaType.APPLICATION_JSON)
                             .param("username","oneuser")
                        ).andDo(print());

@@ -26,6 +26,12 @@
       DELETE FROM forum_topic WHERE ft_id = #{id, jdbcType = INTEGER}
    </delete>
 
+   <select id="getTopicMaxId" resultType="java.lang.Integer">
+      SELECT MAX(ft_id) FROM forum_topic;
+   </select>
+   <select id="countTopic" resultType="java.lang.Integer">
+      SELECT COUNT(*) FROM forum_topic;
+   </select>
    <select id="getTopicById" parameterType="java.lang.Integer" resultMap="TopicMap">
       SELECT ft_id, fu_id, ft_category, ft_title, ft_comment, ft_lastreplytime, ft_createtime
       FROM forum_topic WHERE ft_id = #{id, jdbcType = INTEGER}

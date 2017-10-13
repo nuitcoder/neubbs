@@ -1,7 +1,7 @@
 package org.neusoft.neubbs.controller.api;
 
-import org.neusoft.neubbs.constant.AjaxRequestStatus;
-import org.neusoft.neubbs.constant.UserInfo;
+import org.neusoft.neubbs.constant.ajax.AjaxRequestStatus;
+import org.neusoft.neubbs.constant.account.AccountInfo;
 import org.neusoft.neubbs.dto.ResponseJsonDTO;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -11,33 +11,30 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
 /**
- * 发送邮件 控制器
+ *  邮件 api
+ *      1. 发送邮件验证码
  */
 @Controller
-@RequestMapping("/api")
-public class SendEmailController {
+@RequestMapping("/api/email")
+public class EmailController {
 
 
     /**
-     * 输入邮箱，发送邮箱验证码 api
+     * 邮件验证码
      * @param email
-     * @param request
-     * @param response
-     * @return
+     * @return ResponseJsonDTO
      * @throws Exception
      */
-    @RequestMapping(value = "/code", method = RequestMethod.GET)
+    @RequestMapping(value = "/code", method = RequestMethod.POST)
     @ResponseBody
     public ResponseJsonDTO emailCode(@RequestParam(value = "email", required = false)String email) throws Exception{
         if(email == null || email.length() == 0){
-            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, UserInfo.EMAILCODE_EMAIL_NUNULL);
+            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, AccountInfo.EMAILCODE_EMAIL_NUNULL);
         }
 
         //生成 6 位数随机数,验证码
@@ -45,30 +42,30 @@ public class SendEmailController {
 
         //构造邮件请求
         JavaMailSenderImpl sender = new JavaMailSenderImpl();
-            sender.setHost(UserInfo.EMAILCODE_HOST);
-            sender.setUsername(UserInfo.EMAILCODE_FROM_USERNAME);
-            sender.setPassword(UserInfo.EMAILCODE_FROM_PASSWORD);
-            sender.setProtocol(UserInfo.EMAILCODE_SMTP);
+            sender.setHost(AccountInfo.EMAILCODE_HOST);
+            sender.setUsername(AccountInfo.EMAILCODE_FROM_USERNAME);
+            sender.setPassword(AccountInfo.EMAILCODE_FROM_PASSWORD);
+            sender.setProtocol(AccountInfo.EMAILCODE_SMTP);
             sender.setPort(465);
 
         Properties properties = new Properties();
-            properties.setProperty(UserInfo.EMAILCODE_AUTH, UserInfo.EMAILCODE_AUTH_TRUE);
-            properties.setProperty(UserInfo.EMAILCODE_SMTP_SOCKETFACTORY_CLASS, UserInfo.EMAILCODE_JAVAX_NET_SSL_SSLSOCKETFACTORY);
-            properties.setProperty(UserInfo.EMAILCODE_SMTP_SOCKETFACTORY_PORT, UserInfo.EMAILCODE_SMTP_SSL_PROT);
+            properties.setProperty(AccountInfo.EMAILCODE_AUTH, AccountInfo.EMAILCODE_AUTH_TRUE);
+            properties.setProperty(AccountInfo.EMAILCODE_SMTP_SOCKETFACTORY_CLASS, AccountInfo.EMAILCODE_JAVAX_NET_SSL_SSLSOCKETFACTORY);
+            properties.setProperty(AccountInfo.EMAILCODE_SMTP_SOCKETFACTORY_PORT, AccountInfo.EMAILCODE_SMTP_SSL_PROT);
 
         sender.setJavaMailProperties(properties);
 
         SimpleMailMessage ssm = new SimpleMailMessage();
             ssm.setFrom(sender.getUsername());
             ssm.setTo(email);
-            ssm.setSubject(UserInfo.EMAILCODE_TO_SUBJECT);
-            ssm.setText(UserInfo.EMAILCODE_TO_TEXT + randomNumber);
+            ssm.setSubject(AccountInfo.EMAILCODE_TO_SUBJECT);
+            ssm.setText(AccountInfo.EMAILCODE_TO_TEXT + randomNumber);
 
         //发送邮件
         sender.send(ssm);
 
         Map<String, Object> codeMap = new HashMap<String, Object>();
-            codeMap.put(UserInfo.EMAILCODE, randomNumber);
-        return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, UserInfo.EMAILCODE_SUCCESS, codeMap);
+            codeMap.put(AccountInfo.EMAILCODE, randomNumber);
+        return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, AccountInfo.EMAILCODE_SUCCESS, codeMap);
     }
 }

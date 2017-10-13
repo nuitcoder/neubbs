@@ -3,7 +3,7 @@ package test.org.neusoft.neubbs.util;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-import org.neusoft.neubbs.constant.TokenInfo;
+import org.neusoft.neubbs.constant.account.TokenInfo;
 import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.util.TokenUtils;
 

@@ -1,4 +1,4 @@
-package org.neusoft.neubbs.constant;
+package org.neusoft.neubbs.constant.ajax;
 
 /**
  * 异步请求状态信息

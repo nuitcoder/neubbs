@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.neusoft.neubbs.dao.ITopicContentDAO">
+   <resultMap id="TopicContentMap" type="org.neusoft.neubbs.entity.TopicContentDO">
+      <id column="ftc_id" property="id" javaType="Integer" jdbcType="INTEGER" />
+      <result column="ft_id" property="topicid" javaType="Integer" jdbcType="INTEGER" />
+      <result column="ftc_content" property="content" javaType="String" jdbcType="VARCHAR" />
+      <result column="ftc_read" property="read" javaType="String" jdbcType="VARCHAR" />
+   </resultMap>
+
+   
+   <insert id="saveTopicContent" parameterType="org.neusoft.neubbs.entity.TopicContentDO" useGeneratedKeys="true" keyProperty="ftc_id">
+      INSERT INTO forum_topic_content (ft_id, ftc_content)
+      VALUES (#{topicid, jdbcType = INTEGER},
+              #{content, jdbcType = VARCHAR})
+      <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+         SELECT LAST_INSERT_ID() AS ftc_id
+      </selectKey>
+   </insert>
+
+   <delete id="removeTopicContentById" parameterType="java.lang.Integer">
+      DELETE FROM forum_topic_content WHERE ftc_id = #{id, jdbcType = INTEGER}
+   </delete>
+
+   <select id="getTopicContentMaxId" resultType="java.lang.Integer">
+      SELECT MAX(ftc_id) FROM forum_topic_content;
+   </select>
+   <select id="getTopicContentById" parameterType="java.lang.Integer" resultMap="TopicContentMap">
+      SELECT ftc_id, ft_id, ftc_content, ftc_read
+      FROM forum_topic_content WHERE ftc_id = #{id, jdbcType = INTEGER}
+   </select>
+
+   <update id="updateContentById">
+      UPDATE forum_topic_content SET ftc_content = #{param2, jdbcType = VARCHAR}
+      WHERE ftc_id = #{param1, jdbcType = INTEGER}
+   </update>
+   <update id="updateReadById">
+      UPDATE forum_topic_content SET ftc_read = ftc_read + 1
+      WHERE ftc_id = #{param1, jdbcType =INTEGER}
+   </update>
+</mapper>
+

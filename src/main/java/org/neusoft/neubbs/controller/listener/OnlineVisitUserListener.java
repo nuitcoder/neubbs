@@ -1,13 +1,13 @@
 package org.neusoft.neubbs.controller.listener;
 
-import org.neusoft.neubbs.constant.CountInfo;
+import org.neusoft.neubbs.constant.count.CountInfo;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
 /**
- * 在线访问人数监听器
+ * 在线访问人数监听器（监听 Session 的创建与销毁）
  */
 public class OnlineVisitUserListener implements HttpSessionListener{
 
