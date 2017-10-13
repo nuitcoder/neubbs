@@ -14,7 +14,8 @@
   <spring:url value="/resources/css/" var="css" />
   <spring:url value="/resources/js/" var="js" />
   <link rel="stylesheet" href="${css}/normalize.css">
-  <link rel="stylesheet" href="${css}/style.css">
+  <link rel="stylesheet" href="${css}/bootstrap.css">
+  <%-- <link rel="stylesheet" href="${css}/style.css"> --%>
 </head>
 <body>
   <div id="root"></div>
