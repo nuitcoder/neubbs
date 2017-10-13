@@ -8,12 +8,12 @@ import org.junit.runners.MethodSorters;
 import org.neusoft.neubbs.dao.IUserDAO;
 import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.util.JsonUtils;
+import org.neusoft.neubbs.util.SecretUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import javax.transaction.Transactional;
 import java.util.List;
 
 /**
@@ -22,7 +22,7 @@ import java.util.List;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:spring-context.xml"}) //注入 Spring 配置文件
 @FixMethodOrder(MethodSorters.NAME_ASCENDING) //按方法名字（字典顺序），顺序执行
-@Transactional //测试类执行完后，事务回滚，所执行的数据操作全部回滚
+//@Transactional //测试类执行完后，事务回滚，所执行的数据操作全部回滚
 public class UserDAOTestCase {
 
     @Autowired
@@ -36,8 +36,10 @@ public class UserDAOTestCase {
     public void test1_SaveUser(){
         UserDO user = new UserDO();
             user.setName("testuser");
-            user.setPassword("12345");
             user.setEmail("test@xxxx.com");
+
+        String cipherText = SecretUtils.passwordMD5Encrypt("123");
+            user.setPassword(cipherText);
 
         try{
             int effectRow = userDAO.saveUser(user);
@@ -58,8 +60,9 @@ public class UserDAOTestCase {
 
         for(String s: amdin){
             user.setName(s);
-            user.setPassword("12345");
+            user.setPassword(SecretUtils.passwordMD5Encrypt("12345"));
             user.setEmail(s + "@neubbs.com");
+
 
             userDAO.saveUser(user);//注册用户
 

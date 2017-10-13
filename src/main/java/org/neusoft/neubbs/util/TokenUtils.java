@@ -6,7 +6,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import org.neusoft.neubbs.constant.account.TokenInfo;
+import org.neusoft.neubbs.constant.secret.TokenInfo;
 import org.neusoft.neubbs.entity.UserDO;
 
 import java.io.UnsupportedEncodingException;

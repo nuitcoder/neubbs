@@ -27,7 +27,7 @@ DROP TABLE IF EXISTS `forum_topic_reply`;
 CREATE TABLE `forum_user` (
   `fu_id` INT(11) NOT NULL AUTO_INCREMENT,
   `fu_name` VARCHAR(15) DEFAULT NULL,
-  `fu_password` VARCHAR(15) NOT NULL,
+  `fu_password` VARCHAR(50) NOT NULL,
   `fu_sex` VARCHAR(2) DEFAULT NULL,
   `fu_birthday` VARCHAR(20) DEFAULT NULL,
   `fu_phone` VARCHAR(15) DEFAULT NULL,

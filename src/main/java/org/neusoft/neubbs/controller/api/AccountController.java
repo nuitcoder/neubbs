@@ -3,7 +3,8 @@ package org.neusoft.neubbs.controller.api;
 import org.apache.log4j.Logger;
 import org.neusoft.neubbs.constant.ajax.AjaxRequestStatus;
 import org.neusoft.neubbs.constant.log.LoggerInfo;
-import org.neusoft.neubbs.constant.account.TokenInfo;
+import org.neusoft.neubbs.constant.secret.MD5Info;
+import org.neusoft.neubbs.constant.secret.TokenInfo;
 import org.neusoft.neubbs.constant.count.CountInfo;
 import org.neusoft.neubbs.constant.account.AccountInfo;
 import org.neusoft.neubbs.controller.annotation.AdminRank;
@@ -12,10 +13,7 @@ import org.neusoft.neubbs.dto.ResponseJsonDTO;
 import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.service.IRedisService;
 import org.neusoft.neubbs.service.IUserService;
-import org.neusoft.neubbs.util.CookieUtils;
-import org.neusoft.neubbs.util.JsonUtils;
-import org.neusoft.neubbs.util.StringUtils;
-import org.neusoft.neubbs.util.TokenUtils;
+import org.neusoft.neubbs.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -103,12 +101,16 @@ public class AccountController {
         }
 
         //用户密码判断
-        if (!password.equals(userInfoMap.get(AccountInfo.PASSWORD))) {
+        String cipherText = SecretUtils.passwordMD5Encrypt(password);//密码 MD5 加密后的密文
+        if(cipherText == null){//服务器加密失败
+            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, MD5Info.MD5_ENCRYP_FAIL);
+        }
+        if (!cipherText.equals(userInfoMap.get(AccountInfo.PASSWORD))) {
             return new ResponseJsonDTO(AjaxRequestStatus.FAIL, AccountInfo.USER_PASSWORD_NO_MATCH);
         }
 
         //用户密码通过验证
-        if (username.equals(userInfoMap.get(AccountInfo.NAME)) && password.equals(userInfoMap.get(AccountInfo.PASSWORD))) {
+        if (username.equals(userInfoMap.get(AccountInfo.NAME)) && cipherText.equals(userInfoMap.get(AccountInfo.PASSWORD))) {
             //获取Token，储存进本地Cookie
             String token = TokenUtils.createToken(user);
             CookieUtils.saveCookie(response, TokenInfo.AUTHENTICATION, token);
@@ -137,7 +139,7 @@ public class AccountController {
      * @throws Exception
      */
     @LoginAuthorization
-    @RequestMapping(value = "/logout", method = RequestMethod.POST)
+    @RequestMapping(value = "/logout", method = RequestMethod.GET)
     @ResponseBody
     public ResponseJsonDTO logout(HttpServletRequest request,HttpServletResponse response) throws Exception{
         //删除Cookie
@@ -185,9 +187,12 @@ public class AccountController {
 
         //注册操作
         user = new UserDO();
-        user.setName(username);
-        user.setPassword(password);
-        user.setEmail(email);
+            user.setName(username);
+            user.setEmail(email);
+
+            //密码加密
+            String cipherText = SecretUtils.passwordMD5Encrypt(password);
+            user.setPassword(cipherText);
 
         userService.registerUser(user);
 

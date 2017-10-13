@@ -1,6 +1,6 @@
 package org.neusoft.neubbs.controller.filter;
 
-import org.neusoft.neubbs.constant.account.TokenInfo;
+import org.neusoft.neubbs.constant.secret.TokenInfo;
 import org.neusoft.neubbs.util.CookieUtils;
 
 import javax.servlet.*;
@@ -34,7 +34,6 @@ public class AddResponseHeaderTokenFilter implements Filter {
             String authorization = CookieUtils.getCookieValue(request, TokenInfo.AUTHENTICATION);//Cookie 取出，没有则为 null
             if(authorization != null){
                 response.addHeader(TokenInfo.AUTHENTICATION, authorization);
-
             }
 
         }

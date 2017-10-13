@@ -41,7 +41,8 @@ public interface AccountInfo {
     String UPDATE_USER_RANK_SUCCESS = "更新用户权限成功!";
 
     //权限问题
-    String RANK_NO_ENOUGH = "权限不足，无法调用 api";
+    String NO_VISIT_AHTORITY_PLEASE_LOGIN = "无访问权限，请登录后执行操作！";
+    String USER_RANK_NO_ENOUGH = "用户权限不足，非管理员用户无法调用此 api";
 
     //发送邮箱验证码
     String EMAILCODE = "emailcode";

@@ -1,4 +1,4 @@
-package org.neusoft.neubbs.constant.account;
+package org.neusoft.neubbs.constant.secret;
 
 /**
  *  Token 信息
