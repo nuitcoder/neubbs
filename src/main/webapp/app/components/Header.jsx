@@ -46,18 +46,21 @@ class Header extends Component {
           <Navbar.Brand>
             <StyledLogoLink to="/">Neubbs</StyledLogoLink>
           </Navbar.Brand>
+          <Navbar.Toggle />
         </Navbar.Header>
-        {/* <Nav> */}
-          {/* <NavItem eventKey={1} href="#">Link</NavItem> */}
-          {/* <NavItem eventKey={2} href="#">Link</NavItem> */}
-        {/* </Nav> */}
-        <Nav
-          pullRight
-          onSelect={this.handleRightNavbar}
-        >
-          <NavItem eventKey={REGISTER_EVENT_KEY}>注册</NavItem>
-          <NavItem eventKey={LOGIN_EVENT_KEY}>登陆</NavItem>
-        </Nav>
+        <Navbar.Collapse>
+          {/* <Nav> */}
+            {/* <NavItem eventKey={1} href="#">Link</NavItem> */}
+            {/* <NavItem eventKey={2} href="#">Link</NavItem> */}
+          {/* </Nav> */}
+          <Nav
+            pullRight
+            onSelect={this.handleRightNavbar}
+          >
+            <NavItem eventKey={REGISTER_EVENT_KEY}>注册</NavItem>
+            <NavItem eventKey={LOGIN_EVENT_KEY}>登陆</NavItem>
+          </Nav>
+        </Navbar.Collapse>
       </StyledNavbar>
     )
   }
