@@ -3,6 +3,7 @@ import { createStore, combineReducers } from 'redux'
 import { Provider } from 'react-redux'
 import { Router, Route, IndexRoute, browserHistory } from 'react-router'
 import { syncHistoryWithStore, routerReducer } from 'react-router-redux'
+import { reducer as reduxFormReducer } from 'redux-form'
 
 import * as reducers from './reducers'
 
@@ -13,6 +14,7 @@ import RegisterPage from './pages/Register'
 
 const reducer = combineReducers({
   ...reducers,
+  form: reduxFormReducer,
   routing: routerReducer,
 })
 
