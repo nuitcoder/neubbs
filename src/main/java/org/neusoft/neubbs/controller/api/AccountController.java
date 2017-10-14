@@ -1,12 +1,13 @@
 package org.neusoft.neubbs.controller.api;
 
 import org.apache.log4j.Logger;
-import org.neusoft.neubbs.constant.ajax.AjaxRequestStatus;
-import org.neusoft.neubbs.constant.log.LoggerInfo;
-import org.neusoft.neubbs.constant.secret.MD5Info;
-import org.neusoft.neubbs.constant.secret.TokenInfo;
-import org.neusoft.neubbs.constant.count.CountInfo;
 import org.neusoft.neubbs.constant.account.AccountInfo;
+import org.neusoft.neubbs.constant.ajax.AjaxRequestStatus;
+import org.neusoft.neubbs.constant.ajax.RequestParamInfo;
+import org.neusoft.neubbs.constant.count.CountInfo;
+import org.neusoft.neubbs.constant.log.LoggerInfo;
+import org.neusoft.neubbs.constant.secret.SecretInfo;
+import org.neusoft.neubbs.constant.secret.TokenInfo;
 import org.neusoft.neubbs.controller.annotation.AdminRank;
 import org.neusoft.neubbs.controller.annotation.LoginAuthorization;
 import org.neusoft.neubbs.dto.ResponseJsonDTO;
@@ -33,7 +34,7 @@ import java.util.Map;
  *      3.注销
  *      4.注册
  *      5.修改密码
- *      6.修改权限
+ *      6.激活账户
  */
 @Controller
 @RequestMapping("/api/account")
@@ -60,7 +61,7 @@ public class AccountController {
         //@RequestParam 的 required 属性声明参数是否必须，默认为true,此处声明 false 表示参数非必须，由 api 内部处理空情况
         //空判断(等价于username == null || username.length() == 0）,
         if (StringUtils.isEmpty(username)) {
-            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, AccountInfo.PARAM_USERNAME_NO_NULL);
+            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, RequestParamInfo.PARAM_USERNAME_NO_NULL);
         }
 
         //数据库获取用户信息
@@ -88,22 +89,28 @@ public class AccountController {
                                  @RequestParam(value = "password", required = false) String password,
                                  HttpServletRequest request,HttpServletResponse response) throws Exception {
         if (StringUtils.isEmpty(username)) {
-            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, AccountInfo.PARAM_USERNAME_NO_NULL);
+            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, RequestParamInfo.PARAM_USERNAME_NO_NULL);
         }
         if (StringUtils.isEmpty(password)) {
-            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, AccountInfo.PARAM_PASSWORD_NO_NULL);
+            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, RequestParamInfo.PARAM_PASSWORD_NO_NULL);
         }
 
+        //用户是否存在
         UserDO user = userService.getUserInfoByName(username);
         Map<String, Object> userInfoMap = JsonUtils.getMapByObject(user);
         if (userInfoMap == null) {
             return new ResponseJsonDTO(AjaxRequestStatus.FAIL, AccountInfo.DATABASE_NO_EXIST_USER);
         }
 
+        //用户是否激活
+        if((Integer)userInfoMap.get(AccountInfo.STATE) == 0){
+            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, AccountInfo.ACCOUNT_NO_ACTIVATION_NO_LOGIN);
+        }
+
         //用户密码判断
         String cipherText = SecretUtils.passwordMD5Encrypt(password);//密码 MD5 加密后的密文
         if(cipherText == null){//服务器加密失败
-            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, MD5Info.MD5_ENCRYP_FAIL);
+            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, SecretInfo.MD5_ENCRYP_FAIL);
         }
         if (!cipherText.equals(userInfoMap.get(AccountInfo.PASSWORD))) {
             return new ResponseJsonDTO(AjaxRequestStatus.FAIL, AccountInfo.USER_PASSWORD_NO_MATCH);
@@ -170,13 +177,13 @@ public class AccountController {
                                         @RequestParam(value = "password", required = false)String password,
                                         @RequestParam(value = "email", required = false)String email) throws Exception {
         if (StringUtils.isEmpty(username)) {
-            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, AccountInfo.PARAM_USERNAME_NO_NULL);
+            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, RequestParamInfo.PARAM_USERNAME_NO_NULL);
         }
         if (StringUtils.isEmpty(password)) {
-            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, AccountInfo.PARAM_PASSWORD_NO_NULL);
+            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, RequestParamInfo.PARAM_PASSWORD_NO_NULL);
         }
         if (StringUtils.isEmpty(email)) {
-            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, AccountInfo.PARAM_EMAIL_NO_NULL);
+            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, RequestParamInfo.PARAM_EMAIL_NO_NULL);
         }
 
         //判断用户名唯一
@@ -218,14 +225,16 @@ public class AccountController {
     public ResponseJsonDTO updateUserPasswordById(@RequestParam(value = "username", required = false)String username,
                                                   @RequestParam(value = "password", required = false)String password) throws Exception{
         if (StringUtils.isEmpty(username)){
-            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, AccountInfo.PARAM_USERNAME_NO_NULL);
+            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, RequestParamInfo.PARAM_USERNAME_NO_NULL);
         }
         if (StringUtils.isEmpty(password)) {
-            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, AccountInfo.PARAM_PASSWORD_NO_NULL);
+            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, RequestParamInfo.PARAM_PASSWORD_NO_NULL);
         }
 
+
         //更新用户密码,返回更新状态（true-成功，false-失败）
-        boolean updateStatus = userService.alterUserPasswordByName(username, password);
+        String newPassword = SecretUtils.passwordMD5Encrypt(password); //新加密
+        boolean updateStatus = userService.alterUserPasswordByName(username, newPassword);
         if (!updateStatus) {
             return new ResponseJsonDTO(AjaxRequestStatus.FAIL, AccountInfo.DATABASE_NO_EXIST_USER);
         }
@@ -234,30 +243,39 @@ public class AccountController {
     }
 
     /**
-     * 6.修改权限
-     * @param username
-     * @param rank
+     * 6.激活账户
+     * @param token
      * @return ResponseJsonDTO
      * @throws Exception
      */
-    @LoginAuthorization @AdminRank
-    @RequestMapping(value = "/update-rank", method = RequestMethod.GET)
+    @RequestMapping(value = "/activation", method = RequestMethod.GET)
     @ResponseBody
-    public ResponseJsonDTO updateUserRankById(@RequestParam(value = "username", required = false)String username,
-                                                  @RequestParam(value = "rank", required = false)String rank) throws Exception{
-        if (StringUtils.isEmpty(username)) {
-            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, AccountInfo.PARAM_USERNAME_NO_NULL);
-        }
-        if (StringUtils.isEmpty(rank)) {
-            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, AccountInfo.PARAM_RANK_NO_NULL);
+    public ResponseJsonDTO emailToken(@RequestParam(value = "token", required = false)String token) throws Exception{
+        if(token == null || token.length() == 0){
+            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, RequestParamInfo.PARAM_TOKEN_NO_NULL);
         }
 
-        //更新用户权限
-       boolean updateStatus = userService.alterUserRankByName(username, rank);
-        if (!updateStatus) {
-            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, AccountInfo.DATABASE_NO_EXIST_USER);
+        String plainText = SecretUtils.base64Decrypt(token);
+        if(plainText == null){ //解密失败
+            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, AccountInfo.EMAIL_TOKEN_DECRYPT_FAIL);
         }
 
-        return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, AccountInfo.UPDATE_USER_RANK_SUCCESS);
+        //获取 email + 过期时间
+        String [] array = plainText.split("-");
+        String email = array[0];
+        String expireTime = array[1];
+
+        //过期判断（1 天）
+        if(StringUtils.isExpire(expireTime)){
+            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, AccountInfo.ACCOUNT_ACTIVATION_URL_ALREAD_EXPIRE_TIME);
+        }
+
+        //激活账户
+        boolean autivationResult =  userService.activationUserByEmail(email);
+        if(!autivationResult){ //不存在用户账户激活失败
+            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, AccountInfo.DATABASE_NO_EXIST_USER + AccountInfo.ACCOUNT_ACTIVATION_FAIL);
+        }
+
+        return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, email + AccountInfo.ACCOUNT_ACTIVATION_SUCCESS);
     }
 }

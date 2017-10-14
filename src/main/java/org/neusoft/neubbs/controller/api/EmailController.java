@@ -1,71 +1,71 @@
 package org.neusoft.neubbs.controller.api;
 
+import org.neusoft.neubbs.constant.account.EmailInfo;
 import org.neusoft.neubbs.constant.ajax.AjaxRequestStatus;
-import org.neusoft.neubbs.constant.account.AccountInfo;
+import org.neusoft.neubbs.constant.ajax.RequestParamInfo;
+import org.neusoft.neubbs.constant.secret.SecretInfo;
 import org.neusoft.neubbs.dto.ResponseJsonDTO;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.neusoft.neubbs.entity.UserDO;
+import org.neusoft.neubbs.service.IUserService;
+import org.neusoft.neubbs.util.SecretUtils;
+import org.neusoft.neubbs.util.SendEmailUtils;
+import org.neusoft.neubbs.util.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-
 /**
  *  邮件 api
- *      1. 发送邮件验证码
+ *      1. + 发送邮件（账户激活URL）
  */
 @Controller
 @RequestMapping("/api/email")
 public class EmailController {
 
+    private final String ACTIVATION_URL = "http://localhost:8080/neubbs/api/account/activation?token="; //邮件激活 URL;
+
+    @Autowired
+    IUserService userService;
 
     /**
-     * 邮件验证码
+     * 1.发送邮件（账户激活URL）
      * @param email
      * @return ResponseJsonDTO
      * @throws Exception
      */
-    @RequestMapping(value = "/code", method = RequestMethod.POST)
+    @RequestMapping(value = "/account-activation", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseJsonDTO emailCode(@RequestParam(value = "email", required = false)String email) throws Exception{
+    public ResponseJsonDTO activation(@RequestParam(value = "email", required = false)String email) throws Exception{
         if(email == null || email.length() == 0){
-            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, AccountInfo.EMAILCODE_EMAIL_NUNULL);
+            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, RequestParamInfo.PARAM_EMAIL_NO_NULL);
         }
 
-        //生成 6 位数随机数,验证码
-        int randomNumber = (int)((Math.random() * 9 + 1) * 100000);
+        //检测数据库是否存在此邮箱
+        UserDO user = userService.getUserInfoByEmail(email);
+        if(user == null){
+            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, EmailInfo.EMAIL_NO_REGISTER_NO_SEND_EMAIL);
+        }
 
-        //构造邮件请求
-        JavaMailSenderImpl sender = new JavaMailSenderImpl();
-            sender.setHost(AccountInfo.EMAILCODE_HOST);
-            sender.setUsername(AccountInfo.EMAILCODE_FROM_USERNAME);
-            sender.setPassword(AccountInfo.EMAILCODE_FROM_PASSWORD);
-            sender.setProtocol(AccountInfo.EMAILCODE_SMTP);
-            sender.setPort(465);
+        //构建 token（用户邮箱 + 过期时间）
+        long expireTime = System.currentTimeMillis() + SecretInfo.EXPIRE_TIME_ONE_DAY;
+        String token = SecretUtils.base64Encrypt(email + "-" + expireTime);
 
-        Properties properties = new Properties();
-            properties.setProperty(AccountInfo.EMAILCODE_AUTH, AccountInfo.EMAILCODE_AUTH_TRUE);
-            properties.setProperty(AccountInfo.EMAILCODE_SMTP_SOCKETFACTORY_CLASS, AccountInfo.EMAILCODE_JAVAX_NET_SSL_SSLSOCKETFACTORY);
-            properties.setProperty(AccountInfo.EMAILCODE_SMTP_SOCKETFACTORY_PORT, AccountInfo.EMAILCODE_SMTP_SSL_PROT);
+        //构建邮件内容
+        String content = StringUtils.createEmailActivationHtmlString(ACTIVATION_URL + token);
 
-        sender.setJavaMailProperties(properties);
+        //发送邮件（另启线程）
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                SendEmailUtils.sendEmail(email, EmailInfo.EMAIL_ACTIVATION_FROM_SUBJECT , content);
+            }
+        }).start();
 
-        SimpleMailMessage ssm = new SimpleMailMessage();
-            ssm.setFrom(sender.getUsername());
-            ssm.setTo(email);
-            ssm.setSubject(AccountInfo.EMAILCODE_TO_SUBJECT);
-            ssm.setText(AccountInfo.EMAILCODE_TO_TEXT + randomNumber);
 
-        //发送邮件
-        sender.send(ssm);
-
-        Map<String, Object> codeMap = new HashMap<String, Object>();
-            codeMap.put(AccountInfo.EMAILCODE, randomNumber);
-        return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, AccountInfo.EMAILCODE_SUCCESS, codeMap);
+        //发送成功
+       return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, EmailInfo.EMAIL_AUTIVATION_SEND_EMAIL_SUCCESS);
     }
 }

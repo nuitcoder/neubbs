@@ -1,6 +1,7 @@
 package org.neusoft.neubbs.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.neusoft.neubbs.constant.account.AccountInfo;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,6 +43,11 @@ public class ResponseJsonDTO {
         this.status = status;
         this.message = message;
         this.model = new ArrayList<Map<String, Object>>();
+
+        //密码，权限，激活状态，不显示在页面
+        map.remove(AccountInfo.PASSWORD);
+        map.remove(AccountInfo.RANK);
+        map.remove(AccountInfo.STATE);
 
         this.model.add(map);
     }

@@ -46,6 +46,15 @@ public class UserServiceImpl implements IUserService {
        return userDAO.getUserByName(username);
    }
 
+    /**
+     * 根据 email，获取用户信息
+     * @param email
+     * @return
+     */
+    @Override
+    public UserDO getUserInfoByEmail(String email) {
+        return userDAO.getUserByEmail(email);
+    }
 
 
     /**
@@ -65,18 +74,17 @@ public class UserServiceImpl implements IUserService {
    }
 
     /**
-     * 修改用户权限
-     * @param username
-     * @param rank
+     * 激活用户（激活邮箱指定用户）
+     * @param email
      * @return Boolean
      */
-   @Override
-   public Boolean alterUserRankByName(String username, String rank){
-       int effectRow = userDAO.updateUserRankByName(username, rank);
-       if (effectRow == 0) {
-           return false;
-       } else {
-           return true;
-       }
-   }
+    @Override
+    public Boolean activationUserByEmail(String email) {
+        int effectRow = userDAO.updateUserStateForActivationByEmail(email);
+        if (effectRow == 0) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 }

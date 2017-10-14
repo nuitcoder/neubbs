@@ -1,15 +1,17 @@
 package org.neusoft.neubbs.util;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 
 /**
  * 加密 工具类
  */
 public class SecretUtils {
     /**
-     * MD5加密（消息摘要算法））
+     * MD5 加密（消息摘要算法）
      * @param plainText
      * @return String
      */
@@ -34,12 +36,12 @@ public class SecretUtils {
     }
 
     /**
-     * 用户密码加密
+     *  用户密码 MD5 加密（二重 MD5 加密）
      * @param password
      * @return String
      */
     public static String passwordMD5Encrypt(String password){
-        //初次密码 MD5 加密
+        //一次 密码 MD5 加密
         String ciphertext = MD5Encryp(password);
         String salt = password;
 
@@ -48,7 +50,32 @@ public class SecretUtils {
             sb.append(ciphertext);
             sb.append(salt);
 
-        //再次 MD5 加密
+        //二次 MD5 加密
         return MD5Encryp(sb.toString());
+    }
+
+    /**
+     *  Base64 加密 （用于邮箱激活，生成 token）
+     * @param email
+     * @return String
+     */
+    public static String base64Encrypt(String email){
+        String token = null;
+        try{
+            token = Base64.getUrlEncoder().encodeToString(email.getBytes("utf-8"));
+        } catch (UnsupportedEncodingException ue) {
+            return null;
+        }
+
+        return token;
+    }
+
+    /**
+     * Base64 解密（用于邮箱激活，token 解密）
+     * @param token
+     * @return
+     */
+    public static String base64Decrypt(String token){
+        return new String(Base64.getDecoder().decode(token));
     }
 }

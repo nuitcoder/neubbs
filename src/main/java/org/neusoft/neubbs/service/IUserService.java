@@ -10,7 +10,8 @@ public interface IUserService{
 
     UserDO getUserInfoById(int id);
     UserDO getUserInfoByName(String username);
+    UserDO getUserInfoByEmail(String email);
 
     Boolean alterUserPasswordByName(String username, String password);
-    Boolean alterUserRankByName(String username, String rank);
+    Boolean activationUserByEmail(String email);
 }

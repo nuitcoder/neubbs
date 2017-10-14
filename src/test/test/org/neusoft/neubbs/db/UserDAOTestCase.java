@@ -36,8 +36,9 @@ public class UserDAOTestCase {
     public void test1_SaveUser(){
         UserDO user = new UserDO();
             user.setName("testuser");
-            user.setEmail("test@xxxx.com");
+            user.setEmail("test@test.com");
 
+        //密码加密
         String cipherText = SecretUtils.passwordMD5Encrypt("123");
             user.setPassword(cipherText);
 
@@ -46,7 +47,7 @@ public class UserDAOTestCase {
             System.out.println("受影响行数：" + effectRow + ",新用户 id ：" + user.getId());
             System.out.println("新用户信息：" + JsonUtils.getJSONStringByObject(userDAO.getUserById(user.getId())));
         }catch (DuplicateKeyException de){
-            System.out.println("插入用户失败，用户名重复，fu_name 字段声明 UNIQUE KEY！");
+            throw new DuplicateKeyException("插入用户失败，fu_name 和 fu_email 字段声明 UNIQUE KEY，不能重复！");
         }
     }
 
@@ -55,21 +56,22 @@ public class UserDAOTestCase {
      */
     @Ignore//忽略该用例
     public void addSixAdminUser(){
-        String [] amdin = {"abonn","AnAndroidXiang","kayye","topLynch","Nancyshan","suvan"};
+        String [] adminArray = {"abonn","AnAndroidXiang","kayye","topLynch","Nancyshan","suvan"};
         UserDO user = new UserDO();
 
-        for(String s: amdin){
-            user.setName(s);
+        //插入用户
+        for(String admin: adminArray){
+            user.setName(admin);
             user.setPassword(SecretUtils.passwordMD5Encrypt("12345"));
-            user.setEmail(s + "@neubbs.com");
+            user.setEmail(admin + "@neubbs.com");
 
+            userDAO.saveUser(user); //注册用户
 
-            userDAO.saveUser(user);//注册用户
+            userDAO.updateUserRankByName(admin, "admin"); //修改权限
 
-            userDAO.updateUserRankByName("admin", user.getName());//修改权限
+            System.out.println("管理员" + admin + "添加完毕");
         }
 
-        System.out.println("管理员添加完毕");
     }
 
     /**
@@ -99,8 +101,8 @@ public class UserDAOTestCase {
      * id 查询用户
      */
     @Test
-    public void test3_GetUserById(){
-        UserDO user = userDAO.getUserById(1);
+    public void test31_GetUserById(){
+        UserDO user = userDAO.getUserById(userDAO.getUserMaxId());//查询最新插入id
         System.out.println("id 查询用户，查询结果：" + JsonUtils.getJSONStringByObject(user));
     }
 
@@ -108,16 +110,26 @@ public class UserDAOTestCase {
      * name 查询用户
      */
     @Test
-    public void test4_GetUserByName(){
+    public void test32_GetUserByName(){
         UserDO user = userDAO.getUserByName("testuser");
         System.out.println("name 查询用户，查询结果：" + JsonUtils.getJSONStringByObject(user));
     }
 
     /**
+     * email 查询用户
+     */
+    @Test
+    public void test323_GetUserByEmail(){
+        UserDO user = userDAO.getUserByEmail("526097449@qq.com1");
+        System.out.println("name 查询用户，查询结果：" + JsonUtils.getJSONStringByObject(user));
+    }
+
+
+    /**
      * 查询所有管理员
      */
     @Test
-    public void test5_ListAllAdminUser(){
+    public void test33_ListAllAdminUser(){
         List<UserDO> userList = userDAO.listAllAdminUser();
         System.out.println("查询所有管理员（权限为 admin）：");
         for(UserDO user : userList){
@@ -129,7 +141,7 @@ public class UserDAOTestCase {
      * 查询某年某月范围内，所有注册用户
      */
     @Test
-    public void test6_ListAssignDateRegisterUserByYearMonth(){
+    public void test34_ListAssignDateRegisterUserByYearMonth(){
         List<UserDO> userList = userDAO.listAssignDateRegisterUserByYearMonth(2017,10);
         System.out.println("查询2017年10月份注册的用户：");
         for(UserDO user : userList){
@@ -141,7 +153,7 @@ public class UserDAOTestCase {
      * 查询所有用户
      */
     @Test
-    public void test7_ListAllUser(){
+    public void test35_ListAllUser(){
         List<UserDO> userList = userDAO.listAllUser();
         System.out.println("获取所有用户：");
         for(UserDO user : userList){
@@ -153,8 +165,10 @@ public class UserDAOTestCase {
      * 更新用户密码
      */
     @Test
-    public void test8_UpdateUserPasswordById(){
-        int effectRow = userDAO.updateUserPasswordByName("testuser", "88888");
+    public void test41_UpdateUserPasswordByName(){
+        String newPassword = SecretUtils.passwordMD5Encrypt("888888");
+        int effectRow = userDAO.updateUserPasswordByName("testuser", newPassword);
+
         System.out.println("更新 test 用户密码，更新行数：" + effectRow);
     }
 
@@ -162,8 +176,34 @@ public class UserDAOTestCase {
      * 更新用户权限
      */
     @Test
-    public void test9_UpdateUserRankById(){
-        int effectRow = userDAO.updateUserRankByName("test", "count");
-        System.out.println("更新 test 用户权限，更新行数：" + effectRow);
+    public void test42_UpdateUserRankByName(){
+        int effectRow = userDAO.updateUserRankByName("testuser", "admin");
+        System.out.println("更新 testuser 用户权限（设为管理员），更新行数：" + effectRow);
+    }
+
+    /**
+     * 更新用户头像地址
+     */
+    @Test
+    public void test43_UpdateUserImageByName(){
+        int effectRow = userDAO.updateUserImageByName("testuser", "E://用户头像//suvan.png");
+        System.out.println("更新 testuser 用户头像存放地址：" + effectRow);
+    }
+
+    /**
+     * 更新用户激活状态（激活用户）
+     */
+    @Test
+    public void test44_UpdateUserStateForActivationByEmail(){
+        int effectRow = userDAO.updateUserStateForActivationByEmail("test@test.com");
+        System.out.println("更新 testuser 用户激活状态：" + effectRow);
+    }
+
+    /**
+     * 删减表
+     */
+    @Ignore
+    public void tesetTruncateUserTable(){
+
     }
 }

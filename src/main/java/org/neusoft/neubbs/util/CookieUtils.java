@@ -1,7 +1,5 @@
 package org.neusoft.neubbs.util;
 
-import org.neusoft.neubbs.constant.account.CookieInfo;
-
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -10,6 +8,16 @@ import javax.servlet.http.HttpServletResponse;
  * Cookie 工具类
  */
 public class CookieUtils {
+
+    private final static Integer EXPIRETIME_SERVEN_DAY = 604800;     //60 * 60 * 24 * 7 s, Cookie 过期时间
+    private final static Integer EXPIRETIME_ZERO  = 0;               //0
+
+    private final static  String PATH = "/";                      //指明项目所有路径有效
+
+    private final static  Boolean HTTPONLY_TRUE = true;           //HttpOnly设置true
+    private final static  Boolean HTTPONLY_FALSE = false;         //HttpOnly设置false
+
+
     /**
      * 插入Cookie
      * @param response
@@ -19,9 +27,9 @@ public class CookieUtils {
     public static void saveCookie(HttpServletResponse response,
                                     String cookieName,String cookieValue){
         Cookie cookie = new Cookie(cookieName,cookieValue);
-            cookie.setMaxAge(CookieInfo.EXPIRETIME_SERVEN_DAY);
-            cookie.setPath(CookieInfo.PATH);
-            cookie.setHttpOnly(CookieInfo.HTTPONLY_TRUE);
+            cookie.setMaxAge(EXPIRETIME_SERVEN_DAY);
+            cookie.setPath(PATH);
+            cookie.setHttpOnly(HTTPONLY_TRUE);
 
         response.addCookie(cookie);
     }
@@ -36,9 +44,9 @@ public class CookieUtils {
                                         String cookieName){
         for(Cookie cookie : request.getCookies()){
             if(cookieName.equals(cookie.getName())){
-                cookie.setMaxAge(CookieInfo.EXPIRETIME_ZERO);//有效时间设为0,即是删除
-                cookie.setPath(CookieInfo.PATH);
-                cookie.setHttpOnly(CookieInfo.HTTPONLY_TRUE);
+                cookie.setMaxAge(EXPIRETIME_ZERO);//有效时间设为0,即是删除
+                cookie.setPath(PATH);
+                cookie.setHttpOnly(HTTPONLY_TRUE);
 
                 response.addCookie(cookie);
                 break;

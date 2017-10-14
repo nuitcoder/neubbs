@@ -18,10 +18,14 @@ public interface IUserDAO {
     Integer getUserMaxId();
     UserDO getUserById(int id);
     UserDO getUserByName(String name);
+    UserDO getUserByEmail(String email);
     List<UserDO> listAllAdminUser();
     List<UserDO> listAssignDateRegisterUserByYearMonth(int year, int month);
     List<UserDO> listAllUser();
 
     Integer updateUserPasswordByName(String username, String password);
     Integer updateUserRankByName(String username, String rank);
+    Integer updateUserImageByName(String username, String image);
+    Integer updateUserStateForActivationByEmail(String email);
+
 }

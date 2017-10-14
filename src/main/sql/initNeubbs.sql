@@ -27,16 +27,20 @@ DROP TABLE IF EXISTS `forum_topic_reply`;
 CREATE TABLE `forum_user` (
   `fu_id` INT(11) NOT NULL AUTO_INCREMENT,
   `fu_name` VARCHAR(15) DEFAULT NULL,
-  `fu_password` VARCHAR(50) NOT NULL,
+  `fu_password` VARCHAR(100) NOT NULL,
+  `fu_email` VARCHAR(30) NOT NULL,
   `fu_sex` VARCHAR(2) DEFAULT NULL,
   `fu_birthday` VARCHAR(20) DEFAULT NULL,
-  `fu_phone` VARCHAR(15) DEFAULT NULL,
-  `fu_email` VARCHAR(50) NOT NULL,
-  `fu_address` VARCHAR(50) DEFAULT NULL,
-  `fu_rank` VARCHAR(10) DEFAULT 'user',
+  `fu_address` VARCHAR(100) DEFAULT NULL,
+  `fu_description` VARCHAR(50) DEFAULT NULL comment '一句话描述',
+  `fu_personalprofile` VARCHAR(200) DEFAULT NULL comment '个人简介',
+  `fu_image` VARCHAR(255) comment '用户头像地址',
+  `fu_rank` VARCHAR(10) DEFAULT 'user' comment '用户级别',
+  `fu_state` INT(1) NOT NULL DEFAULT 0 comment '激活状态',
   `fu_createtime` datetime DEFAULT CURRENT_TIMESTAMP,
    PRIMARY KEY (`fu_id`),
-   UNIQUE KEY `fu_name` (`fu_name`)
+   UNIQUE KEY `fu_name` (`fu_name`),
+   UNIQUE KEY `fu_email` (`fu_email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 

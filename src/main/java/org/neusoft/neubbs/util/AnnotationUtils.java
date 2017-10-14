@@ -10,7 +10,7 @@ import java.lang.reflect.Method;
  */
 public class AnnotationUtils {
     /**
-     * 检测方法是否存在指定注解
+     * 是否存在指定注解（检测方法对象，是否被指定注解声明）
      * @param handler
      * @return
      */

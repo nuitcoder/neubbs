@@ -20,7 +20,7 @@ import java.util.Map;
 public class TokenUtils {
 
     /**
-     * 根据 UserDO 对象，构建token
+     * JWT 创建 token（传入 UserDO 对象）
      * @param user
      * @return
      * @throws Exception
@@ -52,7 +52,7 @@ public class TokenUtils {
     }
 
     /**
-     * 根据密钥，解密token，获取用户名
+     * JWT 解密 token （传入 token 和 密钥，得到 UserDO 对象）
      *
      * @param token
      * @param secretKey
@@ -64,14 +64,14 @@ public class TokenUtils {
         DecodedJWT decodedJWT = null;
         try{
             //解密HS256算法
-             verifier = JWT.require(Algorithm.HMAC256(secretKey))
-                            .build();
+             verifier = JWT.require(Algorithm.HMAC256(secretKey)).build();
 
             //解码Base5
             decodedJWT = verifier.verify(token);
-        }catch (UnsupportedEncodingException ue){}
-         catch (TokenExpiredException tee){
-            //token过期
+
+        }catch (UnsupportedEncodingException ue){
+            return null;
+        } catch (TokenExpiredException tee) {      //token过期
             return null;
         }
 

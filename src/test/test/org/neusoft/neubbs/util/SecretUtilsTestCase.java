@@ -15,6 +15,18 @@ public class SecretUtilsTestCase {
      */
     @Test
     public void testMd5Encryp(){
-        System.out.println(SecretUtils.passwordMD5Encrypt("hello"));
+        System.out.println("密文：" + SecretUtils.passwordMD5Encrypt("hello"));
+    }
+
+    /**
+     * 测试 Base64 邮箱加密与解密
+     */
+    @Test
+    public void testEmailBase64(){
+        String plaintext = "liushuwei0925@gmail.com-" + System.currentTimeMillis();
+
+        String token = SecretUtils.base64Encrypt(plaintext);
+        System.out.println("密文：" + token);
+        System.out.println("明文：" + SecretUtils.base64Decrypt(token));
     }
 }

@@ -2,7 +2,6 @@ package org.neusoft.neubbs.controller.api;
 
 import org.neusoft.neubbs.constant.ajax.AjaxRequestStatus;
 import org.neusoft.neubbs.constant.count.CountInfo;
-import org.neusoft.neubbs.controller.annotation.AdminRank;
 import org.neusoft.neubbs.controller.annotation.LoginAuthorization;
 import org.neusoft.neubbs.dto.ResponseJsonDTO;
 import org.springframework.stereotype.Controller;
@@ -25,7 +24,7 @@ public class CountController {
      * @return ResponseJsonDTO
      * @throws Exception
      */
-    @LoginAuthorization @AdminRank
+    @LoginAuthorization
     @RequestMapping(value = "/online-visit-user")
     @ResponseBody
     public ResponseJsonDTO onlineVisitUser(HttpServletRequest request) throws Exception{

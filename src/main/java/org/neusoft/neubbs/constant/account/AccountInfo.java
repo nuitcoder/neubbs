@@ -8,21 +8,19 @@ public interface AccountInfo {
     String USERNAME = "username";
     String NAME = "name";
     String PASSWORD = "password";
+    String EMAIL = "email";
     String SEX = "sex";
     String BIRTHDAY = "birthday";
-    String PHONE = "phone";
-    String EMAIL = "email";
     String ADDRESS = "address";
+    String DESCRIPTION = "description";
+    String PERSONALPROFILE = "personalprofile";
+    String IMAGE = "image";
+    String RANK = "rank";
+    String STATE = "state";
     String CREATETIME = "createtime";
 
-    //空判断
-    String PARAM_USERNAME_NO_NULL = "参数 username，不能为空";
-    String PARAM_PASSWORD_NO_NULL = "参数 password，不能为空";
-    String PARAM_EMAIL_NO_NULL = "参数 email，不能为空";
-    String PARAM_RANK_NO_NULL = "参数 rank，不能为空";
-
     //数据库判断
-    String DATABASE_NO_EXIST_USER = "数据库中不存在该用户";
+    String DATABASE_NO_EXIST_USER = "数据库中不存在该用户!";
     String DATABASE_ALREAD_EXIST_USER_NO_AGAIN_ADD = "数据库已经存在用户，请勿再次添加";
 
     //错误
@@ -44,21 +42,12 @@ public interface AccountInfo {
     String NO_VISIT_AHTORITY_PLEASE_LOGIN = "无访问权限，请登录后执行操作！";
     String USER_RANK_NO_ENOUGH = "用户权限不足，非管理员用户无法调用此 api";
 
-    //发送邮箱验证码
-    String EMAILCODE = "emailcode";
-    String EMAILCODE_HOST = "smtp.qq.com";
-    String EMAILCODE_FROM_USERNAME = "526097449@qq.com";
-    String EMAILCODE_FROM_PASSWORD = "pxjkgvpuvtngbhbe";
-    String EMAILCODE_SMTP = "smtp";
-    String EMAILCODE_AUTH = "mail.smtp.auth";
-    String EMAILCODE_AUTH_TRUE = "true";
-    String EMAILCODE_SMTP_SOCKETFACTORY_CLASS = "mail.smtp.socketFactory.class";
-    String EMAILCODE_JAVAX_NET_SSL_SSLSOCKETFACTORY = "javax.net.ssl.SSLSocketFactory";
-    String EMAILCODE_SMTP_SOCKETFACTORY_PORT = "mail.smtp.socketFactory.port";
-    String EMAILCODE_SMTP_SSL_PROT = "465";
-    String EMAILCODE_TO_SUBJECT = "neubbs 邮箱验证码";
-    String EMAILCODE_TO_TEXT = "您好，您的邮箱验证码为: ";
-    String EMAILCODE_SUCCESS = "邮箱验证码,已成功发送到指定用户邮箱";
-    String EMAILCODE_FAIL = "获取邮箱验证码失败";
-    String EMAILCODE_EMAIL_NUNULL = "获取邮箱验证码，邮箱不能为空";
+    //帐号激活
+    String EMAIL_TOKEN_DECRYPT_FAIL = "邮件 token 解码失败，服务器异常！";
+    String ACCOUNT_ACTIVATION_URL_ALREAD_EXPIRE_TIME = "该激活链接已经过期，请重新注册";
+    String ACCOUNT_ACTIVATION_SUCCESS = " 邮箱，指定账户已经成功激活！";
+    String ACCOUNT_ACTIVATION_FAIL = "账户激活失败!";
+
+    String ACCOUNT_NO_ACTIVATION_NO_LOGIN = "账户未激活，无法登录，请到指定邮箱，点击激活链接，激活账户";
+
 }
