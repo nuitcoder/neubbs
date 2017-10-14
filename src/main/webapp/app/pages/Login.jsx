@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 
+import FormWrapper from '../components/FormWrapper'
 import LoginForm from '../components/LoginForm'
 
 class Login extends Component {
@@ -15,9 +16,9 @@ class Login extends Component {
 
   render() {
     return (
-      <LoginForm
-        onSubmit={this.handleSubmit}
-      />
+      <FormWrapper title="用户登陆">
+        <LoginForm onSubmit={this.handleSubmit} />
+      </FormWrapper>
     )
   }
 }

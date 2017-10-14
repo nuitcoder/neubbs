@@ -11,8 +11,8 @@
   <title>Neubbs</title>
 
   <c:url var="home" value="/" scope="request" />
-  <spring:url value="/resources/css/" var="css" />
-  <spring:url value="/resources/js/" var="js" />
+  <spring:url value="/resources/css" var="css" />
+  <spring:url value="/resources/js" var="js" />
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/latest/css/bootstrap.min.css">
 </head>
 <body>
