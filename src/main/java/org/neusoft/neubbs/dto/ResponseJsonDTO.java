@@ -2,6 +2,7 @@ package org.neusoft.neubbs.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.neusoft.neubbs.constant.account.AccountInfo;
+import org.neusoft.neubbs.constant.ajax.AjaxRequestStatus;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -50,6 +51,17 @@ public class ResponseJsonDTO {
         map.remove(AccountInfo.STATE);
 
         this.model.add(map);
+    }
+
+    /**
+     * 输出错误信息
+     * @param errorInfo
+     */
+    public ResponseJsonDTO putAjaxFail(String errorInfo){
+        this.status = AjaxRequestStatus.FAIL;
+        this.message = errorInfo;
+
+        return this;
     }
 
     /**

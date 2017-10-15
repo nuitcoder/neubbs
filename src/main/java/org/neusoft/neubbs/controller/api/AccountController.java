@@ -3,7 +3,6 @@ package org.neusoft.neubbs.controller.api;
 import org.apache.log4j.Logger;
 import org.neusoft.neubbs.constant.account.AccountInfo;
 import org.neusoft.neubbs.constant.ajax.AjaxRequestStatus;
-import org.neusoft.neubbs.constant.ajax.RequestParamInfo;
 import org.neusoft.neubbs.constant.count.CountInfo;
 import org.neusoft.neubbs.constant.log.LoggerInfo;
 import org.neusoft.neubbs.constant.secret.SecretInfo;
@@ -59,9 +58,11 @@ public class AccountController {
     @ResponseBody
     public ResponseJsonDTO getUserInfoByName(@RequestParam(value = "username", required = false)String username) throws Exception{
         //@RequestParam 的 required 属性声明参数是否必须，默认为true,此处声明 false 表示参数非必须，由 api 内部处理空情况
-        //空判断(等价于username == null || username.length() == 0）,
-        if (StringUtils.isEmpty(username)) {
-            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, RequestParamInfo.PARAM_USERNAME_NO_NULL);
+
+        //参数合法性检测
+        String errorInfo = RequestParamsCheckUtils.username(username);//用户名检测
+        if (errorInfo != null) {
+            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, errorInfo);
         }
 
         //数据库获取用户信息
@@ -88,11 +89,10 @@ public class AccountController {
     public ResponseJsonDTO login(@RequestParam(value = "username", required = false) String username,
                                  @RequestParam(value = "password", required = false) String password,
                                  HttpServletRequest request,HttpServletResponse response) throws Exception {
-        if (StringUtils.isEmpty(username)) {
-            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, RequestParamInfo.PARAM_USERNAME_NO_NULL);
-        }
-        if (StringUtils.isEmpty(password)) {
-            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, RequestParamInfo.PARAM_PASSWORD_NO_NULL);
+        //用户，密码参数合法性检测
+        String errorInfo = RequestParamsCheckUtils.checkUsernamePassword(username,password);
+        if (errorInfo != null) {
+            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, errorInfo);
         }
 
         //用户是否存在
@@ -176,14 +176,10 @@ public class AccountController {
     public ResponseJsonDTO registerUser(@RequestParam(value = "username", required = false)String username,
                                         @RequestParam(value = "password", required = false)String password,
                                         @RequestParam(value = "email", required = false)String email) throws Exception {
-        if (StringUtils.isEmpty(username)) {
-            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, RequestParamInfo.PARAM_USERNAME_NO_NULL);
-        }
-        if (StringUtils.isEmpty(password)) {
-            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, RequestParamInfo.PARAM_PASSWORD_NO_NULL);
-        }
-        if (StringUtils.isEmpty(email)) {
-            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, RequestParamInfo.PARAM_EMAIL_NO_NULL);
+        //用户名，密码，邮箱参数合法性检测
+        String errorInfo = RequestParamsCheckUtils.checkUsernamePasswordEmail(username, password, email);
+        if (errorInfo != null) {
+            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, errorInfo);
         }
 
         //判断用户名唯一
@@ -224,13 +220,10 @@ public class AccountController {
     @ResponseBody
     public ResponseJsonDTO updateUserPasswordById(@RequestParam(value = "username", required = false)String username,
                                                   @RequestParam(value = "password", required = false)String password) throws Exception{
-        if (StringUtils.isEmpty(username)){
-            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, RequestParamInfo.PARAM_USERNAME_NO_NULL);
+        String errorInfo = RequestParamsCheckUtils.checkUsernamePassword(username, password);
+        if (errorInfo != null) {
+            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, errorInfo);
         }
-        if (StringUtils.isEmpty(password)) {
-            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, RequestParamInfo.PARAM_PASSWORD_NO_NULL);
-        }
-
 
         //更新用户密码,返回更新状态（true-成功，false-失败）
         String newPassword = SecretUtils.passwordMD5Encrypt(password); //新加密
@@ -251,8 +244,9 @@ public class AccountController {
     @RequestMapping(value = "/activation", method = RequestMethod.GET)
     @ResponseBody
     public ResponseJsonDTO emailToken(@RequestParam(value = "token", required = false)String token) throws Exception{
-        if(token == null || token.length() == 0){
-            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, RequestParamInfo.PARAM_TOKEN_NO_NULL);
+        String errorInfo = RequestParamsCheckUtils.token(token);
+        if (errorInfo != null) {
+            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, errorInfo);
         }
 
         String plainText = SecretUtils.base64Decrypt(token);

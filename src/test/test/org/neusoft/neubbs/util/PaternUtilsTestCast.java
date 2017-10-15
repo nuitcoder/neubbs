@@ -20,4 +20,30 @@ public class PaternUtilsTestCast {
       System.out.println(PatternUtils.pureNumber("&^@#$sfgqwre1123"));
       System.out.println(PatternUtils.pureNumber("12312!"));
    }
+
+   /**
+    * 测试 匹配用户名
+    */
+   @Test
+   public void testMatchUsername(){
+      String [] usrenameArray = {"1","a","*","kk","*as","asdfasf___","aaaaaaaaaaaaaaaaaaaaaaa","ABCk"};
+
+      for(String name: usrenameArray){
+         System.out.println(name + " 匹配结果：" + PatternUtils.matchUsername(name));
+      }
+   }
+
+   /**
+    * 测试 匹配邮箱
+    */
+   @Test
+   public void testMatchEmail(){
+      String [] emailArray = {"asdfasdf","ss@","@asdfa.com","asdfas@qq.com","fasadf@suvan.net.cn",
+                              "asf_**@qq.com","1231%2312^31321@qq.com","hello@suvan.liushuwei.cn.net",
+                              "liushuwei@gmail.com","313123123@qq.com","suvan@liushuwei.cn"};
+
+      for(String email : emailArray){
+         System.out.println(email + " 匹配结果：" + PatternUtils.matchEmail(email));
+      }
+   }
 }

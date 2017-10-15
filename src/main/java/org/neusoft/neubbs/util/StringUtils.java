@@ -1,5 +1,8 @@
 package org.neusoft.neubbs.util;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * 字符串工具类
  */
@@ -7,9 +10,9 @@ public class StringUtils {
     /**
      * 空判断（true - 为空）
      * @param str
-     * @return boolean
+     * @return Boolean
      */
-    public static boolean isEmpty(String str){
+    public static Boolean isEmpty(String str){
         if (str == null || str.length() == 0) {
             return true;
         } else {
@@ -18,11 +21,39 @@ public class StringUtils {
     }
 
     /**
+     * 长度范围判断（ min <= str.length() <= max）
+     * @param str
+     * @param min
+     * @param max
+     * @return
+     */
+    public static Boolean isScope(String str, int min, int max){
+        if (min <= str.length() && str.length() <= max) {
+            return true; //符合条件
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * 正则判断（字符串是否满足，指定正则表达式）
+     * @param str
+     * @param regexp
+     * @return boolean
+     */
+    public static Boolean isPattern(String str, String regexp){
+        Pattern pattern = Pattern.compile(regexp);
+        Matcher matcher = pattern.matcher(str);
+
+        return matcher.matches();
+    }
+
+    /**
      * 是否过期（判断指定时间戳，是否过期，true-过期）
      * @param expireTime
      * @return boolean
      */
-    public static boolean isExpire(String expireTime){
+    public static Boolean isExpire(String expireTime){
         long now = System.currentTimeMillis();
 
         if (Long.parseLong(expireTime) > now) {
