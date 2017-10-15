@@ -62,12 +62,14 @@ public class UserDAOTestCase {
         //插入用户
         for(String admin: adminArray){
             user.setName(admin);
-            user.setPassword(SecretUtils.passwordMD5Encrypt("12345"));
+            user.setPassword(SecretUtils.passwordMD5Encrypt("123456"));
             user.setEmail(admin + "@neubbs.com");
 
             userDAO.saveUser(user); //注册用户
 
             userDAO.updateUserRankByName(admin, "admin"); //修改权限
+
+            userDAO.updateUserStateForActivationByEmail(user.getEmail());//激活账户
 
             System.out.println("管理员" + admin + "添加完毕");
         }

@@ -134,8 +134,12 @@ public class AccountController {
 
             //储存日志（记录用户登录成功信息）
             logger.info(username + LoggerInfo.USER_LOGINNER_SUCCESS);
+
+            return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, AccountInfo.USER_PASS_AUTHENTICATE_LOGIN_SUCCESS,
+                                       TokenInfo.AUTHENTICATION, token);
         }
-        return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, AccountInfo.USER_PASS_AUTHENTICATE_LOGIN_SUCCESS, userInfoMap);
+
+        return null;
     }
 
     /**

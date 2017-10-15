@@ -15,7 +15,7 @@ public interface RequestParamInfo {
     String PARAM_USERNAME_STYLE_NO_MEET_NORM = "参数 username ，格式不符合规范（A-Z a-z 0-9）";
 
     //密码判断
-    String PARAM_PASSWORD_LENGTH_NO_MATCH_SCOPE = "参数 password，长度不符合范围（3 <= length <= 16）";
+    String PARAM_PASSWORD_LENGTH_NO_MATCH_SCOPE = "参数 password，长度不符合范围（6 <= length <= 16）";
 
     //邮箱判断
     String PARAM_EMAIL_STYLE_NO_MEET_NORM = "参数 email，邮箱格式不符合规范，请重新输入！";

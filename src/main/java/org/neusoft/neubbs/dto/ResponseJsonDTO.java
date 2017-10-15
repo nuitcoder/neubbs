@@ -14,7 +14,7 @@ import java.util.Map;
  * 【Data Transfer Object】
  */
 public class ResponseJsonDTO {
-    private Boolean status;
+    private Boolean success;
     private String message;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -26,12 +26,12 @@ public class ResponseJsonDTO {
     public ResponseJsonDTO(){
         this.model = new ArrayList<Map<String, Object>>();
     }
-    public ResponseJsonDTO(Boolean status, String message){
-        this.status = status;
+    public ResponseJsonDTO(Boolean success, String message){
+        this.success = success;
         this.message = message;
     }
-    public ResponseJsonDTO(Boolean status, String message,String key, Object obj){
-        this.status = status;
+    public ResponseJsonDTO(Boolean success, String message,String key, Object obj){
+        this.success = success;
         this.message = message;
         this.model = new ArrayList<Map<String, Object>>();
 
@@ -40,8 +40,8 @@ public class ResponseJsonDTO {
 
         this.model.add(map);
     }
-    public ResponseJsonDTO(Boolean status, String message, Map<String, Object> map){
-        this.status = status;
+    public ResponseJsonDTO(Boolean success, String message, Map<String, Object> map){
+        this.success = success;
         this.message = message;
         this.model = new ArrayList<Map<String, Object>>();
 
@@ -58,7 +58,7 @@ public class ResponseJsonDTO {
      * @param errorInfo
      */
     public ResponseJsonDTO putAjaxFail(String errorInfo){
-        this.status = AjaxRequestStatus.FAIL;
+        this.success = AjaxRequestStatus.FAIL;
         this.message = errorInfo;
 
         return this;
@@ -67,8 +67,8 @@ public class ResponseJsonDTO {
     /**
      *Getter
      */
-    public Boolean getStatus(){
-        return  status;
+    public Boolean getSuccess(){
+        return  success;
     }
     public String getMessage(){
         return message;
@@ -80,8 +80,8 @@ public class ResponseJsonDTO {
     /**
      * Setter
      */
-    public void setStatus(Boolean status){
-        this.status = status;
+    public void setSuccess(Boolean success){
+        this.success = success;
     }
     public void setMessage(String message){
         this.message = message;

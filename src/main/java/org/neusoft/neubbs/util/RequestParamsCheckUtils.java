@@ -24,7 +24,7 @@ public class RequestParamsCheckUtils {
         }
 
         //正则检查
-        if(PatternUtils.matchUsername(username)){
+        if(!PatternUtils.matchUsername(username)){
             return RequestParamInfo.PARAM_USERNAME_STYLE_NO_MEET_NORM;
         }
 
@@ -58,7 +58,7 @@ public class RequestParamsCheckUtils {
             return RequestParamInfo.PARAM_EMAIL_NO_NULL;
         }
 
-        if (PatternUtils.matchEmail(email)) {
+        if (!PatternUtils.matchEmail(email)) {
             return RequestParamInfo.PARAM_EMAIL_STYLE_NO_MEET_NORM;
         }
 
