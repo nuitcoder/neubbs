@@ -24,6 +24,7 @@
   "globals": {
      "document": true,
      "window": true,
+     "localStorage": true
    },
   "rules": {
     "semi": 0,
