@@ -1,49 +1,19 @@
 import React from 'react'
-import styled from 'styled-components'
 import { Form, Field, reduxForm } from 'redux-form'
-import { FormGroup, FormControl, Button } from 'react-bootstrap'
+import { Button } from 'react-bootstrap'
 import Validator from 'validatorjs'
 
-const InputError = styled.span`
-  color: #a94442;
-  display: inline-block;
-  margin-top: 5px;
-  margin-left: 2px;
-  font-size: 12px;
-`
-
-const FieldInput = (props) => {
-  const { input, type, placeholder, autoFocus, meta } = props
-  const { touched, error } = meta
-
-  let validationState = null
-  if (touched) {
-    validationState = error ? 'error' : 'success'
-  }
-
-  return (
-    <FormGroup controlId={input.name} validationState={validationState}>
-      <FormControl
-        id={input.name}
-        type={type}
-        placeholder={placeholder}
-        value={input.value}
-        onChange={input.onChange}
-        autoFocus={autoFocus}
-      />
-      {validationState === 'error' && <InputError>{error}</InputError>}
-    </FormGroup>
-  )
-}
+import FieldInput from './FieldInput'
 
 const validate = (values) => {
   const rules = {
-    username: 'required|between:3,15',
+    username: 'required|between:3,15|alpha_num',
     password: 'required|between:6,16',
   }
   const messages = {
     'required.username': '请输入用户名',
-    'between.username': '用户名应为 3 ～ 15 个英文字符',
+    'between.username': '用户名应为 3 ～ 15 个字符',
+    'alpha_num.username': '用户名只能包含英文与数字',
     'required.password': '请输入密码',
     'between.password': '密码应为 6 ～ 16 个字符',
   }

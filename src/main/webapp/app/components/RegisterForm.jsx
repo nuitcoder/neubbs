@@ -1,40 +1,9 @@
-import React, { Component } from 'react'
+import React from 'react'
 import { Form, Field, reduxForm } from 'redux-form'
-import { FormGroup, FormControl, Button } from 'react-bootstrap'
-import styled from 'styled-components'
+import { Button } from 'react-bootstrap'
 import Validator from 'validatorjs'
 
-const InputError = styled.span`
-  color: #a94442;
-  display: inline-block;
-  margin-top: 5px;
-  margin-left: 2px;
-  font-size: 12px;
-`
-
-const FieldInput = (props) => {
-  const { input, type, placeholder, autoFocus, meta } = props
-  const { touched, error } = meta
-
-  let validationState = null
-  if (touched) {
-    validationState = error ? 'error' : 'success'
-  }
-
-  return (
-    <FormGroup controlId={input.name} validationState={validationState}>
-      <FormControl
-        id={input.name}
-        type={type}
-        placeholder={placeholder}
-        value={input.value}
-        onChange={input.onChange}
-        autoFocus={autoFocus}
-      />
-      {validationState === 'error' && <InputError>{error}</InputError>}
-    </FormGroup>
-  )
-}
+import FieldInput from './FieldInput'
 
 const validate = (values) => {
   const rules = {
