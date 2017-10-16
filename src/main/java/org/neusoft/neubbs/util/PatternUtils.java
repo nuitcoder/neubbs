@@ -13,11 +13,11 @@ public class PatternUtils {
      private final static String MATCH_EMAIL =  "^([a-z0-9A-Z]+[-|\\.]?)+[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-zA-Z]{2,}$";  ;
 
     /**
-     * 纯数字检测（检测是否存在非 0 ~ 9 字符）
+     * 是否为纯数字检测（检测是否存在非 0 ~ 9 字符）
      * @param str
      * @return
      */
-    public static Boolean pureNumber(String str) {
+    public static Boolean isPureNumber(String str) {
         Pattern pattern = Pattern.compile(EXIST_NU_PURE_NUMBER);
         Matcher matcher = pattern.matcher(str);
 

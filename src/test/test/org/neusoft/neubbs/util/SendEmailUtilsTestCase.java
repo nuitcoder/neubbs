@@ -19,7 +19,7 @@ public class SendEmailUtilsTestCase {
        String email = "13202405189@163.com";
        String subject = "Neubbs 帐号激活";
 
-       String token = SecretUtils.base64Encrypt(email);
+       String token = SecretUtils.encryptBase64(email);
 
        String url  = "http://localhost:8080/neubbs?token = " + token;
 

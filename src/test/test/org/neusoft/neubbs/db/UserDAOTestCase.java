@@ -39,7 +39,7 @@ public class UserDAOTestCase {
             user.setEmail("test@test.com");
 
         //密码加密
-        String cipherText = SecretUtils.passwordMD5Encrypt("123");
+        String cipherText = SecretUtils.encryptUserPassword("123");
             user.setPassword(cipherText);
 
         try{
@@ -54,15 +54,15 @@ public class UserDAOTestCase {
     /**
      * 添加6个管理员
      */
-    @Ignore//忽略该用例
+    @Test//忽略该用例
     public void addSixAdminUser(){
-        String [] adminArray = {"abonn","AnAndroidXiang","kayye","topLynch","Nancyshan","suvan"};
+        String [] adminArray = {"ahonn","AnAndroidXiang","kayye","topLynch","Nancyshan","suvan"};
         UserDO user = new UserDO();
 
         //插入用户
         for(String admin: adminArray){
             user.setName(admin);
-            user.setPassword(SecretUtils.passwordMD5Encrypt("123456"));
+            user.setPassword(SecretUtils.encryptUserPassword("123456"));
             user.setEmail(admin + "@neubbs.com");
 
             userDAO.saveUser(user); //注册用户
@@ -168,7 +168,7 @@ public class UserDAOTestCase {
      */
     @Test
     public void test41_UpdateUserPasswordByName(){
-        String newPassword = SecretUtils.passwordMD5Encrypt("888888");
+        String newPassword = SecretUtils.encryptUserPassword("888888");
         int effectRow = userDAO.updateUserPasswordByName("testuser", newPassword);
 
         System.out.println("更新 test 用户密码，更新行数：" + effectRow);

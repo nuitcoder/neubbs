@@ -1,5 +1,6 @@
 package org.neusoft.neubbs.controller.api;
 
+import org.neusoft.neubbs.constant.account.AccountInfo;
 import org.neusoft.neubbs.constant.account.EmailInfo;
 import org.neusoft.neubbs.constant.ajax.AjaxRequestStatus;
 import org.neusoft.neubbs.constant.secret.SecretInfo;
@@ -12,10 +13,12 @@ import org.neusoft.neubbs.util.SendEmailUtils;
 import org.neusoft.neubbs.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.Map;
 
 /**
  *  邮件 api
@@ -32,14 +35,16 @@ public class EmailController {
 
     /**
      * 1.发送邮件（账户激活URL）
-     * @param email
+     * @param requestBodyParamsMap
      * @return ResponseJsonDTO
      * @throws Exception
      */
-    @RequestMapping(value = "/account-activation", method = RequestMethod.POST)
+    @RequestMapping(value = "/account-activation", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
-    public ResponseJsonDTO activation(@RequestParam(value = "email", required = false)String email) throws Exception{
-        String errorInfo = RequestParamsCheckUtils.email(email);
+    public ResponseJsonDTO activation(@RequestBody Map<String, Object> requestBodyParamsMap) throws Exception{
+        String email = (String)requestBodyParamsMap.get(AccountInfo.EMAIL);
+
+        String errorInfo = RequestParamsCheckUtils.checkEmail(email);
         if (errorInfo != null) {
             return new ResponseJsonDTO(AjaxRequestStatus.FAIL, errorInfo);
         }
@@ -52,7 +57,7 @@ public class EmailController {
 
         //构建 token（用户邮箱 + 过期时间）
         long expireTime = System.currentTimeMillis() + SecretInfo.EXPIRE_TIME_ONE_DAY;
-        String token = SecretUtils.base64Encrypt(email + "-" + expireTime);
+        String token = SecretUtils.encryptBase64(email + "-" + expireTime);
 
         //构建邮件内容
         String content = StringUtils.createEmailActivationHtmlString(ACTIVATION_URL + token);
@@ -61,12 +66,12 @@ public class EmailController {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                SendEmailUtils.sendEmail(email, EmailInfo.EMAIL_ACTIVATION_FROM_SUBJECT , content);
+                SendEmailUtils.sendEmail(email, EmailInfo.EMAIL_ACTIVATE_FROM_SUBJECT , content);
             }
         }).start();
 
 
         //发送成功
-       return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, EmailInfo.EMAIL_AUTIVATION_SEND_EMAIL_SUCCESS);
+       return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, EmailInfo.ENGLISH_ACCOUTN_ACTIVATE_EMAIL_SEND_SUCCESS);
     }
 }

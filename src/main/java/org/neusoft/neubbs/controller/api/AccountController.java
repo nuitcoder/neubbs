@@ -16,10 +16,7 @@ import org.neusoft.neubbs.service.IUserService;
 import org.neusoft.neubbs.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -60,7 +57,7 @@ public class AccountController {
         //@RequestParam 的 required 属性声明参数是否必须，默认为true,此处声明 false 表示参数非必须，由 api 内部处理空情况
 
         //参数合法性检测
-        String errorInfo = RequestParamsCheckUtils.username(username);//用户名检测
+        String errorInfo = RequestParamsCheckUtils.checkUsername(username);//用户名检测
         if (errorInfo != null) {
             return new ResponseJsonDTO(AjaxRequestStatus.FAIL, errorInfo);
         }
@@ -72,25 +69,32 @@ public class AccountController {
             return new ResponseJsonDTO(AjaxRequestStatus.FAIL, AccountInfo.DATABASE_NO_EXIST_USER);
         }
 
-        return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, AccountInfo.GET_USER_INFORMATION_SUCCESS, userInfoMap);
+        return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, AccountInfo.ENGLISH_GET_USER_INFORMATION_SUCCESS, userInfoMap);
     }
 
     /**
      * 2.登录
-     * @param username
-     * @param password
+     * @param requestBodyParamsMap
      * @param request
      * @param response
      * @return ResponseJsonDTO
      * @throws Exception
      */
-    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    @RequestMapping(value = "/login", method = RequestMethod.POST, consumes = "application/json") //指定处理Content-Type 类型
     @ResponseBody
-    public ResponseJsonDTO login(@RequestParam(value = "username", required = false) String username,
-                                 @RequestParam(value = "password", required = false) String password,
-                                 HttpServletRequest request,HttpServletResponse response) throws Exception {
-        //用户，密码参数合法性检测
-        String errorInfo = RequestParamsCheckUtils.checkUsernamePassword(username,password);
+    public ResponseJsonDTO login(@RequestBody Map<String,Object> requestBodyParamsMap,
+                                 HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+        //@RequestBody 自动将 JSON 格式转为 java 对象
+        //获取 request body 的 JSON 格式参数
+        String username = (String)requestBodyParamsMap.get(AccountInfo.USERNAME);
+        String password = (String)requestBodyParamsMap.get(AccountInfo.PASSWORD);
+
+        //用户，密码参数合法性检测（链式调用）
+        String errorInfo = RequestParamsCheckUtils
+                            .putParamKeys(new String[]{AccountInfo.USERNAME, AccountInfo.PASSWORD})
+                            .putParamValues(new String[]{username, password})
+                            .checkParamsNorm();
         if (errorInfo != null) {
             return new ResponseJsonDTO(AjaxRequestStatus.FAIL, errorInfo);
         }
@@ -108,7 +112,7 @@ public class AccountController {
         }
 
         //用户密码判断
-        String cipherText = SecretUtils.passwordMD5Encrypt(password);//密码 MD5 加密后的密文
+        String cipherText = SecretUtils.encryptUserPassword(password);//密码 MD5 加密后的密文
         if(cipherText == null){//服务器加密失败
             return new ResponseJsonDTO(AjaxRequestStatus.FAIL, SecretInfo.MD5_ENCRYP_FAIL);
         }
@@ -135,7 +139,7 @@ public class AccountController {
             //储存日志（记录用户登录成功信息）
             logger.info(username + LoggerInfo.USER_LOGINNER_SUCCESS);
 
-            return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, AccountInfo.USER_PASS_AUTHENTICATE_LOGIN_SUCCESS,
+            return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, AccountInfo.ENGLISH_LOGIN_SUCCESS,
                                        TokenInfo.AUTHENTICATION, token);
         }
 
@@ -163,25 +167,28 @@ public class AccountController {
             application.setAttribute(CountInfo.ONLINE_LOGIN_USER, --onlineLoginUser);
         }
 
-        return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, AccountInfo.USER_LOGOU_SUCCESS);
+        return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, AccountInfo.ENGLISH_USER_LOGOU_SUCCESS);
     }
 
 
     /**
      * 4.注册
-     * @param username
-     * @param password
-     * @param email
+     * @param requestBodyParamsMap
      * @return ResponseJsonDTO
      * @throws Exception
      */
-    @RequestMapping(value = "/register", method = RequestMethod.POST)
+    @RequestMapping(value = "/register", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
-    public ResponseJsonDTO registerUser(@RequestParam(value = "username", required = false)String username,
-                                        @RequestParam(value = "password", required = false)String password,
-                                        @RequestParam(value = "email", required = false)String email) throws Exception {
+    public ResponseJsonDTO registerUser(@RequestBody Map<String, Object> requestBodyParamsMap) throws Exception {
+        String username = (String)requestBodyParamsMap.get(AccountInfo.USERNAME);
+        String password = (String)requestBodyParamsMap.get(AccountInfo.PASSWORD);
+        String email = (String)requestBodyParamsMap.get(AccountInfo.EMAIL);
+
         //用户名，密码，邮箱参数合法性检测
-        String errorInfo = RequestParamsCheckUtils.checkUsernamePasswordEmail(username, password, email);
+        String errorInfo = RequestParamsCheckUtils
+                            .putParamKeys(new String[]{AccountInfo.USERNAME, AccountInfo.PASSWORD, AccountInfo.EMAIL})
+                            .putParamValues(new String[]{username, password, email})
+                            .checkParamsNorm();
         if (errorInfo != null) {
             return new ResponseJsonDTO(AjaxRequestStatus.FAIL, errorInfo);
         }
@@ -198,7 +205,7 @@ public class AccountController {
             user.setEmail(email);
 
             //密码加密
-            String cipherText = SecretUtils.passwordMD5Encrypt(password);
+            String cipherText = SecretUtils.encryptUserPassword(password);
             user.setPassword(cipherText);
 
         userService.registerUser(user);
@@ -208,35 +215,39 @@ public class AccountController {
         user = userService.getUserInfoById(newId);//根据 id 重新查询用户
         Map<String, Object> userInfoMap = JsonUtils.getMapByObject(user);
 
-        return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, AccountInfo.REGISTER_USER_SUCCESS, userInfoMap);
+        return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, AccountInfo.ENGLISH_REGISTER_USER_SUCCESS, userInfoMap);
     }
 
 
     /**
      * 5.修改密码
-     * @param username
-     * @param password
+     * @param requestBodyParamsMap
      * @return ResponseJsonDTO
      * @throws Exception
      */
     @LoginAuthorization
-    @RequestMapping(value = "/update-password", method = RequestMethod.POST)
+    @RequestMapping(value = "/update-password", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
-    public ResponseJsonDTO updateUserPasswordById(@RequestParam(value = "username", required = false)String username,
-                                                  @RequestParam(value = "password", required = false)String password) throws Exception{
-        String errorInfo = RequestParamsCheckUtils.checkUsernamePassword(username, password);
+    public ResponseJsonDTO updateUserPasswordById(@RequestBody Map<String, Object> requestBodyParamsMap) throws Exception{
+        String username = (String)requestBodyParamsMap.get(AccountInfo.USERNAME);
+        String password = (String)requestBodyParamsMap.get(AccountInfo.PASSWORD);
+
+        String errorInfo = RequestParamsCheckUtils
+                            .putParamKeys(new String[]{AccountInfo.USERNAME, AccountInfo.PASSWORD})
+                            .putParamValues(new String[]{username, password})
+                            .checkParamsNorm();
         if (errorInfo != null) {
             return new ResponseJsonDTO(AjaxRequestStatus.FAIL, errorInfo);
         }
 
         //更新用户密码,返回更新状态（true-成功，false-失败）
-        String newPassword = SecretUtils.passwordMD5Encrypt(password); //新加密
+        String newPassword = SecretUtils.encryptUserPassword(password); //新加密
         boolean updateStatus = userService.alterUserPasswordByName(username, newPassword);
         if (!updateStatus) {
             return new ResponseJsonDTO(AjaxRequestStatus.FAIL, AccountInfo.DATABASE_NO_EXIST_USER);
         }
 
-        return new  ResponseJsonDTO(AjaxRequestStatus.SUCCESS, AccountInfo.UPDATE_USER_PASSWORD_SUCCESS);
+        return new  ResponseJsonDTO(AjaxRequestStatus.SUCCESS, AccountInfo.ENGLISH_UPDATE_USER_PASSWORD_SUCCESS);
     }
 
     /**
@@ -253,7 +264,7 @@ public class AccountController {
             return new ResponseJsonDTO(AjaxRequestStatus.FAIL, errorInfo);
         }
 
-        String plainText = SecretUtils.base64Decrypt(token);
+        String plainText = SecretUtils.decryptBase64(token);
         if(plainText == null){ //解密失败
             return new ResponseJsonDTO(AjaxRequestStatus.FAIL, AccountInfo.EMAIL_TOKEN_DECRYPT_FAIL);
         }
@@ -274,6 +285,6 @@ public class AccountController {
             return new ResponseJsonDTO(AjaxRequestStatus.FAIL, AccountInfo.DATABASE_NO_EXIST_USER + AccountInfo.ACCOUNT_ACTIVATION_FAIL);
         }
 
-        return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, email + AccountInfo.ACCOUNT_ACTIVATION_SUCCESS);
+        return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, email + AccountInfo.ENGLISH_ACOUNT_ACTIVATE_SUCCESS);
     }
 }

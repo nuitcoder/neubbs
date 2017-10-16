@@ -11,11 +11,11 @@ import java.util.Base64;
  */
 public class SecretUtils {
     /**
-     * MD5 加密（消息摘要算法）
+     * 加密 MD5（消息摘要算法）
      * @param plainText
      * @return String
      */
-    public static String MD5Encryp(String plainText){
+    public static String encryptMD5(String plainText){
         byte [] secretBytes = null;
         try{
             secretBytes = MessageDigest.getInstance("md5").digest(plainText.getBytes());
@@ -36,13 +36,13 @@ public class SecretUtils {
     }
 
     /**
-     *  用户密码 MD5 加密（二重 MD5 加密）
+     *  加密用户面膜（二重 MD5 加密）
      * @param password
      * @return String
      */
-    public static String passwordMD5Encrypt(String password){
+    public static String encryptUserPassword(String password){
         //一次 密码 MD5 加密
-        String ciphertext = MD5Encryp(password);
+        String ciphertext = encryptMD5(password);
         String salt = password;
 
         //加密后的密文 + 原密码
@@ -51,15 +51,15 @@ public class SecretUtils {
             sb.append(salt);
 
         //二次 MD5 加密
-        return MD5Encryp(sb.toString());
+        return encryptMD5(sb.toString());
     }
 
     /**
-     *  Base64 加密 （用于邮箱激活，生成 token）
+     *  加密 Base64 （用于邮箱激活，生成 token）
      * @param email
      * @return String
      */
-    public static String base64Encrypt(String email){
+    public static String encryptBase64(String email){
         String token = null;
         try{
             token = Base64.getUrlEncoder().encodeToString(email.getBytes("utf-8"));
@@ -71,11 +71,11 @@ public class SecretUtils {
     }
 
     /**
-     * Base64 解密（用于邮箱激活，token 解密）
+     * 解密 Base64（用于邮箱激活，token 解密）
      * @param token
      * @return
      */
-    public static String base64Decrypt(String token){
+    public static String decryptBase64(String token){
         return new String(Base64.getDecoder().decode(token));
     }
 }

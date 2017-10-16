@@ -26,17 +26,20 @@ public interface AccountInfo {
     //错误
     String USER_PASSWORD_NO_MATCH = "用户密码不匹配";
 
-    //格式错误
-    String DATE_FORMATE = "yyyy-MM-dd HH:mm:ss";
-    String ID_STYLE_ERROR_NO_PPURENUMBER = "id 格式错误，存在非数字字符，请重新输入";
-
     //成功
     String GET_USER_INFORMATION_SUCCESS = "获取用户信息成功！";
     String USER_PASS_AUTHENTICATE_LOGIN_SUCCESS = "用户通过验证，登录成功，将在7天内自动登录!";
     String USER_LOGOU_SUCCESS = "用户注销成功!";
     String REGISTER_USER_SUCCESS = "注册用户成功！";
     String UPDATE_USER_PASSWORD_SUCCESS = "更新用户密码成功!";
-    String UPDATE_USER_RANK_SUCCESS = "更新用户权限成功!";
+    String ACCOUNT_ACTIVATE_SUCCESS = " 邮箱，指定账户已经成功激活！";
+
+    String ENGLISH_GET_USER_INFORMATION_SUCCESS = "Get User Information Success!";
+    String ENGLISH_LOGIN_SUCCESS = "User Login Success!";
+    String ENGLISH_USER_LOGOU_SUCCESS = "User Logout Success!";
+    String ENGLISH_REGISTER_USER_SUCCESS = "Register User Success!";
+    String ENGLISH_UPDATE_USER_PASSWORD_SUCCESS = "Update User Password Success!";
+    String ENGLISH_ACOUNT_ACTIVATE_SUCCESS = " Email , Activate Success !";
 
     //权限问题
     String NO_VISIT_AHTORITY_PLEASE_LOGIN = "无访问权限，请登录后执行操作！";
@@ -45,7 +48,6 @@ public interface AccountInfo {
     //帐号激活
     String EMAIL_TOKEN_DECRYPT_FAIL = "邮件 token 解码失败，服务器异常！";
     String ACCOUNT_ACTIVATION_URL_ALREAD_EXPIRE_TIME = "该激活链接已经过期，请重新注册";
-    String ACCOUNT_ACTIVATION_SUCCESS = " 邮箱，指定账户已经成功激活！";
     String ACCOUNT_ACTIVATION_FAIL = "账户激活失败!";
 
     String ACCOUNT_NO_ACTIVATION_NO_LOGIN = "账户未激活，无法登录，请到指定邮箱，点击激活链接，激活账户";

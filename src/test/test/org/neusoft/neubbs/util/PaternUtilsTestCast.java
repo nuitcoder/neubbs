@@ -15,10 +15,10 @@ public class PaternUtilsTestCast {
     */
    @Test
    public void testPureNumber(){
-      System.out.println(PatternUtils.pureNumber("___213132"));
-      System.out.println(PatternUtils.pureNumber("222"));
-      System.out.println(PatternUtils.pureNumber("&^@#$sfgqwre1123"));
-      System.out.println(PatternUtils.pureNumber("12312!"));
+      System.out.println(PatternUtils.isPureNumber("___213132"));
+      System.out.println(PatternUtils.isPureNumber("222"));
+      System.out.println(PatternUtils.isPureNumber("&^@#$sfgqwre1123"));
+      System.out.println(PatternUtils.isPureNumber("12312!"));
    }
 
    /**
