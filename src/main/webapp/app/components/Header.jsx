@@ -24,8 +24,16 @@ const StyledLogoLink = styled(Link)`
 class Header extends Component {
   constructor(props) {
     super(props)
+    this.state = {
+      navExpanded: false,
+    }
 
+    this.setNavExpanded = this.setNavExpanded.bind(this)
     this.handleRightNavbar = this.handleRightNavbar.bind(this)
+  }
+
+  setNavExpanded(expanded) {
+    this.setState({ navExpanded: expanded })
   }
 
   handleRightNavbar(eventKey) {
@@ -47,6 +55,7 @@ class Header extends Component {
         break
       default:
     }
+    this.setNavExpanded(false)
   }
 
   renderRightNavbar() {
@@ -70,7 +79,10 @@ class Header extends Component {
 
   render() {
     return (
-      <StyledNavbar>
+      <StyledNavbar
+        expanded={this.state.navExpanded}
+        onToggle={this.setNavExpanded}
+      >
         <Navbar.Header>
           <Navbar.Brand>
             <StyledLogoLink to="/">Neubbs</StyledLogoLink>
