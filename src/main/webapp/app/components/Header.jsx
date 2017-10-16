@@ -4,7 +4,10 @@ import styled from 'styled-components'
 import PropTypes from 'prop-types'
 import { Navbar, Nav, NavItem } from 'react-bootstrap'
 
+import auth from '../auth'
+
 const LOGIN_EVENT_KEY = 'LOGIN'
+const LOGOUT_EVENT_KEY = 'LOGOUT'
 const REGISTER_EVENT_KEY = 'REGISTER'
 
 const StyledNavbar = styled(Navbar)`
@@ -32,11 +35,34 @@ class Header extends Component {
       case LOGIN_EVENT_KEY:
         router.push('/account/login')
         break
+      case LOGOUT_EVENT_KEY:
+        auth.logout()
+        router.push('/account/login')
+        break
       case REGISTER_EVENT_KEY:
         router.push('/account/register')
         break
       default:
     }
+  }
+
+  renderRightNavbar() {
+    const { isLogin } = this.props
+
+    if (isLogin) {
+      return (
+        <Nav onSelect={this.handleRightNavbar} pullRight>
+          <NavItem eventKey={LOGOUT_EVENT_KEY}>退出</NavItem>
+        </Nav>
+      )
+    }
+
+    return (
+      <Nav onSelect={this.handleRightNavbar} pullRight>
+        <NavItem eventKey={REGISTER_EVENT_KEY}>注册</NavItem>
+        <NavItem eventKey={LOGIN_EVENT_KEY}>登陆</NavItem>
+      </Nav>
+    )
   }
 
   render() {
@@ -52,14 +78,8 @@ class Header extends Component {
           {/* <Nav> */}
             {/* <NavItem eventKey={1} href="#">Link</NavItem> */}
             {/* <NavItem eventKey={2} href="#">Link</NavItem> */}
-          {/* </Nav> */}
-          <Nav
-            pullRight
-            onSelect={this.handleRightNavbar}
-          >
-            <NavItem eventKey={REGISTER_EVENT_KEY}>注册</NavItem>
-            <NavItem eventKey={LOGIN_EVENT_KEY}>登陆</NavItem>
-          </Nav>
+            {/* </Nav> */}
+          {this.renderRightNavbar()}
         </Navbar.Collapse>
       </StyledNavbar>
     )
@@ -68,6 +88,7 @@ class Header extends Component {
 
 Header.PropTypes = {
   router: PropTypes.object.isRequired,
+  isLogin: PropTypes.bool.isRequired,
 }
 
 export default Header

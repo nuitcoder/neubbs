@@ -11,10 +11,11 @@ class Login extends Component {
     this.handleSubmit = this.handleSubmit.bind(this)
   }
 
-  handleSubmit(values) {
-    console.log(values)
-    auth.login({
-      data: values
+  handleSubmit({ username, password }) {
+    auth.login({ username, password }, (data) => {
+      if (data.success) {
+        this.props.router.push('/')
+      }
     })
   }
 
