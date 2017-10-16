@@ -1,12 +1,10 @@
 package org.neusoft.neubbs.controller.api;
 
 import org.apache.log4j.Logger;
-import org.neusoft.neubbs.constant.account.AccountInfo;
 import org.neusoft.neubbs.constant.ajax.AjaxRequestStatus;
-import org.neusoft.neubbs.constant.count.CountInfo;
-import org.neusoft.neubbs.constant.log.LoggerInfo;
-import org.neusoft.neubbs.constant.secret.SecretInfo;
-import org.neusoft.neubbs.constant.secret.TokenInfo;
+import org.neusoft.neubbs.constant.api.AccountInfo;
+import org.neusoft.neubbs.constant.api.CountInfo;
+import org.neusoft.neubbs.constant.log.LogWarnInfo;
 import org.neusoft.neubbs.controller.annotation.AdminRank;
 import org.neusoft.neubbs.controller.annotation.LoginAuthorization;
 import org.neusoft.neubbs.dto.ResponseJsonDTO;
@@ -59,6 +57,7 @@ public class AccountController {
         //参数合法性检测
         String errorInfo = RequestParamsCheckUtils.checkUsername(username);//用户名检测
         if (errorInfo != null) {
+            logger.warn(errorInfo); //打印警告信息
             return new ResponseJsonDTO(AjaxRequestStatus.FAIL, errorInfo);
         }
 
@@ -66,10 +65,11 @@ public class AccountController {
         UserDO user = userService.getUserInfoByName(username);
         Map<String, Object> userInfoMap = JsonUtils.getMapByObject(user); //将 Object 对象转为 Map 类型
         if(userInfoMap == null){
-            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, AccountInfo.DATABASE_NO_EXIST_USER);
+            logger.warn(username + LogWarnInfo.DATABASE_NO_EXIST_USER);
+            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, AccountInfo.NO_USER);
         }
 
-        return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, AccountInfo.ENGLISH_GET_USER_INFORMATION_SUCCESS, userInfoMap);
+        return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, userInfoMap);
     }
 
     /**
@@ -84,7 +84,6 @@ public class AccountController {
     @ResponseBody
     public ResponseJsonDTO login(@RequestBody Map<String,Object> requestBodyParamsMap,
                                  HttpServletRequest request, HttpServletResponse response) throws Exception {
-
         //@RequestBody 自动将 JSON 格式转为 java 对象
         //获取 request body 的 JSON 格式参数
         String username = (String)requestBodyParamsMap.get(AccountInfo.USERNAME);
@@ -96,6 +95,7 @@ public class AccountController {
                             .putParamValues(new String[]{username, password})
                             .checkParamsNorm();
         if (errorInfo != null) {
+            logger.warn(errorInfo);
             return new ResponseJsonDTO(AjaxRequestStatus.FAIL, errorInfo);
         }
 
@@ -103,47 +103,37 @@ public class AccountController {
         UserDO user = userService.getUserInfoByName(username);
         Map<String, Object> userInfoMap = JsonUtils.getMapByObject(user);
         if (userInfoMap == null) {
-            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, AccountInfo.DATABASE_NO_EXIST_USER);
+            logger.warn(username + LogWarnInfo.DATABASE_NO_EXIST_USER);
+            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, AccountInfo.USERNAME_PASSWORD_ERROR); //防止被试出用户是否存在
         }
 
         //用户是否激活
         if((Integer)userInfoMap.get(AccountInfo.STATE) == 0){
-            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, AccountInfo.ACCOUNT_NO_ACTIVATION_NO_LOGIN);
+            logger.warn(username + LogWarnInfo.ACCOUNT_NO_ACTIVATION_NO_LOGIN);
+            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, AccountInfo.NO_ACTIVATE);
         }
 
         //用户密码判断
         String cipherText = SecretUtils.encryptUserPassword(password);//密码 MD5 加密后的密文
-        if(cipherText == null){//服务器加密失败
-            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, SecretInfo.MD5_ENCRYP_FAIL);
-        }
         if (!cipherText.equals(userInfoMap.get(AccountInfo.PASSWORD))) {
-            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, AccountInfo.USER_PASSWORD_NO_MATCH);
+            logger.warn(username + LogWarnInfo.USER_PASSWORD_NO_MATCH);
+            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, AccountInfo.USERNAME_PASSWORD_ERROR);
         }
 
-        //用户密码通过验证
-        if (username.equals(userInfoMap.get(AccountInfo.NAME)) && cipherText.equals(userInfoMap.get(AccountInfo.PASSWORD))) {
-            //获取Token，储存进本地Cookie
-            String token = TokenUtils.createToken(user);
-            CookieUtils.saveCookie(response, TokenInfo.AUTHENTICATION, token);
-            //System.out.println(token);//测试打印 token
-            //CookieUtils.printCookie(request);//测试打印 Cookie
+        //通过所有验证
+        //获取 Token，储存进本地 Cookie
+        String token = JWTTokenUtils.createToken(user);
+        CookieUtils.saveCookie(response, AccountInfo.AUTHENTICATION, token);
 
-            //在线登录人数+1
-            ServletContext application = request.getServletContext();// 获取上下文对象（全局唯一）
-            Integer onlineLoginUser = (Integer) application.getAttribute(CountInfo.ONLINE_LOGIN_USER);//获取在线登录对象
-            if(onlineLoginUser == null) {
-                onlineLoginUser = 0;
-            }
-            application.setAttribute(CountInfo.ONLINE_LOGIN_USER, ++onlineLoginUser);//用户 +1
-
-            //储存日志（记录用户登录成功信息）
-            logger.info(username + LoggerInfo.USER_LOGINNER_SUCCESS);
-
-            return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, AccountInfo.ENGLISH_LOGIN_SUCCESS,
-                                       TokenInfo.AUTHENTICATION, token);
+        //在线登录人数+1
+        ServletContext application = request.getServletContext();// 获取上下文对象（全局唯一）
+        Integer onlineLoginUser = (Integer) application.getAttribute(CountInfo.ONLINE_LOGIN_USER);//获取在线登录对象
+        if (onlineLoginUser == null) {
+            onlineLoginUser = 0;
         }
+        application.setAttribute(CountInfo.ONLINE_LOGIN_USER, ++onlineLoginUser);//用户 +1
 
-        return null;
+        return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, AccountInfo.AUTHENTICATION, token);
     }
 
     /**
@@ -158,7 +148,7 @@ public class AccountController {
     @ResponseBody
     public ResponseJsonDTO logout(HttpServletRequest request,HttpServletResponse response) throws Exception{
         //删除Cookie
-        CookieUtils.removeCookie(request, response, TokenInfo.AUTHENTICATION);
+        CookieUtils.removeCookie(request, response, AccountInfo.AUTHENTICATION);
 
         //在线登录人数-1
         ServletContext application = request.getServletContext();
@@ -167,7 +157,7 @@ public class AccountController {
             application.setAttribute(CountInfo.ONLINE_LOGIN_USER, --onlineLoginUser);
         }
 
-        return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, AccountInfo.ENGLISH_USER_LOGOU_SUCCESS);
+        return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS);
     }
 
 
@@ -190,13 +180,15 @@ public class AccountController {
                             .putParamValues(new String[]{username, password, email})
                             .checkParamsNorm();
         if (errorInfo != null) {
+            logger.warn(errorInfo);
             return new ResponseJsonDTO(AjaxRequestStatus.FAIL, errorInfo);
         }
 
         //判断用户名唯一
         UserDO user = userService.getUserInfoByName(username);
         if (user != null) {
-            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, AccountInfo.DATABASE_ALREAD_EXIST_USER_NO_AGAIN_ADD);
+            logger.warn(username + LogWarnInfo.DATABASE_ALREAD_EXIST_USER_NO_AGAIN_ADD);
+            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, AccountInfo.USERNAME_REGISTERED);
         }
 
         //注册操作
@@ -210,14 +202,13 @@ public class AccountController {
 
         userService.registerUser(user);
 
-        //注册成功,会自动注入用户 id（用户自增）
+        //注册成功（ //默认往 user 对象，注入用户 id（数据库主键自增））
         int newId = user.getId();
-        user = userService.getUserInfoById(newId);//根据 id 重新查询用户
+        user = userService.getUserInfoById(newId);//根据 id 查询用户
         Map<String, Object> userInfoMap = JsonUtils.getMapByObject(user);
 
-        return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, AccountInfo.ENGLISH_REGISTER_USER_SUCCESS, userInfoMap);
+        return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, userInfoMap);
     }
-
 
     /**
      * 5.修改密码
@@ -237,17 +228,18 @@ public class AccountController {
                             .putParamValues(new String[]{username, password})
                             .checkParamsNorm();
         if (errorInfo != null) {
+            logger.warn(errorInfo);
             return new ResponseJsonDTO(AjaxRequestStatus.FAIL, errorInfo);
         }
 
         //更新用户密码,返回更新状态（true-成功，false-失败）
         String newPassword = SecretUtils.encryptUserPassword(password); //新加密
-        boolean updateStatus = userService.alterUserPasswordByName(username, newPassword);
-        if (!updateStatus) {
-            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, AccountInfo.DATABASE_NO_EXIST_USER);
+        if (!userService.alterUserPasswordByName(username, newPassword)) {
+            logger.warn(username + LogWarnInfo.DATABASE_NO_EXIST_USER);
+            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, AccountInfo.NO_USER);
         }
 
-        return new  ResponseJsonDTO(AjaxRequestStatus.SUCCESS, AccountInfo.ENGLISH_UPDATE_USER_PASSWORD_SUCCESS);
+        return new  ResponseJsonDTO(AjaxRequestStatus.SUCCESS);
     }
 
     /**
@@ -261,14 +253,11 @@ public class AccountController {
     public ResponseJsonDTO emailToken(@RequestParam(value = "token", required = false)String token) throws Exception{
         String errorInfo = RequestParamsCheckUtils.token(token);
         if (errorInfo != null) {
+            logger.warn(errorInfo);
             return new ResponseJsonDTO(AjaxRequestStatus.FAIL, errorInfo);
         }
 
         String plainText = SecretUtils.decryptBase64(token);
-        if(plainText == null){ //解密失败
-            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, AccountInfo.EMAIL_TOKEN_DECRYPT_FAIL);
-        }
-
         //获取 email + 过期时间
         String [] array = plainText.split("-");
         String email = array[0];
@@ -276,15 +265,16 @@ public class AccountController {
 
         //过期判断（1 天）
         if(StringUtils.isExpire(expireTime)){
-            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, AccountInfo.ACCOUNT_ACTIVATION_URL_ALREAD_EXPIRE_TIME);
+            logger.warn(token + LogWarnInfo.ACCOUNT_ACTIVATION_URL_ALREAD_EXPIRE_TIME);
+            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, AccountInfo.LINK_INVALID);
         }
 
         //激活账户
-        boolean autivationResult =  userService.activationUserByEmail(email);
-        if(!autivationResult){ //不存在用户账户激活失败
-            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, AccountInfo.DATABASE_NO_EXIST_USER + AccountInfo.ACCOUNT_ACTIVATION_FAIL);
+        if (!userService.activationUserByEmail(email)) { //不存在用户账户激活失败
+            logger.warn(LogWarnInfo.ACCOUNT_ACTIVATION_FAIL_EMAIL_NO_REGISTER + LogWarnInfo.DATABASE_NO_EXIST_USER);
+            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, AccountInfo.ACTIVATION_FAIL_EMAIL_NO_REGISTER);
         }
 
-        return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, email + AccountInfo.ENGLISH_ACOUNT_ACTIVATE_SUCCESS);
+        return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS);
     }
 }

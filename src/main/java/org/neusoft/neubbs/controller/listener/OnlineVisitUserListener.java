@@ -1,6 +1,6 @@
 package org.neusoft.neubbs.controller.listener;
 
-import org.neusoft.neubbs.constant.count.CountInfo;
+import org.neusoft.neubbs.constant.api.CountInfo;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSessionEvent;

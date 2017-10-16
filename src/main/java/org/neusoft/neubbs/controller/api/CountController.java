@@ -1,7 +1,8 @@
 package org.neusoft.neubbs.controller.api;
 
+import org.apache.log4j.Logger;
 import org.neusoft.neubbs.constant.ajax.AjaxRequestStatus;
-import org.neusoft.neubbs.constant.count.CountInfo;
+import org.neusoft.neubbs.constant.api.CountInfo;
 import org.neusoft.neubbs.controller.annotation.LoginAuthorization;
 import org.neusoft.neubbs.dto.ResponseJsonDTO;
 import org.springframework.stereotype.Controller;
@@ -18,6 +19,9 @@ import javax.servlet.http.HttpServletRequest;
 @Controller
 @RequestMapping("/api/count/")
 public class CountController {
+
+    private static Logger logger = Logger.getLogger(CountController.class);
+
     /**
      * 1.在线访问人数
      * @param request
@@ -30,8 +34,7 @@ public class CountController {
     public ResponseJsonDTO onlineVisitUser(HttpServletRequest request) throws Exception{
         Integer onlineVisitUser = (Integer) request.getServletContext().getAttribute(CountInfo.ONLINE_VISIT_USER);
 
-        return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, CountInfo.ONLINE_VISIT_USER_SUCCESS,
-                                   CountInfo.ONLINE_VISIT_USER, onlineVisitUser);
+        return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, CountInfo.ONLINE_VISIT_USER, onlineVisitUser);
     }
 
     /**
@@ -46,7 +49,6 @@ public class CountController {
     public ResponseJsonDTO onlineLoginUser(HttpServletRequest request) throws Exception{
         Integer onlineLoginUser = (Integer)request.getServletContext().getAttribute(CountInfo.ONLINE_LOGIN_USER);
 
-        return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, CountInfo.ONLINE_LOGIN_USER_SUCCESS,
-                                   CountInfo.ONLINE_LOGIN_USER, onlineLoginUser);
+        return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, CountInfo.ONLINE_LOGIN_USER, onlineLoginUser);
     }
 }

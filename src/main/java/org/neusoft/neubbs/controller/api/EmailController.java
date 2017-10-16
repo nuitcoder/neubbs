@@ -1,8 +1,10 @@
 package org.neusoft.neubbs.controller.api;
 
-import org.neusoft.neubbs.constant.account.AccountInfo;
-import org.neusoft.neubbs.constant.account.EmailInfo;
+import org.apache.log4j.Logger;
 import org.neusoft.neubbs.constant.ajax.AjaxRequestStatus;
+import org.neusoft.neubbs.constant.api.AccountInfo;
+import org.neusoft.neubbs.constant.api.EmailInfo;
+import org.neusoft.neubbs.constant.log.LogWarnInfo;
 import org.neusoft.neubbs.constant.secret.SecretInfo;
 import org.neusoft.neubbs.dto.ResponseJsonDTO;
 import org.neusoft.neubbs.entity.UserDO;
@@ -33,6 +35,8 @@ public class EmailController {
     @Autowired
     IUserService userService;
 
+    private static Logger logger = Logger.getLogger(EmailController.class);
+
     /**
      * 1.发送邮件（账户激活URL）
      * @param requestBodyParamsMap
@@ -46,13 +50,15 @@ public class EmailController {
 
         String errorInfo = RequestParamsCheckUtils.checkEmail(email);
         if (errorInfo != null) {
+            logger.warn(errorInfo);
             return new ResponseJsonDTO(AjaxRequestStatus.FAIL, errorInfo);
         }
 
         //检测数据库是否存在此邮箱
         UserDO user = userService.getUserInfoByEmail(email);
         if(user == null){
-            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, EmailInfo.EMAIL_NO_REGISTER_NO_SEND_EMAIL);
+            logger.warn(LogWarnInfo.EMAIL_NO_REGISTER_NO_SEND_EMAIL);
+            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, EmailInfo.EMAIL_NO_REIGSTER);
         }
 
         //构建 token（用户邮箱 + 过期时间）
@@ -66,12 +72,11 @@ public class EmailController {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                SendEmailUtils.sendEmail(email, EmailInfo.EMAIL_ACTIVATE_FROM_SUBJECT , content);
+                SendEmailUtils.sendEmail(email, EmailInfo.EMAIL_SUBJECT , content);
+                logger.warn(email + LogWarnInfo.ACTIVATION_EMAIL_SEND_SUCCESS);
             }
         }).start();
 
-
-        //发送成功
-       return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, EmailInfo.ENGLISH_ACCOUTN_ACTIVATE_EMAIL_SEND_SUCCESS);
+       return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, EmailInfo.MAIL_SENT_SUCCESS);
     }
 }

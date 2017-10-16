@@ -1,8 +1,5 @@
 package org.neusoft.neubbs.controller.filter;
 
-import org.neusoft.neubbs.constant.secret.TokenInfo;
-import org.neusoft.neubbs.util.CookieUtils;
-
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -29,14 +26,13 @@ public class AddResponseHeaderTokenFilter implements Filter {
         request.getSession(true);
 
         //response Header 添加 Authorization 参数
-        if(response.getHeader(TokenInfo.AUTHENTICATION) == null){
-            //读取本地 Cookie
-            String authorization = CookieUtils.getCookieValue(request, TokenInfo.AUTHENTICATION);//Cookie 取出，没有则为 null
-            if(authorization != null){
-                response.addHeader(TokenInfo.AUTHENTICATION, authorization);
-            }
-
-        }
+        //if(response.getHeader(AccountInfo.AUTHENTICATION) == null){
+        //    //读取本地 Cookie
+        //    String authorization = CookieUtils.getCookieValue(request, AccountInfo.AUTHENTICATION);//Cookie 取出，没有则为 null
+        //    if(authorization != null){
+        //        response.addHeader(AccountInfo.AUTHENTICATION, authorization);
+        //    }
+        //}
 
         //放行
         chain.doFilter(request,response);
