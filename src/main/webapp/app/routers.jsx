@@ -5,12 +5,13 @@ import { Router, Route, IndexRoute, browserHistory } from 'react-router'
 import { syncHistoryWithStore, routerReducer } from 'react-router-redux'
 import { reducer as reduxFormReducer } from 'redux-form'
 
-import * as reducers from './reducers'
-
 import App from './App'
 import HomePage from './pages/Home'
 import LoginPage from './pages/Login'
 import RegisterPage from './pages/Register'
+
+import * as reducers from './reducers'
+import auth from './auth'
 
 const reducer = combineReducers({
   ...reducers,
@@ -21,14 +22,20 @@ const reducer = combineReducers({
 const store = createStore(reducer)
 const history = syncHistoryWithStore(browserHistory, store)
 
+const requireNotLogged = (_, replace) => {
+  if (auth.checkAuth()) {
+    replace({ pathname: '/' })
+  }
+}
+
 const Routers = () => (
   <Provider store={store}>
     <Router history={history}>
       <Route path="/" component={App}>
         <IndexRoute component={HomePage} />
 
-        <Route path="/account/login" component={LoginPage} />
-        <Route path="/account/register" component={RegisterPage} />
+        <Route path="/account/login" component={LoginPage} onEnter={requireNotLogged} />
+        <Route path="/account/register" component={RegisterPage} onEnter={requireNotLogged} />
       </Route>
     </Router>
   </Provider>
