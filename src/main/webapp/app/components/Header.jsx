@@ -63,7 +63,7 @@ class Header extends Component {
     return (
       <Nav onSelect={this.handleRightNavbar} pullRight>
         <NavItem eventKey={REGISTER_EVENT_KEY}>注册</NavItem>
-        <NavItem eventKey={LOGIN_EVENT_KEY}>登陆</NavItem>
+        <NavItem eventKey={LOGIN_EVENT_KEY}>登录</NavItem>
       </Nav>
     )
   }

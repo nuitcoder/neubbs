@@ -38,7 +38,7 @@ class Login extends Component {
     const { alertMessage } = this.state
 
     return (
-      <FormWrapper title="用户登陆">
+      <FormWrapper title="用户登录">
         {alertMessage !== '' &&
           <Alert bsStyle="danger" onDismiss={this.handleAlertDismiss}>
             {alertMessage}
