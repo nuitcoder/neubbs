@@ -54,12 +54,14 @@ public class UserDAOTestCase {
     /**
      * 添加6个管理员
      */
-    @Test//忽略该用例
+    @Ignore//忽略该用例
     public void addSixAdminUser(){
-        String [] adminArray = {"ahonn","AnAndroidXiang","kayye","topLynch","Nancyshan","suvan"};
+        String [] adminArray = {"ahonn", "AnAndroidXiang", "kayye", "topLynch", "Nancyshan", "suvan"};
+        String [] emailArray = {"ahonn95@outlook.com", "2389351081@qq.com", "584157012@qq.com", "805742416@qq.com", "1169251031@qq.com", "liushuwei0925@gmail.com"};
         UserDO user = new UserDO();
 
         //插入用户
+        int porinter = 0;
         for(String admin: adminArray){
             user.setName(admin);
             user.setPassword(SecretUtils.encryptUserPassword("123456"));
@@ -71,9 +73,12 @@ public class UserDAOTestCase {
 
             userDAO.updateUserStateForActivationByEmail(user.getEmail());//激活账户
 
+            //SendEmailUtils.sendEmail(emailArray[porinter++],
+            //                        "Nebbbs 开发团队",
+            //                        "欢迎您成为 Neubbs 项目管理员\n您的的管理员帐号：" + admin + " 密码：123456");//发送邮件
+
             System.out.println("管理员" + admin + "添加完毕");
         }
-
     }
 
     /**
