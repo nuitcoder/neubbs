@@ -31,6 +31,8 @@ public class ResponseJsonDTO {
     public ResponseJsonDTO(Boolean success, Map<String, Object> map){ //成功获取到数据不需要提示信息
         this.success = success;
         this.model = map;
+
+        filterUserInfo(map);
     }
     public ResponseJsonDTO(Boolean success, String key, Object obj){
         this.success = success;
@@ -63,6 +65,20 @@ public class ResponseJsonDTO {
     }
     public void setModel(Map<String, Object> model){
         this.model = model;
+    }
+
+    /**
+     * 过滤用户信息
+     *
+     * @param map UserDO 对象的 map
+     */
+    public void filterUserInfo(Map map){
+        map.remove("id");
+        map.remove("password");
+        map.remove("image");
+        map.remove("rank");
+        map.remove("state");
+        map.remove("createtime");
     }
 
     @Override

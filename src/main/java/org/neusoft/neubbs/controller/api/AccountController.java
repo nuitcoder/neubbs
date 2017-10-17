@@ -24,11 +24,12 @@ import java.util.Map;
 /**
  *   账户 api
  *      1.获取用户信息
- *      2.登录
- *      3.注销
- *      4.注册
- *      5.修改密码
- *      6.激活账户
+ *      2.用户存在性
+ *      3.登录
+ *      4.注销
+ *      5.注册
+ *      6.修改密码
+ *      7.激活账户
  *
  * @author Suvan
  */
@@ -43,6 +44,7 @@ public class AccountController {
     IRedisService redisService;
 
     private static Logger logger = Logger.getLogger(AccountController.class);
+
 
     /**
      * 1.获取用户信息（AccountController 默认访问）
@@ -59,7 +61,7 @@ public class AccountController {
      * @throws Exception
      */
     @LoginAuthorization @AdminRank
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(value = "", method = RequestMethod.GET)
     @ResponseBody
     public ResponseJsonDTO getUserInfoByName(@RequestParam(value = "username", required = false)String username) throws Exception{
         //@RequestParam 的 required 属性声明参数是否必须，默认为true,此处声明 false 表示参数非必须，由 api 内部处理空情况
@@ -88,10 +90,35 @@ public class AccountController {
     }
 
     /**
-     * 2.登录
+     * 2.用户存在性
+     *
+     * @param username
+     * @return ResponseJsonDTO
+     */
+    @RequestMapping(value = "/exist", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseJsonDTO accountExist(@RequestParam(value = "username", required = false) String username){
+        String errorInfo = RequestParamsCheckUtils.checkUsername(username);
+        if(errorInfo != null){
+            logger.warn(errorInfo);
+            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, errorInfo);
+        }
+
+        UserDO user = userService.getUserInfoByName(username);
+        if(user == null){
+            logger.warn(username + LogWarnInfo.DATABASE_NO_EXIST_USER);
+            return new ResponseJsonDTO(AjaxRequestStatus.FAIL);
+        }
+
+        return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS);
+    }
+
+    /**
+     * 3.登录
      *
      * 注解提示：
      *       @RequestBody 自动将 JSON 格式转为 java 对象
+     *
      * @param requestBodyParamsMap  request Body 里的JSON 数据
      * @param request
      * @param response
@@ -158,7 +185,7 @@ public class AccountController {
     }
 
     /**
-     * 3.注销
+     * 4.注销
      *
      * @param request
      * @param response
@@ -184,7 +211,7 @@ public class AccountController {
 
 
     /**
-     * 4.注册
+     * 5.注册
      * @param requestBodyParamsMap
      * @return ResponseJsonDTO
      * @throws Exception
@@ -234,7 +261,7 @@ public class AccountController {
     }
 
     /**
-     * 5.修改密码
+     * 6.修改密码
      *
      * @param requestBodyParamsMap
      * @return ResponseJsonDTO
@@ -267,7 +294,7 @@ public class AccountController {
     }
 
     /**
-     * 6.激活账户
+     * 7.激活账户
      * @param token
      * @return ResponseJsonDTO
      * @throws Exception

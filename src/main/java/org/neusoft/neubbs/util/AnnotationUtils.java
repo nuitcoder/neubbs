@@ -13,23 +13,25 @@ import java.lang.reflect.Method;
 public class AnnotationUtils {
     /**
      * 是否存在指定注解（检测方法对象，是否被指定注解声明）
+     *
      * @param handler
-     * @return
+     * @return Boolean （true 存在，false-不存在）
      */
-    public static Boolean hasMethodAnnotation(Object handler,Class t){
-         //不是方法级跳过
+    public static Boolean hasMethodAnnotation(Object handler, Class t){
+         //不属于方法级跳过（默认不存在）
         if(!(handler instanceof HandlerMethod)){
-            return true;
+            return false;
         }
 
         //获取注解
         HandlerMethod handlerMethod = (HandlerMethod)handler;
         Method method = handlerMethod.getMethod();
         Annotation annotation = method.getAnnotation(t);
-        if(annotation != null){
-                return true;
+        if(annotation == null){
+                return false;
         }
 
-        return false;
+        //存在
+        return true;
     }
 }
