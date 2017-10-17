@@ -12,15 +12,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import javax.transaction.Transactional;
-
 /**
  * ITopicContentDAO 测试用例
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:spring-context.xml"})
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-@Transactional
+//@Transactional
 public class TopicContentDAOTestCase {
 
     @Autowired

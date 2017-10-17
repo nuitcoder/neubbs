@@ -7,6 +7,7 @@
       <result column="ft_category" property="category" javaType="String" jdbcType="VARCHAR" />
       <result column="ft_title" property="title" javaType="String" jdbcType="VARCHAR" />
       <result column="ft_comment" property="comment" javaType="String" jdbcType="VARCHAR" />
+      <result column="ft_lastreplyuserid" property="lastreplyuserid" javaType="Integer" jdbcType="INTEGER" />
       <result column="ft_lastreplytime" property="lastreplytime" javaType="java.util.Date" jdbcType="TIMESTAMP" />
       <result column="ft_createtime" property="createtime" javaType="java.util.Date" jdbcType="TIMESTAMP" />
    </resultMap>
@@ -34,11 +35,11 @@
       SELECT MAX(ft_id) FROM forum_topic;
    </select>
    <select id="getTopicById" parameterType="java.lang.Integer" resultMap="TopicMap">
-      SELECT ft_id, fu_id, ft_category, ft_title, ft_comment, ft_lastreplytime, ft_createtime
+      SELECT ft_id, fu_id, ft_category, ft_title, ft_comment,ft_lastreplyuserid, ft_lastreplytime, ft_createtime
       FROM forum_topic WHERE ft_id = #{id, jdbcType = INTEGER}
    </select>
    <select id="listTopicByStartRowByCount" resultMap="TopicMap">
-      SELECT ft_id, fu_id, ft_category, ft_title, ft_comment, ft_lastreplytime, ft_createtime
+      SELECT ft_id, fu_id, ft_category, ft_title, ft_comment,ft_lastreplyuserid, ft_lastreplytime, ft_createtime
       FROM forum_topic LIMIT #{param1, jdbcType = INTEGER}, #{param2, jdbcType = INTEGER}
    </select>
 

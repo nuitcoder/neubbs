@@ -11,6 +11,7 @@ public class TopicContentDO {
 
     private String content;
     private String read;
+    private String agree;
 
     /**
      * Getter
@@ -27,6 +28,10 @@ public class TopicContentDO {
     public String getRead(){
         return read;
     }
+    public String getAgree() {
+        return agree;
+    }
+
 
     /**
      * Setter
@@ -43,6 +48,9 @@ public class TopicContentDO {
     public void setRead(String read){
         this.read = read;
     }
+    public void setAgree(String agree){
+        this.agree = agree;
+    }
 
     @Override
     public String toString() {
@@ -51,6 +59,7 @@ public class TopicContentDO {
                 ", topicid=" + topicid +
                 ", content='" + content + '\'' +
                 ", read='" + read + '\'' +
+                ", agree='" + agree + '\'' +
                 '}';
     }
 }

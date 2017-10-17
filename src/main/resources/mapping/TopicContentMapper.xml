@@ -6,6 +6,7 @@
       <result column="ft_id" property="topicid" javaType="Integer" jdbcType="INTEGER" />
       <result column="ftc_content" property="content" javaType="String" jdbcType="VARCHAR" />
       <result column="ftc_read" property="read" javaType="String" jdbcType="VARCHAR" />
+      <result column="ftc_agree" property="agree" javaType="String" jdbcType="VARCHAR" />
    </resultMap>
 
    
@@ -26,7 +27,7 @@
       SELECT MAX(ftc_id) FROM forum_topic_content;
    </select>
    <select id="getTopicContentById" parameterType="java.lang.Integer" resultMap="TopicContentMap">
-      SELECT ftc_id, ft_id, ftc_content, ftc_read
+      SELECT ftc_id, ft_id, ftc_content, ftc_read, ftc_agree
       FROM forum_topic_content WHERE ftc_id = #{id, jdbcType = INTEGER}
    </select>
 
