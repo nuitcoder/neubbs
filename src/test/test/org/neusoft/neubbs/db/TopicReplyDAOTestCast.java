@@ -74,7 +74,7 @@ public class TopicReplyDAOTestCast {
 
         TopicReplyDO topicReply = topicReplyDAO.getTopicReplyById(maxId);
 
-        System.out.println("查询 id = 1 的回复，查询结果：" + JsonUtils.getJSONStringByObject(topicReply));
+        System.out.println("查询 id = 1 的回复，查询结果：" + JsonUtils.toJSONStringByObject(topicReply));
     }
 
     /**

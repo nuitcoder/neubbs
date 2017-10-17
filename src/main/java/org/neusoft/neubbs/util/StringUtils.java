@@ -4,13 +4,16 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * 字符串工具类
+ * 字符串 工具类
+ *
+ * @author Suvan
  */
 public class StringUtils {
     /**
      * 空判断（true - 为空）
+     *
      * @param str
-     * @return Boolean
+     * @return Boolean 检测结果
      */
     public static Boolean isEmpty(String str){
         if (str == null || str.length() == 0) {
@@ -22,14 +25,16 @@ public class StringUtils {
 
     /**
      * 长度范围判断（ min <= str.length() <= max）
+     *
      * @param str
      * @param min
      * @param max
-     * @return
+     * @return Boolean 检测结果
      */
     public static Boolean isScope(String str, int min, int max){
         if (min <= str.length() && str.length() <= max) {
-            return true; //符合条件
+            //符合条件
+            return true;
         } else {
             return false;
         }
@@ -37,9 +42,10 @@ public class StringUtils {
 
     /**
      * 正则判断（字符串是否满足，指定正则表达式）
+     *
      * @param str
-     * @param regexp
-     * @return boolean
+     * @param regexp 正则表达式
+     * @return Boolean 检测结果
      */
     public static Boolean isPattern(String str, String regexp){
         Pattern pattern = Pattern.compile(regexp);
@@ -49,9 +55,10 @@ public class StringUtils {
     }
 
     /**
-     * 是否过期（判断指定时间戳，是否过期，true-过期）
-     * @param expireTime
-     * @return boolean
+     * 是否过期（判断此时是否过期，true-过期）
+     *
+     * @param expireTime 过期指定时间（时间戳）
+     * @return Boolean 检测结果
      */
     public static Boolean isExpire(String expireTime){
         long now = System.currentTimeMillis();
@@ -59,7 +66,8 @@ public class StringUtils {
         if (Long.parseLong(expireTime) > now) {
             return false;
         } else {
-            return true; //过期
+            //过期
+            return true;
         }
     }
 

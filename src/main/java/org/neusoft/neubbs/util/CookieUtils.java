@@ -6,23 +6,26 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * Cookie 工具类
+ *
+ * @author Suvan
  */
 public class CookieUtils {
 
-    private final static Integer EXPIRETIME_SERVEN_DAY = 604800;     //60 * 60 * 24 * 7 s, Cookie 过期时间
-    private final static Integer EXPIRETIME_ZERO  = 0;               //0
+    private final static Integer EXPIRETIME_SERVEN_DAY = 604800;
+    private final static Integer EXPIRETIME_ZERO  = 0;
 
-    private final static  String PATH = "/";                      //指明项目所有路径有效
+    private final static  String PATH = "/";
 
-    private final static  Boolean HTTPONLY_TRUE = true;           //HttpOnly设置true
-    private final static  Boolean HTTPONLY_FALSE = false;         //HttpOnly设置false
+    private final static  Boolean HTTPONLY_TRUE = true;
+    private final static  Boolean HTTPONLY_FALSE = false;
 
 
     /**
      * 插入Cookie
+     *
      * @param response
-     * @param cookieName
-     * @param cookieValue
+     * @param cookieName Cookie名字
+     * @param cookieValue Cookie值
      */
     public static void saveCookie(HttpServletResponse response,
                                     String cookieName,String cookieValue){
@@ -35,16 +38,17 @@ public class CookieUtils {
     }
 
     /**
-     * 删除Cookie
+     * 删除Cookie（有效时间设为0,即是删除）
+     *
      * @param request
      * @param response
-     * @param cookieName
+     * @param cookieName Cookie名
      */
     public static void removeCookie(HttpServletRequest request,HttpServletResponse response,
                                         String cookieName){
         for(Cookie cookie : request.getCookies()){
             if(cookieName.equals(cookie.getName())){
-                cookie.setMaxAge(EXPIRETIME_ZERO);//有效时间设为0,即是删除
+                cookie.setMaxAge(EXPIRETIME_ZERO);
                 cookie.setPath(PATH);
                 cookie.setHttpOnly(HTTPONLY_TRUE);
 
@@ -56,9 +60,10 @@ public class CookieUtils {
 
     /**
      * 根据Cookie名，获取Cookie值
+     *
      * @param request
-     * @param cookieName
-     * @return
+     * @param cookieName Cookie名
+     * @return String  Cookie值
      */
     public static String getCookieValue(HttpServletRequest request,String cookieName){
         for(Cookie cookie: request.getCookies()){
@@ -72,6 +77,7 @@ public class CookieUtils {
 
     /**
      * 打印客户端所有Cookie
+     *
      * @param request
      */
     public static void printCookie(HttpServletRequest request){

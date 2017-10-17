@@ -9,24 +9,35 @@ import java.io.UnsupportedEncodingException;
 import java.util.Properties;
 
 /**
- * 发送邮件工具类
+ * 发送邮件 工具类
+ *
+ * @author Suvan
  */
 public class SendEmailUtils {
+    /**
+     * 发送邮件的账户
+     */
     private final static String FROM_USERNAME = "suvan@liushuwei.cn";
-    private final static String FROM_AUTHORIZATIONCODE = "23h235i2vhKwUgbg";  //腾讯企业邮箱,客户端授权码
+    private final static String FROM_AUTHORIZATIONCODE = "23h235i2vhKwUgbg";
     private final static String FROM_PERSONNAME = "Neubbs 管理员";
 
+    /**
+     * 邮件格式
+     */
     private final static String FROM_SUBJECT_ENCODING = "UTF-8";
     private final static String FROM_CONTENT_TYPE = "text/html;charset=UTF-8";
 
-    private final static String TO_HOST = "smtp.exmail.qq.com"; //腾讯企业邮箱服务器
+    /**
+     * 腾讯企业邮箱
+     */
+    private final static String TO_HOST = "smtp.exmail.qq.com";
     private final static String TO_SMTP = "smtp";
     private final static String TO_AUTH = "mail.smtp.auth";
     private final static String TO_AUTH_TRUE = "true";
     private final static String TO_MAIL_SMTP_SOCKETFACTORY_CLASS = "mail.smtp.socketFactory.class";
     private final static String TO_JAVAX_NET_SSL_SSLSOCKETFACTORY = "javax.net.ssl.SSLSocketFactory";
     private final static String TO_MAIL_SMTP_SOCKETFACTORY_PORT = "mail.smtp.socketFactory.port";
-    private final static String TO_SMTP_SSL_PROT = "465";   //腾讯邮箱 发送邮件服务器 端口
+    private final static String TO_SMTP_SSL_PROT = "465";
 
     /**
      * 发送邮件

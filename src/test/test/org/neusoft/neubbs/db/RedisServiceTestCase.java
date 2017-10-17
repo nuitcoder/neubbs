@@ -30,7 +30,7 @@ public class RedisServiceTestCase {
      */
     @Test
     public void testSaveByKeyValue(){
-        redisService.saveByKeyValue("testsave","测试");
+        redisService.save("testsave","测试");
     }
 
     /**
@@ -38,15 +38,15 @@ public class RedisServiceTestCase {
      */
     @Test
     public void testSaveByKeyValueTime(){
-        redisService.saveByKeyValueTime("study", "value", 2);
-        System.out.println(redisService.getValueByKey("study"));
+        redisService.save("study", "value", 2);
+        System.out.println(redisService.getValue("study"));
 
         try{
             System.out.println("休眠2秒钟*****");
             Thread.sleep(2000);
         }catch (Exception e){}
 
-        System.out.println("再次查询：" + redisService.getValueByKey("study"));
+        System.out.println("再次查询：" + redisService.getValue("study"));
     }
 
     /**
@@ -55,10 +55,10 @@ public class RedisServiceTestCase {
     @Test
     public void testSaveObjectForUser(){
         UserDO user = userService.getUserInfoByName("oneuser");
-        Map<String, Object> userInfoMap = JsonUtils.getMapByObject(user);
+        Map<String, Object> userInfoMap = JsonUtils.toMapByObject(user);
 
 
-            String userJSON = JsonUtils.getJSONStringByObject(userInfoMap);
+            String userJSON = JsonUtils.toJSONStringByObject(userInfoMap);
             System.out.println("JSON 格式 user对象 ：" + userJSON);
     }
 
@@ -67,7 +67,7 @@ public class RedisServiceTestCase {
      */
     @Test
     public void testRemoveByKey(){
-        redisService.removeByKey("oneuser_1507535956862");
+        redisService.remove("oneuser_1507535956862");
     }
 
     /**
@@ -75,7 +75,7 @@ public class RedisServiceTestCase {
      */
     @Test
     public void testGetValueByKey(){
-        System.out.println(redisService.getValueByKey("oneuser_1507535956862"));
+        System.out.println(redisService.getValue("oneuser_1507535956862"));
     }
 
     /**
@@ -84,8 +84,8 @@ public class RedisServiceTestCase {
     @Test
     public void testGetExpreTimeByKey(){
         long hourMillis = 60 * 60 * 1000;
-        redisService.saveByKeyValueTime("study", "good" , hourMillis);
-        System.out.println("***********过期时间：" + redisService.getExpireTimeByKey("study"));
+        redisService.save("study", "good" , hourMillis);
+        System.out.println("***********过期时间：" + redisService.getExpireTime("study"));
 
         try{
             System.out.println("休眠2s");
@@ -93,7 +93,7 @@ public class RedisServiceTestCase {
         }catch (Exception e){}
 
         //-2是不存在key，-1是永久，获取的是此时此刻剩余过期秒数
-        System.out.println(redisService.getExpireTimeByKey("study"));
+        System.out.println(redisService.getExpireTime("study"));
     }
 
     /**
@@ -101,6 +101,6 @@ public class RedisServiceTestCase {
      */
     @Test
     public void testUpdateByKeyValue(){
-        redisService.updateByKeyValue("test","new");
+        redisService.update("test","new");
     }
 }

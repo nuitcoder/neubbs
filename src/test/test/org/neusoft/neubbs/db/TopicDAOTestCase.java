@@ -83,7 +83,7 @@ public class TopicDAOTestCase {
     public void test4_GetTopicById(){
         TopicDO topic = topicDAO.getTopicById(1);
 
-        System.out.println("查询结果：" + JsonUtils.getJSONStringByObject(topic));
+        System.out.println("查询结果：" + JsonUtils.toJSONStringByObject(topic));
     }
 
     /**
@@ -108,7 +108,7 @@ public class TopicDAOTestCase {
 
         System.out.println("********从" + startRow + "行开始," + "输出" + count + "条记录***********");
         for(TopicDO topic: listTopic){
-            System.out.println(JsonUtils.getJSONStringByObject(topic));
+            System.out.println(JsonUtils.toJSONStringByObject(topic));
         }
     }
 

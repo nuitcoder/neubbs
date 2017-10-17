@@ -14,7 +14,7 @@ import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.service.IRedisService;
 import org.neusoft.neubbs.util.AnnotationUtils;
 import org.neusoft.neubbs.util.CookieUtils;
-import org.neusoft.neubbs.util.JWTTokenUtils;
+import org.neusoft.neubbs.util.JwtTokenUtils;
 import org.neusoft.neubbs.util.JsonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -26,7 +26,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 /**
- *  api 拦截器，登录验证 or 管理员权限验证
+ *  api token 拦截器，登录验证 or 管理员权限验证
+ *
+ *  @author Suvan
  */
 public class ApiTokenInterceptor implements HandlerInterceptor{
 
@@ -55,8 +57,8 @@ public class ApiTokenInterceptor implements HandlerInterceptor{
             return false;
         }
 
-
-        return true;//拦截器放行
+        //拦截器放行
+        return true;
     }
 
     /**
@@ -92,7 +94,7 @@ public class ApiTokenInterceptor implements HandlerInterceptor{
     public void outFailJSONMessage(HttpServletResponse response,String failMessage) throws IOException{
         ResponseJsonDTO responseJson = new ResponseJsonDTO(AjaxRequestStatus.FAIL, failMessage);
 
-        String json = JsonUtils.getJSONStringByObject(responseJson);
+        String json = JsonUtils.toJSONStringByObject(responseJson);
 
         response.setCharacterEncoding(ResponseStyleInfo.CHARACTER_ENCODING);
         response.setContentType(ResponseStyleInfo.CONTENT_TYPE);
@@ -118,12 +120,12 @@ public class ApiTokenInterceptor implements HandlerInterceptor{
         //检查 api 函数是否包含@LoginAuthroizatin
         boolean hasLoginAuthorization = AnnotationUtils.hasMethodAnnotation(handler, LoginAuthorization.class);
         if(hasLoginAuthorization){
-            //验证 Authroization 参数
-            String authroization =  CookieUtils.getCookieValue(request, AccountInfo.AUTHENTICATION);;//Cookie 内获取
+            //验证 Authroization 参数（Cookie 内日获取）
+            String authroization =  CookieUtils.getCookieValue(request, AccountInfo.AUTHENTICATION);;
             if(authroization != null){
 
-                //验证客户端 Token 是否过期
-                UserDO user = JWTTokenUtils.verifyToken(authroization, SecretInfo.TOKEN_SECRET_KEY);// token 解密
+                //验证客户端 Token 是否过期（token 能否解密，过期无法解密）
+                UserDO user = JwtTokenUtils.verifyToken(authroization, SecretInfo.TOKEN_SECRET_KEY);
                 if(user == null){
                     logger.warn(LogWarnInfo.JWT_TOKEN_ALREAD_EXPIRE);
                     outFailJSONMessage(response, AccountInfo.TOKEN_EXPIRED);
@@ -154,14 +156,17 @@ public class ApiTokenInterceptor implements HandlerInterceptor{
         boolean hasAdminRank = AnnotationUtils.hasMethodAnnotation(handler, AdminRank.class);
         if(hasAdminRank){
             String token = CookieUtils.getCookieValue(request,AccountInfo.AUTHENTICATION);
-            UserDO user = JWTTokenUtils.verifyToken(token, SecretInfo.TOKEN_SECRET_KEY);
+            UserDO user = JwtTokenUtils.verifyToken(token, SecretInfo.TOKEN_SECRET_KEY);
             if(AccountInfo.RANK_ADMIN.equals(user.getRank())){
-                return true;//管理员权限
+                //拥有管理员权限
+                return true;
+
             }else{
                 //无管理员权限，无法访问api
                 logger.warn(LogWarnInfo.USER_RANK_NO_ENOUGH_NO_ADMIN);
                 outFailJSONMessage(response, AccountInfo.NO_PERMISSION);
                 return false;
+
             }
         }
 

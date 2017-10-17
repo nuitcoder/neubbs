@@ -7,6 +7,8 @@ import java.lang.annotation.Target;
 
 /**
  *  管理员权限注解 @AdminRank
+ *
+ *  @author Suvan
  */
 @Target(ElementType.METHOD) //修饰方法
 @Retention(RetentionPolicy.RUNTIME) //运行时注解

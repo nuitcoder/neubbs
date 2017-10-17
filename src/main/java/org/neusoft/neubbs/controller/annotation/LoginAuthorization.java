@@ -7,6 +7,8 @@ import java.lang.annotation.Target;
 
 /**
  *  登录认证注解 @LoginAuthorization
+ *
+ *  @author Suvan
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)

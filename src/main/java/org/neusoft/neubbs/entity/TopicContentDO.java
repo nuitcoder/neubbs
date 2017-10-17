@@ -2,6 +2,8 @@ package org.neusoft.neubbs.entity;
 
 /**
  * forum_topic_content 表领域对象
+ *
+ * @author Suvan
  */
 public class TopicContentDO {
     private Integer id;
@@ -40,5 +42,15 @@ public class TopicContentDO {
     }
     public void setRead(String read){
         this.read = read;
+    }
+
+    @Override
+    public String toString() {
+        return "TopicContentDO{" +
+                "id=" + id +
+                ", topicid=" + topicid +
+                ", content='" + content + '\'' +
+                ", read='" + read + '\'' +
+                '}';
     }
 }

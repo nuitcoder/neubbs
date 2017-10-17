@@ -26,12 +26,17 @@ import java.util.Map;
 /**
  *  邮件 api
  *      1. + 发送邮件（账户激活URL）
+ *
+ *  @author Suvan
  */
 @Controller
 @RequestMapping("/api/email")
 public class EmailController {
 
-    private final String ACTIVATION_URL = "http://localhost:8080/api/account/activation?token="; //邮件激活 URL;
+    /**
+     * 账户激活 URL
+     */
+    private final String ACCOUNT_ACTIVATION_URL = "http://localhost:8080/api/account/activation?token=";
 
     @Autowired
     IUserService userService;
@@ -66,11 +71,11 @@ public class EmailController {
         }
 
         //构建 token（用户邮箱 + 过期时间）
-        long expireTime = System.currentTimeMillis() + SecretInfo.EXPIRE_TIME_ONE_DAY;
+        long expireTime = System.currentTimeMillis() + SecretInfo.EXPIRETIME_ONE_DAY;
         String token = SecretUtils.encryptBase64(email + "-" + expireTime);
 
         //构建邮件内容
-        String content = StringUtils.createEmailActivationHtmlString(ACTIVATION_URL + token);
+        String content = StringUtils.createEmailActivationHtmlString(ACCOUNT_ACTIVATION_URL + token);
 
         //发送邮件（Spring 线程池，另启线程）
         taskExecutor.execute(new Runnable(){

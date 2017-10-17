@@ -8,6 +8,8 @@ import java.util.Map;
 
 /**
  *  response JSON 列表传输对象
+ *
+ *  @author Suvan
  */
 public class ResponseJsonListDTO {
     private Boolean success;
@@ -51,5 +53,14 @@ public class ResponseJsonListDTO {
     }
     public void setModel(List<Map<String, Object>> listModel){
         this.model = listModel;
+    }
+
+    @Override
+    public String toString() {
+        return "ResponseJsonListDTO{" +
+                "success=" + success +
+                ", message='" + message + '\'' +
+                ", model=" + model +
+                '}';
     }
 }

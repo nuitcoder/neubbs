@@ -8,8 +8,13 @@ import java.util.Base64;
 
 /**
  * 加密 工具类
+ *
+ * @author Suvan
  */
 public class SecretUtils {
+
+    private final static Integer MDT_STRING_LENGTH = 32;
+
     /**
      * 加密 MD5（消息摘要算法）
      * @param plainText
@@ -20,19 +25,19 @@ public class SecretUtils {
         try{
             secretBytes = MessageDigest.getInstance("md5").digest(plainText.getBytes());
         }catch (NoSuchAlgorithmException noe){
-            return null; //找不到算法异常
+            //找不到指定算法
+            return null;
         }catch (Exception e){
             return null;
         }
 
-        String md5Code = new BigInteger(1, secretBytes).toString(16); //16进制数字
-
+        StringBuilder md5Code = new StringBuilder(new BigInteger(1, secretBytes).toString(16));
         //如果生成数字未满 32位，需要前面补0
-        for(int i = 1; i < 32 - md5Code.length(); i++){
-            md5Code = "0" + md5Code;
+        for(int i = 1; i < MDT_STRING_LENGTH - md5Code.length(); i++){
+            md5Code.insert(0, "0");
         }
 
-        return md5Code;
+        return md5Code.toString();
     }
 
     /**

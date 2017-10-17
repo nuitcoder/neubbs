@@ -45,7 +45,7 @@ public class UserDAOTestCase {
         try{
             int effectRow = userDAO.saveUser(user);
             System.out.println("受影响行数：" + effectRow + ",新用户 id ：" + user.getId());
-            System.out.println("新用户信息：" + JsonUtils.getJSONStringByObject(userDAO.getUserById(user.getId())));
+            System.out.println("新用户信息：" + JsonUtils.toJSONStringByObject(userDAO.getUserById(user.getId())));
         }catch (DuplicateKeyException de){
             throw new DuplicateKeyException("插入用户失败，fu_name 和 fu_email 字段声明 UNIQUE KEY，不能重复！");
         }
@@ -110,7 +110,7 @@ public class UserDAOTestCase {
     @Test
     public void test31_GetUserById(){
         UserDO user = userDAO.getUserById(userDAO.getUserMaxId());//查询最新插入id
-        System.out.println("id 查询用户，查询结果：" + JsonUtils.getJSONStringByObject(user));
+        System.out.println("id 查询用户，查询结果：" + JsonUtils.toJSONStringByObject(user));
     }
 
     /**
@@ -119,7 +119,7 @@ public class UserDAOTestCase {
     @Test
     public void test32_GetUserByName(){
         UserDO user = userDAO.getUserByName("testuser");
-        System.out.println("name 查询用户，查询结果：" + JsonUtils.getJSONStringByObject(user));
+        System.out.println("name 查询用户，查询结果：" + JsonUtils.toJSONStringByObject(user));
     }
 
     /**
@@ -128,7 +128,7 @@ public class UserDAOTestCase {
     @Test
     public void test323_GetUserByEmail(){
         UserDO user = userDAO.getUserByEmail("526097449@qq.com1");
-        System.out.println("name 查询用户，查询结果：" + JsonUtils.getJSONStringByObject(user));
+        System.out.println("name 查询用户，查询结果：" + JsonUtils.toJSONStringByObject(user));
     }
 
 
@@ -140,7 +140,7 @@ public class UserDAOTestCase {
         List<UserDO> userList = userDAO.listAllAdminUser();
         System.out.println("查询所有管理员（权限为 admin）：");
         for(UserDO user : userList){
-            System.out.println(JsonUtils.getJSONStringByObject(user));
+            System.out.println(JsonUtils.toJSONStringByObject(user));
         }
     }
 
@@ -152,7 +152,7 @@ public class UserDAOTestCase {
         List<UserDO> userList = userDAO.listAssignDateRegisterUserByYearMonth(2017,10);
         System.out.println("查询2017年10月份注册的用户：");
         for(UserDO user : userList){
-            System.out.println(JsonUtils.getJSONStringByObject(user));
+            System.out.println(JsonUtils.toJSONStringByObject(user));
         }
     }
 
@@ -164,7 +164,7 @@ public class UserDAOTestCase {
         List<UserDO> userList = userDAO.listAllUser();
         System.out.println("获取所有用户：");
         for(UserDO user : userList){
-            System.out.println(JsonUtils.getJSONStringByObject(user));
+            System.out.println(JsonUtils.toJSONStringByObject(user));
         }
     }
 

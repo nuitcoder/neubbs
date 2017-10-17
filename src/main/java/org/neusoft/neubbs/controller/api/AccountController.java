@@ -29,6 +29,8 @@ import java.util.Map;
  *      4.注册
  *      5.修改密码
  *      6.激活账户
+ *
+ * @author Suvan
  */
 @Controller
 @RequestMapping("/api/account")
@@ -40,12 +42,20 @@ public class AccountController {
     @Autowired
     IRedisService redisService;
 
-    private static Logger logger = Logger.getLogger(AccountController.class);//日志类
+    private static Logger logger = Logger.getLogger(AccountController.class);
 
     /**
      * 1.获取用户信息（AccountController 默认访问）
-     * @param username
-     * @return ResponseJsonDTO
+     *
+     * 注解提示：
+     *      @LoginAuthroization 需要登录验证
+     *      @AdminRank 需要管理员权限验证
+     *      @RequestMapping 指定 api 路径
+     *      @RequestParam 的 required 属性声明参数是否必须，默认为true,此处声明 false 表示参数非必须，由 api 内部处理空情况
+     *      @RequestBody 将 ResponseJsonDTO 对象，转为 JSON 格式字符串，显示在页面
+     *
+     * @param username 用户名
+     * @return ResponseJsonDTO 数据传输对象
      * @throws Exception
      */
     @LoginAuthorization @AdminRank
@@ -55,15 +65,20 @@ public class AccountController {
         //@RequestParam 的 required 属性声明参数是否必须，默认为true,此处声明 false 表示参数非必须，由 api 内部处理空情况
 
         //参数合法性检测
-        String errorInfo = RequestParamsCheckUtils.checkUsername(username);//用户名检测
+        String errorInfo = RequestParamsCheckUtils.checkUsername(username);
         if (errorInfo != null) {
-            logger.warn(errorInfo); //打印警告信息
+            //日志打印警告信息
+            logger.warn(errorInfo);
             return new ResponseJsonDTO(AjaxRequestStatus.FAIL, errorInfo);
         }
 
-        //数据库获取用户信息
+        /*
+         *获取用户信息
+         *      1.数据库查询用户信息，获取 UserDO 对象
+         *      2.将 UserDO 对象转为 Map 对象
+         */
         UserDO user = userService.getUserInfoByName(username);
-        Map<String, Object> userInfoMap = JsonUtils.getMapByObject(user); //将 Object 对象转为 Map 类型
+        Map<String, Object> userInfoMap = JsonUtils.toMapByObject(user);
         if(userInfoMap == null){
             logger.warn(username + LogWarnInfo.DATABASE_NO_EXIST_USER);
             return new ResponseJsonDTO(AjaxRequestStatus.FAIL, AccountInfo.NO_USER);
@@ -74,7 +89,10 @@ public class AccountController {
 
     /**
      * 2.登录
-     * @param requestBodyParamsMap
+     *
+     * 注解提示：
+     *       @RequestBody 自动将 JSON 格式转为 java 对象
+     * @param requestBodyParamsMap  request Body 里的JSON 数据
      * @param request
      * @param response
      * @return ResponseJsonDTO
@@ -84,7 +102,7 @@ public class AccountController {
     @ResponseBody
     public ResponseJsonDTO login(@RequestBody Map<String,Object> requestBodyParamsMap,
                                  HttpServletRequest request, HttpServletResponse response) throws Exception {
-        //@RequestBody 自动将 JSON 格式转为 java 对象
+
         //获取 request body 的 JSON 格式参数
         String username = (String)requestBodyParamsMap.get(AccountInfo.USERNAME);
         String password = (String)requestBodyParamsMap.get(AccountInfo.PASSWORD);
@@ -99,12 +117,12 @@ public class AccountController {
             return new ResponseJsonDTO(AjaxRequestStatus.FAIL, errorInfo);
         }
 
-        //用户是否存在
+        //用户是否存在（与用户账户密码错误抛出一样警告，防止被试出用户是否存在）
         UserDO user = userService.getUserInfoByName(username);
-        Map<String, Object> userInfoMap = JsonUtils.getMapByObject(user);
+        Map<String, Object> userInfoMap = JsonUtils.toMapByObject(user);
         if (userInfoMap == null) {
             logger.warn(username + LogWarnInfo.DATABASE_NO_EXIST_USER);
-            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, AccountInfo.USERNAME_PASSWORD_ERROR); //防止被试出用户是否存在
+            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, AccountInfo.USERNAME_PASSWORD_ERROR);
         }
 
         //用户是否激活
@@ -113,31 +131,35 @@ public class AccountController {
             return new ResponseJsonDTO(AjaxRequestStatus.FAIL, AccountInfo.NO_ACTIVATE);
         }
 
-        //用户密码判断
-        String cipherText = SecretUtils.encryptUserPassword(password);//密码 MD5 加密后的密文
+        //用户密码是否正确（密码为 MD5 加密后的密文）
+        String cipherText = SecretUtils.encryptUserPassword(password);
         if (!cipherText.equals(userInfoMap.get(AccountInfo.PASSWORD))) {
             logger.warn(username + LogWarnInfo.USER_PASSWORD_NO_MATCH);
             return new ResponseJsonDTO(AjaxRequestStatus.FAIL, AccountInfo.USERNAME_PASSWORD_ERROR);
         }
 
-        //通过所有验证
-        //获取 Token，储存进本地 Cookie
-        String token = JWTTokenUtils.createToken(user);
+        /*
+         * 通过所有验证
+         *      1.获取登录 token（JWT 密文，内含用户 id，name，rank）,储存进Cookie
+         *      2.获取上下文对象，获取在线登录对象，在线登录人数 +1
+         *      3.api 返回成功状态 + token
+         */
+        String token = JwtTokenUtils.createToken(user);
         CookieUtils.saveCookie(response, AccountInfo.AUTHENTICATION, token);
 
-        //在线登录人数+1
-        ServletContext application = request.getServletContext();// 获取上下文对象（全局唯一）
-        Integer onlineLoginUser = (Integer) application.getAttribute(CountInfo.ONLINE_LOGIN_USER);//获取在线登录对象
+        ServletContext application = request.getServletContext();
+        Integer onlineLoginUser = (Integer) application.getAttribute(CountInfo.ONLINE_LOGIN_USER);
         if (onlineLoginUser == null) {
             onlineLoginUser = 0;
         }
-        application.setAttribute(CountInfo.ONLINE_LOGIN_USER, ++onlineLoginUser);//用户 +1
+        application.setAttribute(CountInfo.ONLINE_LOGIN_USER, ++onlineLoginUser);
 
         return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, AccountInfo.AUTHENTICATION, token);
     }
 
     /**
      * 3.注销
+     *
      * @param request
      * @param response
      * @return ResponseJsonDTO
@@ -170,6 +192,7 @@ public class AccountController {
     @RequestMapping(value = "/register", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
     public ResponseJsonDTO registerUser(@RequestBody Map<String, Object> requestBodyParamsMap) throws Exception {
+        //获取参数
         String username = (String)requestBodyParamsMap.get(AccountInfo.USERNAME);
         String password = (String)requestBodyParamsMap.get(AccountInfo.PASSWORD);
         String email = (String)requestBodyParamsMap.get(AccountInfo.EMAIL);
@@ -196,7 +219,7 @@ public class AccountController {
             user.setName(username);
             user.setEmail(email);
 
-            //密码加密
+            //密码MD5加密
             String cipherText = SecretUtils.encryptUserPassword(password);
             user.setPassword(cipherText);
 
@@ -204,14 +227,15 @@ public class AccountController {
 
         //注册成功（ //默认往 user 对象，注入用户 id（数据库主键自增））
         int newId = user.getId();
-        user = userService.getUserInfoById(newId);//根据 id 查询用户
-        Map<String, Object> userInfoMap = JsonUtils.getMapByObject(user);
+        user = userService.getUserInfoById(newId);
+        Map<String, Object> userInfoMap = JsonUtils.toMapByObject(user);
 
         return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, userInfoMap);
     }
 
     /**
      * 5.修改密码
+     *
      * @param requestBodyParamsMap
      * @return ResponseJsonDTO
      * @throws Exception
@@ -232,9 +256,9 @@ public class AccountController {
             return new ResponseJsonDTO(AjaxRequestStatus.FAIL, errorInfo);
         }
 
-        //更新用户密码,返回更新状态（true-成功，false-失败）
-        String newPassword = SecretUtils.encryptUserPassword(password); //新加密
-        if (!userService.alterUserPasswordByName(username, newPassword)) {
+        //更新用户密码（需加密）,返回更新状态（true-成功，false-失败）
+        String newPassword = SecretUtils.encryptUserPassword(password);
+        if (!userService.alterUserPassword(username, newPassword)) {
             logger.warn(username + LogWarnInfo.DATABASE_NO_EXIST_USER);
             return new ResponseJsonDTO(AjaxRequestStatus.FAIL, AccountInfo.NO_USER);
         }
@@ -257,8 +281,12 @@ public class AccountController {
             return new ResponseJsonDTO(AjaxRequestStatus.FAIL, errorInfo);
         }
 
+        /*
+         * 获取 email 和 expireTime 参数
+          *    1. 密文解密成明文
+          *    2. 明文分组，获取参数
+         */
         String plainText = SecretUtils.decryptBase64(token);
-        //获取 email + 过期时间
         String [] array = plainText.split("-");
         String email = array[0];
         String expireTime = array[1];
@@ -269,8 +297,8 @@ public class AccountController {
             return new ResponseJsonDTO(AjaxRequestStatus.FAIL, AccountInfo.LINK_INVALID);
         }
 
-        //激活账户
-        if (!userService.activationUserByEmail(email)) { //不存在用户账户激活失败
+        //激活账户（激活失败，表示不存在用户）
+        if (!userService.activationUser(email)) {
             logger.warn(LogWarnInfo.ACCOUNT_ACTIVATION_FAIL_EMAIL_NO_REGISTER + LogWarnInfo.DATABASE_NO_EXIST_USER);
             return new ResponseJsonDTO(AjaxRequestStatus.FAIL, AccountInfo.ACTIVATION_FAIL_EMAIL_NO_REGISTER);
         }

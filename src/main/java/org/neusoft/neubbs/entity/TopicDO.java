@@ -4,6 +4,8 @@ import java.util.Date;
 
 /**
  * forum_topic表 领域对象
+ *
+ * @author Suvan
  */
 public class TopicDO {
     private Integer id;
@@ -64,5 +66,18 @@ public class TopicDO {
     }
     public void setCreatetime(Date createtime){
         this.createtime = createtime;
+    }
+
+    @Override
+    public String toString() {
+        return "TopicDO{" +
+                "id=" + id +
+                ", userid=" + userid +
+                ", category='" + category + '\'' +
+                ", title='" + title + '\'' +
+                ", comment='" + comment + '\'' +
+                ", lastreplytime=" + lastreplytime +
+                ", createtime=" + createtime +
+                '}';
     }
 }

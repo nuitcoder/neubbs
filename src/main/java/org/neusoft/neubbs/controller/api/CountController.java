@@ -15,6 +15,8 @@ import javax.servlet.http.HttpServletRequest;
  * 统计 api
  *      1.在线访问人数
  *      2.在线登录人数
+ *
+ * @author Suvan
  */
 @Controller
 @RequestMapping("/api/count/")
@@ -24,6 +26,7 @@ public class CountController {
 
     /**
      * 1.在线访问人数
+     *
      * @param request
      * @return ResponseJsonDTO
      * @throws Exception
@@ -39,6 +42,7 @@ public class CountController {
 
     /**
      * 2.在线登录人数
+     *
      * @param request
      * @return ResponseJsonDTO
      * @throws Exception

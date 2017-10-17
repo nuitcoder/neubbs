@@ -23,7 +23,7 @@ public class JsonUtilsTestCast {
             user.setName("hello");
             user.setRank("admin");
 
-        System.out.println(JsonUtils.getJSONStringByObject(user));
+        System.out.println(JsonUtils.toJSONStringByObject(user));
     }
 
     /**
@@ -35,8 +35,8 @@ public class JsonUtilsTestCast {
             user.setName("suvan");
             user.setPassword("1345");
 
-        String json = JsonUtils.getJSONStringByObject(user);
-        Map<String, Object> map = JsonUtils.getMapByJSONString(json);
+        String json = JsonUtils.toJSONStringByObject(user);
+        Map<String, Object> map = JsonUtils.toMapByJSONString(json);
 
         for(String key: map.keySet()){
             System.out.println(key + " : " + map.get(key));
@@ -53,7 +53,7 @@ public class JsonUtilsTestCast {
             user.setName("testoneuser");
             user.setAddress("中国某地");
 
-        Map<String, Object> map = JsonUtils.getMapByObject(user);
+        Map<String, Object> map = JsonUtils.toMapByObject(user);
 
         for(String key: map.keySet()){
             System.out.println(key + " : " + map.get(key));

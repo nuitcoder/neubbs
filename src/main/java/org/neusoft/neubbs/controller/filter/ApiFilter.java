@@ -6,7 +6,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- *  添加 Resposne Header Token 过滤器（访问 /api/* 路径后的添加请求）
+ *  添加 resposne Header Token 过滤器（访问 /api/* 路径后的添加请求）
+ *
+ *  @author Suvan
  */
 public class ApiFilter implements Filter {
 
@@ -26,16 +28,7 @@ public class ApiFilter implements Filter {
         //访问api，即创建 session(用于统计在线人数)
         request.getSession(true);
 
-        //response Header 添加 Authorization 参数
-        //if(response.getHeader(AccountInfo.AUTHENTICATION) == null){
-        //    //读取本地 Cookie
-        //    String authorization = CookieUtils.getCookieValue(request, AccountInfo.AUTHENTICATION);//Cookie 取出，没有则为 null
-        //    if(authorization != null){
-        //        response.addHeader(AccountInfo.AUTHENTICATION, authorization);
-        //    }
-        //}
-
-        //放行
+        //过滤器放行
         chain.doFilter(request,response);
     }
 

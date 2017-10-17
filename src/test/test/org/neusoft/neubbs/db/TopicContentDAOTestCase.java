@@ -70,7 +70,7 @@ public class TopicContentDAOTestCase {
     public void test3_GetTopicContentById(){
        TopicContentDO topicContent = topicContentDAO.getTopicContentById(1);
 
-        System.out.println("查询结果：" + JsonUtils.getJSONStringByObject(topicContent));
+        System.out.println("查询结果：" + JsonUtils.toJSONStringByObject(topicContent));
     }
 
     /**

@@ -15,22 +15,26 @@ import java.util.Map;
 
 /**
  * Token 工具类
+ *
+ * @author Suvan
  */
-public class JWTTokenUtils {
+public class JwtTokenUtils {
 
     private final static String JWT = "JWT";
     private final static String HS256 = "HS256";
 
-    private final static String HEADER = "Header";       //头部
-    private final static String HEADER_TYP = "typ";      //类型
-    private final static String HEADER_ALG = "alg";      //加密算法
+    private final static String HEADER = "Header";
+    private final static String HEADER_TYP = "typ";
+    private final static String HEADER_ALG = "alg";
 
 
     private final static String SET_ISSUER = "neubbs";
     private final static String SET_SUBJECT =  "www.neubbs.com";
     private final static String SET_AUDIENCE = "count@neubbs.com";
 
-    //Claim参数
+    /**
+     * Claim参数（保存用户信息）
+     */
     private final static  String CLAIM_NAME = "name";
     private final static String CLAIM_ID = "id";
     private final static String CLAIN_RANK = "rank";
@@ -43,13 +47,13 @@ public class JWTTokenUtils {
      * @throws Exception
      */
     public static String createToken(UserDO user) throws Exception{
-        Map<String,Object> headerMap = new HashMap<String, Object>();
+        Map<String,Object> headerMap = new HashMap<String, Object>(2);
             headerMap.put(HEADER_ALG, HS256);
             headerMap.put(HEADER_TYP, JWT);
 
-        //签发时间,与过期时间
+        //签发时间,与过期时间（过期无法解密）
         long iat = System.currentTimeMillis();
-        long ext = iat + SecretInfo.EXPIRETIME_SERVEN_DAY;//过期则无法解密
+        long ext = iat + SecretInfo.EXPIRETIME_SERVEN_DAY;
         //long ext = iat + 1;//测试过期token是否无效
 
         //设置Playload,且使用HS256加密,生成token

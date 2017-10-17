@@ -7,7 +7,9 @@ import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
 /**
- * 在线访问人数监听器（监听 Session 的创建与销毁）
+ *  Api Session 监听器（监听 Session 的创建与销毁）
+ *
+ *  @author Suvan
  */
 public class ApiSessionListener implements HttpSessionListener{
 
@@ -26,7 +28,7 @@ public class ApiSessionListener implements HttpSessionListener{
             onlineUser = 0;
         }
 
-        //在线访问用户+1
+        //在线访问用户 +1
         onlineUser ++;
 
         application.setAttribute(CountInfo.ONLINE_VISIT_USER, onlineUser);

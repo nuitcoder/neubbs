@@ -8,6 +8,8 @@ import java.util.Map;
 /**
  * response JSON 单个Map 数据对象（api 返回数据格式）
  * 【Data Transfer Object】
+ *
+ * @author Suvan
  */
 public class ResponseJsonDTO {
     private Boolean success;
@@ -61,5 +63,14 @@ public class ResponseJsonDTO {
     }
     public void setModel(Map<String, Object> model){
         this.model = model;
+    }
+
+    @Override
+    public String toString() {
+        return "ResponseJsonDTO{" +
+                "success=" + success +
+                ", message='" + message + '\'' +
+                ", model=" + model +
+                '}';
     }
 }

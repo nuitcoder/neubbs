@@ -2,6 +2,8 @@ package org.neusoft.neubbs.util;
 
 /**
  * 随机数 工具类
+ *
+ * @author Suvan
  */
 public class RandomUtils {
 

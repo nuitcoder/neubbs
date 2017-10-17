@@ -2,6 +2,8 @@ package org.neusoft.neubbs.constant.api;
 
 /**
  * 用户信息
+ *
+ * @author Suvan
  */
 public interface AccountInfo {
     String ID = "id";
@@ -19,7 +21,15 @@ public interface AccountInfo {
     String STATE = "state";
     String CREATETIME = "createtime";
 
-    //api 返回数据
+    /**
+     * token 验证
+     */
+    String AUTHENTICATION = "authentication";
+    String RANK_ADMIN = "admin";
+
+    /**
+     *  api 警告信息
+     */
     String NO_USER = "the user does not exist";
     String NO_ACTIVATE   = "account is not active";
     String PASSWORD_ERROR = "user password is incorrect";
@@ -31,9 +41,6 @@ public interface AccountInfo {
     String NO_PERMISSION= "no permission";
     String ACTIVATION_SUCCESSFUL =  "activation successful！";
 
-    //验证 Token
-    String AUTHENTICATION = "authentication";
-    String RANK_ADMIN = "admin"; //管理员权限
 
 
 }

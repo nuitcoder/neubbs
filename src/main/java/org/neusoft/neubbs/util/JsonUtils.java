@@ -8,6 +8,8 @@ import java.util.Map;
 
 /**
  * JSON 工具类
+ *
+ * @author Suvan
  */
 public class JsonUtils {
     /**
@@ -16,7 +18,7 @@ public class JsonUtils {
      * @return
      * @throws JsonProcessingException
      */
-    public static String getJSONStringByObject(Object obj){
+    public static String toJSONStringByObject(Object obj){
         ObjectMapper mapper = new ObjectMapper();
 
         String json = null;
@@ -33,7 +35,7 @@ public class JsonUtils {
      * @return
      * @throws IOException
      */
-    public static Map<String, Object> getMapByJSONString(String json){
+    public static Map<String, Object> toMapByJSONString(String json){
         ObjectMapper mapper = new ObjectMapper();
 
         Map<String, Object> map = null;
@@ -49,7 +51,7 @@ public class JsonUtils {
      * @param obj
      * @return
      */
-    public static Map<String, Object> getMapByObject(Object obj){
+    public static Map<String, Object> toMapByObject(Object obj){
         ObjectMapper mapper = new ObjectMapper();
         String json = null;
         Map<String, Object> map = null;

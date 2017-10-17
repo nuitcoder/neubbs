@@ -7,6 +7,11 @@ import java.util.Date;
 /**
  *  forum_user表 领域对象
  *  【Domain Object】
+ *
+ *  注解提醒：
+ *      @JsonIgnore 可在字段名上加入此注解，则不进行序列化
+ *
+ *  @author Suvan
  */
 public class UserDO {
 
@@ -14,19 +19,18 @@ public class UserDO {
 
     private String name;
 
-    //@JsonIgnore //生成JSON 忽略该属性
     private String password;
     private String email;
     private String sex;
     private String birthday;
     private String address;
 
-    private String description;          //一句话描述
-    private String personalprofile;      //个人简介
-    private String image;                //头像地址
+    private String description;
+    private String personalprofile;
+    private String image;
 
-    private String rank;                 //级别
-    private Integer state;               //激活状态
+    private String rank;
+    private Integer state;
 
     private Date createtime;
 
@@ -115,5 +119,24 @@ public class UserDO {
     }
     public void setCreatetime(Date createtime) {
         this.createtime = createtime;
+    }
+
+    @Override
+    public String toString() {
+        return "UserDO{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", password='" + password + '\'' +
+                ", email='" + email + '\'' +
+                ", sex='" + sex + '\'' +
+                ", birthday='" + birthday + '\'' +
+                ", address='" + address + '\'' +
+                ", description='" + description + '\'' +
+                ", personalprofile='" + personalprofile + '\'' +
+                ", image='" + image + '\'' +
+                ", rank='" + rank + '\'' +
+                ", state=" + state +
+                ", createtime=" + createtime +
+                '}';
     }
 }
