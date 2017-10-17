@@ -26,4 +26,17 @@
 
 	<!-- 导入 spring-redis-context.xml 配置文件 -->
 	<import resource="classpath:spring-redis-context.xml" />
+
+	<!-- Spring 线程池 -->
+	<bean id="taskExecutro" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+		<property name="corePoolSize" value="5" />
+		<property name="keepAliveSeconds" value="200" />
+		<property name="maxPoolSize" value="10" />
+		<property name="queueCapacity" value="20" />
+		<property name="rejectedExecutionHandler">
+			<bean class="java.util.concurrent.ThreadPoolExecutor$CallerRunsPolicy" />
+		</property>
+	</bean>
+
+
 </beans>

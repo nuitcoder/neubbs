@@ -9,7 +9,7 @@ import javax.servlet.http.HttpSessionListener;
 /**
  * 在线访问人数监听器（监听 Session 的创建与销毁）
  */
-public class OnlineVisitUserListener implements HttpSessionListener{
+public class ApiSessionListener implements HttpSessionListener{
 
     /**
      * Session 创建时调用

@@ -42,6 +42,7 @@ public class UserServiceImpl implements IUserService {
      * @param username
      * @return UserDO
      */
+    @Override
    public UserDO getUserInfoByName(String username){
        return userDAO.getUserByName(username);
    }

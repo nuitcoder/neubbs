@@ -14,6 +14,7 @@ public interface LogWarnInfo {
     String ACCOUNT_NO_ACTIVATION_NO_LOGIN = " 账户未激活，无法登录，请到指定邮箱，点击激活链接，激活账户";
     String ACCOUNT_ACTIVATION_URL_ALREAD_EXPIRE_TIME = " 该激活链接已经过期，请重新注册";
     String ACCOUNT_ACTIVATION_FAIL_EMAIL_NO_REGISTER = "账户激活失败，该邮箱未注册，";
+    String ACCOUNT_ACTIVATION_SUCCESSFUL = " 邮箱账户激活成功！";
 
     //密码匹配
     String USER_PASSWORD_NO_MATCH = " 用户密码不匹配 ，请重新输入";

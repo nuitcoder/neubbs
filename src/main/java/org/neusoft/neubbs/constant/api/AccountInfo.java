@@ -29,6 +29,7 @@ public interface AccountInfo {
     String ACTIVATION_FAIL_EMAIL_NO_REGISTER = "activation failed, mailbox is not registered";
     String TOKEN_EXPIRED = "token expired";
     String NO_PERMISSION= "no permission";
+    String ACTIVATION_SUCCESSFUL =  "activation successful！";
 
     //验证 Token
     String AUTHENTICATION = "authentication";

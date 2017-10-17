@@ -275,6 +275,7 @@ public class AccountController {
             return new ResponseJsonDTO(AjaxRequestStatus.FAIL, AccountInfo.ACTIVATION_FAIL_EMAIL_NO_REGISTER);
         }
 
-        return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS);
+        logger.warn(email + LogWarnInfo.ACCOUNT_ACTIVATION_SUCCESSFUL);
+        return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, AccountInfo.ACTIVATION_SUCCESSFUL);
     }
 }

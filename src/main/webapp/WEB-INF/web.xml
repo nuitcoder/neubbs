@@ -22,7 +22,7 @@
         <listener-class>org.springframework.web.util.IntrospectorCleanupListener</listener-class> <!-- 防止Spring内存溢出监听器 -->
     </listener>
     <listener>
-        <listener-class>org.neusoft.neubbs.controller.listener.OnlineVisitUserListener</listener-class><!-- 统计在线人数 -->
+        <listener-class>org.neusoft.neubbs.controller.listener.ApiSessionListener</listener-class><!-- 统计在线人数 -->
     </listener>
 
     <servlet>
@@ -43,7 +43,7 @@
     <!-- 添加 Response Header Token 过滤器 -->
     <filter>
         <filter-name>AddResponseHeaderTokenFilter</filter-name>
-        <filter-class>org.neusoft.neubbs.controller.filter.AddResponseHeaderTokenFilter</filter-class>
+        <filter-class>org.neusoft.neubbs.controller.filter.ApiFilter</filter-class>
     </filter>
     <filter-mapping>
         <filter-name>AddResponseHeaderTokenFilter</filter-name>

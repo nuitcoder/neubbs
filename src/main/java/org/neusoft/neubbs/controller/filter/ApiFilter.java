@@ -8,7 +8,7 @@ import java.io.IOException;
 /**
  *  添加 Resposne Header Token 过滤器（访问 /api/* 路径后的添加请求）
  */
-public class AddResponseHeaderTokenFilter implements Filter {
+public class ApiFilter implements Filter {
 
     /**
      * 执行过滤器
@@ -18,6 +18,7 @@ public class AddResponseHeaderTokenFilter implements Filter {
      * @throws ServletException
      * @throws IOException
      */
+    @Override
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws ServletException, IOException {
         HttpServletRequest request = (HttpServletRequest)req;
         HttpServletResponse response = (HttpServletResponse)resp;
@@ -44,10 +45,12 @@ public class AddResponseHeaderTokenFilter implements Filter {
      * @param config
      * @throws ServletException
      */
+    @Override
     public void init(FilterConfig config) throws ServletException {}
 
     /**
      * 销毁
      */
+    @Override
     public void destroy(){}
 }

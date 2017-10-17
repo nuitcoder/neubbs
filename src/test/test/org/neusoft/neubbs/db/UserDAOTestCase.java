@@ -65,7 +65,7 @@ public class UserDAOTestCase {
         for(String admin: adminArray){
             user.setName(admin);
             user.setPassword(SecretUtils.encryptUserPassword("123456"));
-            user.setEmail(admin + "@neubbs.com");
+            user.setEmail(emailArray[porinter++]);
 
             userDAO.saveUser(user); //注册用户
 

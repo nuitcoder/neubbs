@@ -14,6 +14,7 @@ import org.neusoft.neubbs.util.SecretUtils;
 import org.neusoft.neubbs.util.SendEmailUtils;
 import org.neusoft.neubbs.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,6 +35,9 @@ public class EmailController {
 
     @Autowired
     IUserService userService;
+
+    @Autowired
+    private ThreadPoolTaskExecutor taskExecutor;
 
     private static Logger logger = Logger.getLogger(EmailController.class);
 
@@ -68,14 +72,14 @@ public class EmailController {
         //构建邮件内容
         String content = StringUtils.createEmailActivationHtmlString(ACTIVATION_URL + token);
 
-        //发送邮件（另启线程）
-        new Thread(new Runnable() {
+        //发送邮件（Spring 线程池，另启线程）
+        taskExecutor.execute(new Runnable(){
             @Override
             public void run() {
                 SendEmailUtils.sendEmail(email, EmailInfo.EMAIL_SUBJECT , content);
                 logger.warn(email + LogWarnInfo.ACTIVATION_EMAIL_SEND_SUCCESS);
             }
-        }).start();
+        });
 
        return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, EmailInfo.MAIL_SENT_SUCCESS);
     }
