@@ -1,23 +1,26 @@
-import axios from 'axios'
-
-const LOGIN_API_URL = '/api/account/login'
-const LOGOUT_API_URL = '/api/account/logout'
+import api from './api'
 
 export default {
   authenticated: false,
 
+  /**
+   * login account and set auth
+   *
+   * @param {object} data login data(usernaem, password)
+   * @param {function} callback response callback
+   * @returns {undefined}
+   */
   login(data, callback) {
     const { username, password } = data
 
-    axios.post(LOGIN_API_URL, {
+    api.account.login({
       username,
       password,
     }).then((response) => {
       const rdata = response.data
 
       if (rdata.success) {
-        // TODO: need to fix <16-10-17, Ahonn Jiang> //
-        const { Authentication: token } = rdata.model[0]
+        const { authentication: token } = rdata.model
 
         localStorage.setItem('token', token)
         localStorage.setItem('username', username)
@@ -30,8 +33,14 @@ export default {
     })
   },
 
+  /**
+   * logout account and remove auth
+   *
+   * @param {function} callback response callback
+   * @returns {undefined}
+   */
   logout(callback) {
-    axios.get(LOGOUT_API_URL)
+    api.account.logout()
       .then((response) => {
         const rdata = response.data
         if (rdata.success) {
@@ -50,6 +59,12 @@ export default {
     this.onChange = listener
   },
 
+
+  /**
+   * check whether the authenticated
+   *
+   * @returns {boolean} authenticated
+   */
   checkAuth() {
     const token = localStorage.getItem('token')
     this.authenticated = !!token
