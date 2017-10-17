@@ -5,7 +5,6 @@ import org.neusoft.neubbs.constant.ajax.AjaxRequestStatus;
 import org.neusoft.neubbs.constant.api.AccountInfo;
 import org.neusoft.neubbs.constant.api.CountInfo;
 import org.neusoft.neubbs.constant.log.LogWarnInfo;
-import org.neusoft.neubbs.controller.annotation.AdminRank;
 import org.neusoft.neubbs.controller.annotation.LoginAuthorization;
 import org.neusoft.neubbs.dto.ResponseJsonDTO;
 import org.neusoft.neubbs.entity.UserDO;
@@ -24,12 +23,11 @@ import java.util.Map;
 /**
  *   账户 api
  *      1.获取用户信息
- *      2.用户存在性
- *      3.登录
- *      4.注销
- *      5.注册
- *      6.修改密码
- *      7.激活账户
+ *      2.登录
+ *      3.注销
+ *      4.注册
+ *      5.修改密码
+ *      6.激活账户
  *
  * @author Suvan
  */
@@ -52,18 +50,19 @@ public class AccountController {
      * 注解提示：
      *      @LoginAuthroization 需要登录验证
      *      @AdminRank 需要管理员权限验证
+     *
      *      @RequestMapping 指定 api 路径
      *      @RequestParam 的 required 属性声明参数是否必须，默认为true,此处声明 false 表示参数非必须，由 api 内部处理空情况
      *      @RequestBody 将 ResponseJsonDTO 对象，转为 JSON 格式字符串，显示在页面
      *
      * @param username 用户名
+     * @param request Http请求
      * @return ResponseJsonDTO 数据传输对象
      * @throws Exception
      */
-    @LoginAuthorization @AdminRank
     @RequestMapping(value = "", method = RequestMethod.GET)
     @ResponseBody
-    public ResponseJsonDTO getUserInfoByName(@RequestParam(value = "username", required = false)String username) throws Exception{
+    public ResponseJsonDTO getUserInfoByName(@RequestParam(value = "username", required = false)String username, HttpServletRequest request) throws Exception{
         //@RequestParam 的 required 属性声明参数是否必须，默认为true,此处声明 false 表示参数非必须，由 api 内部处理空情况
 
         //参数合法性检测
@@ -86,35 +85,21 @@ public class AccountController {
             return new ResponseJsonDTO(AjaxRequestStatus.FAIL, AccountInfo.NO_USER);
         }
 
+
+        /*
+         * 判断是否登录（Cookie 内是否有参数）
+         *      1.未登录，返回 true，不返回用户信息
+         *      2.已登录，返回 true，同时返回用户信息
+         */
+        String authroization =  CookieUtils.getCookieValue(request, AccountInfo.AUTHENTICATION);;
+        if (authroization == null) {
+            return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS);
+        }
         return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, userInfoMap);
     }
 
     /**
-     * 2.用户存在性
-     *
-     * @param username
-     * @return ResponseJsonDTO
-     */
-    @RequestMapping(value = "/exist", method = RequestMethod.GET)
-    @ResponseBody
-    public ResponseJsonDTO accountExist(@RequestParam(value = "username", required = false) String username){
-        String errorInfo = RequestParamsCheckUtils.checkUsername(username);
-        if(errorInfo != null){
-            logger.warn(errorInfo);
-            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, errorInfo);
-        }
-
-        UserDO user = userService.getUserInfoByName(username);
-        if(user == null){
-            logger.warn(username + LogWarnInfo.DATABASE_NO_EXIST_USER);
-            return new ResponseJsonDTO(AjaxRequestStatus.FAIL);
-        }
-
-        return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS);
-    }
-
-    /**
-     * 3.登录
+     * 2.登录
      *
      * 注解提示：
      *       @RequestBody 自动将 JSON 格式转为 java 对象
@@ -185,7 +170,7 @@ public class AccountController {
     }
 
     /**
-     * 4.注销
+     * 3.注销
      *
      * @param request
      * @param response
@@ -211,7 +196,7 @@ public class AccountController {
 
 
     /**
-     * 5.注册
+     * 4.注册
      * @param requestBodyParamsMap
      * @return ResponseJsonDTO
      * @throws Exception
@@ -261,7 +246,7 @@ public class AccountController {
     }
 
     /**
-     * 6.修改密码
+     * 5.修改密码
      *
      * @param requestBodyParamsMap
      * @return ResponseJsonDTO
@@ -294,7 +279,7 @@ public class AccountController {
     }
 
     /**
-     * 7.激活账户
+     * 6.激活账户
      * @param token
      * @return ResponseJsonDTO
      * @throws Exception
