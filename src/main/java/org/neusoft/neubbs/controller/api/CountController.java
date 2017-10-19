@@ -22,7 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 @RequestMapping("/api/count/")
 public class CountController {
 
-    private static Logger logger = Logger.getLogger(CountController.class);
+    private static final Logger logger = Logger.getLogger(CountController.class);
 
     /**
      * 1.在线访问人数

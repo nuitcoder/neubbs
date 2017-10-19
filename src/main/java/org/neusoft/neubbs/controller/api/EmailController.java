@@ -6,6 +6,8 @@ import org.neusoft.neubbs.constant.api.AccountInfo;
 import org.neusoft.neubbs.constant.api.EmailInfo;
 import org.neusoft.neubbs.constant.log.LogWarnInfo;
 import org.neusoft.neubbs.constant.secret.SecretInfo;
+import org.neusoft.neubbs.controller.exception.AcountErrorException;
+import org.neusoft.neubbs.controller.exception.ParamsErrorException;
 import org.neusoft.neubbs.dto.ResponseJsonDTO;
 import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.service.IUserService;
@@ -33,18 +35,18 @@ import java.util.Map;
 @RequestMapping("/api/email")
 public class EmailController {
 
-    /**
-     * 账户激活 URL
-     */
-    private final String ACCOUNT_ACTIVATION_URL = "http://localhost:8080/api/account/activation?token=";
-
     @Autowired
     IUserService userService;
 
     @Autowired
     private ThreadPoolTaskExecutor taskExecutor;
 
-    private static Logger logger = Logger.getLogger(EmailController.class);
+    private static final Logger logger = Logger.getLogger(EmailController.class);
+
+    /**
+     * 账户激活 URL
+     */
+    private final  String ACCOUNT_ACTIVATION_URL = "http://localhost:8080/api/account/activation?token=";
 
     /**
      * 1.发送邮件（账户激活URL）
@@ -59,15 +61,13 @@ public class EmailController {
 
         String errorInfo = RequestParamsCheckUtils.checkEmail(email);
         if (errorInfo != null) {
-            logger.warn(errorInfo);
-            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, errorInfo);
+            throw new ParamsErrorException(errorInfo).log(errorInfo);
         }
 
         //检测数据库是否存在此邮箱
         UserDO user = userService.getUserInfoByEmail(email);
         if(user == null){
-            logger.warn(LogWarnInfo.EMAIL_NO_REGISTER_NO_SEND_EMAIL);
-            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, EmailInfo.EMAIL_NO_REIGSTER);
+            throw new AcountErrorException(EmailInfo.EMAIL_NO_REIGSTER).log(LogWarnInfo.EMAIL_NO_REGISTER_NO_SEND_EMAIL);
         }
 
         //构建 token（用户邮箱 + 过期时间）
@@ -82,7 +82,6 @@ public class EmailController {
             @Override
             public void run() {
                 SendEmailUtils.sendEmail(email, EmailInfo.EMAIL_SUBJECT , content);
-                logger.warn(email + LogWarnInfo.ACTIVATION_EMAIL_SEND_SUCCESS);
             }
         });
 

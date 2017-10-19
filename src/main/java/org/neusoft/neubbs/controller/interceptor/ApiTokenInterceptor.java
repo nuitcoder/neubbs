@@ -1,30 +1,24 @@
 package org.neusoft.neubbs.controller.interceptor;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.log4j.Logger;
-import org.neusoft.neubbs.constant.ajax.AjaxRequestStatus;
-import org.neusoft.neubbs.constant.ajax.ResponseStyleInfo;
 import org.neusoft.neubbs.constant.api.AccountInfo;
 import org.neusoft.neubbs.constant.log.LogWarnInfo;
 import org.neusoft.neubbs.constant.secret.SecretInfo;
 import org.neusoft.neubbs.controller.annotation.AdminRank;
 import org.neusoft.neubbs.controller.annotation.LoginAuthorization;
-import org.neusoft.neubbs.dto.ResponseJsonDTO;
 import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.service.IRedisService;
 import org.neusoft.neubbs.service.IUserService;
 import org.neusoft.neubbs.util.AnnotationUtils;
 import org.neusoft.neubbs.util.CookieUtils;
-import org.neusoft.neubbs.util.JsonUtils;
 import org.neusoft.neubbs.util.JwtTokenUtils;
+import org.neusoft.neubbs.util.ResponsePrintWriterUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
 
 /**
  *  api token 拦截器，登录验证 or 管理员权限验证
@@ -88,27 +82,6 @@ public class ApiTokenInterceptor implements HandlerInterceptor{
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object obj, Exception exception) throws Exception {}
 
-    /**
-     * 直接输出失败的JSON提示信息
-     *
-     * @param response
-     * @param failMessage
-     * @throws JsonProcessingException
-     * @throws IOException
-     */
-    public void outFailJSONMessage(HttpServletResponse response,String failMessage) throws IOException{
-        ResponseJsonDTO responseJson = new ResponseJsonDTO(AjaxRequestStatus.FAIL, failMessage);
-
-        String json = JsonUtils.toJSONStringByObject(responseJson);
-
-        response.setCharacterEncoding(ResponseStyleInfo.CHARACTER_ENCODING);
-        response.setContentType(ResponseStyleInfo.CONTENT_TYPE);
-
-        PrintWriter writer = response.getWriter();
-            writer.print(json);
-            writer.flush();
-            writer.close();
-    }
 
     /**
      * @LoginAuthroization 执行登录验证
@@ -130,7 +103,7 @@ public class ApiTokenInterceptor implements HandlerInterceptor{
                 UserDO user = JwtTokenUtils.verifyToken(authroization, SecretInfo.TOKEN_SECRET_KEY);
                 if(user == null){
                     logger.warn(LogWarnInfo.JWT_TOKEN_ALREAD_EXPIRE);
-                    outFailJSONMessage(response, AccountInfo.TOKEN_EXPIRED);
+                    ResponsePrintWriterUtils.outFailJSONMessage(response, AccountInfo.TOKEN_EXPIRED);
                     return false;
                 }
 
@@ -140,7 +113,7 @@ public class ApiTokenInterceptor implements HandlerInterceptor{
             }else{
                 //无登录，无权访问 api
                 logger.warn(LogWarnInfo.NO_VISIT_AHTORITY_PLEASE_LOGIN);
-                outFailJSONMessage(response, AccountInfo.NO_PERMISSION);
+                ResponsePrintWriterUtils. outFailJSONMessage(response, AccountInfo.NO_PERMISSION);
                 return false;
             }
         }
@@ -167,7 +140,7 @@ public class ApiTokenInterceptor implements HandlerInterceptor{
             }else{
                 //无管理员权限，无法访问api
                 logger.warn(LogWarnInfo.USER_RANK_NO_ENOUGH_NO_ADMIN);
-                outFailJSONMessage(response, AccountInfo.NO_PERMISSION);
+                ResponsePrintWriterUtils.outFailJSONMessage(response, AccountInfo.NO_PERMISSION);
                 return false;
 
             }

@@ -6,6 +6,9 @@ import org.neusoft.neubbs.constant.api.AccountInfo;
 import org.neusoft.neubbs.constant.api.CountInfo;
 import org.neusoft.neubbs.constant.log.LogWarnInfo;
 import org.neusoft.neubbs.controller.annotation.LoginAuthorization;
+import org.neusoft.neubbs.controller.exception.AcountErrorException;
+import org.neusoft.neubbs.controller.exception.ParamsErrorException;
+import org.neusoft.neubbs.controller.exception.TokenExpireException;
 import org.neusoft.neubbs.dto.ResponseJsonDTO;
 import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.service.IRedisService;
@@ -41,7 +44,7 @@ public class AccountController {
     @Autowired
     IRedisService redisService;
 
-    private static Logger logger = Logger.getLogger(AccountController.class);
+    private static final Logger logger = Logger.getLogger(AccountController.class);
 
 
     /**
@@ -68,21 +71,20 @@ public class AccountController {
         //参数合法性检测
         String errorInfo = RequestParamsCheckUtils.checkUsername(username);
         if (errorInfo != null) {
-            //日志打印警告信息
-            logger.warn(errorInfo);
-            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, errorInfo);
+            //抛出异常（错误信息，日志信息）
+            throw new ParamsErrorException(errorInfo).log(errorInfo);
         }
 
         /*
          *获取用户信息
          *      1.数据库查询用户信息，获取 UserDO 对象
          *      2.将 UserDO 对象转为 Map 对象
+         *      3.不存在用户，则抛出异常
          */
         UserDO user = userService.getUserInfoByName(username);
         Map<String, Object> userInfoMap = JsonUtils.toMapByObject(user);
         if(userInfoMap == null){
-            logger.warn(username + LogWarnInfo.DATABASE_NO_EXIST_USER);
-            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, AccountInfo.NO_USER);
+            throw new AcountErrorException(AccountInfo.NO_USER).log(username + LogWarnInfo.DATABASE_NO_EXIST_USER);
         }
 
 
@@ -125,29 +127,25 @@ public class AccountController {
                             .putParamValues(new String[]{username, password})
                             .checkParamsNorm();
         if (errorInfo != null) {
-            logger.warn(errorInfo);
-            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, errorInfo);
+            throw new ParamsErrorException(errorInfo).log(errorInfo);
         }
 
         //用户是否存在（与用户账户密码错误抛出一样警告，防止被试出用户是否存在）
         UserDO user = userService.getUserInfoByName(username);
         Map<String, Object> userInfoMap = JsonUtils.toMapByObject(user);
         if (userInfoMap == null) {
-            logger.warn(username + LogWarnInfo.DATABASE_NO_EXIST_USER);
-            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, AccountInfo.USERNAME_PASSWORD_ERROR);
+            throw new AcountErrorException(AccountInfo.NO_USER).log(username + LogWarnInfo.DATABASE_NO_EXIST_USER);
         }
 
         //用户是否激活
         if((Integer)userInfoMap.get(AccountInfo.STATE) == 0){
-            logger.warn(username + LogWarnInfo.ACCOUNT_NO_ACTIVATION_NO_LOGIN);
-            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, AccountInfo.NO_ACTIVATE);
+            throw new AcountErrorException(AccountInfo.NO_ACTIVATE).log(username + LogWarnInfo.ACCOUNT_NO_ACTIVATION_NO_LOGIN);
         }
 
         //用户密码是否正确（密码为 MD5 加密后的密文）
         String cipherText = SecretUtils.encryptUserPassword(password);
         if (!cipherText.equals(userInfoMap.get(AccountInfo.PASSWORD))) {
-            logger.warn(username + LogWarnInfo.USER_PASSWORD_NO_MATCH);
-            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, AccountInfo.USERNAME_PASSWORD_ERROR);
+            throw new AcountErrorException(AccountInfo.USERNAME_PASSWORD_ERROR).log(username + LogWarnInfo.USER_PASSWORD_NO_MATCH);
         }
 
         /*
@@ -215,15 +213,13 @@ public class AccountController {
                             .putParamValues(new String[]{username, password, email})
                             .checkParamsNorm();
         if (errorInfo != null) {
-            logger.warn(errorInfo);
-            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, errorInfo);
+            throw new ParamsErrorException(errorInfo).log(errorInfo);
         }
 
         //判断用户名唯一
         UserDO user = userService.getUserInfoByName(username);
         if (user != null) {
-            logger.warn(username + LogWarnInfo.DATABASE_ALREAD_EXIST_USER_NO_AGAIN_ADD);
-            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, AccountInfo.USERNAME_REGISTERED);
+            throw new AcountErrorException(AccountInfo.USERNAME_REGISTERED).log(username + LogWarnInfo.DATABASE_ALREAD_EXIST_USER_NO_AGAIN_ADD);
         }
 
         //注册操作
@@ -264,15 +260,13 @@ public class AccountController {
                             .putParamValues(new String[]{username, password})
                             .checkParamsNorm();
         if (errorInfo != null) {
-            logger.warn(errorInfo);
-            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, errorInfo);
+            throw new ParamsErrorException(errorInfo).log(errorInfo);
         }
 
         //更新用户密码（需加密）,返回更新状态（true-成功，false-失败）
         String newPassword = SecretUtils.encryptUserPassword(password);
         if (!userService.alterUserPassword(username, newPassword)) {
-            logger.warn(username + LogWarnInfo.DATABASE_NO_EXIST_USER);
-            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, AccountInfo.NO_USER);
+            throw new AcountErrorException(AccountInfo.NO_USER).log(username + LogWarnInfo.DATABASE_NO_EXIST_USER);
         }
 
         return new  ResponseJsonDTO(AjaxRequestStatus.SUCCESS);
@@ -289,8 +283,7 @@ public class AccountController {
     public ResponseJsonDTO emailToken(@RequestParam(value = "token", required = false)String token) throws Exception{
         String errorInfo = RequestParamsCheckUtils.token(token);
         if (errorInfo != null) {
-            logger.warn(errorInfo);
-            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, errorInfo);
+            throw new ParamsErrorException(errorInfo).log(errorInfo);
         }
 
         /*
@@ -305,17 +298,14 @@ public class AccountController {
 
         //过期判断（1 天）
         if(StringUtils.isExpire(expireTime)){
-            logger.warn(token + LogWarnInfo.ACCOUNT_ACTIVATION_URL_ALREAD_EXPIRE_TIME);
-            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, AccountInfo.LINK_INVALID);
+            throw new TokenExpireException(AccountInfo.LINK_INVALID).log(token + LogWarnInfo.ACCOUNT_ACTIVATION_URL_ALREAD_EXPIRE_TIME);
         }
 
         //激活账户（激活失败，表示不存在用户）
         if (!userService.activationUser(email)) {
-            logger.warn(LogWarnInfo.ACCOUNT_ACTIVATION_FAIL_EMAIL_NO_REGISTER + LogWarnInfo.DATABASE_NO_EXIST_USER);
-            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, AccountInfo.ACTIVATION_FAIL_EMAIL_NO_REGISTER);
+            throw new AcountErrorException(AccountInfo.ACTIVATION_FAIL_EMAIL_NO_REGISTER).log(LogWarnInfo.ACCOUNT_ACTIVATION_FAIL_EMAIL_NO_REGISTER + LogWarnInfo.DATABASE_NO_EXIST_USER);
         }
 
-        logger.warn(email + LogWarnInfo.ACCOUNT_ACTIVATION_SUCCESSFUL);
         return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, AccountInfo.ACTIVATION_SUCCESSFUL);
     }
 }

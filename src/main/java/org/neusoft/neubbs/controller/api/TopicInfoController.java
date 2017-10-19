@@ -13,5 +13,5 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/api/topic")
 public class TopicInfoController {
 
-    private static Logger logger = Logger.getLogger(TopicInfoController.class);
+    private static final Logger logger = Logger.getLogger(TopicInfoController.class);
 }

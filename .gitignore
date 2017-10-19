@@ -8,5 +8,7 @@ target/
 
 rebel.xml
 
-后端API 交互协议.md
-后台开发任务列表.md
+src/main/java/org/neusoft/neubbs/util/design_patterns/
+
+Neubbs 后台开发任务列表.md
+后端api交互协议.md

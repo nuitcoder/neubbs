@@ -38,5 +38,6 @@
 		</property>
 	</bean>
 
-
+	<!-- 自定义 api 异常处理器 -->
+	<bean id="apiExceptionHandler" class="org.neusoft.neubbs.controller.handler.ApiExceptionHandler" />
 </beans>

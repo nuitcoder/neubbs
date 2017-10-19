@@ -9,6 +9,7 @@ public class RandomUtils {
 
     /**
      * 获取6位数随机数
+     *
      * @return Integer
      */
     public static Integer getSixRandomNumber(){
