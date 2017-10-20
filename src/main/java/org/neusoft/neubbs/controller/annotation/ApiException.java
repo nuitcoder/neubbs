@@ -6,12 +6,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- *  登录认证注解 @LoginAuthorization
- *      1.修饰方法
+ * Api 异常注解 @ApiException
+ *      1.修饰类 or 接口
  *      2.运行时注解
  *
- *  @author Suvan
+ * @author Suvan
  */
-@Target(ElementType.METHOD)
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface LoginAuthorization {}
+public @interface ApiException {}

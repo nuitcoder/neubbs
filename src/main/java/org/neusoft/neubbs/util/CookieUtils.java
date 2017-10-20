@@ -11,7 +11,10 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class CookieUtils {
 
-    private final static Integer EXPIRETIME_SERVEN_DAY = 604800;
+    /**
+     * 过期时间 s
+     */
+    private final static Integer EXPIRETIME_THIRTY_DAY = 108000;
     private final static Integer EXPIRETIME_ZERO  = 0;
 
     private final static  String PATH = "/";
@@ -30,7 +33,7 @@ public class CookieUtils {
     public static void saveCookie(HttpServletResponse response,
                                     String cookieName,String cookieValue){
         Cookie cookie = new Cookie(cookieName,cookieValue);
-            cookie.setMaxAge(EXPIRETIME_SERVEN_DAY);
+            cookie.setMaxAge(EXPIRETIME_THIRTY_DAY);
             cookie.setPath(PATH);
             cookie.setHttpOnly(HTTPONLY_TRUE);
 

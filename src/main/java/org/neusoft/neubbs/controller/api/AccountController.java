@@ -6,7 +6,7 @@ import org.neusoft.neubbs.constant.api.AccountInfo;
 import org.neusoft.neubbs.constant.api.CountInfo;
 import org.neusoft.neubbs.constant.log.LogWarnInfo;
 import org.neusoft.neubbs.controller.annotation.LoginAuthorization;
-import org.neusoft.neubbs.controller.exception.AcountErrorException;
+import org.neusoft.neubbs.controller.exception.AccountErrorException;
 import org.neusoft.neubbs.controller.exception.ParamsErrorException;
 import org.neusoft.neubbs.controller.exception.TokenExpireException;
 import org.neusoft.neubbs.dto.ResponseJsonDTO;
@@ -84,7 +84,7 @@ public class AccountController {
         UserDO user = userService.getUserInfoByName(username);
         Map<String, Object> userInfoMap = JsonUtils.toMapByObject(user);
         if(userInfoMap == null){
-            throw new AcountErrorException(AccountInfo.NO_USER).log(username + LogWarnInfo.DATABASE_NO_EXIST_USER);
+            throw new AccountErrorException(AccountInfo.NO_USER).log(username + LogWarnInfo.DATABASE_NO_EXIST_USER);
         }
 
 
@@ -104,7 +104,7 @@ public class AccountController {
      * 2.登录
      *
      * 注解提示：
-     *       @RequestBody 自动将 JSON 格式转为 java 对象
+     *       @RequestBody 自动将 JSON 格式转为 log 对象
      *
      * @param requestBodyParamsMap  request Body 里的JSON 数据
      * @param request
@@ -134,18 +134,18 @@ public class AccountController {
         UserDO user = userService.getUserInfoByName(username);
         Map<String, Object> userInfoMap = JsonUtils.toMapByObject(user);
         if (userInfoMap == null) {
-            throw new AcountErrorException(AccountInfo.NO_USER).log(username + LogWarnInfo.DATABASE_NO_EXIST_USER);
+            throw new AccountErrorException(AccountInfo.NO_USER).log(username + LogWarnInfo.DATABASE_NO_EXIST_USER);
         }
 
         //用户是否激活
         if((Integer)userInfoMap.get(AccountInfo.STATE) == 0){
-            throw new AcountErrorException(AccountInfo.NO_ACTIVATE).log(username + LogWarnInfo.ACCOUNT_NO_ACTIVATION_NO_LOGIN);
+            throw new AccountErrorException(AccountInfo.NO_ACTIVATE).log(username + LogWarnInfo.ACCOUNT_NO_ACTIVATION_NO_LOGIN);
         }
 
         //用户密码是否正确（密码为 MD5 加密后的密文）
         String cipherText = SecretUtils.encryptUserPassword(password);
         if (!cipherText.equals(userInfoMap.get(AccountInfo.PASSWORD))) {
-            throw new AcountErrorException(AccountInfo.USERNAME_PASSWORD_ERROR).log(username + LogWarnInfo.USER_PASSWORD_NO_MATCH);
+            throw new AccountErrorException(AccountInfo.USERNAME_PASSWORD_ERROR).log(username + LogWarnInfo.USER_PASSWORD_NO_MATCH);
         }
 
         /*
@@ -219,7 +219,7 @@ public class AccountController {
         //判断用户名唯一
         UserDO user = userService.getUserInfoByName(username);
         if (user != null) {
-            throw new AcountErrorException(AccountInfo.USERNAME_REGISTERED).log(username + LogWarnInfo.DATABASE_ALREAD_EXIST_USER_NO_AGAIN_ADD);
+            throw new AccountErrorException(AccountInfo.USERNAME_REGISTERED).log(username + LogWarnInfo.DATABASE_ALREAD_EXIST_USER_NO_AGAIN_ADD);
         }
 
         //注册操作
@@ -266,7 +266,7 @@ public class AccountController {
         //更新用户密码（需加密）,返回更新状态（true-成功，false-失败）
         String newPassword = SecretUtils.encryptUserPassword(password);
         if (!userService.alterUserPassword(username, newPassword)) {
-            throw new AcountErrorException(AccountInfo.NO_USER).log(username + LogWarnInfo.DATABASE_NO_EXIST_USER);
+            throw new AccountErrorException(AccountInfo.NO_USER).log(username + LogWarnInfo.DATABASE_NO_EXIST_USER);
         }
 
         return new  ResponseJsonDTO(AjaxRequestStatus.SUCCESS);
@@ -303,7 +303,7 @@ public class AccountController {
 
         //激活账户（激活失败，表示不存在用户）
         if (!userService.activationUser(email)) {
-            throw new AcountErrorException(AccountInfo.ACTIVATION_FAIL_EMAIL_NO_REGISTER).log(LogWarnInfo.ACCOUNT_ACTIVATION_FAIL_EMAIL_NO_REGISTER + LogWarnInfo.DATABASE_NO_EXIST_USER);
+            throw new AccountErrorException(AccountInfo.ACTIVATION_FAIL_EMAIL_NO_REGISTER).log(LogWarnInfo.ACCOUNT_ACTIVATION_FAIL_EMAIL_NO_REGISTER + LogWarnInfo.DATABASE_NO_EXIST_USER);
         }
 
         return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, AccountInfo.ACTIVATION_SUCCESSFUL);

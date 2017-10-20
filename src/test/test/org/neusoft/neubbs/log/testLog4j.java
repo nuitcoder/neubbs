@@ -1,4 +1,4 @@
-package test.org.neusoft.neubbs.java;
+package test.org.neusoft.neubbs.log;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;

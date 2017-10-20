@@ -1,9 +1,13 @@
 package org.neusoft.neubbs.controller.exception;
+
+import org.neusoft.neubbs.controller.annotation.ApiException;
+
 /**
  * 参数异常
  *
  * @author Suvan
  */
+@ApiException
 public class ParamsErrorException extends Exception implements IExceptionLog {
 
     /**

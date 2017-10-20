@@ -1,21 +1,25 @@
 package org.neusoft.neubbs.controller.exception;
 
+import org.neusoft.neubbs.controller.annotation.ApiException;
+
 /**
  * 数据库异常
+ *      1.声明 @ApiException ，表名被 ApiExceptinHandler处理
  *
  * @author Suvan
  */
-public class AcountErrorException extends Exception implements IExceptionLog{
+@ApiException
+public class AccountErrorException extends Exception implements IExceptionLog{
 
    private String logMessage;
 
     /**
      * Constructor
      */
-    public AcountErrorException(String message){
+    public AccountErrorException(String message){
         super(message);
     }
-    public AcountErrorException(String message, String logMessage){
+    public AccountErrorException(String message, String logMessage){
         super(message);
         this.logMessage = logMessage;
     }
@@ -28,7 +32,7 @@ public class AcountErrorException extends Exception implements IExceptionLog{
     }
 
     @Override
-    public AcountErrorException log(String logMessage){
+    public AccountErrorException log(String logMessage){
         this.logMessage = logMessage;
         return this;
     }

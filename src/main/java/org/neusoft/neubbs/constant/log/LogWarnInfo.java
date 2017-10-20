@@ -32,6 +32,13 @@ public interface LogWarnInfo {
     String SAVE_TOPIC_FAIL = "保存主题失败！";
 
 
+    /*****************************File api**********************************/
+    String USER_NO_CHOICE_UPLOAD_FILE = "用户没有选择上传文件!";
+    String FILE_TYPE_NO_USER_IMAGE_SPECIFY_TYPE = "文件类型不符合用户头像指定类型，请重新选择上传";
+    String USER_IMAGE_SAVE_DATABASE_FAIL = "用户头像，保存数据库失败，删除已上传图片";
+    String DELETE_IMAGE_FILE_FAIL = "删除图片文件失败,请手动处理仍然停留在服务器的文件！";
+
+
     /*****************************Api Token Interceptor**********************************/
     String JWT_TOKEN_ALREAD_EXPIRE = "JWT 的 token 已经过期，解密失败";
     String NO_VISIT_AHTORITY_PLEASE_LOGIN = "无访问权限，请登录后执行操作！";

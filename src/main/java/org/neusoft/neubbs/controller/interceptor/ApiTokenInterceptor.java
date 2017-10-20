@@ -6,13 +6,13 @@ import org.neusoft.neubbs.constant.log.LogWarnInfo;
 import org.neusoft.neubbs.constant.secret.SecretInfo;
 import org.neusoft.neubbs.controller.annotation.AdminRank;
 import org.neusoft.neubbs.controller.annotation.LoginAuthorization;
+import org.neusoft.neubbs.controller.exception.AccountErrorException;
 import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.service.IRedisService;
 import org.neusoft.neubbs.service.IUserService;
 import org.neusoft.neubbs.util.AnnotationUtils;
 import org.neusoft.neubbs.util.CookieUtils;
 import org.neusoft.neubbs.util.JwtTokenUtils;
-import org.neusoft.neubbs.util.ResponsePrintWriterUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -102,9 +102,7 @@ public class ApiTokenInterceptor implements HandlerInterceptor{
                 //验证客户端 Token 是否过期（token 能否解密，过期无法解密）
                 UserDO user = JwtTokenUtils.verifyToken(authroization, SecretInfo.TOKEN_SECRET_KEY);
                 if(user == null){
-                    logger.warn(LogWarnInfo.JWT_TOKEN_ALREAD_EXPIRE);
-                    ResponsePrintWriterUtils.outFailJSONMessage(response, AccountInfo.TOKEN_EXPIRED);
-                    return false;
+                    throw new AccountErrorException(AccountInfo.TOKEN_EXPIRED).log(LogWarnInfo.JWT_TOKEN_ALREAD_EXPIRE);
                 }
 
                 //自动登录
@@ -112,9 +110,7 @@ public class ApiTokenInterceptor implements HandlerInterceptor{
 
             }else{
                 //无登录，无权访问 api
-                logger.warn(LogWarnInfo.NO_VISIT_AHTORITY_PLEASE_LOGIN);
-                ResponsePrintWriterUtils. outFailJSONMessage(response, AccountInfo.NO_PERMISSION);
-                return false;
+                throw new AccountErrorException(AccountInfo.NO_PERMISSION).log(LogWarnInfo.NO_VISIT_AHTORITY_PLEASE_LOGIN);
             }
         }
 
@@ -139,10 +135,7 @@ public class ApiTokenInterceptor implements HandlerInterceptor{
 
             }else{
                 //无管理员权限，无法访问api
-                logger.warn(LogWarnInfo.USER_RANK_NO_ENOUGH_NO_ADMIN);
-                ResponsePrintWriterUtils.outFailJSONMessage(response, AccountInfo.NO_PERMISSION);
-                return false;
-
+                throw new AccountErrorException(AccountInfo.NO_PERMISSION).log(LogWarnInfo.USER_RANK_NO_ENOUGH_NO_ADMIN);
             }
         }
 

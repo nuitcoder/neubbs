@@ -61,4 +61,14 @@ public class UserServiceImpl implements IUserService {
             return true;
         }
     }
+
+    @Override
+    public Boolean uploadUserImage(String username, String image){
+       int effectRow = userDAO.updateUserImageByName(username, image);
+        if (effectRow == 0) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 }

@@ -40,4 +40,12 @@
 
 	<!-- 自定义 api 异常处理器 -->
 	<bean id="apiExceptionHandler" class="org.neusoft.neubbs.controller.handler.ApiExceptionHandler" />
+
+	<!-- 文件上传解析器 -->
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="defaultEncoding" value="UTF-8"></property>
+		<!-- 最大文件上传面积(5 MB) + 最大写入内存值(5 MB) 单位：字节（1 MB = 1024 KB = 1048576[1024 * 1024] B 字节）-->
+		<property name="maxUploadSize" value="5242880"></property>
+		<property name="maxInMemorySize" value="5242880"></property>
+	</bean>
 </beans>

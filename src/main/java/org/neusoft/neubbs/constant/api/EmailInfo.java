@@ -10,7 +10,7 @@ public interface EmailInfo {
 
 
     /**
-     * api 警告信息
+     * Email api 警告信息
      */
     String EMAIL_NO_REIGSTER = "the mailbox is not registered";
     String MAIL_SENT_SUCCESS = "mail sent successfully";

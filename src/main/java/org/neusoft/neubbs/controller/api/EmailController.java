@@ -6,7 +6,7 @@ import org.neusoft.neubbs.constant.api.AccountInfo;
 import org.neusoft.neubbs.constant.api.EmailInfo;
 import org.neusoft.neubbs.constant.log.LogWarnInfo;
 import org.neusoft.neubbs.constant.secret.SecretInfo;
-import org.neusoft.neubbs.controller.exception.AcountErrorException;
+import org.neusoft.neubbs.controller.exception.AccountErrorException;
 import org.neusoft.neubbs.controller.exception.ParamsErrorException;
 import org.neusoft.neubbs.dto.ResponseJsonDTO;
 import org.neusoft.neubbs.entity.UserDO;
@@ -67,7 +67,7 @@ public class EmailController {
         //检测数据库是否存在此邮箱
         UserDO user = userService.getUserInfoByEmail(email);
         if(user == null){
-            throw new AcountErrorException(EmailInfo.EMAIL_NO_REIGSTER).log(LogWarnInfo.EMAIL_NO_REGISTER_NO_SEND_EMAIL);
+            throw new AccountErrorException(EmailInfo.EMAIL_NO_REIGSTER).log(LogWarnInfo.EMAIL_NO_REGISTER_NO_SEND_EMAIL);
         }
 
         //构建 token（用户邮箱 + 过期时间）

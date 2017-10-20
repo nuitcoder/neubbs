@@ -3,24 +3,24 @@ package org.neusoft.neubbs.controller.exception;
 import org.neusoft.neubbs.controller.annotation.ApiException;
 
 /**
- * token 过期异常
+ * 文件上传错误异常
  *
  * @author Suvan
  */
 @ApiException
-public class TokenExpireException extends Exception implements IExceptionLog{
+public class FileUploadException extends Exception implements IExceptionLog{
 
     private String logMessage;
 
     /**
      * Constructor
      */
-    public TokenExpireException(String message){
+    public FileUploadException(String message){
         super(message);
     }
-    public TokenExpireException(String message, String logMessage){
+    public FileUploadException(String message, String logMessage) {
         super(message);
-        this.logMessage = message;
+        this.logMessage = logMessage;
     }
 
     /**
@@ -31,7 +31,7 @@ public class TokenExpireException extends Exception implements IExceptionLog{
     }
 
     @Override
-    public TokenExpireException log(String logMessage){
+    public FileUploadException log(String logMessage){
         this.logMessage = logMessage;
         return this;
     }

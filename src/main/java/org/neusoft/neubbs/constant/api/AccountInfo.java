@@ -28,7 +28,7 @@ public interface AccountInfo {
     String RANK_ADMIN = "admin";
 
     /**
-     *  api 警告信息
+     * Account api 警告信息
      */
     String NO_USER = "the user does not exist";
     String NO_ACTIVATE   = "account is not active";

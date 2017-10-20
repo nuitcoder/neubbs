@@ -46,4 +46,16 @@ public class PaternUtilsTestCast {
          System.out.println(email + " 匹配结果：" + PatternUtils.matchEmail(email));
       }
    }
+
+   /**
+    * 匹配图片
+    */
+   @Test
+   public void testIsUserImage(){
+      String [] imageType = {"image/jpg", "image/JPG" ,"image/png", "image/PNG", "image/asdffsda", "image/gif"};
+
+      for (String type: imageType) {
+         System.out.println(type + "匹配结果：" + PatternUtils.isUserImage(type));
+      }
+   }
 }

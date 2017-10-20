@@ -10,6 +10,6 @@ public interface CountInfo {
     String ONLINE_LOGIN_USER = "onlineLoginUser";
 
     /**
-     * api 警告信息
+     * Count api 警告信息
      */
 }

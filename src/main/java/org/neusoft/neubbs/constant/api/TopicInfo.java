@@ -13,6 +13,6 @@ public interface TopicInfo {
     String SAVE_TOPIC_FAIL = "保存主题失败！";
 
     /**
-     * api 警告信息
+     * Topic api 警告信息
      */
 }

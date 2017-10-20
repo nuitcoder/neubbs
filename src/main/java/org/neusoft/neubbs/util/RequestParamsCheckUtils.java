@@ -6,8 +6,8 @@ import java.util.Map;
 /**
  * Request 请求参数检查 工具类
  *      使用到其余工具类
- *          1. StringUitls.java
- *          2. PatternUtils.java
+ *          1. StringUitls.log
+ *          2. PatternUtils.log
  *
  *  @author Suvan
  */

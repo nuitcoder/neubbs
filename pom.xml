@@ -152,7 +152,7 @@
     </dependency>
     <dependency>
       <groupId>redis.clients</groupId>
-      <artifactId>jedis</artifactId>   <!-- Jedis库（java 连接 Redis） -->
+      <artifactId>jedis</artifactId>   <!-- Jedis库（log 连接 Redis） -->
       <version>2.6.0</version>
     </dependency>
 
@@ -231,7 +231,7 @@
       <version>1.1.41</version>
     </dependency>
 
-    <!-- java EE  -->
+    <!-- log EE  -->
     <dependency>
       <groupId>javax</groupId>
       <artifactId>javaee-api</artifactId><!-- ja -->

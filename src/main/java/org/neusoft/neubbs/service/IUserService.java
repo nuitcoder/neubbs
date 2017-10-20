@@ -57,4 +57,14 @@ public interface IUserService{
      * @return Boolean 激活结果
      */
     Boolean activationUser(String email);
+
+    /**
+     * 上传用户头像
+     *
+     * @param username 用户名
+     * @param image 用户图片名
+     * @return Boolean 上传结果
+     *
+     */
+    Boolean uploadUserImage(String username, String image);
 }
