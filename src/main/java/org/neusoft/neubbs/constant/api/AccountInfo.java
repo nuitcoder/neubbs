@@ -22,6 +22,11 @@ public interface AccountInfo {
     String CREATETIME = "createtime";
 
     /**
+     * 验证码（储存在 Session）
+     */
+    String SESSION_CAPTCHA = "captcha";
+
+    /**
      * token 验证
      */
     String AUTHENTICATION = "authentication";
@@ -30,6 +35,7 @@ public interface AccountInfo {
     /**
      * Account api 警告信息
      */
+    String PARAM_ERROR  = "incorrect input parameter";
     String NO_USER = "the user does not exist";
     String NO_ACTIVATE   = "account is not active";
     String PASSWORD_ERROR = "user password is incorrect";
@@ -40,6 +46,8 @@ public interface AccountInfo {
     String TOKEN_EXPIRED = "token expired";
     String NO_PERMISSION= "no permission";
     String ACTIVATION_SUCCESSFUL =  "activation successful！";
+    String NO_GENERATE_CAPTCHA = "did not generate captcha";
+    String CAPTCHA_ERROR = "captcha error";
 
 
 

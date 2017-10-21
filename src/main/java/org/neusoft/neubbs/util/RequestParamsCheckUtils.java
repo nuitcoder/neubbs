@@ -13,28 +13,32 @@ import java.util.Map;
  */
 public class RequestParamsCheckUtils {
 
-    private final static String USERNAME = "username";
-    private final static String PASSWORD = "password";
-    private final static String EMAIL = "email";
-    private final static String TOKEN = "token";
+    private static final String USERNAME = "username";
+    private static final String PASSWORD = "password";
+    private static final String EMAIL = "email";
+    private static final String TOKEN = "token";
+    private static final String captcha = "cpatcha";
 
-    private final static Integer USERNAME_LENGTH_MIN = 3;
-    private final static Integer USERNAME_LENGTH_MAX = 15;
-    private final static Integer PASSWORD_LENGTH_MIN = 6;
-    private final static Integer PASSWORD_LENGTH_MAX = 16;
+    private static final Integer USERNAME_LENGTH_MIN = 3;
+    private static final Integer USERNAME_LENGTH_MAX = 15;
+    private static final Integer PASSWORD_LENGTH_MIN = 6;
+    private static final Integer PASSWORD_LENGTH_MAX = 16;
+    private static final Integer CAPTCHA_LENGTH = 5;
 
 
     /**
      * 错误提示信息
      */
-    private final static String WARN_USERNAME_NO_NULL = "参数 username，不能为空;";
-    private final static String WARN_PASSWORD_NO_NULL = " 参数 password，不能为空;";
-    private final static String WARN_EMAIL_NO_NULL = " 参数 email，不能为空;";
-    private final static String WARN_TOKEN_NO_NULL = " 参数 token，不能为空;";
-    private final static String WARN_USERNAME_LENGTH_NO_MATCH_SCOPE = "参数 username ，长度不符合范围（ 3 <= length <= 15）";
-    private final static String WARN_USERNAME_STYLE_NO_MEET_NORM = "参数 username ，格式不符合规范（A-Z a-z 0-9）";
-    private final static String WARN_PASSWORD_LENGTH_NO_MATCH_SCOPE = "参数 password，长度不符合范围（6 <= length <= 16）";
-    private final static String WARN_EMAIL_STYLE_NO_MEET_NORM = "参数 email，邮箱格式不符合规范，请重新输入！";
+    private static final String WARN_USERNAME_NO_NULL = " 参数 username，不能为空;";
+    private static final String WARN_PASSWORD_NO_NULL = " 参数 password，不能为空;";
+    private static final String WARN_EMAIL_NO_NULL = " 参数 email，不能为空;";
+    private static final String WARN_TOKEN_NO_NULL = " 参数 token，不能为空;";
+    private static final String WARN_CAPTCHA_NO_NULL = " 参数 captcha，不能为空；";
+    private static final String WARN_USERNAME_LENGTH_NO_MATCH_SCOPE = "参数 username ，长度不符合范围（ 3 <= length <= 15）";
+    private static final String WARN_USERNAME_STYLE_NO_MEET_NORM = "参数 username ，格式不符合规范（A-Z a-z 0-9）";
+    private static final String WARN_PASSWORD_LENGTH_NO_MATCH_SCOPE = "参数 password，长度不符合范围（6 <= length <= 16）";
+    private static final String WARN_EMAIL_STYLE_NO_MEET_NORM = "参数 email，邮箱格式不符合规范，请重新输入！";
+    private static final String WARN_CAPTCHA_LENGTH_NO_MATCH_SCOPE = " 参数 captcha，长度不符合匹配(length == 5)";
 
 
     private Map<String, String> requestParamsMap;
@@ -106,9 +110,26 @@ public class RequestParamsCheckUtils {
      * @param token 密文
      * @return String 错误信息
      */
-    public static String token(String token){
+    public static String checkToken(String token){
         if (StringUtils.isEmpty(token)) {
             return WARN_TOKEN_NO_NULL;
+        }
+
+        return null;
+    }
+
+    /**
+     * 检测 captcha
+     * @param captcha 验证码
+     * @return String 错误信息
+     */
+    public static String checkCaptcha(String captcha){
+        if (StringUtils.isEmpty(captcha)) {
+            return WARN_CAPTCHA_NO_NULL;
+        }
+
+        if (!StringUtils.isScope(captcha, CAPTCHA_LENGTH, CAPTCHA_LENGTH)) {
+            return WARN_CAPTCHA_LENGTH_NO_MATCH_SCOPE;
         }
 
         return null;

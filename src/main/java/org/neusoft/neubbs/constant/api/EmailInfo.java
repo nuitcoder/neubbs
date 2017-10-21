@@ -12,6 +12,7 @@ public interface EmailInfo {
     /**
      * Email api 警告信息
      */
+    String PARAM_ERROR  = "incorrect input parameter";
     String EMAIL_NO_REIGSTER = "the mailbox is not registered";
     String MAIL_SENT_SUCCESS = "mail sent successfully";
 }

@@ -15,4 +15,5 @@ public interface TopicInfo {
     /**
      * Topic api 警告信息
      */
+    String PARAM_ERROR  = "incorrect input parameter";
 }

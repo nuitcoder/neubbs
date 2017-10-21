@@ -47,6 +47,7 @@ public class EmailController {
 
     /**
      * 1.发送邮件（账户激活URL）
+     *
      * @param requestBodyParamsMap
      * @return ResponseJsonDTO
      * @throws Exception
@@ -58,7 +59,7 @@ public class EmailController {
 
         String errorInfo = RequestParamsCheckUtils.checkEmail(email);
         if (errorInfo != null) {
-            throw new ParamsErrorException(errorInfo).log(errorInfo);
+            throw new ParamsErrorException(EmailInfo.PARAM_ERROR).log(errorInfo);
         }
 
         //检测数据库是否存在此邮箱

@@ -17,9 +17,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.imageio.ImageIO;
 import javax.servlet.ServletContext;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.awt.image.BufferedImage;
 import java.util.Map;
 
 /**
@@ -30,6 +33,8 @@ import java.util.Map;
  *      4.注册
  *      5.修改密码
  *      6.激活账户
+ *      7.图片验证码
+ *      8.检查验证码
  *
  * @author Suvan
  */
@@ -41,7 +46,7 @@ public class AccountController {
     private IUserService userService;
 
     @Autowired
-    private Producer captchaProducer = null;
+    private Producer captchaProducer;
 
     /**
      * 1.获取用户信息（AccountController 默认访问）
@@ -68,7 +73,7 @@ public class AccountController {
         String errorInfo = RequestParamsCheckUtils.checkUsername(username);
         if (errorInfo != null) {
             //抛出异常（错误信息，日志信息）
-            throw new ParamsErrorException(errorInfo).log(errorInfo);
+            throw new ParamsErrorException(AccountInfo.PARAM_ERROR).log(errorInfo);
         }
 
         /*
@@ -123,7 +128,7 @@ public class AccountController {
                             .putParamValues(new String[]{username, password})
                             .checkParamsNorm();
         if (errorInfo != null) {
-            throw new ParamsErrorException(errorInfo).log(errorInfo);
+            throw new ParamsErrorException(AccountInfo.PARAM_ERROR).log(errorInfo);
         }
 
         //用户是否存在（与用户账户密码错误抛出一样警告，防止被试出用户是否存在）
@@ -210,7 +215,7 @@ public class AccountController {
                             .putParamValues(new String[]{username, password, email})
                             .checkParamsNorm();
         if (errorInfo != null) {
-            throw new ParamsErrorException(errorInfo).log(errorInfo);
+            throw new ParamsErrorException(AccountInfo.PARAM_ERROR).log(errorInfo);
         }
 
         //判断用户名唯一
@@ -257,7 +262,7 @@ public class AccountController {
                             .putParamValues(new String[]{username, password})
                             .checkParamsNorm();
         if (errorInfo != null) {
-            throw new ParamsErrorException(errorInfo).log(errorInfo);
+            throw new ParamsErrorException(AccountInfo.PARAM_ERROR).log(errorInfo);
         }
 
         //更新用户密码（需加密）,返回更新状态（true-成功，false-失败）
@@ -279,7 +284,7 @@ public class AccountController {
     @RequestMapping(value = "/activation", method = RequestMethod.GET)
     @ResponseBody
     public ResponseJsonDTO emailToken(@RequestParam(value = "token", required = false)String token) throws Exception{
-        String errorInfo = RequestParamsCheckUtils.token(token);
+        String errorInfo = RequestParamsCheckUtils.checkToken(token);
         if (errorInfo != null) {
             throw new ParamsErrorException(errorInfo).log(errorInfo);
         }
@@ -307,4 +312,74 @@ public class AccountController {
         return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, AccountInfo.ACTIVATION_SUCCESSFUL);
     }
 
+    /**
+     * 7.图片验证码
+     *
+     * @param request http请求
+     * @param response http响应
+     * @return ResponseJsonDTO 传输对象，api 显示结果
+     * @throws Exception
+     */
+    @RequestMapping(value = "/captcha", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseJsonDTO getCaptcha(HttpServletRequest request, HttpServletResponse response) throws Exception{
+        /*
+         * 生成验证码步骤
+         *      1.设置 response
+         *      2.生成验证码（文本 or 数字）
+         *      3.存放至 Session
+         *      4.,生成图像（jpg格式），页面输出
+         */
+        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+        response.addHeader("Cache-Control", "post-check=0, pre-check=0");
+        response.setHeader("Pragma", "no-cache");
+        response.setContentType("image/jpeg");
+
+        String capText = captchaProducer.createText();
+        request.getSession().setAttribute(AccountInfo.SESSION_CAPTCHA, capText);
+
+        BufferedImage bi = captchaProducer.createImage(capText);
+        ServletOutputStream out = response.getOutputStream();
+        ImageIO.write(bi, "jpg", out);
+        try{
+            out.flush();
+        } finally {
+            out.close();
+        }
+
+        return null;
+    }
+
+    /**
+     * 8.检查验证码（比较用户输入是否与图片一致）
+     *
+     * @param captcha 验证码字符串
+     * @param request http请求
+     * @return ResponseJsonDTO 传输对象，api 显示结果
+     * @throws Exception
+     */
+    @RequestMapping(value = "/check-captcha", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseJsonDTO checkCaptcha(@RequestParam(value = "captcha", required = false)String captcha, HttpServletRequest request) throws Exception{
+        //参数检查(空与长度)
+        String errorInfo = RequestParamsCheckUtils.checkCaptcha(captcha);
+        if (errorInfo != null) {
+            throw new AccountErrorException(AccountInfo.PARAM_ERROR).log(errorInfo);
+        }
+
+        /*
+         * 验证码比较
+         *      1.是否有生成验证码
+         *      2.验证码是否匹配
+         */
+        String sessionCaptcha = (String)request.getSession().getAttribute(AccountInfo.SESSION_CAPTCHA);
+        if(StringUtils.isEmpty(sessionCaptcha)){
+            throw new AccountErrorException(AccountInfo.NO_GENERATE_CAPTCHA).log(LogWarnInfo.NO_GENERATE_CAPTCHA_NO_CHECK);
+        }
+        if(!captcha.equals(sessionCaptcha)){
+            throw new AccountErrorException(AccountInfo.CAPTCHA_ERROR).log(LogWarnInfo.CAPTCHA_ERROR_NO_MATCH);
+        }
+
+        return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS);
+    }
 }

@@ -18,6 +18,9 @@ public interface LogWarnInfo {
 
     String USER_PASSWORD_NO_MATCH = " 用户密码不匹配 ，请重新输入";
 
+    String NO_GENERATE_CAPTCHA_NO_CHECK = "没有生成验证，请生成后再进行验证!";
+    String CAPTCHA_ERROR_NO_MATCH = " 验证码错误，不匹配，请重新输入！";
+
 
     /*****************************Email api**********************************/
     String EMAIL_NO_REGISTER_NO_SEND_EMAIL = "该邮箱未注册，无法发送邮件";
