@@ -17,8 +17,9 @@ public class SecretUtils {
 
     /**
      * 加密 MD5（消息摘要算法）
-     * @param plainText
-     * @return String
+     *
+     * @param plainText 明文（待加密的字符串）
+     * @return String 密文
      */
     public static String encryptMD5(String plainText){
         byte [] secretBytes = null;
@@ -41,9 +42,10 @@ public class SecretUtils {
     }
 
     /**
-     *  加密用户面膜（二重 MD5 加密）
-     * @param password
-     * @return String
+     * 加密用户面膜（二重 MD5 加密）
+     *
+     * @param password 用户密码
+     * @return String 密文
      */
     public static String encryptUserPassword(String password){
         //一次 密码 MD5 加密
@@ -60,9 +62,10 @@ public class SecretUtils {
     }
 
     /**
-     *  加密 Base64 （用于邮箱激活，生成 token）
-     * @param email
-     * @return String
+     * 加密 Base64 （用于邮箱激活，生成 token）
+     *
+     * @param email 用户邮箱
+     * @return String 密文
      */
     public static String encryptBase64(String email){
         String token = null;
@@ -77,8 +80,9 @@ public class SecretUtils {
 
     /**
      * 解密 Base64（用于邮箱激活，token 解密）
-     * @param token
-     * @return
+     *
+     * @param token Base64密文
+     * @return String 明文
      */
     public static String decryptBase64(String token){
         return new String(Base64.getDecoder().decode(token));

@@ -37,9 +37,9 @@ public interface IUserDAO {
     Integer getUserMaxId();
 
     /**
-     *  id获取用户对象
+     * id获取用户对象
      *
-     * @param id
+     * @param id 用户对象
      * @return UserDO 用户对象
      */
     UserDO getUserById(int id);

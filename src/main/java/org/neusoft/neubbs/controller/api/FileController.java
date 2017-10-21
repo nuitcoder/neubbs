@@ -43,8 +43,8 @@ public class FileController {
      * 1.上传用户头像（新上传的会覆盖旧的）
      *
      * @param multipartFile 用户上传的文件对象
-     * @param request
-     * @return ResponseJsonDTO
+     * @param request http请求
+     * @return ResponseJsonDTO 传输对象，api 显示结果
      * @throws Exception
      */
     @LoginAuthorization

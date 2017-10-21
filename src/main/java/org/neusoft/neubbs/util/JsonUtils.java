@@ -14,8 +14,9 @@ import java.util.Map;
 public class JsonUtils {
     /**
      * 将Object对象转换为JSON格式字符串
-     * @param obj
-     * @return
+     *
+     * @param obj Object对象
+     * @return String JSON格式字符串
      * @throws JsonProcessingException
      */
     public static String toJSONStringByObject(Object obj){
@@ -31,8 +32,9 @@ public class JsonUtils {
 
     /**
      * 将JSON格式字符串，转为Map<String,String>
-     * @param json
-     * @return
+     *
+     * @param json JSON格式字符串
+     * @return Map<String,Object>键值对
      * @throws IOException
      */
     public static Map<String, Object> toMapByJSONString(String json){
@@ -48,8 +50,9 @@ public class JsonUtils {
 
     /**
      * 将 Object 对象转换成 Map<String, String> 格式
-     * @param obj
-     * @return
+     *
+     * @param obj Object对象
+     * @return Map<Sttring,Object>键值对
      */
     public static Map<String, Object> toMapByObject(Object obj){
         ObjectMapper mapper = new ObjectMapper();

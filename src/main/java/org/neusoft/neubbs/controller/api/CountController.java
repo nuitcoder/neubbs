@@ -1,6 +1,5 @@
 package org.neusoft.neubbs.controller.api;
 
-import org.apache.log4j.Logger;
 import org.neusoft.neubbs.constant.ajax.AjaxRequestStatus;
 import org.neusoft.neubbs.constant.api.CountInfo;
 import org.neusoft.neubbs.controller.annotation.LoginAuthorization;
@@ -22,13 +21,11 @@ import javax.servlet.http.HttpServletRequest;
 @RequestMapping("/api/count/")
 public class CountController {
 
-    private static final Logger logger = Logger.getLogger(CountController.class);
-
     /**
      * 1.在线访问人数
      *
-     * @param request
-     * @return ResponseJsonDTO
+     * @param request http请求
+     * @return ResponseJsonDTO 传输对象，api 显示结果
      * @throws Exception
      */
     @LoginAuthorization
@@ -43,8 +40,8 @@ public class CountController {
     /**
      * 2.在线登录人数
      *
-     * @param request
-     * @return ResponseJsonDTO
+     * @param request http请求
+     * @return ResponseJsonDTO 传输对象， api 显示结果
      * @throws Exception
      */
     @LoginAuthorization

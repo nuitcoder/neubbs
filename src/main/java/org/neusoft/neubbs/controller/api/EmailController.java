@@ -1,6 +1,5 @@
 package org.neusoft.neubbs.controller.api;
 
-import org.apache.log4j.Logger;
 import org.neusoft.neubbs.constant.ajax.AjaxRequestStatus;
 import org.neusoft.neubbs.constant.api.AccountInfo;
 import org.neusoft.neubbs.constant.api.EmailInfo;
@@ -36,12 +35,10 @@ import java.util.Map;
 public class EmailController {
 
     @Autowired
-    IUserService userService;
+    private IUserService userService;
 
     @Autowired
     private ThreadPoolTaskExecutor taskExecutor;
-
-    private static final Logger logger = Logger.getLogger(EmailController.class);
 
     /**
      * 账户激活 URL

@@ -38,12 +38,11 @@ public class RequestParamsCheckUtils {
 
 
     private Map<String, String> requestParamsMap;
-    private StringBuffer errorInfo;
 
     /**
      * 检查用户名
      *
-     * @param username
+     * @param username 用户名
      * @return String 错误信息
      */
     public static String checkUsername(String username){
@@ -68,7 +67,7 @@ public class RequestParamsCheckUtils {
     /**
      * 检查密码
      *
-     * @param password
+     * @param password 用户密码
      * @return String 错误信息
      */
     public static String checkPassword(String password){
@@ -86,7 +85,7 @@ public class RequestParamsCheckUtils {
     /**
      * 检查邮箱
      *
-     * @param email
+     * @param email 用户邮箱
      * @return String 错误信息
      */
     public static String checkEmail(String email){
@@ -104,7 +103,7 @@ public class RequestParamsCheckUtils {
     /**
      * 检测 token
      *
-     * @param token
+     * @param token 密文
      * @return String 错误信息
      */
     public static String token(String token){
@@ -127,8 +126,8 @@ public class RequestParamsCheckUtils {
     /**
      *  存放参数 key（获取数组参数 key ，规定检查类型，例如：username，password，email）
      *
-     * @param paramKeys
-     * @return RequestParamsCheckUtils
+     * @param paramKeys 需要检测的类型参数数组
+     * @return RequestParamsCheckUtils 工具类自调用
      */
     public static RequestParamsCheckUtils putParamKeys(String [] paramKeys){
         RequestParamsCheckUtils rpcu = new RequestParamsCheckUtils();
@@ -144,8 +143,8 @@ public class RequestParamsCheckUtils {
     /**
      * 存放参数 value （获取数组参数 value，将其存入指定 key，例如：map("username", "suvan")）
      *
-     * @param paramValues
-     * @return RequestParamsCheckUtils
+     * @param paramValues 参数 Value 数组
+     * @return RequestParamsCheckUtils 工具类自调用
      */
     public RequestParamsCheckUtils putParamValues(String [] paramValues){
         int pointer = 0;
@@ -159,7 +158,7 @@ public class RequestParamsCheckUtils {
     /**
      * 检测参数集合内所有参数的合法性（返回相应错误信息）
      *
-     * @return check
+     * @return String 错误信息
      */
     public String checkParamsNorm(){
         //储存错误信息
@@ -225,7 +224,7 @@ public class RequestParamsCheckUtils {
     /**
      * 【私有】检测用户名规范（用于链式调用）
      *
-     * @param username
+     * @param username 用户名
      * @return String 错误信息
      */
     private String checkUsernameNorm(String username){
@@ -241,7 +240,7 @@ public class RequestParamsCheckUtils {
     /**
      * 【私有】检测密码规范（用于链式调用）
      *
-     * @param password
+     * @param password 用户密码
      * @return String 错误信息
      */
     private String checkPasswordNorm(String password){
@@ -254,7 +253,7 @@ public class RequestParamsCheckUtils {
     /**
      * 【私有】检测邮箱规范（用于链式调用）
      *
-     * @param email
+     * @param email 用户邮箱
      * @return 错误信息
      */
     private String checkEmailNorm(String email){

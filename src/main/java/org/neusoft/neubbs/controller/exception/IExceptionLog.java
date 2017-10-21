@@ -1,7 +1,7 @@
 package org.neusoft.neubbs.controller.exception;
 
 /**
- * 异常日志
+ * 异常日志接口
  *
  * @author Suvan
  */

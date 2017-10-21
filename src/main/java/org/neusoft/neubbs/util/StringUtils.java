@@ -12,7 +12,7 @@ public class StringUtils {
     /**
      * 空判断（true - 为空）
      *
-     * @param str
+     * @param str 输入字符串
      * @return Boolean 检测结果
      */
     public static Boolean isEmpty(String str){
@@ -26,9 +26,9 @@ public class StringUtils {
     /**
      * 长度范围判断（ min <= str.length() <= max）
      *
-     * @param str
-     * @param min
-     * @param max
+     * @param str 输入字符串
+     * @param min 最小值
+     * @param max 最大值
      * @return Boolean 检测结果
      */
     public static Boolean isScope(String str, int min, int max){
@@ -43,7 +43,7 @@ public class StringUtils {
     /**
      * 正则判断（字符串是否满足，指定正则表达式）
      *
-     * @param str
+     * @param str 输入字符串
      * @param regexp 正则表达式
      * @return Boolean 检测结果
      */
@@ -73,8 +73,9 @@ public class StringUtils {
 
     /**
      * 生成邮件 HTML 字符串（构建，邮箱激活邮件内容）
-     * @param url
-     * @return String
+     *
+     * @param url 输入字符串
+     * @return String 生成的HTML字符串
      */
     public static String createEmailActivationHtmlString(String url){
         StringBuffer sb = new StringBuffer();

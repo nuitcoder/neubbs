@@ -41,10 +41,10 @@ public class SendEmailUtils {
 
     /**
      * 发送邮件
-     * @param email
-     * @param subject
-     * @param content
-     * @return Boolean
+     *
+     * @param email 要发送的的邮箱
+     * @param subject 发送主题
+     * @param content 发送内容
      */
    public static void  sendEmail(String email, String subject, String content){
         //构造邮件请求
@@ -54,7 +54,6 @@ public class SendEmailUtils {
             sender.setHost(TO_HOST);
             sender.setProtocol(TO_SMTP);
             sender.setPort(Integer.parseInt(TO_SMTP_SSL_PROT));
-
 
         //构建参数
         Properties properties = new Properties();

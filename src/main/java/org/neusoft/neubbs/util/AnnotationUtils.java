@@ -14,7 +14,7 @@ public class AnnotationUtils {
     /**
      * （方法级）是否存在指定注解
      *
-     * @param handler
+     * @param handler 方法对象（拦截器内的 Object handler）
      * @return Boolean （true 存在，false-不存在）
      */
     public static Boolean hasMethodAnnotation(Object handler, Class c){

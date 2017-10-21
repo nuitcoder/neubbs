@@ -42,8 +42,9 @@ public class JwtTokenUtils {
 
     /**
      * JWT 创建 token（传入 UserDO 对象）
-     * @param user
-     * @return
+     *
+     * @param user 用户对象
+     * @return String 加密后密文
      * @throws Exception
      */
     public static String createToken(UserDO user) throws Exception{
@@ -75,9 +76,9 @@ public class JwtTokenUtils {
     /**
      * JWT 解密 token （传入 token 和 密钥，得到 UserDO 对象）
      *
-     * @param token
-     * @param secretKey
-     * @return
+     * @param token 密文
+     * @param secretKey 解密密钥
+     * @return UserDO 用户对象
      * @throws Exception
      */
     public static UserDO verifyToken(String token, String secretKey){

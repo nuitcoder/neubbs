@@ -23,8 +23,9 @@ public class ResponsePrintWriterUtils {
 
     /**
      * 输出失败 JSON 信息
-     * @param response
-     * @param failMessage
+     *
+     * @param response 用户响应
+     * @param failMessage 失败信息
      * @throws IOException
      */
     public static void outFailJSONMessage(HttpServletResponse response, String failMessage){

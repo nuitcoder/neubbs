@@ -79,7 +79,8 @@ public interface ITopicDAO {
     Integer updateTitleById(int id, String title);
 
     /**
-     *  更新评论回复数（自动+1）
+     * 更新评论回复数（自动+1）
+     *
      * @param id 话题id
      * @return Integer 更新行数
      */
@@ -87,6 +88,7 @@ public interface ITopicDAO {
 
     /**
      * 更新最后回复时间
+     *
      * @param id 话题id
      * @param lastreplytime 最后回复数
      * @return Integer 更新行数

@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 public class CookieUtils {
 
     /**
-     * 过期时间 s
+     * 过期时间是（单位：s）
      */
     private final static Integer EXPIRETIME_THIRTY_DAY = 108000;
     private final static Integer EXPIRETIME_ZERO  = 0;
@@ -24,9 +24,9 @@ public class CookieUtils {
 
 
     /**
-     * 插入Cookie
+     * 保存 Cookie
      *
-     * @param response
+     * @param response http响应
      * @param cookieName Cookie名字
      * @param cookieValue Cookie值
      */
@@ -41,11 +41,11 @@ public class CookieUtils {
     }
 
     /**
-     * 删除Cookie（有效时间设为0,即是删除）
+     * 删除Cookie（有效时间设为0,即表示删除）
      *
-     * @param request
-     * @param response
-     * @param cookieName Cookie名
+     * @param request http请求
+     * @param response http响应
+     * @param cookieName Cookie名字
      */
     public static void removeCookie(HttpServletRequest request,HttpServletResponse response,
                                         String cookieName){
@@ -62,11 +62,11 @@ public class CookieUtils {
     }
 
     /**
-     * 根据Cookie名，获取Cookie值
+     * 根据 Cookie 名，获取 Cookie 值
      *
-     * @param request
+     * @param request http请求
      * @param cookieName Cookie名
-     * @return String  Cookie值
+     * @return String Cookie值
      */
     public static String getCookieValue(HttpServletRequest request,String cookieName){
         for(Cookie cookie: request.getCookies()){
@@ -79,16 +79,14 @@ public class CookieUtils {
     }
 
     /**
-     * 打印客户端所有Cookie
+     * 打印客户端所有 Cookie
      *
      * @param request
      */
     public static void printCookie(HttpServletRequest request){
         int count = 1;
         for(Cookie cookie: request.getCookies()){
-            System.out.println("\n" + (count++) + " : "
-                                + cookie.getName() + "---"
-                                + cookie.getValue());
+            System.out.println("\n" + (count++) + " : " +cookie.getName() + "---" + cookie.getValue());
         }
     }
 }

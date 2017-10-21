@@ -1,6 +1,6 @@
 package org.neusoft.neubbs.controller.api;
 
-import org.apache.log4j.Logger;
+import com.google.code.kaptcha.Producer;
 import org.neusoft.neubbs.constant.ajax.AjaxRequestStatus;
 import org.neusoft.neubbs.constant.api.AccountInfo;
 import org.neusoft.neubbs.constant.api.CountInfo;
@@ -11,7 +11,6 @@ import org.neusoft.neubbs.controller.exception.ParamsErrorException;
 import org.neusoft.neubbs.controller.exception.TokenExpireException;
 import org.neusoft.neubbs.dto.ResponseJsonDTO;
 import org.neusoft.neubbs.entity.UserDO;
-import org.neusoft.neubbs.service.IRedisService;
 import org.neusoft.neubbs.service.IUserService;
 import org.neusoft.neubbs.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,13 +38,10 @@ import java.util.Map;
 public class AccountController {
 
     @Autowired
-    IUserService userService;
+    private IUserService userService;
 
     @Autowired
-    IRedisService redisService;
-
-    private static final Logger logger = Logger.getLogger(AccountController.class);
-
+    private Producer captchaProducer = null;
 
     /**
      * 1.获取用户信息（AccountController 默认访问）
@@ -59,8 +55,8 @@ public class AccountController {
      *      @RequestBody 将 ResponseJsonDTO 对象，转为 JSON 格式字符串，显示在页面
      *
      * @param username 用户名
-     * @param request Http请求
-     * @return ResponseJsonDTO 数据传输对象
+     * @param request http请求
+     * @return ResponseJsonDTO 传输对象,api返回结果
      * @throws Exception
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
@@ -107,9 +103,9 @@ public class AccountController {
      *       @RequestBody 自动将 JSON 格式转为 log 对象
      *
      * @param requestBodyParamsMap  request Body 里的JSON 数据
-     * @param request
-     * @param response
-     * @return ResponseJsonDTO
+     * @param request http请求
+     * @param response http响应
+     * @return ResponseJsonDTO 传输对象
      * @throws Exception
      */
     @RequestMapping(value = "/login", method = RequestMethod.POST, consumes = "application/json") //指定处理Content-Type 类型
@@ -170,9 +166,9 @@ public class AccountController {
     /**
      * 3.注销
      *
-     * @param request
-     * @param response
-     * @return ResponseJsonDTO
+     * @param request http请求
+     * @param response http响应
+     * @return ResponseJsonDTO 传输对象，api 显示结果
      * @throws Exception
      */
     @LoginAuthorization
@@ -195,8 +191,9 @@ public class AccountController {
 
     /**
      * 4.注册
-     * @param requestBodyParamsMap
-     * @return ResponseJsonDTO
+     *
+     * @param requestBodyParamsMap http请求，post，body 里的 JSON 参数
+     * @return ResponseJsonDTO 传输对象，api 显示结果
      * @throws Exception
      */
     @RequestMapping(value = "/register", method = RequestMethod.POST, consumes = "application/json")
@@ -244,8 +241,8 @@ public class AccountController {
     /**
      * 5.修改密码
      *
-     * @param requestBodyParamsMap
-     * @return ResponseJsonDTO
+     * @param requestBodyParamsMap http请求，post，body 内 JSON 参数
+     * @return ResponseJsonDTO 传输对象，api显示结果
      * @throws Exception
      */
     @LoginAuthorization
@@ -274,8 +271,9 @@ public class AccountController {
 
     /**
      * 6.激活账户
-     * @param token
-     * @return ResponseJsonDTO
+     *
+     * @param token 密文
+     * @return ResponseJsonDTO 传输对象，api 显示结果
      * @throws Exception
      */
     @RequestMapping(value = "/activation", method = RequestMethod.GET)
@@ -308,4 +306,5 @@ public class AccountController {
 
         return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, AccountInfo.ACTIVATION_SUCCESSFUL);
     }
+
 }

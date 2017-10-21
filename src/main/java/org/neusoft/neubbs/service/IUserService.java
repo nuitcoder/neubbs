@@ -36,7 +36,7 @@ public interface IUserService{
     /**
      * email 获取用户信息
      *
-     * @param email
+     * @param email 用户邮箱
      * @return UserDO 用户对象
      */
     UserDO getUserInfoByEmail(String email);

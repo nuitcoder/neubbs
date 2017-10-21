@@ -19,8 +19,8 @@ public class PatternUtils {
     /**
      * 是否为纯数字检测（检测是否存在非 0 ~ 9 字符）
      *
-     * @param str
-     * @return 检测结果
+     * @param str 纯数字类型字符串
+     * @return Boolean 检测结果
      */
     public static Boolean isPureNumber(String str) {
         Pattern pattern = Pattern.compile(EXIST_NU_PURE_NUMBER);
@@ -35,6 +35,7 @@ public class PatternUtils {
 
     /**
      * 匹配用户名
+     *
      * @param username 用户名字符串
      * @return Boolean 匹配结果
      */
@@ -63,7 +64,7 @@ public class PatternUtils {
     /**
      * 匹配图片类型
      *
-     * @param imageType
+     * @param imageType 图片类型字符串
      * @return Boolean 匹配结果
      */
     public static Boolean isUserImage(String imageType){

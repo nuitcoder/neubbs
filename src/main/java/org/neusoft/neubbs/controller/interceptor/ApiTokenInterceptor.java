@@ -1,6 +1,5 @@
 package org.neusoft.neubbs.controller.interceptor;
 
-import org.apache.log4j.Logger;
 import org.neusoft.neubbs.constant.api.AccountInfo;
 import org.neusoft.neubbs.constant.log.LogWarnInfo;
 import org.neusoft.neubbs.constant.secret.SecretInfo;
@@ -8,12 +7,9 @@ import org.neusoft.neubbs.controller.annotation.AdminRank;
 import org.neusoft.neubbs.controller.annotation.LoginAuthorization;
 import org.neusoft.neubbs.controller.exception.AccountErrorException;
 import org.neusoft.neubbs.entity.UserDO;
-import org.neusoft.neubbs.service.IRedisService;
-import org.neusoft.neubbs.service.IUserService;
 import org.neusoft.neubbs.util.AnnotationUtils;
 import org.neusoft.neubbs.util.CookieUtils;
 import org.neusoft.neubbs.util.JwtTokenUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -26,14 +22,6 @@ import javax.servlet.http.HttpServletResponse;
  *  @author Suvan
  */
 public class ApiTokenInterceptor implements HandlerInterceptor{
-
-    @Autowired
-    private IRedisService redisService;
-
-    @Autowired
-    private IUserService userService;
-
-    private static Logger logger = Logger.getLogger(ApiTokenInterceptor.class);
 
     /**
      * 业务处理器 hander(Controller 内方法) 请求前调用

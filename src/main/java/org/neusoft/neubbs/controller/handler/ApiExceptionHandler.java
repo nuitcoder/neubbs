@@ -23,6 +23,15 @@ public class ApiExceptionHandler implements HandlerExceptionResolver{
 
     private static final Logger logger = Logger.getLogger(ApiExceptionHandler.class);
 
+    /**
+     * 解析异常
+     *
+     * @param request http请求
+     * @param response http响应
+     * @param o 抛出异常的方法对象
+     * @param e 异常对象
+     * @return ModelAndView 视图对象
+     */
     @Override
     public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object o, Exception e) {
         //api 页面输出错误信息（只输出 Api 指定异常）
