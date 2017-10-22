@@ -25,6 +25,9 @@
    <delete id="removeTopicReplyById" parameterType="java.lang.Integer">
       DELETE FROM forum_topic_reply WHERE ftr_id = #{id, jdbcType = INTEGER}
    </delete>
+   <delete id="removeTopicReplyByTopicId" parameterType="java.lang.Integer">
+      DELETE FROM forum_topic_reply WHERE ft_id = #{ft_id, jdbcType = INTEGER}
+   </delete>
 
    <select id="getTopicReplyMaxId" resultType="java.lang.Integer">
       SELECT MAX(ftr_id) FROM forum_topic_reply;
@@ -33,17 +36,29 @@
       SELECT ftr_id, fu_id, ft_id, ftr_content, ftr_agree, ftr_oppose, ftr_createtime
       FROM forum_topic_reply WHERE ftr_id = #{id, jdbcType = INTEGER}
    </select>
+   <select id="listTopicReplyByTopicId" parameterType="java.lang.Integer" resultMap="TopicReplyMap">
+      SELECT ftr_id, fu_id, ft_id, ftr_content, ftr_agree, ftr_oppose, ftr_createtime
+      FROM forum_topic_reply WHERE ft_id = #{param1, jdbcType = INTEGER}
+   </select>
 
    <update id="updateContentByIdByContent">
       UPDATE forum_topic_reply SET ftr_content = #{param2, jdbcType = VARCHAR}
       WHERE ftr_id = #{param1, jdbcType = INTEGER}
    </update>
-    <update id="updateAgreeById">
+   <update id="updateAgreeAddOneById">
       UPDATE forum_topic_reply SET ftr_agree = ftr_agree + 1
       WHERE ftr_id = #{param1, jdbcType = INTEGER}
    </update>
-   <update id="updateOpposeById">
+   <update id="updateAgreeCutOneById">
+      UPDATE forum_topic_reply SET ftr_agree = ftr_agree - 1
+      WHERE ftr_id = #{param1, jdbcType = INTEGER}
+   </update>
+   <update id="updateOpposeAddOneById">
       UPDATE forum_topic_reply SET ftr_oppose = ftr_oppose + 1
+      WHERE ftr_id = #{param1, jdbcType =INTEGER}
+   </update>
+   <update id="updateOpposeCutOneById">
+      UPDATE forum_topic_reply SET ftr_oppose = ftr_oppose - 1
       WHERE ftr_id = #{param1, jdbcType =INTEGER}
    </update>
 </mapper>

@@ -6,14 +6,27 @@ package org.neusoft.neubbs.constant.api;
  * @author Suvan
  */
 public interface TopicInfo {
-    String SAVE_TOPIC_ID_NONULL = "保存主题，id 不能为空";
-    String SAVE_TOPIC_TITLE_NONULL = "保存主题，title 不能为空";
-    String SAVE_TOPIC_CATEGORY_NONULL = "保存主题，category 不能为空";
-    String SAVE_TOPIC_SUCCESS = "保存主题成功！";
-    String SAVE_TOPIC_FAIL = "保存主题失败！";
+    String ID = "id";
+    String CATEGORY = "category";
+    String TITLE = "title";
+    String COMMENT = "comment";
+    String LASTREPLYUSERID = "lastreplyuserid";
+    String LASTREPLYTIME = "lastreplytime";
+    String CREATETIME = "createtime";
+
+    String TOPICID = "topicid";
+    String CONTENT = "content";
+    String READ = "read";
+    String AGREE = "agree";
+
+    String USERID = "userid";
+    String OPPOSE = "oppose";
+
 
     /**
      * Topic api 警告信息
      */
     String PARAM_ERROR  = "incorrect input parameter";
+    String PUBLISH_TOPIC_SUCCESS = "publish the topic successfully";
+    String PUBLISH_REPLY_SUCCESS = "publish the reply successfully";
 }

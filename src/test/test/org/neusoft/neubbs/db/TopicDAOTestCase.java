@@ -67,7 +67,6 @@ public class TopicDAOTestCase {
         System.out.println("主题总数：" + topicTotal);
     }
 
-
     /**
      * 查询最新插入的id
      */
@@ -75,15 +74,28 @@ public class TopicDAOTestCase {
     public void testGetTopicMaxId(){
         System.out.println("最新插入的 id =" + topicDAO.getTopicMaxId());
     }
+
     /**
      * id 查询主题
      */
     @Test
     public void test4_GetTopicById(){
-        TopicDO topic = topicDAO.getTopicById(1);
-
+        TopicDO topic = topicDAO.getTopicById(topicDAO.getTopicMaxId());
         System.out.println("查询结果：" + JsonUtils.toJSONStringByObject(topic));
     }
+
+    /**
+     *  逆序获取话题列表（指定数量）
+     */
+    @Test
+    public void test4_ListTopicDESCByCount(){
+        List<TopicDO> listTopic = topicDAO.listTopicDESCByCount(10);
+
+        for(TopicDO topic: listTopic){
+            System.out.println(JsonUtils.toJSONStringByObject(topic));
+        }
+    }
+
 
     /**
      * 分页查询 forum_topic 表所有记录
@@ -115,9 +127,8 @@ public class TopicDAOTestCase {
      * 更新分类
      */
     @Test
-    public void test6_UpdateCategoryById(){
-        int effectRow = topicDAO.updateCategoryById(1, "已经更新分类");
-
+    public void test61_UpdateCategoryById(){
+        int effectRow = topicDAO.updateCategoryById(topicDAO.getTopicMaxId(), "已经更新分类");
         System.out.println("修改标题，已更新行数：" + effectRow);
     }
 
@@ -125,30 +136,45 @@ public class TopicDAOTestCase {
      * 更新标题
      */
     @Test
-    public void test7_UpdateTitle(){
-        int effectRow = topicDAO.updateTitleById(1, "已经更新标题");
-
+    public void tes6222_UpdateTitle(){
+        int effectRow = topicDAO.updateTitleById(topicDAO.getTopicMaxId(), "已经更新标题");
         System.out.println("修改标题，已更新行数：" + effectRow);
     }
 
     /**
-     * 更新评论数
+     * 更新评论数（自动 +1）
      */
     @Test
-    public void test8_UpdateCommentById(){
-        int effectRow = topicDAO.updateCommentById(1);
-
+    public void test63_UpdateCommentById(){
+        int effectRow = topicDAO.updateCommentAddOneById(topicDAO.getTopicMaxId());
         System.out.println("评论数+1，已更新行数：" + effectRow);
+    }
+
+    /**
+     * 更新评论数（自动 -1）
+     */
+    @Test
+    public void test633_UpdateCommentById(){
+        int effectRow = topicDAO.updateCommentCutOneById(topicDAO.getTopicMaxId());
+        System.out.println("评论数-1，已更新行数：" + effectRow);
+    }
+
+    /**
+     * 更新最后回复id
+     */
+    @Test
+    public void test64_UpdateLastreplyuseridById(){
+        int effectRow = topicDAO.updateLastreplyuseridById(topicDAO.getTopicMaxId(),20);
+        System.out.println("更新最后回复人id,已更新行数：" + effectRow);
     }
 
     /**
      * 更新最后回复时间
      */
     @Test
-    public void test9_UpdateLastreplaytimeById(){
+    public void test65_UpdateLastreplytimeById(){
         Date date = new Date();
-        int effectRow = topicDAO.updateLastreplytimeById(1, date);
-
+        int effectRow = topicDAO.updateLastreplytimeById(topicDAO.getTopicMaxId(), date);
         System.out.println("修改最后回复时间，已影响行数：" + effectRow);
     }
 }

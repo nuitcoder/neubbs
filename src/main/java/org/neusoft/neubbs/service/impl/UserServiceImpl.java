@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements IUserService {
 
     @Autowired
-    IUserDAO userDAO;
+    private IUserDAO userDAO;
 
     @Override
     public Boolean registerUser(UserDO user){

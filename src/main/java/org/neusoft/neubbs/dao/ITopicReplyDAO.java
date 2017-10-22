@@ -3,6 +3,8 @@ package org.neusoft.neubbs.dao;
 import org.neusoft.neubbs.entity.TopicReplyDO;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * forum_topic_reply 数据访问对象（TopicRelayMapper.xml 映射接口）
  *
@@ -23,9 +25,17 @@ public interface ITopicReplyDAO {
      * 删除话题回复
      *
      * @param id 回复id
-     * @return 删除行数
+     * @return Integer 删除行数
      */
     Integer removeTopicReplyById(int id);
+
+    /**
+     * 删除话题回复（指定话题id，所有回复）
+     *
+     * @param topicId 话题id
+     * @return Integer 删除行数
+     */
+    Integer removeTopicReplyByTopicId(int topicId);
 
     /**
      * 获取话题回复总数
@@ -43,6 +53,14 @@ public interface ITopicReplyDAO {
     TopicReplyDO getTopicReplyById(int id);
 
     /**
+     * 获取话题回复列表（指定话题id）
+     *
+     * @param topicId 话题id
+     * @return List<TopicReplyDO>
+     */
+    List<TopicReplyDO> listTopicReplyByTopicId(int topicId);
+
+    /**
      * 更新回复内容
      *
      * @param id 话题id
@@ -52,18 +70,34 @@ public interface ITopicReplyDAO {
     Integer updateContentByIdByContent(int id, String content);
 
     /**
-     * 更新点赞数
+     * 更新点赞数（自动 +1）
      *
      * @param id 回复id
      * @return Integer 更新行数
      */
-    Integer updateAgreeById(int id);
+    Integer updateAgreeAddOneById(int id);
 
     /**
-     * 更新反对数
+     * 更新点赞数（自动 -1）
      *
      * @param id 回复id
      * @return Integer 更新行数
      */
-    Integer updateOpposeById(int id);
+    Integer updateAgreeCutOneById(int id);
+
+    /**
+     * 更新反对数（自动 +1）
+     *
+     * @param id 回复id
+     * @return Integer 更新行数
+     */
+    Integer updateOpposeAddOneById(int id);
+
+    /**
+     * 更新反对数（自动 -1）
+     *
+     * @param id 回复id
+     * @return Integer 更新行数
+     */
+    Integer updateOpposeCutOneById(int id);
 }

@@ -38,6 +38,10 @@
       SELECT ft_id, fu_id, ft_category, ft_title, ft_comment,ft_lastreplyuserid, ft_lastreplytime, ft_createtime
       FROM forum_topic WHERE ft_id = #{id, jdbcType = INTEGER}
    </select>
+   <select id="listTopicDESCByCount"  parameterType="java.lang.Integer" resultMap="TopicMap">
+      SELECT ft_id, fu_id, ft_category, ft_title, ft_comment,ft_lastreplyuserid, ft_lastreplytime, ft_createtime
+      FROM forum_topic ORDER BY ft_createtime DESC LIMIT #{param1, jdbcType = INTEGER};
+   </select>
    <select id="listTopicByStartRowByCount" resultMap="TopicMap">
       SELECT ft_id, fu_id, ft_category, ft_title, ft_comment,ft_lastreplyuserid, ft_lastreplytime, ft_createtime
       FROM forum_topic LIMIT #{param1, jdbcType = INTEGER}, #{param2, jdbcType = INTEGER}
@@ -51,9 +55,17 @@
       UPDATE forum_topic SET ft_title = #{param2, jdbcType = VARCHAR}
       WHERE ft_id = #{param1, jdbcType = INTEGER}
    </update>
-   <update id="updateCommentById" parameterType="java.lang.Integer">
+   <update id="updateCommentAddOneById" parameterType="java.lang.Integer">
       UPDATE forum_topic SET ft_comment = ft_comment + 1
       WHERE ft_id = #{id, jdbcType = INTEGER}
+   </update>
+   <update id="updateCommentCutOneById" parameterType="java.lang.Integer">
+      UPDATE forum_topic SET ft_comment = ft_comment - 1
+      WHERE ft_id = #{id, jdbcType = INTEGER}
+   </update>
+   <update id="updateLastreplyuseridById">
+      UPDATE forum_topic SET ft_lastreplyuserid = #{param2, jdbcType = INTEGER}
+      WHERE ft_id = #{param1, jdbcType = INTEGER}
    </update>
    <update id="updateLastreplytimeById">
       UPDATE forum_topic SET ft_lastreplytime = #{param2, jdbcType = TIMESTAMP}

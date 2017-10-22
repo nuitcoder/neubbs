@@ -51,11 +51,23 @@ public class PaternUtilsTestCast {
     * 匹配图片
     */
    @Test
-   public void testIsUserImage(){
+   public void testMatchUserImage(){
       String [] imageType = {"image/jpg", "image/JPG" ,"image/png", "image/PNG", "image/asdffsda", "image/gif"};
 
       for (String type: imageType) {
-         System.out.println(type + "匹配结果：" + PatternUtils.isUserImage(type));
+         System.out.println(type + "匹配结果：" + PatternUtils.matchUserImage(type));
+      }
+   }
+
+   /**
+    * 匹配话题类型
+    */
+   @Test
+   public void testMatchTopicCategory(){
+      String [] categoryArray = {"java", "132aa","_qwerq","你好","你好study","学习!234_+"};
+
+      for(String category: categoryArray){
+         System.out.println(category + " 匹配结果：" + PatternUtils.matchTopicCategory(category));
       }
    }
 }

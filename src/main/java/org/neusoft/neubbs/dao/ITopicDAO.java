@@ -52,6 +52,14 @@ public interface ITopicDAO {
     TopicDO getTopicById(int id);
 
     /**
+     * 获取最新的话题列表（降序，指定数量）
+     *
+     * @param count 数量
+     * @return list<TopicDO>
+     */
+    List<TopicDO> listTopicDESCByCount(int count);
+
+    /**
      * 获取话题列表（指定开始行数，数量，用于分页查询）
      *
      * @param startRow 开始行数
@@ -79,12 +87,27 @@ public interface ITopicDAO {
     Integer updateTitleById(int id, String title);
 
     /**
-     * 更新评论回复数（自动+1）
+     * 更新评论回复数（自动 +1）
      *
      * @param id 话题id
      * @return Integer 更新行数
      */
-    Integer updateCommentById(int id);
+    Integer updateCommentAddOneById(int id);
+
+    /**
+     * 更新评论回复数（自动 -1）
+     * @param id 话题id
+     * @return Integer 更新行数
+     */
+    Integer updateCommentCutOneById(int id);
+
+    /**
+     * 更新最后回复人id
+     *
+     * @param id 最后回复人id
+     * @return Integer 更新行数
+     */
+    Integer updateLastreplyuseridById(int id, int lastreplyuserid);
 
     /**
      * 更新最后回复时间

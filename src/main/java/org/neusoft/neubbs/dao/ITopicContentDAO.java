@@ -44,17 +44,33 @@ public interface ITopicContentDAO {
     /**
      * 更新话题内容
      *
-     * @param id    话题id
+     * @param topicId 话题id
      * @param content 新话题内容
      * @return Integer 更新行数
      */
-    Integer updateContentById(int id, String content);
+    Integer updateContentByTopicId(int topicId, String content);
 
     /**
-     * 更新话题阅读数
+     * 更新话题阅读数（+1）
      *
-     * @param id 话题id
+     * @param topicId 话题id
      * @return Integer 更新行数
      */
-    Integer updateReadById(int id);
+    Integer updateReadAddOneByTopicId(int topicId);
+
+    /**
+     * 更新话题内容赞同数，+1
+     *
+     * @param topicId 话题id
+     * @return Integer 更新行数
+     */
+    Integer updateAgreeAddOneByTopicId(int topicId);
+
+    /**
+     * 更新话题内容赞同数，-1
+     *
+     * @param topicId 话题id
+     * @return Integer 更新行数
+     */
+    Integer updateAgreeCutOneByTopicId(int topicId);
 }

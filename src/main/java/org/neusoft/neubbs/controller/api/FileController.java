@@ -67,7 +67,7 @@ public class FileController {
             // 抛出文件空异常
             throw new FileUploadException(FileInfo.NO_CHOICE_PICTURE).log(LogWarnInfo.USER_NO_CHOICE_UPLOAD_FILE);
         }
-        if (!PatternUtils.isUserImage(multipartFile.getContentType())) {
+        if (!PatternUtils.matchUserImage(multipartFile.getContentType())) {
             //抛出文件类型不匹配异常
             throw new FileUploadException(FileInfo.PICTURE_FORMAT_WRONG).log( multipartFile.getContentType() + LogWarnInfo.FILE_TYPE_NO_USER_IMAGE_SPECIFY_TYPE);
         }

@@ -31,13 +31,21 @@
       FROM forum_topic_content WHERE ftc_id = #{id, jdbcType = INTEGER}
    </select>
 
-   <update id="updateContentById">
+   <update id="updateContentByTopicId">
       UPDATE forum_topic_content SET ftc_content = #{param2, jdbcType = VARCHAR}
-      WHERE ftc_id = #{param1, jdbcType = INTEGER}
+      WHERE ft_id = #{param1, jdbcType = INTEGER}
    </update>
-   <update id="updateReadById">
+   <update id="updateReadAddOneByTopicId" parameterType="java.lang.Integer">
       UPDATE forum_topic_content SET ftc_read = ftc_read + 1
-      WHERE ftc_id = #{param1, jdbcType =INTEGER}
+      WHERE ft_id = #{param1, jdbcType =INTEGER}
+   </update>
+   <update id="updateAgreeAddOneByTopicId" parameterType="java.lang.Integer">
+      UPDATE forum_topic_content SET ftc_agree = ftc_agree + 1
+      WHERE ft_id = #{param1, jdbcType =INTEGER}
+   </update>
+   <update id="updateAgreeCutOneByTopicId" parameterType="java.lang.Integer">
+      UPDATE forum_topic_content SET ftc_agree = ftc_agree - 1
+      WHERE ft_id = #{param1, jdbcType =INTEGER}
    </update>
 </mapper>
 

@@ -67,7 +67,6 @@ public class TopicContentDAOTestCase {
     @Test
     public void test3_GetTopicContentById(){
        TopicContentDO topicContent = topicContentDAO.getTopicContentById(1);
-
         System.out.println("查询结果：" + JsonUtils.toJSONStringByObject(topicContent));
     }
 
@@ -76,19 +75,35 @@ public class TopicContentDAOTestCase {
      */
     @Test
     public void test4_UpdateContentById(){
-       int effectRow = topicContentDAO.updateContentById(1, "变化内容");
-
-        System.out.println("修改主题内容，更新行数：" + effectRow);
+       int effectRow = topicContentDAO.updateContentByTopicId(1, "变化内容");
+       System.out.println("修改主题内容，更新行数：" + effectRow);
     }
 
     /**
-     * 更新阅读数量
+     * 更新阅读数量，+1
      */
     @Test
     public void test5_UpdateReadById(){
-        int effectRow = topicContentDAO.updateReadById(1);
-
+        int effectRow = topicContentDAO.updateReadAddOneByTopicId(1);
         System.out.println("阅读数量+1，更新行数:" + effectRow);
+    }
+
+    /**
+     * 更新赞同数，+1
+     */
+    @Test
+    public void test55_updateAgreeAddOneByTopicId(){
+        int effectRow = topicContentDAO.updateAgreeAddOneByTopicId(1);
+        System.out.println("赞同数+1，更新行数：" + effectRow);
+    }
+
+    /**
+     * 更新赞同数，-1
+     */
+    @Test
+    public void test56_updateAgreeCutOneByTopicId(){
+        int effectRow = topicContentDAO.updateAgreeCutOneByTopicId(1);
+        System.out.println("赞同数-1，更新行数：" + effectRow);
     }
 
 }

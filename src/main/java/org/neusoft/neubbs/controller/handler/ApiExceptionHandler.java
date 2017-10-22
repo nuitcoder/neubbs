@@ -2,10 +2,7 @@ package org.neusoft.neubbs.controller.handler;
 
 import org.apache.log4j.Logger;
 import org.neusoft.neubbs.controller.annotation.ApiException;
-import org.neusoft.neubbs.controller.exception.AccountErrorException;
-import org.neusoft.neubbs.controller.exception.FileUploadException;
-import org.neusoft.neubbs.controller.exception.ParamsErrorException;
-import org.neusoft.neubbs.controller.exception.TokenExpireException;
+import org.neusoft.neubbs.controller.exception.*;
 import org.neusoft.neubbs.util.AnnotationUtils;
 import org.neusoft.neubbs.util.ResponsePrintWriterUtils;
 import org.springframework.web.servlet.HandlerExceptionResolver;
@@ -48,6 +45,8 @@ public class ApiExceptionHandler implements HandlerExceptionResolver{
             logger.warn(((TokenExpireException) e).getLogMessage());
         } else if (e instanceof FileUploadException) {
             logger.warn(((FileUploadException) e).getLogMessage());
+        } else if (e instanceof TopicErrorException) {
+            logger.warn(((TopicErrorException) e).getLogMessage());
         }
 
         return null;

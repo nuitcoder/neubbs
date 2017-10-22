@@ -15,7 +15,7 @@ public class TopicDO {
     private String title;
     private String comment;
 
-    private Integer lastreplytimeuserid;
+    private Integer lastreplyuserid;
     private Date lastreplytime;
     private Date createtime;
 
@@ -37,8 +37,8 @@ public class TopicDO {
     public String getComment(){
         return comment;
     }
-    public Integer getLastreplytimeuserid(){
-        return lastreplytimeuserid;
+    public Integer getLastreplyuserid(){
+        return lastreplyuserid;
     }
     public Date getLastreplytime(){
         return lastreplytime;
@@ -65,8 +65,8 @@ public class TopicDO {
     public void setComment(String comment){
         this.comment = comment;
     }
-    public void setLastreplytimeuserid(Integer lastreplytimeuserid){
-        this.lastreplytimeuserid = lastreplytimeuserid;
+    public void setLastreplyuserid(Integer lastreplyuserid){
+        this.lastreplyuserid = lastreplyuserid;
     }
     public void setLastreplytime(Date lastreplytime){
         this.lastreplytime = lastreplytime;
@@ -83,7 +83,7 @@ public class TopicDO {
                 ", category='" + category + '\'' +
                 ", title='" + title + '\'' +
                 ", comment='" + comment + '\'' +
-                ", lastreplytimeuserid=" + lastreplytimeuserid +
+                ", lastreplyuserid=" + lastreplyuserid +
                 ", lastreplytime=" + lastreplytime +
                 ", createtime=" + createtime +
                 '}';
