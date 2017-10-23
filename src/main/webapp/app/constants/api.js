@@ -1,4 +1,5 @@
 const API_PREFIX = '/api'
 
-export const LOGIN_API_URL = `${API_PREFIX}\\account\\login`
-export const LOGOUT_API_URL = `${API_PREFIX}\\account\\logout`
+export const ACCOUNT_API_URL = `${API_PREFIX}/account`
+export const LOGIN_API_URL = `${ACCOUNT_API_URL}/login`
+export const LOGOUT_API_URL = `${ACCOUNT_API_URL}/logout`

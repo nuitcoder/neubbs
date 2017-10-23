@@ -1,5 +1,6 @@
 import axios from 'axios'
 import {
+  ACCOUNT_API_URL,
   LOGIN_API_URL,
   LOGOUT_API_URL,
 } from '../constants/api'
@@ -22,6 +23,12 @@ const account = {
    */
   logout() {
     return axios.get(LOGOUT_API_URL)
+  },
+
+  unique(params) {
+    return axios.get(ACCOUNT_API_URL, {
+      params,
+    })
   },
 }
 
