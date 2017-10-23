@@ -27,6 +27,7 @@ const FieldInput = (props) => {
         placeholder={placeholder}
         value={input.value}
         onChange={input.onChange}
+        onBlur={input.onBlur}
         autoFocus={autoFocus}
       />
       {validationState === 'error' && <InputError>{error}</InputError>}

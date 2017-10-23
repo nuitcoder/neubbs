@@ -9,7 +9,7 @@ const LoginForm = (props) => {
   const { handleSubmit } = props
   return (
     <Form onSubmit={handleSubmit}>
-      <Field component={FieldInput} name="username" type="text" placeholder="用户名" autoFocus />
+      <Field component={FieldInput} name="username" type="text" placeholder="用户名" />
       <Field component={FieldInput} name="password" type="password" placeholder="密码" />
       <Button bsStyle="primary" type="submit" block>登录</Button>
     </Form>

@@ -1,19 +1,10 @@
 import Validator from 'validatorjs'
-import _ from 'lodash'
 
 import api from '../api'
 
-Validator.registerAsync('unique', (username, attribute, req, passes) => {
-  api.account.unique({ username })
-    .then(res => {
-      console.log(res)
-      passes()
-    })
-})
-
 const register = (values) => {
   const rules = {
-    username: 'required|between:3,15|unique',
+    username: 'required|between:3,15',
     email: 'required|email',
     password: 'required|between:6,16',
     password_confirmation: 'required|same:password',
@@ -21,7 +12,6 @@ const register = (values) => {
   const messages = {
     'required.username': '请输入用户名',
     'between.username': '用户名应为 3 ～ 15 个英文字符',
-    'unique.username': '用户名已被占用',
     'required.email': '请输入个人邮箱',
     'email.email': '邮箱格式错误',
     'required.password': '请输入密码',
@@ -32,14 +22,30 @@ const register = (values) => {
   const validation = new Validator(values, rules, messages)
 
   const errors = {}
-  validation.fails(() => {
+  if (validation.fails()) {
     errors.username = validation.errors.first('username')
     errors.email = validation.errors.first('email')
     errors.password = validation.errors.first('password')
     errors.password_confirmation = validation.errors.first('password_confirmation')
-  })
+  }
 
   return errors
+}
+
+const registerAsync = (values) => {
+  const { username } = values
+  return new Promise((resolve, reject) => {
+    if (username) {
+      api.account.unique({ username })
+        .then((res) => {
+          if (res.data.success) {
+            reject({ username: '用户名已占用' })
+          } else {
+            resolve()
+          }
+        })
+    }
+  })
 }
 
 const login = (values) => {
@@ -57,16 +63,17 @@ const login = (values) => {
   const validation = new Validator(values, rules, messages)
 
   const errors = {}
-  validation.fails(() => {
+  if (validation.fails()) {
     errors.username = validation.errors.first('username')
     errors.password = validation.errors.first('password')
-  })
+  }
 
   return errors
 }
 
 
 export default {
-  register,
   login,
+  register,
+  registerAsync,
 }
