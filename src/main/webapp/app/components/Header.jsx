@@ -44,8 +44,8 @@ class Header extends Component {
         router.push('/account/login')
         break
       case LOGOUT_EVENT_KEY:
-        auth.logout((data) => {
-          if (data.success) {
+        auth.logout().then((res) => {
+          if (res.data.success) {
             router.push('/account/login')
           }
         })

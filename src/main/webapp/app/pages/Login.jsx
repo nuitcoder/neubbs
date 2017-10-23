@@ -23,15 +23,17 @@ class Login extends Component {
   }
 
   handleSubmit({ username, password }) {
-    auth.login({ username, password }, (data) => {
-      if (data.success) {
-        this.props.router.push('/')
-      } else {
-        this.setState({
-          alertMessage: '用户不存在或密码错误',
-        })
-      }
-    })
+    auth.login({ username, password })
+      .then((res) => {
+        const { data } = res
+        if (data.success) {
+          this.props.router.push('/')
+        } else {
+          this.setState({
+            alertMessage: data.message,
+          })
+        }
+      })
   }
 
   render() {

@@ -7,13 +7,12 @@ export default {
    * login account and set auth
    *
    * @param {object} data login data(usernaem, password)
-   * @param {function} callback response callback
    * @returns {undefined}
    */
-  login(data, callback) {
+  login(data) {
     const { username, password } = data
 
-    api.account.login({
+    return api.account.login({
       username,
       password,
     }).then((response) => {
@@ -28,19 +27,17 @@ export default {
         this.authenticated = true
         if (this.onChange) this.onChange()
       }
-
-      if (callback) callback(rdata)
+      return response
     })
   },
 
   /**
    * logout account and remove auth
    *
-   * @param {function} callback response callback
    * @returns {undefined}
    */
-  logout(callback) {
-    api.account.logout()
+  logout() {
+    return api.account.logout()
       .then((response) => {
         const rdata = response.data
         if (rdata.success) {
@@ -51,7 +48,7 @@ export default {
           if (this.onChange) this.onChange()
         }
 
-        if (callback) callback(rdata)
+        return response
       })
   },
 
