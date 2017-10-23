@@ -9,6 +9,7 @@ import App from './App'
 import HomePage from './pages/Home'
 import LoginPage from './pages/Login'
 import RegisterPage from './pages/Register'
+import ValidatePage from './pages/Validate'
 
 import * as reducers from './reducers'
 import auth from './auth'
@@ -39,6 +40,8 @@ const Routers = () => (
 
         <Route path="/account/login" component={LoginPage} onEnter={requireNotLogged} />
         <Route path="/account/register" component={RegisterPage} onEnter={requireNotLogged} />
+        <Route path="/account/validate" component={ValidatePage} />
+
       </Route>
     </Router>
   </Provider>
