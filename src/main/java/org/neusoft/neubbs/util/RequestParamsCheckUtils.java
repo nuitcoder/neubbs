@@ -162,7 +162,7 @@ public class RequestParamsCheckUtils {
      * @return String 错误信息
      */
     public static String checkId(String id){
-        if (StringUtils.isEmpty(id)) {
+        if (StringUtils.isEmpty(id) || "null".equals(id)) {
             return WARN_ID_NO_NULL;
         }
 

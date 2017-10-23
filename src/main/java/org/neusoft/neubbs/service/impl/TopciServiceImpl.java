@@ -90,11 +90,6 @@ public class TopciServiceImpl implements ITopicService{
 
     @Override
     public Boolean removeReply(int replyId) {
-       int removeTopicReplyEffectRow = topicReplyDAO.removeTopicReplyById(replyId);
-       if (removeTopicReplyEffectRow == 0) {
-            return false;
-       }
-
        TopicReplyDO topicReply = topicReplyDAO.getTopicReplyById(replyId);
 
        int removeTopicEffectRow = topicDAO.updateCommentCutOneById(topicReply.getTopicid());
@@ -102,12 +97,12 @@ public class TopciServiceImpl implements ITopicService{
            return false;
        }
 
-       return true;
-    }
+       int removeTopicReplyEffectRow = topicReplyDAO.removeTopicReplyById(replyId);
+       if (removeTopicReplyEffectRow == 0) {
+            return false;
+       }
 
-    @Override
-    public List<TopicDO> listTopicDesc(int count) {
-        return topicDAO.listTopicDESCByCount(count);
+       return true;
     }
 
     @Override
@@ -118,6 +113,16 @@ public class TopciServiceImpl implements ITopicService{
     @Override
     public TopicContentDO getTopicContent(int topicId) {
         return topicContentDAO.getTopicContentById(topicId);
+    }
+
+    @Override
+    public TopicReplyDO getReply(int replyId){
+        return topicReplyDAO.getTopicReplyById(replyId);
+    }
+
+    @Override
+    public List<TopicDO> listTopicDesc(int count) {
+        return topicDAO.listTopicDESCByCount(count);
     }
 
     @Override

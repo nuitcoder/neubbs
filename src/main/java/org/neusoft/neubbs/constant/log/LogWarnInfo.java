@@ -28,11 +28,8 @@ public interface LogWarnInfo {
 
 
     /*****************************Topic api**********************************/
-    String SAVE_TOPIC_ID_NONULL = "保存主题，id 不能为空";
-    String SAVE_TOPIC_TITLE_NONULL = "保存主题，title 不能为空";
-    String SAVE_TOPIC_CATEGORY_NONULL = "保存主题，category 不能为空";
-    String SAVE_TOPIC_SUCCESS = "保存主题成功！";
-    String SAVE_TOPIC_FAIL = "保存主题失败！";
+    String NO_EXIST_TOPIC = "不存在指定主题，请检查输入（主题 id）";
+    String NO_EXIST_REPLY = "不存在指定回复，请检查输入（回复 id）";
 
 
     /*****************************File api**********************************/

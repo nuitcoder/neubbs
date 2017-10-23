@@ -21,12 +21,19 @@ public interface TopicInfo {
 
     String USERID = "userid";
     String OPPOSE = "oppose";
+    String REPLYID = "replyid";
 
 
     /**
      * Topic api 警告信息
      */
     String PARAM_ERROR  = "incorrect input parameter";
-    String PUBLISH_TOPIC_SUCCESS = "publish the topic successfully";
-    String PUBLISH_REPLY_SUCCESS = "publish the reply successfully";
+    String NO_TOPIC = "no topic";
+    String NO_REPLY = "no reply";
+    String SAVE_TOPIC_SUCCESS = "save the topic success";
+    String SAVE_REPLY_SUCCESS = "save the reply success";
+    String REMOVE_TOPIC_SUCCESS = "remove the topic success";
+    String REMOVE_REPLY_SUCCESS = "remove the reply success";
+    String ALTER_TOPIC_CONTENT_SUCCESS = "alter topic content success";
+    String ALTER_REPLY_CONTENT_SUCCESS = "alter reply content success";
 }

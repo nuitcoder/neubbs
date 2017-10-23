@@ -51,14 +51,6 @@ public interface ITopicService {
     Boolean removeReply(int replyId);
 
     /**
-     * 获取话题信息（最新发布）
-     *
-     * @param count 显示话题数
-     * @return List<TopicDO> 话题列表
-     */
-    List<TopicDO> listTopicDesc(int count);
-
-    /**
      * 话获取话题（基本信息）
      *
      * @param topicId 话题id
@@ -73,6 +65,22 @@ public interface ITopicService {
      * @return TopicContentDO 话题内容对象
      */
     TopicContentDO getTopicContent(int topicId);
+
+    /**
+     * 获取话题回复
+     *
+     * @param replyId
+     * @return TopicReplyDO 话题回复对象
+     */
+    TopicReplyDO getReply(int replyId);
+
+    /**
+     * 获取话题信息（最新发布）
+     *
+     * @param count 显示话题数
+     * @return List<TopicDO> 话题列表
+     */
+    List<TopicDO> listTopicDesc(int count);
 
     /**
      * 获取话题所有回复
