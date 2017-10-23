@@ -20,25 +20,25 @@ import java.util.Map;
  */
 public class JwtTokenUtils {
 
-    private final static String JWT = "JWT";
-    private final static String HS256 = "HS256";
+    private static final String JWT = "JWT";
+    private static final String HS256 = "HS256";
 
-    private final static String HEADER = "Header";
-    private final static String HEADER_TYP = "typ";
-    private final static String HEADER_ALG = "alg";
+    private static final String HEADER = "Header";
+    private static final String HEADER_TYP = "typ";
+    private static final String HEADER_ALG = "alg";
 
-
-    private final static String SET_ISSUER = "neubbs";
-    private final static String SET_SUBJECT =  "www.neubbs.com";
-    private final static String SET_AUDIENCE = "count@neubbs.com";
+    private static final String SET_ISSUER = "neubbs";
+    private static final String SET_SUBJECT =  "www.neubbs.com";
+    private static final String SET_AUDIENCE = "count@neubbs.com";
 
     /**
      * Claim参数（保存用户信息）
      */
-    private final static  String CLAIM_NAME = "name";
-    private final static String CLAIM_ID = "id";
-    private final static String CLAIN_RANK = "rank";
-    private final static String CLAIN_EMAIL = "email";
+    private static final  String CLAIM_NAME = "name";
+    private static final String CLAIM_ID = "id";
+    private static final String CLAIN_RANK = "rank";
+    private static final String CLAIN_EMAIL = "email";
+    private static final String CLAIN_STATE = "state";
 
     /**
      * JWT 创建 token（传入 UserDO 对象）
@@ -68,6 +68,7 @@ public class JwtTokenUtils {
                                                 .withClaim(CLAIM_ID, user.getId())
                                                 .withClaim(CLAIM_NAME, user.getName())
                                                 .withClaim(CLAIN_RANK, user.getRank())
+                                                .withClaim(CLAIN_STATE, user.getState())
                                                     .sign(Algorithm.HMAC256(SecretInfo.TOKEN_SECRET_KEY));
 
         return token;
@@ -101,11 +102,13 @@ public class JwtTokenUtils {
         Claim idClaim = decodedJWT.getClaim(CLAIM_ID);
         Claim nameClaim = decodedJWT.getClaim(CLAIM_NAME);
         Claim rankClaim = decodedJWT.getClaim(CLAIN_RANK);
+        Claim stateClaim = decodedJWT.getClaim(CLAIN_STATE);
 
         UserDO user = new UserDO();
             user.setId(idClaim.asInt());
             user.setName(nameClaim.asString());
             user.setRank(rankClaim.asString());
+            user.setState(stateClaim.asInt());
 
         return user;
     }

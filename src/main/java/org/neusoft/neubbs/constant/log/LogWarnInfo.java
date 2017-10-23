@@ -8,24 +8,23 @@ package org.neusoft.neubbs.constant.log;
 public interface LogWarnInfo {
 
     /*****************************Account api**********************************/
-    String DATABASE_NO_EXIST_USER = " 数据库中不存在该用户!";
-    String DATABASE_ALREAD_EXIST_USER_NO_AGAIN_ADD = " 数据库已经存该用户，请勿再次添加";
+    String DATABASE_NO_EXIST_USER = "数据库中不存在用户 ";
+    String DATABASE_ALREAD_EXIST_USER_NO_AGAIN_ADD = " 数据库已经存该用户，无法再次添加";
 
-    String ACCOUNT_NO_ACTIVATION_NO_LOGIN = " 账户未激活，无法登录，请到指定邮箱，点击激活链接，激活账户";
-    String ACCOUNT_ACTIVATION_URL_ALREAD_EXPIRE_TIME = " 该激活链接已经过期，请重新注册";
-    String ACCOUNT_ACTIVATION_FAIL_EMAIL_NO_REGISTER = "账户激活失败，该邮箱未注册，";
-    String ACCOUNT_ACTIVATION_SUCCESSFUL = " 邮箱账户激活成功！";
+    String NO_ACTIVATION_NO_LOGIN = " 账户未激活，无法登录";
+    String NO_ACTIVATION_NO_USE_API = "账户未激活，无法调用此 api";
+    String ACTIVATION_URL_ALREAD_EXPIRE_TIME = " 激活口令已经过期";
+    String ACTIVATION_FAIL_EMAIL_NO_REGISTER = "激活失败，该邮箱未注册";
 
-    String USER_PASSWORD_NO_MATCH = " 用户密码不匹配 ，请重新输入";
+    String USER_PASSWORD_NO_MATCH = " 用户密码不匹配";
 
-    String NO_GENERATE_CAPTCHA_NO_CHECK = "没有生成验证，请生成后再进行验证!";
-    String CAPTCHA_ERROR_NO_MATCH = " 验证码错误，不匹配，请重新输入！";
+    String NO_GENERATE_CAPTCHA_NO_CHECK = "未生成验证码，无法验证";
+    String CAPTCHA_ERROR_NO_MATCH = " 验证码错误，不匹配，请重新输入";
 
+    String NO_USERNAME_OR_EMAIL_PARAM_NO_GET_ACCOUNT_INFO = "没有 username 或 email 参数（选其一即可），无法获取账户信息";
 
-    /*****************************Email api**********************************/
-    String EMAIL_NO_REGISTER_NO_SEND_EMAIL = "该邮箱未注册，无法发送邮件";
-    String ACTIVATION_EMAIL_SEND_SUCCESS = "激活邮件发送成功！";
-
+    String EMAIL_NO_REGISTER_NO_SEND_EMAIL = " 邮箱未注册，无法发送邮件";
+    String EMAIL_ACTIVATED_NO_AGAIN_SEND_EMAIL = " 邮箱用户已经激活，不重复发送邮件";
 
     /*****************************Topic api**********************************/
     String NO_EXIST_TOPIC = "不存在指定主题，请检查输入（主题 id）";
@@ -33,15 +32,15 @@ public interface LogWarnInfo {
 
 
     /*****************************File api**********************************/
-    String USER_NO_CHOICE_UPLOAD_FILE = "用户没有选择上传文件!";
-    String FILE_TYPE_NO_USER_IMAGE_SPECIFY_TYPE = "文件类型不符合用户头像指定类型，请重新选择上传";
+    String USER_NO_CHOICE_UPLOAD_FILE = "用户没有选择上传文件 ";
+    String FILE_TYPE_NO_MATCH_IMAGE_TYPE = " 文件类型不符合头像类型（jpg | png | jpeg）";
     String USER_IMAGE_SAVE_DATABASE_FAIL = "用户头像，保存数据库失败，删除已上传图片";
-    String DELETE_IMAGE_FILE_FAIL = "删除图片文件失败,请手动处理仍然停留在服务器的文件！";
+    String DELETE_IMAGE_FILE_FAIL = "删除图片文件失败,请手动处理仍然在服务器的文件";
 
 
     /*****************************Api Token Interceptor**********************************/
-    String JWT_TOKEN_ALREAD_EXPIRE = "JWT 的 token 已经过期，解密失败";
-    String NO_VISIT_AHTORITY_PLEASE_LOGIN = "无访问权限，请登录后执行操作！";
+    String TOKEN_ALREAD_EXPIRE = "token 已经过期，需重新登录";
+    String NO_PERMISSION_NEED_LOGIN = "无权访问 api，需登录";
     String USER_RANK_NO_ENOUGH_NO_ADMIN = "用户权限不足，非管理员用户无法调用此 api";
 
 }

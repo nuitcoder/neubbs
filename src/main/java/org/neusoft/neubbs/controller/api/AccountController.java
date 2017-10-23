@@ -5,6 +5,8 @@ import org.neusoft.neubbs.constant.ajax.AjaxRequestStatus;
 import org.neusoft.neubbs.constant.api.AccountInfo;
 import org.neusoft.neubbs.constant.api.CountInfo;
 import org.neusoft.neubbs.constant.log.LogWarnInfo;
+import org.neusoft.neubbs.constant.secret.SecretInfo;
+import org.neusoft.neubbs.controller.annotation.AccountActivation;
 import org.neusoft.neubbs.controller.annotation.LoginAuthorization;
 import org.neusoft.neubbs.controller.exception.AccountErrorException;
 import org.neusoft.neubbs.controller.exception.ParamsErrorException;
@@ -14,6 +16,7 @@ import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.service.IUserService;
 import org.neusoft.neubbs.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,9 +35,10 @@ import java.util.Map;
  *      3.注销
  *      4.注册
  *      5.修改密码
- *      6.激活账户
- *      7.图片验证码
- *      8.检查验证码
+ *      6.发送账户激活邮件
+ *      7.激活账户（ token 验证）
+ *      8.图片验证码
+ *      9.检查验证码（比较用户输入是否与图片一致）
  *
  * @author Suvan
  */
@@ -46,13 +50,19 @@ public class AccountController {
     private IUserService userService;
 
     @Autowired
+    private ThreadPoolTaskExecutor taskExecutor;
+
+    @Autowired
     private Producer captchaProducer;
+
+    private final  String ACCOUNT_ACTIVATION_URL = "http://localhost:8080/api/account/validate?token=";
 
     /**
      * 1.获取用户信息（AccountController 默认访问）
      *
      * 注解提示：
      *      @LoginAuthroization 需要登录验证
+     *      @AccountActivation 需要激活才能访问
      *      @AdminRank 需要管理员权限验证
      *
      *      @RequestMapping 指定 api 路径
@@ -66,38 +76,58 @@ public class AccountController {
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
     @ResponseBody
-    public ResponseJsonDTO getUserInfoByName(@RequestParam(value = "username", required = false)String username, HttpServletRequest request) throws Exception{
+    public ResponseJsonDTO getUserInfoByName(@RequestParam(value = "username", required = false)String username,
+                                             @RequestParam(value = "email", required = false)String email,
+                                             HttpServletRequest request) throws Exception{
         //@RequestParam 的 required 属性声明参数是否必须，默认为true,此处声明 false 表示参数非必须，由 api 内部处理空情况
 
-        //参数合法性检测
-        String errorInfo = RequestParamsCheckUtils.checkUsername(username);
-        if (errorInfo != null) {
-            //抛出异常（错误信息，日志信息）
-            throw new ParamsErrorException(AccountInfo.PARAM_ERROR).log(errorInfo);
-        }
-
         /*
-         *获取用户信息
-         *      1.数据库查询用户信息，获取 UserDO 对象
-         *      2.将 UserDO 对象转为 Map 对象
-         *      3.不存在用户，则抛出异常
+         * 获取用户信息
+         *      1.判断输入参数（username 或者 email）,优先选择 username，其次 email
+         *      2.根据不同参数类型，进行参数检测
+         *      3.根据不同参数类型，使用不同方式，获取用户信息
+         *      4.判断用户是存在
          */
-        UserDO user = userService.getUserInfoByName(username);
-        Map<String, Object> userInfoMap = JsonUtils.toMapByObject(user);
-        if(userInfoMap == null){
-            throw new AccountErrorException(AccountInfo.NO_USER).log(username + LogWarnInfo.DATABASE_NO_EXIST_USER);
-        }
+        UserDO user = null;
+        if (username != null) {
+             //用户名获取
+             String usernameErrorInfo = RequestParamsCheckUtils.checkUsername(username);
+             if (usernameErrorInfo != null) {
+                throw new ParamsErrorException(AccountInfo.PARAM_ERROR).log(usernameErrorInfo);
+             }
 
+             user = userService.getUserInfoByName(username);
+             if(user == null){
+                 throw new AccountErrorException(AccountInfo.NO_USER).log(LogWarnInfo.DATABASE_NO_EXIST_USER + username);
+             }
+
+        } else if (email != null) {
+            //邮箱获取
+            String emailErrorInfo = RequestParamsCheckUtils.checkEmail(email);
+            if (emailErrorInfo != null) {
+                throw new ParamsErrorException(AccountInfo.PARAM_ERROR).log(emailErrorInfo);
+            }
+
+            user = userService.getUserInfoByEmail(email);
+            if (user == null) {
+                throw new AccountErrorException(AccountInfo.NO_USER).log(email + LogWarnInfo.DATABASE_NO_EXIST_USER);
+            }
+
+        } else {
+            throw new ParamsErrorException(AccountInfo.PARAM_ERROR).log(LogWarnInfo.NO_USERNAME_OR_EMAIL_PARAM_NO_GET_ACCOUNT_INFO);
+        }
 
         /*
          * 判断是否登录（Cookie 内是否有参数）
          *      1.未登录，返回 true，不返回用户信息
-         *      2.已登录，返回 true，同时返回用户信息
+         *      2.已登录，返回 true，将 UserDO 对象转为 Map ，同时返回用户信息
          */
         String authroization =  CookieUtils.getCookieValue(request, AccountInfo.AUTHENTICATION);;
         if (authroization == null) {
             return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS);
         }
+
+        Map<String, Object> userInfoMap = JsonUtils.toMapByObject(user);
         return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, userInfoMap);
     }
 
@@ -107,7 +137,7 @@ public class AccountController {
      * 注解提示：
      *       @RequestBody 自动将 JSON 格式转为 log 对象
      *
-     * @param requestBodyParamsMap  request Body 里的JSON 数据
+     * @param requestBodyParamsMap  http请求，request body 内 JSON 数据
      * @param request http请求
      * @param response http响应
      * @return ResponseJsonDTO 传输对象
@@ -131,22 +161,17 @@ public class AccountController {
             throw new ParamsErrorException(AccountInfo.PARAM_ERROR).log(errorInfo);
         }
 
-        //用户是否存在（与用户账户密码错误抛出一样警告，防止被试出用户是否存在）
+        //用户是否存在（与用户账户密码错误抛出一样警告，防止被试出用户是否存在）(登录注册的，api 返回信息，统一是用户密码错误(包含用户不存在场景))
         UserDO user = userService.getUserInfoByName(username);
         Map<String, Object> userInfoMap = JsonUtils.toMapByObject(user);
         if (userInfoMap == null) {
-            throw new AccountErrorException(AccountInfo.NO_USER).log(username + LogWarnInfo.DATABASE_NO_EXIST_USER);
-        }
-
-        //用户是否激活
-        if((Integer)userInfoMap.get(AccountInfo.STATE) == 0){
-            throw new AccountErrorException(AccountInfo.NO_ACTIVATE).log(username + LogWarnInfo.ACCOUNT_NO_ACTIVATION_NO_LOGIN);
+            throw new AccountErrorException(AccountInfo.USERNAME_PASSWORD_ERROR).log(LogWarnInfo.DATABASE_NO_EXIST_USER +  username);
         }
 
         //用户密码是否正确（密码为 MD5 加密后的密文）
         String cipherText = SecretUtils.encryptUserPassword(password);
         if (!cipherText.equals(userInfoMap.get(AccountInfo.PASSWORD))) {
-            throw new AccountErrorException(AccountInfo.USERNAME_PASSWORD_ERROR).log(username + LogWarnInfo.USER_PASSWORD_NO_MATCH);
+            throw new AccountErrorException(AccountInfo.USERNAME_PASSWORD_ERROR).log(password + LogWarnInfo.USER_PASSWORD_NO_MATCH);
         }
 
         /*
@@ -197,7 +222,7 @@ public class AccountController {
     /**
      * 4.注册
      *
-     * @param requestBodyParamsMap http请求，post，body 里的 JSON 参数
+     * @param requestBodyParamsMap http请求，request body 内 JSON 数据
      * @return ResponseJsonDTO 传输对象，api 显示结果
      * @throws Exception
      */
@@ -218,10 +243,19 @@ public class AccountController {
             throw new ParamsErrorException(AccountInfo.PARAM_ERROR).log(errorInfo);
         }
 
-        //判断用户名唯一
-        UserDO user = userService.getUserInfoByName(username);
+        /*
+         * 判断用户是否注册
+         *      1.检测用户名
+         *      2.检测邮箱
+         */
+        UserDO user = null;
+        user = userService.getUserInfoByName(username);
         if (user != null) {
             throw new AccountErrorException(AccountInfo.USERNAME_REGISTERED).log(username + LogWarnInfo.DATABASE_ALREAD_EXIST_USER_NO_AGAIN_ADD);
+        }
+        user = userService.getUserInfoByEmail(email);
+        if (user != null) {
+            throw new AccountErrorException(AccountInfo.EMAIL_REGISTERED).log(email + LogWarnInfo.DATABASE_ALREAD_EXIST_USER_NO_AGAIN_ADD);
         }
 
         //注册操作
@@ -246,11 +280,11 @@ public class AccountController {
     /**
      * 5.修改密码
      *
-     * @param requestBodyParamsMap http请求，post，body 内 JSON 参数
+     * @param requestBodyParamsMap http请求，request body 内 JSON 数据
      * @return ResponseJsonDTO 传输对象，api显示结果
      * @throws Exception
      */
-    @LoginAuthorization
+    @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/update-password", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
     public ResponseJsonDTO updateUserPasswordById(@RequestBody Map<String, Object> requestBodyParamsMap) throws Exception{
@@ -268,20 +302,67 @@ public class AccountController {
         //更新用户密码（需加密）,返回更新状态（true-成功，false-失败）
         String newPassword = SecretUtils.encryptUserPassword(password);
         if (!userService.alterUserPassword(username, newPassword)) {
-            throw new AccountErrorException(AccountInfo.NO_USER).log(username + LogWarnInfo.DATABASE_NO_EXIST_USER);
+            throw new AccountErrorException(AccountInfo.NO_USER).log(LogWarnInfo.DATABASE_NO_EXIST_USER + username);
         }
 
         return new  ResponseJsonDTO(AjaxRequestStatus.SUCCESS);
     }
 
     /**
-     * 6.激活账户
+     * 6.发送账户激活邮件
+     *
+     * @param requestBodyParamsMap http请求，request body 内 JSON 数据
+     * @return ResponseJsonDTO 传输对象，api 显示结果
+     * @throws Exception
+     */
+    @RequestMapping(value = "/activate", method = RequestMethod.POST, consumes = "application/json")
+    @ResponseBody
+    public ResponseJsonDTO accountActivation(@RequestBody Map<String, Object> requestBodyParamsMap) throws Exception{
+        String email = (String)requestBodyParamsMap.get(AccountInfo.EMAIL);
+
+        String errorInfo = RequestParamsCheckUtils.checkEmail(email);
+        if (errorInfo != null) {
+            throw new ParamsErrorException(AccountInfo.PARAM_ERROR).log(errorInfo);
+        }
+
+        //检测数据库是否存在此邮箱
+        UserDO user = userService.getUserInfoByEmail(email);
+        if(user == null){
+            throw new AccountErrorException(AccountInfo.EMAIL_NO_REIGSTER_NO_SEND).log(email + LogWarnInfo.EMAIL_NO_REGISTER_NO_SEND_EMAIL);
+        }
+
+        //检测邮箱激活状态（0-未激活，1-已激活）
+        if(user.getState() == 1){
+            throw new AccountErrorException(AccountInfo.EMAIL_ACTIVATED).log(email + LogWarnInfo.EMAIL_ACTIVATED_NO_AGAIN_SEND_EMAIL);
+        }
+
+        //构建 token（用户邮箱 + 过期时间）
+        long expireTime = System.currentTimeMillis() + SecretInfo.EXPIRETIME_ONE_DAY;
+        String token = SecretUtils.encryptBase64(email + "-" + expireTime);
+
+        //构建邮件内容
+        String content = StringUtils.createEmailActivationHtmlString(ACCOUNT_ACTIVATION_URL + token);
+
+        //发送邮件（Spring 线程池，另启线程）
+        taskExecutor.execute(new Runnable(){
+            @Override
+            public void run() {
+                SendEmailUtils.sendEmail(email, AccountInfo.EMAIL_SUBJECT_ACCOUNT_ACTIVATION , content);
+            }
+        });
+
+        return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, AccountInfo.MAIL_SENT_SUCCESS);
+    }
+
+
+    /**
+     * 7.激活账户（ token 验证）
      *
      * @param token 密文
      * @return ResponseJsonDTO 传输对象，api 显示结果
      * @throws Exception
      */
-    @RequestMapping(value = "/activation", method = RequestMethod.GET)
+    @RequestMapping(value = "/validate", method = RequestMethod.GET)
     @ResponseBody
     public ResponseJsonDTO emailToken(@RequestParam(value = "token", required = false)String token) throws Exception{
         String errorInfo = RequestParamsCheckUtils.checkToken(token);
@@ -301,19 +382,19 @@ public class AccountController {
 
         //过期判断（1 天）
         if(StringUtils.isExpire(expireTime)){
-            throw new TokenExpireException(AccountInfo.LINK_INVALID).log(token + LogWarnInfo.ACCOUNT_ACTIVATION_URL_ALREAD_EXPIRE_TIME);
+            throw new TokenExpireException(AccountInfo.LINK_INVALID).log(token + LogWarnInfo.ACTIVATION_URL_ALREAD_EXPIRE_TIME);
         }
 
         //激活账户（激活失败，表示不存在用户）
         if (!userService.activationUser(email)) {
-            throw new AccountErrorException(AccountInfo.ACTIVATION_FAIL_EMAIL_NO_REGISTER).log(LogWarnInfo.ACCOUNT_ACTIVATION_FAIL_EMAIL_NO_REGISTER + LogWarnInfo.DATABASE_NO_EXIST_USER);
+            throw new AccountErrorException(AccountInfo.ACTIVATION_FAIL_EMAIL_NO_REGISTER).log(email + LogWarnInfo.ACTIVATION_FAIL_EMAIL_NO_REGISTER);
         }
 
         return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, AccountInfo.ACTIVATION_SUCCESSFUL);
     }
 
     /**
-     * 7.图片验证码
+     * 8.图片验证码
      *
      * @param request http请求
      * @param response http响应
@@ -351,7 +432,7 @@ public class AccountController {
     }
 
     /**
-     * 8.检查验证码（比较用户输入是否与图片一致）
+     * 9.检查验证码（比较用户输入是否与图片一致）
      *
      * @param captcha 验证码字符串
      * @param request http请求

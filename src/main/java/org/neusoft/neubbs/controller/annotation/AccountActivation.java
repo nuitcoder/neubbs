@@ -6,12 +6,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 管理员权限注解 @AdminRank （验证是否有管理员权限）
+ * 账户激活注解 @AccountActivation（验证账户是否激活）
  *      1.修饰方法
  *      2.运行时注解
  *
- *  @author Suvan
+ * @author Suvan
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface AdminRank {}
+public @interface AccountActivation {}

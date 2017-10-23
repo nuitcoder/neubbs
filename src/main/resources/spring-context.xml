@@ -29,7 +29,7 @@
 
 	<!-- Spring 线程池 -->
 	<bean id="taskExecutro" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
-		<property name="corePoolSize" value="5" />
+		<property name="corePoolSize" value="2" />
 		<property name="keepAliveSeconds" value="200" />
 		<property name="maxPoolSize" value="10" />
 		<property name="queueCapacity" value="20" />

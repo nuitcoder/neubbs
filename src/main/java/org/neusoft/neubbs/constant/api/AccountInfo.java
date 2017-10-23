@@ -33,21 +33,30 @@ public interface AccountInfo {
     String RANK_ADMIN = "admin";
 
     /**
+     * 发送激活邮件
+     */
+    String EMAIL_SUBJECT_ACCOUNT_ACTIVATION = "Neubbs 账户激活";
+
+    /**
      * Account api 警告信息
      */
     String PARAM_ERROR  = "incorrect input parameter";
     String NO_USER = "the user does not exist";
-    String NO_ACTIVATE   = "account is not active";
+    String NO_ACTIVATE   = "account has not been activated";
     String PASSWORD_ERROR = "user password is incorrect";
-    String USERNAME_PASSWORD_ERROR = "wrong user name or password";
-    String USERNAME_REGISTERED = "user name has been registered";
+    String USERNAME_PASSWORD_ERROR = "username or password is incorrect";
+    String USERNAME_REGISTERED = "username has been registered";
+    String EMAIL_REGISTERED = "email has bean registered";
     String LINK_INVALID = "invalid activation link";
-    String ACTIVATION_FAIL_EMAIL_NO_REGISTER = "activation failed, mailbox is not registered";
+    String ACTIVATION_FAIL_EMAIL_NO_REGISTER = "activation failed, email is not registered";
     String TOKEN_EXPIRED = "token expired";
     String NO_PERMISSION= "no permission";
     String ACTIVATION_SUCCESSFUL =  "activation successful！";
     String NO_GENERATE_CAPTCHA = "did not generate captcha";
     String CAPTCHA_ERROR = "captcha error";
+    String EMAIL_NO_REIGSTER_NO_SEND = "the email is not registered";
+    String EMAIL_ACTIVATED = "the email has been activated";
+    String MAIL_SENT_SUCCESS = "mail sent successfully";
 
 
 

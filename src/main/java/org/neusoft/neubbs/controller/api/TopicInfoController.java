@@ -3,8 +3,10 @@ package org.neusoft.neubbs.controller.api;
 import org.neusoft.neubbs.constant.ajax.AjaxRequestStatus;
 import org.neusoft.neubbs.constant.api.TopicInfo;
 import org.neusoft.neubbs.constant.log.LogWarnInfo;
+import org.neusoft.neubbs.controller.annotation.AccountActivation;
 import org.neusoft.neubbs.controller.annotation.AdminRank;
 import org.neusoft.neubbs.controller.annotation.LoginAuthorization;
+import org.neusoft.neubbs.controller.exception.ParamsErrorException;
 import org.neusoft.neubbs.controller.exception.TopicErrorException;
 import org.neusoft.neubbs.dto.ResponseJsonDTO;
 import org.neusoft.neubbs.service.ITopicService;
@@ -43,7 +45,7 @@ public class TopicInfoController {
      * @return ResponseJsonDTO 传输对象，api 显示
      * @throws Exception
      */
-    @LoginAuthorization
+    @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @ResponseBody
     public ResponseJsonDTO saveTopic(@RequestBody Map<String, Object> requestBodyParamsMap) throws Exception{
@@ -64,7 +66,7 @@ public class TopicInfoController {
                                 .putParamValues(new String[]{String.valueOf(userId), category, title, content})
                                 .checkParamsNorm();
         if (errorInfo != null) {
-            throw new TopicErrorException(TopicInfo.PARAM_ERROR).log(errorInfo);
+            throw new ParamsErrorException(TopicInfo.PARAM_ERROR).log(errorInfo);
         }
 
         topicService.saveTopic(userId, category, title, content);
@@ -79,7 +81,7 @@ public class TopicInfoController {
      * @return ResponseJsonDTO 传输对象，api 显示
      * @throws Exception
      */
-    @LoginAuthorization
+    @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/save-reply", method = RequestMethod.POST)
     @ResponseBody
     public ResponseJsonDTO saveReply(@RequestBody Map<String, Object> requetBodyParamsMap) throws Exception{
@@ -92,7 +94,7 @@ public class TopicInfoController {
                                 .putParamValues(new String[]{String.valueOf(userId), String.valueOf(topicId), content})
                                 .checkParamsNorm();
         if (errorInfo != null) {
-            throw new TopicErrorException(TopicInfo.PARAM_ERROR).log(errorInfo);
+            throw new ParamsErrorException(TopicInfo.PARAM_ERROR).log(errorInfo);
         }
 
         topicService.saveReply(userId, topicId, content);
@@ -107,7 +109,7 @@ public class TopicInfoController {
      * @return ResponseJsonDTO 传输对象，api 显示
      * @throws Exception
      */
-    @LoginAuthorization @AdminRank
+    @LoginAuthorization @AccountActivation @AdminRank
     @RequestMapping(value = "/remove", method = RequestMethod.POST)
     @ResponseBody
     public ResponseJsonDTO removeTopic(@RequestBody Map<String, Object> requestBodyParamsMap) throws Exception{
@@ -115,7 +117,7 @@ public class TopicInfoController {
 
         String errorInfo = RequestParamsCheckUtils.checkId(String.valueOf(topicId));
         if (errorInfo != null) {
-            throw new TopicErrorException(TopicInfo.PARAM_ERROR).log(errorInfo);
+            throw new ParamsErrorException(TopicInfo.PARAM_ERROR).log(errorInfo);
         }
 
         if (topicService.getTopic(topicId) == null) {
@@ -134,7 +136,7 @@ public class TopicInfoController {
      * @return ResponseJsonDTO 传输对象，api 显示
      * @throws Exception
      */
-    @LoginAuthorization
+    @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/remove-reply", method = RequestMethod.POST)
     @ResponseBody
     public ResponseJsonDTO removeReply(@RequestBody Map<String, Object> requetsBodyParamsMap) throws Exception{
@@ -142,7 +144,7 @@ public class TopicInfoController {
 
         String errorInfo = RequestParamsCheckUtils.checkId(String.valueOf(replyId));
         if (errorInfo != null) {
-            throw new TopicErrorException(TopicInfo.PARAM_ERROR).log(errorInfo);
+            throw new ParamsErrorException(TopicInfo.PARAM_ERROR).log(errorInfo);
         }
 
         if (topicService.getReply(replyId) == null) {

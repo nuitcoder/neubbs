@@ -48,7 +48,7 @@ public class FileController {
      * @throws Exception
      */
     @LoginAuthorization
-    @RequestMapping(value = "/upload-user-image", method = RequestMethod.POST)
+    @RequestMapping(value = "/image", method = RequestMethod.POST)
     @ResponseBody
     public ResponseJsonDTO uploadUserImage(@RequestParam("image")MultipartFile multipartFile,
                                            HttpServletRequest request) throws Exception{
@@ -67,9 +67,10 @@ public class FileController {
             // 抛出文件空异常
             throw new FileUploadException(FileInfo.NO_CHOICE_PICTURE).log(LogWarnInfo.USER_NO_CHOICE_UPLOAD_FILE);
         }
-        if (!PatternUtils.matchUserImage(multipartFile.getContentType())) {
+        String fileType = multipartFile.getContentType();
+        if (!PatternUtils.matchUserImage(fileType)) {
             //抛出文件类型不匹配异常
-            throw new FileUploadException(FileInfo.PICTURE_FORMAT_WRONG).log( multipartFile.getContentType() + LogWarnInfo.FILE_TYPE_NO_USER_IMAGE_SPECIFY_TYPE);
+            throw new FileUploadException(FileInfo.PICTURE_FORMAT_WRONG).log( fileType + LogWarnInfo.FILE_TYPE_NO_MATCH_IMAGE_TYPE);
         }
         if(multipartFile.getSize() >= FileInfo.SIZE_ONE_MB){
             //文件压缩处理

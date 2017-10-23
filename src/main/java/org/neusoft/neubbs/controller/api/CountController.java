@@ -29,7 +29,7 @@ public class CountController {
      * @throws Exception
      */
     @LoginAuthorization
-    @RequestMapping(value = "/online-visit-user")
+    @RequestMapping(value = "/visit")
     @ResponseBody
     public ResponseJsonDTO onlineVisitUser(HttpServletRequest request) throws Exception{
         Integer onlineVisitUser = (Integer) request.getServletContext().getAttribute(CountInfo.ONLINE_VISIT_USER);
@@ -45,7 +45,7 @@ public class CountController {
      * @throws Exception
      */
     @LoginAuthorization
-    @RequestMapping(value = "/online-login-user")
+    @RequestMapping(value = "/login")
     @ResponseBody
     public ResponseJsonDTO onlineLoginUser(HttpServletRequest request) throws Exception{
         Integer onlineLoginUser = (Integer)request.getServletContext().getAttribute(CountInfo.ONLINE_LOGIN_USER);
