@@ -69,6 +69,10 @@
         UPDATE forum_user SET fu_password = #{param2, jdbcType = VARCHAR}
         WHERE fu_name = #{param1, jdbcType = VARCHAR}
     </update>
+    <update id="updateUserEmailByName">
+        UPDATE forum_user SET fu_email = #{param2, jdbcType = VARCHAR}
+        WHERE fu_name = #{param1, jdbcType = VARCHAR}
+    </update>
     <update id="updateUserRankByName">
         UPDATE forum_user SET fu_rank = #{param2, jdbcType = VARCHAR}
         WHERE fu_name = #{param1, jdbcType = VARCHAR}

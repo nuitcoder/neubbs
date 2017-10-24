@@ -91,14 +91,7 @@ public class FileController {
 
         multipartFile.transferTo(imageFile);
 
-        if (!userService.uploadUserImage(user.getName(), fileName)) {
-            if(!imageFile.delete()){
-               //删除失败
-               throw new FileUploadException(FileInfo.UPLOAD_FAIL).log(LogWarnInfo.USER_IMAGE_SAVE_DATABASE_FAIL + LogWarnInfo.DELETE_IMAGE_FILE_FAIL);
-            }
-
-            throw new FileUploadException(FileInfo.UPLOAD_FAIL).log(LogWarnInfo.USER_IMAGE_SAVE_DATABASE_FAIL);
-        }
+        userService.uploadUserImage(user.getName(),fileName);
 
         return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, FileInfo.UPLOAD_SUCCESS);
     }

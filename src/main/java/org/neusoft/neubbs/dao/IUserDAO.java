@@ -93,6 +93,15 @@ public interface IUserDAO {
     Integer updateUserPasswordByName(String username, String password);
 
     /**
+     * 更新用户邮箱
+     *
+     * @param username 用户名
+     * @param email 新邮箱
+     * @return Integer 更新行数
+     */
+    Integer updateUserEmailByName(String username, String email);
+
+    /**
      * 更新用户权限
      *
      * @param username 用户名

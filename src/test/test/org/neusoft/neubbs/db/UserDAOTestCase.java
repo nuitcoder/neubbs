@@ -180,6 +180,15 @@ public class UserDAOTestCase {
     }
 
     /**
+     * 更新用户邮箱
+     */
+    @Test
+    public void test42_UpdateUserEmailByName(){
+        int effectRow = userDAO.updateUserEmailByName("testuser", "13202405189@qq.com");
+        System.out.println("更新邮箱，更新行数" + effectRow);
+    }
+
+    /**
      * 更新用户权限
      */
     @Test

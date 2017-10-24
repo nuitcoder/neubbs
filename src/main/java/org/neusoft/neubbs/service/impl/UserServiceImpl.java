@@ -18,12 +18,10 @@ public class UserServiceImpl implements IUserService {
     private IUserDAO userDAO;
 
     @Override
-    public Boolean registerUser(UserDO user){
+    public void registerUser(UserDO user){
         int effectRow = userDAO.saveUser(user);
         if (effectRow == 0) {
-           return false;
-        } else {
-            return true;
+            //处理异常
         }
     }
 
@@ -43,32 +41,34 @@ public class UserServiceImpl implements IUserService {
     }
 
    @Override
-   public Boolean alterUserPassword(String username, String password){
+   public void alterUserPassword(String username, String password){
        int effectRow = userDAO.updateUserPasswordByName(username, password);
        if (effectRow == 0) {
-           return false;
-       } else {
-           return true;
+
+       }
+   }
+
+   @Override
+   public void alterUserEmail(String username, String email){
+       int effectRow = userDAO.updateUserEmailByName(username, email);
+       if (effectRow == 0) {
+
        }
    }
 
     @Override
-    public Boolean activationUser(String email) {
+    public void activationUser(String email) {
         int effectRow = userDAO.updateUserStateForActivationByEmail(email);
         if (effectRow == 0) {
-            return false;
-        } else {
-            return true;
+
         }
     }
 
     @Override
-    public Boolean uploadUserImage(String username, String image){
+    public void uploadUserImage(String username, String image){
        int effectRow = userDAO.updateUserImageByName(username, image);
         if (effectRow == 0) {
-            return false;
-        } else {
-            return true;
+
         }
     }
 }

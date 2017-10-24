@@ -13,9 +13,8 @@ public interface IUserService{
      * 注册用户
      *
      * @param user 用户对象
-     * @return Boolean 注册结果
      */
-    Boolean registerUser(UserDO user);
+    void registerUser(UserDO user);
 
     /**
      * id 获取用户信息
@@ -46,25 +45,30 @@ public interface IUserService{
      *
      * @param username 用户名
      * @param password 新用户名密码
-     * @return Boolean 修改结果
      */
-    Boolean alterUserPassword(String username, String password);
+     void alterUserPassword(String username, String password);
+
+    /**
+     * 修改用户邮箱
+     *
+     * @param username 用户名
+     * @param password 密码
+     */
+    void alterUserEmail(String username, String password);
 
     /**
      * 激活用户
      *
      * @param email 用户邮箱
-     * @return Boolean 激活结果
      */
-    Boolean activationUser(String email);
+     void activationUser(String email);
 
     /**
      * 上传用户头像
      *
      * @param username 用户名
      * @param image 用户图片名
-     * @return Boolean 上传结果
      *
      */
-    Boolean uploadUserImage(String username, String image);
+    void uploadUserImage(String username, String image);
 }

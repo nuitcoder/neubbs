@@ -23,8 +23,11 @@ public interface LogWarnInfo {
 
     String NO_USERNAME_OR_EMAIL_PARAM_NO_GET_ACCOUNT_INFO = "没有 username 或 email 参数（选其一即可），无法获取账户信息";
 
+    String EMAIL_REGISTERD_NO_USE = " 邮箱已被注册，无法使用！";
     String EMAIL_NO_REGISTER_NO_SEND_EMAIL = " 邮箱未注册，无法发送邮件";
     String EMAIL_ACTIVATED_NO_AGAIN_SEND_EMAIL = " 邮箱用户已经激活，不重复发送邮件";
+
+    String NO_PERMISSION_UPDATE_OTHER_USER = "无权修改其余用户";
 
     /*****************************Topic api**********************************/
     String NO_EXIST_TOPIC = "不存在指定主题，请检查输入（主题 id）";

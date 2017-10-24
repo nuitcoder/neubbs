@@ -16,5 +16,4 @@ public interface FileInfo {
     String UPLOAD_SUCCESS = "upload successful!";
     String NO_CHOICE_PICTURE = "no choice to upload picture";
     String PICTURE_FORMAT_WRONG = "user upload picture type is wrong, only *.jpg or *.png or *.jpeg";
-
 }

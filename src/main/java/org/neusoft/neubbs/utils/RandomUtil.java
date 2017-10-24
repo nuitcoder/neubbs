@@ -32,4 +32,36 @@ public class RandomUtil {
         // 0~99区间.nextInt(100),  1~100区间.nextInt(99) + 1，64~128区间.nextInt(65) + 64
         return random.nextInt(max - min + 1) + min;
     }
+
+    /**
+     * 获取指定长度随机字符串（a-z, A-Z, 0-9）
+     *
+     * @param len 字符串长度
+     * @return String 随机字符串
+     */
+    public static String getRandomString(int len){
+        StringBuilder sb = new StringBuilder();
+
+        int point;
+        int ascii;
+        for(int i = 0; i < len; i++){
+            //生成 “min <= 随机数 <= max ” 的随机数   int num = min + (int)(Math.random() * (max-min+1))
+            point = 1 + (int)(Math.random()*3);
+
+            if (point == 1) {
+                //数字
+                sb.append((int)(Math.random() * 10));
+            } else if (point == 2) {
+                //小写字母(97 - 122)
+                ascii = 97 + (int)(Math.random() * 26);
+                sb.append((char)ascii);
+            } else if (point == 3) {
+                //大写字母（65 - 90）
+                ascii = 65 + (int)(Math.random() * 26);
+                sb.append((char)ascii);
+            }
+        }
+
+        return sb.toString();
+    }
 }

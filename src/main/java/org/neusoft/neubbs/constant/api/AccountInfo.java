@@ -32,10 +32,12 @@ public interface AccountInfo {
     String AUTHENTICATION = "authentication";
     String RANK_ADMIN = "admin";
 
+
     /**
-     * 发送激活邮件
+     * 激活状态
      */
-    String EMAIL_SUBJECT_ACCOUNT_ACTIVATION = "Neubbs 账户激活";
+    int STATE_SUCCESS = 1;
+    int STATE_FAIL = 0;
 
     /**
      * Account api 警告信息
@@ -47,6 +49,7 @@ public interface AccountInfo {
     String USERNAME_PASSWORD_ERROR = "username or password is incorrect";
     String USERNAME_REGISTERED = "username has been registered";
     String EMAIL_REGISTERED = "email has bean registered";
+    String ACCOUNT_ACTIVATED_NO_UPDATE_EMAIL = "account has bean activated no update email";
     String LINK_INVALID = "invalid activation link";
     String ACTIVATION_FAIL_EMAIL_NO_REGISTER = "activation failed, email is not registered";
     String TOKEN_EXPIRED = "token expired";
