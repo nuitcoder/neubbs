@@ -12,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "axios": "^0.16.2",
+    "link-to-inbox": "^1.2.0",
     "lodash": "^4.17.4",
     "prop-types": "^15.6.0",
     "react": "^15.4.0",
@@ -22,6 +23,7 @@
     "react-router": "^3.0.5",
     "react-router-redux": "^4.0.8",
     "redux": "^3.7.2",
+    "redux-actions": "^2.2.1",
     "redux-form": "^7.1.1",
     "styled-components": "^2.1.2",
     "validatorjs": "^3.13.5"

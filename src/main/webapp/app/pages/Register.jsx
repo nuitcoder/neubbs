@@ -1,9 +1,14 @@
 import React, { Component } from 'react'
 import { Alert } from 'react-bootstrap'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
 
 import FormWrapper from '../components/FormWrapper'
 import RegisterForm from '../components/RegisterForm'
 import ActivateModal from '../components/ActivateModal'
+
+import actions from '../actions'
+import auth from '../auth'
 import api from '../api'
 
 class Register extends Component {
@@ -40,6 +45,17 @@ class Register extends Component {
       const { data } = res
       if (data.success) {
         console.log('register success')
+
+        // TODO: login when not active
+        auth.login({ username, password })
+          .then((res) => {
+            console.log(res)
+            const { data } = res
+            if (data.success) {
+              console.log('login success')
+            }
+          })
+
         this.setState({
           showModal: true,
         })
@@ -67,4 +83,20 @@ class Register extends Component {
   }
 }
 
-export default Register
+const mapStateToProps = (state) => {
+  const { account } = state
+  return {
+    account,
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    actions: bindActionCreators(actions, dispatch)
+  }
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(Register)
