@@ -8,9 +8,9 @@ import org.neusoft.neubbs.controller.annotation.AdminRank;
 import org.neusoft.neubbs.controller.annotation.LoginAuthorization;
 import org.neusoft.neubbs.controller.exception.AccountErrorException;
 import org.neusoft.neubbs.entity.UserDO;
-import org.neusoft.neubbs.util.AnnotationUtils;
-import org.neusoft.neubbs.util.CookieUtils;
-import org.neusoft.neubbs.util.JwtTokenUtils;
+import org.neusoft.neubbs.utils.AnnotationUtil;
+import org.neusoft.neubbs.utils.CookieUtil;
+import org.neusoft.neubbs.utils.JwtTokenUtil;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -99,11 +99,11 @@ public class ApiInterceptor implements HandlerInterceptor{
          *      3.解密 authentication（过期无法解密），获取用户信息（UserDO 对象）
          *      4.判断（能获取用户信息，表示已经登录）
          */
-        boolean hasLoginAuthorization = AnnotationUtils.hasMethodAnnotation(handler, LoginAuthorization.class);
+        boolean hasLoginAuthorization = AnnotationUtil.hasMethodAnnotation(handler, LoginAuthorization.class);
         if (hasLoginAuthorization) {
-            String authentication =  CookieUtils.getCookieValue(request, AccountInfo.AUTHENTICATION);;
+            String authentication =  CookieUtil.getCookieValue(request, AccountInfo.AUTHENTICATION);;
             if (authentication != null) {
-                UserDO user = JwtTokenUtils.verifyToken(authentication, SecretInfo.TOKEN_SECRET_KEY);
+                UserDO user = JwtTokenUtil.verifyToken(authentication, SecretInfo.TOKEN_SECRET_KEY);
                 if (user != null) {
                     //通过验证
                     return true;
@@ -129,11 +129,11 @@ public class ApiInterceptor implements HandlerInterceptor{
      * @throws Exception
      */
     private Boolean doAccountActivation(HttpServletRequest request, Object handler) throws Exception{
-        boolean hasAccountActivation = AnnotationUtils.hasMethodAnnotation(handler, AccountActivation.class);
+        boolean hasAccountActivation = AnnotationUtil.hasMethodAnnotation(handler, AccountActivation.class);
         if (hasAccountActivation) {
-            String authentication = CookieUtils.getCookieValue(request, AccountInfo.AUTHENTICATION);
+            String authentication = CookieUtil.getCookieValue(request, AccountInfo.AUTHENTICATION);
             if (authentication != null) {
-                UserDO user = JwtTokenUtils.verifyToken(authentication, SecretInfo.TOKEN_SECRET_KEY);
+                UserDO user = JwtTokenUtil.verifyToken(authentication, SecretInfo.TOKEN_SECRET_KEY);
                 if (user.getState() == 1) {
                     //通过验证
                     return true;
@@ -154,11 +154,11 @@ public class ApiInterceptor implements HandlerInterceptor{
      * @throws Exception
      */
     public Boolean doAdminRank(HttpServletRequest request, Object handler) throws Exception{
-        boolean hasAdminRank = AnnotationUtils.hasMethodAnnotation(handler, AdminRank.class);
+        boolean hasAdminRank = AnnotationUtil.hasMethodAnnotation(handler, AdminRank.class);
         if (hasAdminRank) {
-            String authentication = CookieUtils.getCookieValue(request,AccountInfo.AUTHENTICATION);
+            String authentication = CookieUtil.getCookieValue(request,AccountInfo.AUTHENTICATION);
             if (authentication != null) {
-                UserDO user = JwtTokenUtils.verifyToken(authentication, SecretInfo.TOKEN_SECRET_KEY);
+                UserDO user = JwtTokenUtil.verifyToken(authentication, SecretInfo.TOKEN_SECRET_KEY);
                 if (AccountInfo.RANK_ADMIN.equals(user.getRank())) {
                     //通过验证
                     return true;

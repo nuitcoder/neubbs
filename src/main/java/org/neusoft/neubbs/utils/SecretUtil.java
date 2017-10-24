@@ -1,4 +1,4 @@
-package org.neusoft.neubbs.util;
+package org.neusoft.neubbs.utils;
 
 import javax.crypto.*;
 import java.io.UnsupportedEncodingException;
@@ -14,7 +14,7 @@ import java.util.Base64;
  *
  * @author Suvan
  */
-public class SecretUtils {
+public class SecretUtil {
 
     private static final Integer MDT_STRING_LENGTH = 32;
 

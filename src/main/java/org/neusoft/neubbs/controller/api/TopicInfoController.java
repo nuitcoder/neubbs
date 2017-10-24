@@ -10,7 +10,7 @@ import org.neusoft.neubbs.controller.exception.ParamsErrorException;
 import org.neusoft.neubbs.controller.exception.TopicErrorException;
 import org.neusoft.neubbs.dto.ResponseJsonDTO;
 import org.neusoft.neubbs.service.ITopicService;
-import org.neusoft.neubbs.util.RequestParamsCheckUtils;
+import org.neusoft.neubbs.utils.RequestParamsCheckUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -61,7 +61,7 @@ public class TopicInfoController {
         String title = (String)requestBodyParamsMap.get(TopicInfo.TITLE);
         String content = (String)requestBodyParamsMap.get(TopicInfo.CONTENT);
 
-        String errorInfo = RequestParamsCheckUtils
+        String errorInfo = RequestParamsCheckUtil
                                 .putParamKeys(new String[]{TopicInfo.USERID, TopicInfo.CATEGORY, TopicInfo.TITLE, TopicInfo.CONTENT})
                                 .putParamValues(new String[]{String.valueOf(userId), category, title, content})
                                 .checkParamsNorm();
@@ -89,7 +89,7 @@ public class TopicInfoController {
         Integer topicId = (Integer)requetBodyParamsMap.get(TopicInfo.TOPICID);
         String content = (String)requetBodyParamsMap.get(TopicInfo.CONTENT);
 
-        String errorInfo = RequestParamsCheckUtils
+        String errorInfo = RequestParamsCheckUtil
                                 .putParamKeys(new String[]{TopicInfo.USERID, TopicInfo.TOPICID, TopicInfo.CONTENT})
                                 .putParamValues(new String[]{String.valueOf(userId), String.valueOf(topicId), content})
                                 .checkParamsNorm();
@@ -115,7 +115,7 @@ public class TopicInfoController {
     public ResponseJsonDTO removeTopic(@RequestBody Map<String, Object> requestBodyParamsMap) throws Exception{
         Integer topicId = (Integer)requestBodyParamsMap.get(TopicInfo.TOPICID);
 
-        String errorInfo = RequestParamsCheckUtils.checkId(String.valueOf(topicId));
+        String errorInfo = RequestParamsCheckUtil.checkId(String.valueOf(topicId));
         if (errorInfo != null) {
             throw new ParamsErrorException(TopicInfo.PARAM_ERROR).log(errorInfo);
         }
@@ -142,7 +142,7 @@ public class TopicInfoController {
     public ResponseJsonDTO removeReply(@RequestBody Map<String, Object> requetsBodyParamsMap) throws Exception{
         Integer replyId = (Integer)requetsBodyParamsMap.get(TopicInfo.REPLYID);
 
-        String errorInfo = RequestParamsCheckUtils.checkId(String.valueOf(replyId));
+        String errorInfo = RequestParamsCheckUtil.checkId(String.valueOf(replyId));
         if (errorInfo != null) {
             throw new ParamsErrorException(TopicInfo.PARAM_ERROR).log(errorInfo);
         }

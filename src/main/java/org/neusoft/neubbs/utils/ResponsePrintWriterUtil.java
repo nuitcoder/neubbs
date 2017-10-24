@@ -1,4 +1,4 @@
-package org.neusoft.neubbs.util;
+package org.neusoft.neubbs.utils;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -8,11 +8,11 @@ import java.util.Map;
 
 /**
  * 响应输出 工具类
- *      1. 需要 JsonUtils 工具类
+ *      1. 需要 JsonUtil 工具类
  *
  * @author
  */
-public class ResponsePrintWriterUtils {
+public class ResponsePrintWriterUtil {
 
     private static final String  SUCCESS_STATES = "success";
     private static final Boolean SUCCESS_STATES_FAIL= false;
@@ -36,7 +36,7 @@ public class ResponsePrintWriterUtils {
             map.put(MESSAGE, failMessage);
 
         //将 Map 转换为 JSON 格式字符串
-        String json = JsonUtils.toJSONStringByObject(map);
+        String json = JsonUtil.toJSONStringByObject(map);
 
         //设定相应类型
         response.setCharacterEncoding(CHARACTER_ENCODING);

@@ -7,7 +7,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 import org.neusoft.neubbs.dao.ITopicContentDAO;
 import org.neusoft.neubbs.entity.TopicContentDO;
-import org.neusoft.neubbs.util.JsonUtils;
+import org.neusoft.neubbs.utils.JsonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -67,7 +67,7 @@ public class TopicContentDAOTestCase {
     @Test
     public void test3_GetTopicContentById(){
        TopicContentDO topicContent = topicContentDAO.getTopicContentById(1);
-        System.out.println("查询结果：" + JsonUtils.toJSONStringByObject(topicContent));
+        System.out.println("查询结果：" + JsonUtil.toJSONStringByObject(topicContent));
     }
 
     /**

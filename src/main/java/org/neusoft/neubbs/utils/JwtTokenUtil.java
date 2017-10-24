@@ -1,4 +1,4 @@
-package org.neusoft.neubbs.util;
+package org.neusoft.neubbs.utils;
 
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -18,7 +18,7 @@ import java.util.Map;
  *
  * @author Suvan
  */
-public class JwtTokenUtils {
+public class JwtTokenUtil {
 
     private static final String JWT = "JWT";
     private static final String HS256 = "HS256";

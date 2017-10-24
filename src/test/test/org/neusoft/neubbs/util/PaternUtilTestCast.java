@@ -3,22 +3,22 @@ package test.org.neusoft.neubbs.util;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-import org.neusoft.neubbs.util.PatternUtils;
+import org.neusoft.neubbs.utils.PatternUtil;
 
 /**
  * 正则匹配 测试类
  */
 @RunWith(JUnit4.class)
-public class PaternUtilsTestCast {
+public class PaternUtilTestCast {
    /**
     * 测试 纯数字检测
     */
    @Test
    public void testPureNumber(){
-      System.out.println(PatternUtils.isPureNumber("___213132"));
-      System.out.println(PatternUtils.isPureNumber("222"));
-      System.out.println(PatternUtils.isPureNumber("&^@#$sfgqwre1123"));
-      System.out.println(PatternUtils.isPureNumber("12312!"));
+      System.out.println(PatternUtil.isPureNumber("___213132"));
+      System.out.println(PatternUtil.isPureNumber("222"));
+      System.out.println(PatternUtil.isPureNumber("&^@#$sfgqwre1123"));
+      System.out.println(PatternUtil.isPureNumber("12312!"));
    }
 
    /**
@@ -29,7 +29,7 @@ public class PaternUtilsTestCast {
       String [] usrenameArray = {"1","a","*","kk","*as","asdfasf___","aaaaaaaaaaaaaaaaaaaaaaa","ABCk"};
 
       for(String name: usrenameArray){
-         System.out.println(name + " 匹配结果：" + PatternUtils.matchUsername(name));
+         System.out.println(name + " 匹配结果：" + PatternUtil.matchUsername(name));
       }
    }
 
@@ -43,7 +43,7 @@ public class PaternUtilsTestCast {
                               "liushuwei@gmail.com","313123123@qq.com","suvan@liushuwei.cn"};
 
       for(String email : emailArray){
-         System.out.println(email + " 匹配结果：" + PatternUtils.matchEmail(email));
+         System.out.println(email + " 匹配结果：" + PatternUtil.matchEmail(email));
       }
    }
 
@@ -55,7 +55,7 @@ public class PaternUtilsTestCast {
       String [] imageType = {"image/jpg", "image/JPG" ,"image/png", "image/PNG", "image/asdffsda", "image/gif"};
 
       for (String type: imageType) {
-         System.out.println(type + "匹配结果：" + PatternUtils.matchUserImage(type));
+         System.out.println(type + "匹配结果：" + PatternUtil.matchUserImage(type));
       }
    }
 
@@ -67,7 +67,7 @@ public class PaternUtilsTestCast {
       String [] categoryArray = {"java", "132aa","_qwerq","你好","你好study","学习!234_+"};
 
       for(String category: categoryArray){
-         System.out.println(category + " 匹配结果：" + PatternUtils.matchTopicCategory(category));
+         System.out.println(category + " 匹配结果：" + PatternUtil.matchTopicCategory(category));
       }
    }
 }

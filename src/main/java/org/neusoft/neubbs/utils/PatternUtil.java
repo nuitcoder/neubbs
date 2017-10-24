@@ -1,4 +1,4 @@
-package org.neusoft.neubbs.util;
+package org.neusoft.neubbs.utils;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
  *
  * @author Suvan
  */
-public class PatternUtils {
+public class PatternUtil {
 
      private static final String EXIST_NU_PURE_NUMBER = "[^0-9]";
      private static final String MATCH_USERNAME = "^[A-Za-z0-9]{3,20}$";

@@ -7,7 +7,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 import org.neusoft.neubbs.dao.ITopicReplyDAO;
 import org.neusoft.neubbs.entity.TopicReplyDO;
-import org.neusoft.neubbs.util.JsonUtils;
+import org.neusoft.neubbs.utils.JsonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -95,7 +95,7 @@ public class TopicReplyDAOTestCase {
 
         TopicReplyDO topicReply = topicReplyDAO.getTopicReplyById(maxId);
 
-        System.out.println("查询 id = 1 的回复，查询结果：" + JsonUtils.toJSONStringByObject(topicReply));
+        System.out.println("查询 id = 1 的回复，查询结果：" + JsonUtil.toJSONStringByObject(topicReply));
     }
 
     /**
@@ -106,7 +106,7 @@ public class TopicReplyDAOTestCase {
         List<TopicReplyDO> listTopicReply = topicReplyDAO.listTopicReplyByTopicId(1);
 
         for(TopicReplyDO topicReply: listTopicReply){
-            System.out.println(JsonUtils.toJSONStringByObject(topicReply));
+            System.out.println(JsonUtil.toJSONStringByObject(topicReply));
         }
     }
 

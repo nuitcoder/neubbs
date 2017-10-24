@@ -3,14 +3,14 @@ package test.org.neusoft.neubbs.util;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-import org.neusoft.neubbs.util.SecretUtils;
-import org.neusoft.neubbs.util.SendEmailUtils;
+import org.neusoft.neubbs.utils.SecretUtil;
+import org.neusoft.neubbs.utils.SendEmailUtil;
 
 /**
- * SendEmailUtils 测试类
+ * SendEmailUtil 测试类
  */
 @RunWith(JUnit4.class)
-public class SendEmailUtilsTestCase {
+public class SendEmailUtilTestCase {
     /**
      * 测试发送激活邮件
      */
@@ -19,7 +19,7 @@ public class SendEmailUtilsTestCase {
        String email = "13202405189@163.com";
        String subject = "Neubbs 帐号激活";
 
-       String token = SecretUtils.encryptBase64(email);
+       String token = SecretUtil.encryptBase64(email);
 
        String url  = "http://localhost:8080/neubbs?token = " + token;
 
@@ -27,7 +27,7 @@ public class SendEmailUtilsTestCase {
                         + "<a href=\"" + url + "\">" + url + "</a>"
                         + "</body></html>";
 
-        SendEmailUtils.sendEmail(email, subject, content);
+        SendEmailUtil.sendEmail(email, subject, content);
 
         System.out.println("发送邮件成功");
     }

@@ -1,4 +1,4 @@
-package org.neusoft.neubbs.util;
+package org.neusoft.neubbs.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,7 +11,7 @@ import java.util.Map;
  *
  * @author Suvan
  */
-public class JsonUtils {
+public class JsonUtil {
     /**
      * 将Object对象转换为JSON格式字符串
      *

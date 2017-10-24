@@ -3,8 +3,8 @@ package org.neusoft.neubbs.controller.handler;
 import org.apache.log4j.Logger;
 import org.neusoft.neubbs.controller.annotation.ApiException;
 import org.neusoft.neubbs.controller.exception.*;
-import org.neusoft.neubbs.util.AnnotationUtils;
-import org.neusoft.neubbs.util.ResponsePrintWriterUtils;
+import org.neusoft.neubbs.utils.AnnotationUtil;
+import org.neusoft.neubbs.utils.ResponsePrintWriterUtil;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -32,8 +32,8 @@ public class ApiExceptionHandler implements HandlerExceptionResolver{
     @Override
     public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object o, Exception e) {
         //api 页面输出错误信息（只输出 Api 指定异常）
-        if (AnnotationUtils.hasClassAnnotation(e.getClass(), ApiException.class)) {
-            ResponsePrintWriterUtils.outFailJSONMessage(response, e.getMessage());
+        if (AnnotationUtil.hasClassAnnotation(e.getClass(), ApiException.class)) {
+            ResponsePrintWriterUtil.outFailJSONMessage(response, e.getMessage());
         }
 
         //根据不同异常打印日志

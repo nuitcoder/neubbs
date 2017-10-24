@@ -1,4 +1,4 @@
-package org.neusoft.neubbs.util;
+package org.neusoft.neubbs.utils;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author Suvan
  */
-public class CookieUtils {
+public class CookieUtil {
 
     /**
      * 过期时间是（单位：s）

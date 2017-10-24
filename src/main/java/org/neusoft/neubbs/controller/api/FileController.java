@@ -5,14 +5,15 @@ import org.neusoft.neubbs.constant.api.AccountInfo;
 import org.neusoft.neubbs.constant.api.FileInfo;
 import org.neusoft.neubbs.constant.log.LogWarnInfo;
 import org.neusoft.neubbs.constant.secret.SecretInfo;
+import org.neusoft.neubbs.controller.annotation.AccountActivation;
 import org.neusoft.neubbs.controller.annotation.LoginAuthorization;
 import org.neusoft.neubbs.controller.exception.FileUploadException;
 import org.neusoft.neubbs.dto.ResponseJsonDTO;
 import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.service.IUserService;
-import org.neusoft.neubbs.util.CookieUtils;
-import org.neusoft.neubbs.util.JwtTokenUtils;
-import org.neusoft.neubbs.util.PatternUtils;
+import org.neusoft.neubbs.utils.CookieUtil;
+import org.neusoft.neubbs.utils.JwtTokenUtil;
+import org.neusoft.neubbs.utils.PatternUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,7 +48,7 @@ public class FileController {
      * @return ResponseJsonDTO 传输对象，api 显示结果
      * @throws Exception
      */
-    @LoginAuthorization
+    @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/image", method = RequestMethod.POST)
     @ResponseBody
     public ResponseJsonDTO uploadUserImage(@RequestParam("image")MultipartFile multipartFile,
@@ -68,7 +69,7 @@ public class FileController {
             throw new FileUploadException(FileInfo.NO_CHOICE_PICTURE).log(LogWarnInfo.USER_NO_CHOICE_UPLOAD_FILE);
         }
         String fileType = multipartFile.getContentType();
-        if (!PatternUtils.matchUserImage(fileType)) {
+        if (!PatternUtil.matchUserImage(fileType)) {
             //抛出文件类型不匹配异常
             throw new FileUploadException(FileInfo.PICTURE_FORMAT_WRONG).log( fileType + LogWarnInfo.FILE_TYPE_NO_MATCH_IMAGE_TYPE);
         }
@@ -79,8 +80,8 @@ public class FileController {
 
         String serverPath = request.getServletContext().getRealPath(this.USER_IMAGE_PATH);
 
-        String authentication = CookieUtils.getCookieValue(request, AccountInfo.AUTHENTICATION);
-        UserDO user = JwtTokenUtils.verifyToken(authentication, SecretInfo.TOKEN_SECRET_KEY);
+        String authentication = CookieUtil.getCookieValue(request, AccountInfo.AUTHENTICATION);
+        UserDO user = JwtTokenUtil.verifyToken(authentication, SecretInfo.TOKEN_SECRET_KEY);
 
         String fileName = user.getId() + "_" + user.getName() + "_" + multipartFile.getOriginalFilename();
         File imageFile = new File(serverPath, fileName);

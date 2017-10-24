@@ -1,4 +1,4 @@
-package org.neusoft.neubbs.util;
+package org.neusoft.neubbs.utils;
 
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
@@ -13,7 +13,7 @@ import java.util.Properties;
  *
  * @author Suvan
  */
-public class SendEmailUtils {
+public class SendEmailUtil {
     /**
      * 发送邮件的账户
      */

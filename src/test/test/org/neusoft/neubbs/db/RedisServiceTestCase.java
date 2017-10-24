@@ -5,7 +5,7 @@ import org.junit.runner.RunWith;
 import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.service.IRedisService;
 import org.neusoft.neubbs.service.IUserService;
-import org.neusoft.neubbs.util.JsonUtils;
+import org.neusoft.neubbs.utils.JsonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -55,10 +55,10 @@ public class RedisServiceTestCase {
     @Test
     public void testSaveObjectForUser(){
         UserDO user = userService.getUserInfoByName("oneuser");
-        Map<String, Object> userInfoMap = JsonUtils.toMapByObject(user);
+        Map<String, Object> userInfoMap = JsonUtil.toMapByObject(user);
 
 
-            String userJSON = JsonUtils.toJSONStringByObject(userInfoMap);
+            String userJSON = JsonUtil.toJSONStringByObject(userInfoMap);
             System.out.println("JSON 格式 user对象 ：" + userJSON);
     }
 

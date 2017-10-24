@@ -1,4 +1,4 @@
-package org.neusoft.neubbs.util;
+package org.neusoft.neubbs.utils;
 
 import org.springframework.web.method.HandlerMethod;
 
@@ -10,7 +10,7 @@ import java.lang.reflect.Method;
  *
  * @author Suvan
  */
-public class AnnotationUtils {
+public class AnnotationUtil {
     /**
      * （方法级）是否存在指定注解
      *

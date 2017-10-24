@@ -1,4 +1,4 @@
-package org.neusoft.neubbs.util;
+package org.neusoft.neubbs.utils;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
  *
  * @author Suvan
  */
-public class StringUtils {
+public class StringUtil {
     /**
      * 空判断（true - 为空）
      *

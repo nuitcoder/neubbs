@@ -1,4 +1,4 @@
-package org.neusoft.neubbs.util;
+package org.neusoft.neubbs.utils;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -7,11 +7,11 @@ import java.util.Map;
  * Request 请求参数检查 工具类
  *      使用到其余工具类
  *          1. StringUitls.log
- *          2. PatternUtils.log
+ *          2. PatternUtil.log
  *
  *  @author Suvan
  */
-public class RequestParamsCheckUtils {
+public class RequestParamsCheckUtil {
 
     private static final String USERNAME = "username";
     private static final String PASSWORD = "password";
@@ -71,17 +71,17 @@ public class RequestParamsCheckUtils {
      */
     public static String checkUsername(String username){
         //非空检查
-        if(StringUtils.isEmpty(username)){
+        if(StringUtil.isEmpty(username)){
             return WARN_USERNAME_NO_NULL;
         }
 
         //长度检查
-        if(!StringUtils.isScope(username, USERNAME_LENGTH_MIN, USERNAME_LENGTH_MAX)){
+        if(!StringUtil.isScope(username, USERNAME_LENGTH_MIN, USERNAME_LENGTH_MAX)){
             return WARN_USERNAME_LENGTH_NO_MATCH_SCOPE;
         }
 
         //正则检查
-        if(!PatternUtils.matchUsername(username)){
+        if(!PatternUtil.matchUsername(username)){
             return WARN_USERNAME_STYLE_NO_MEET_NORM;
         }
 
@@ -95,11 +95,11 @@ public class RequestParamsCheckUtils {
      * @return String 错误信息
      */
     public static String checkPassword(String password){
-        if (StringUtils.isEmpty(password)) {
+        if (StringUtil.isEmpty(password)) {
             return WARN_PASSWORD_NO_NULL;
         }
 
-        if(!StringUtils.isScope(password, PASSWORD_LENGTH_MIN, PASSWORD_LENGTH_MAX)){
+        if(!StringUtil.isScope(password, PASSWORD_LENGTH_MIN, PASSWORD_LENGTH_MAX)){
             return WARN_PASSWORD_LENGTH_NO_MATCH_SCOPE;
         }
 
@@ -113,11 +113,11 @@ public class RequestParamsCheckUtils {
      * @return String 错误信息
      */
     public static String checkEmail(String email){
-        if(StringUtils.isEmpty(email)){
+        if(StringUtil.isEmpty(email)){
             return WARN_EMAIL_NO_NULL;
         }
 
-        if (!PatternUtils.matchEmail(email)) {
+        if (!PatternUtil.matchEmail(email)) {
             return WARN_EMAIL_STYLE_NO_MEET_NORM;
         }
 
@@ -131,7 +131,7 @@ public class RequestParamsCheckUtils {
      * @return String 错误信息
      */
     public static String checkToken(String token){
-        if (StringUtils.isEmpty(token)) {
+        if (StringUtil.isEmpty(token)) {
             return WARN_TOKEN_NO_NULL;
         }
 
@@ -144,11 +144,11 @@ public class RequestParamsCheckUtils {
      * @return String 错误信息
      */
     public static String checkCaptcha(String captcha){
-        if (StringUtils.isEmpty(captcha)) {
+        if (StringUtil.isEmpty(captcha)) {
             return WARN_CAPTCHA_NO_NULL;
         }
 
-        if (!StringUtils.isScope(captcha, CAPTCHA_LENGTH, CAPTCHA_LENGTH)) {
+        if (!StringUtil.isScope(captcha, CAPTCHA_LENGTH, CAPTCHA_LENGTH)) {
             return WARN_CAPTCHA_LENGTH_NO_MATCH_SCOPE;
         }
 
@@ -162,11 +162,11 @@ public class RequestParamsCheckUtils {
      * @return String 错误信息
      */
     public static String checkId(String id){
-        if (StringUtils.isEmpty(id) || "null".equals(id)) {
+        if (StringUtil.isEmpty(id) || "null".equals(id)) {
             return WARN_ID_NO_NULL;
         }
 
-        if (!StringUtils.isScope(id, ONE_LENGTH, ID_LENGTH_MAX)) {
+        if (!StringUtil.isScope(id, ONE_LENGTH, ID_LENGTH_MAX)) {
             return WARN_ID_LENGTH_NO_MATCH_SCOPE;
         }
 
@@ -180,15 +180,15 @@ public class RequestParamsCheckUtils {
      * @return String 错误信息
      */
     public static String checkCategory(String category){
-        if (StringUtils.isEmpty(category)) {
+        if (StringUtil.isEmpty(category)) {
             return WARN_CAPTCHA_NO_NULL;
         }
 
-        if (!StringUtils.isScope(category, ONE_LENGTH, CATEGORY_LENGTH_MAX)) {
+        if (!StringUtil.isScope(category, ONE_LENGTH, CATEGORY_LENGTH_MAX)) {
             return WARN_CATEGORY_LENGTH_NO_MATCH_SCOPE;
         }
 
-        if (!PatternUtils.matchTopicCategory(category)) {
+        if (!PatternUtil.matchTopicCategory(category)) {
             return WARN_CATEGORY_STYLE_NO_MEET_NORM;
         }
 
@@ -202,11 +202,11 @@ public class RequestParamsCheckUtils {
      * @return String 错误信息
      */
     public static String checkTitle(String title){
-        if (StringUtils.isEmpty(title)) {
+        if (StringUtil.isEmpty(title)) {
             return WARN_TITLE_NO_NULL;
         }
 
-        if (StringUtils.isScope(title, ONE_LENGTH, TITLE_LENGTH_MAX)) {
+        if (StringUtil.isScope(title, ONE_LENGTH, TITLE_LENGTH_MAX)) {
             return WARN_TITLE_LENGTH_NO_MATCH_SCOPE;
         }
 
@@ -220,11 +220,11 @@ public class RequestParamsCheckUtils {
      * @return String 错误信息
      */
     public static String checkContent(String content){
-        if (StringUtils.isEmpty(content)) {
+        if (StringUtil.isEmpty(content)) {
             return WARN_CONTENT_NO_NULL;
         }
 
-        if (StringUtils.isScope(content, ONE_LENGTH, CONTENT_LENGTH_MAX)) {
+        if (StringUtil.isScope(content, ONE_LENGTH, CONTENT_LENGTH_MAX)) {
             return WARN_CAPTCHA_LENGTH_NO_MATCH_SCOPE;
         }
 
@@ -234,7 +234,7 @@ public class RequestParamsCheckUtils {
     /**
      * 参数集合非空检测 ，链式调用
      *
-     *    String errorInfo = RequestParamsCheckUtils
+     *    String errorInfo = RequestParamsCheckUtil
      *                            .putParamKeys(new String[]{"username", "password", "email"})
      *                            .putParamValues(new String[]{"","",""})
      *                            .checkNull();
@@ -244,10 +244,10 @@ public class RequestParamsCheckUtils {
      *  存放参数 key（获取数组参数 key ，规定检查类型，例如：username，password，email）
      *
      * @param paramKeys 需要检测的类型参数数组
-     * @return RequestParamsCheckUtils 工具类自调用
+     * @return RequestParamsCheckUtil 工具类自调用
      */
-    public static RequestParamsCheckUtils putParamKeys(String [] paramKeys){
-        RequestParamsCheckUtils rpcu = new RequestParamsCheckUtils();
+    public static RequestParamsCheckUtil putParamKeys(String [] paramKeys){
+        RequestParamsCheckUtil rpcu = new RequestParamsCheckUtil();
         rpcu.requestParamsMap = new LinkedHashMap<String, String>();
 
         for(int i = 0 , len = paramKeys.length; i < len; i++){
@@ -261,9 +261,9 @@ public class RequestParamsCheckUtils {
      * 存放参数 value （获取数组参数 value，将其存入指定 key，例如：map("username", "suvan")）
      *
      * @param paramValues 参数 Value 数组
-     * @return RequestParamsCheckUtils 工具类自调用
+     * @return RequestParamsCheckUtil 工具类自调用
      */
-    public RequestParamsCheckUtils putParamValues(String [] paramValues){
+    public RequestParamsCheckUtil putParamValues(String [] paramValues){
         int pointer = 0;
         for(String key: requestParamsMap.keySet()){
            requestParamsMap.put(key, paramValues[pointer++]);
@@ -289,31 +289,31 @@ public class RequestParamsCheckUtils {
             value = param.getValue();
 
             if (key.equals(USERNAME)) {
-                if (StringUtils.isEmpty(value)) {
+                if (StringUtil.isEmpty(value)) {
                     errorInfo.append(WARN_USERNAME_NO_NULL);
                 }
             } else if (key.equals(PASSWORD)) {
-                if (StringUtils.isEmpty(value)) {
+                if (StringUtil.isEmpty(value)) {
                     errorInfo.append(WARN_PASSWORD_NO_NULL);
                 }
             } else if (key.equals(EMAIL)) {
-                if (StringUtils.isEmpty(value)) {
+                if (StringUtil.isEmpty(value)) {
                     errorInfo.append(WARN_EMAIL_NO_NULL);
                 }
             } else if (key.equals(ID) || key.equals(USERID) || key.equals(TOPICID)) {
-                if (StringUtils.isEmpty(value) || "null".equals(value)) {
+                if (StringUtil.isEmpty(value) || "null".equals(value)) {
                     errorInfo.append(WARN_ID_NO_NULL);
                 }
             } else if (key.equals(CATEGORY)) {
-                if (StringUtils.isEmpty(value)) {
+                if (StringUtil.isEmpty(value)) {
                     errorInfo.append(WARN_CATEGORY_NO_NULL);
                 }
             } else if (key.equals(TITLE)) {
-                if (StringUtils.isEmpty(value)) {
+                if (StringUtil.isEmpty(value)) {
                     errorInfo.append(WARN_TITLE_NO_NULL);
                 }
             } else if (key.equals(CONTENT)) {
-                if (StringUtils.isEmpty(value)) {
+                if (StringUtil.isEmpty(value)) {
                     errorInfo.append(WARN_CONTENT_NO_NULL);
                 }
             }
@@ -385,10 +385,10 @@ public class RequestParamsCheckUtils {
      * @return String 错误信息
      */
     private String checkUsernameNorm(String username){
-        if(!StringUtils.isScope(username, USERNAME_LENGTH_MIN, USERNAME_LENGTH_MAX)){
+        if(!StringUtil.isScope(username, USERNAME_LENGTH_MIN, USERNAME_LENGTH_MAX)){
             return WARN_USERNAME_LENGTH_NO_MATCH_SCOPE;
         }
-        if(!PatternUtils.matchUsername(username)){
+        if(!PatternUtil.matchUsername(username)){
             return WARN_USERNAME_STYLE_NO_MEET_NORM;
         }
 
@@ -401,7 +401,7 @@ public class RequestParamsCheckUtils {
      * @return String 错误信息
      */
     private String checkPasswordNorm(String password){
-        if(!StringUtils.isScope(password, PASSWORD_LENGTH_MIN, PASSWORD_LENGTH_MAX)){
+        if(!StringUtil.isScope(password, PASSWORD_LENGTH_MIN, PASSWORD_LENGTH_MAX)){
             return WARN_PASSWORD_LENGTH_NO_MATCH_SCOPE;
         }
 
@@ -414,7 +414,7 @@ public class RequestParamsCheckUtils {
      * @return 错误信息
      */
     private String checkEmailNorm(String email){
-        if (!PatternUtils.matchEmail(email)) {
+        if (!PatternUtil.matchEmail(email)) {
             return WARN_EMAIL_STYLE_NO_MEET_NORM;
         }
 
@@ -428,7 +428,7 @@ public class RequestParamsCheckUtils {
      * @return String 错误信息
      */
     private static String checkIdNorm(String id){
-        if (!StringUtils.isScope(id, ONE_LENGTH, ID_LENGTH_MAX)) {
+        if (!StringUtil.isScope(id, ONE_LENGTH, ID_LENGTH_MAX)) {
             return WARN_ID_LENGTH_NO_MATCH_SCOPE;
         }
 
@@ -442,11 +442,11 @@ public class RequestParamsCheckUtils {
      * @return String 错误信息
      */
     private static String checkCategoryNorm(String category){
-        if (!StringUtils.isScope(category, ONE_LENGTH, CATEGORY_LENGTH_MAX)) {
+        if (!StringUtil.isScope(category, ONE_LENGTH, CATEGORY_LENGTH_MAX)) {
             return WARN_CATEGORY_LENGTH_NO_MATCH_SCOPE;
         }
 
-        if (!PatternUtils.matchTopicCategory(category)) {
+        if (!PatternUtil.matchTopicCategory(category)) {
             return WARN_CATEGORY_STYLE_NO_MEET_NORM;
         }
 
@@ -460,7 +460,7 @@ public class RequestParamsCheckUtils {
      * @return String 错误信息
      */
     private static String checkTitleNorm(String title){
-        if (!StringUtils.isScope(title, ONE_LENGTH, TITLE_LENGTH_MAX)) {
+        if (!StringUtil.isScope(title, ONE_LENGTH, TITLE_LENGTH_MAX)) {
             return WARN_TITLE_LENGTH_NO_MATCH_SCOPE;
         }
 
@@ -474,7 +474,7 @@ public class RequestParamsCheckUtils {
      * @return String 错误信息
      */
     private static String checkContentNorm(String content){
-        if (!StringUtils.isScope(content, ONE_LENGTH, CONTENT_LENGTH_MAX)) {
+        if (!StringUtil.isScope(content, ONE_LENGTH, CONTENT_LENGTH_MAX)) {
             return WARN_CAPTCHA_LENGTH_NO_MATCH_SCOPE;
         }
 

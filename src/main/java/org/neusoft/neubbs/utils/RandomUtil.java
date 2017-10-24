@@ -1,4 +1,4 @@
-package org.neusoft.neubbs.util;
+package org.neusoft.neubbs.utils;
 
 import java.util.Random;
 
@@ -7,7 +7,7 @@ import java.util.Random;
  *
  * @author Suvan
  */
-public class RandomUtils {
+public class RandomUtil {
 
     /**
      * 获取6位数随机数

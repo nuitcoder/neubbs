@@ -4,7 +4,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.neusoft.neubbs.service.ITopicService;
-import org.neusoft.neubbs.util.RandomUtils;
+import org.neusoft.neubbs.utils.RandomUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -46,15 +46,15 @@ public class TopicServiceTestCase {
     public void test_13_SaveTopicAndReyply(){
         //保存10条话
         for(int i = 0; i < 10; i++){
-            topicService.saveTopic(RandomUtils.getRandomNumberByScope(1, 10),"类别" + i, "标题" + i, "内容" + 1);
+            topicService.saveTopic(RandomUtil.getRandomNumberByScope(1, 10),"类别" + i, "标题" + i, "内容" + 1);
             System.out.println("成功生成" + (i+1) + "条话题！");
         }
         System.out.println("10条话题生成成功！");
 
         //保存100条回复
         for(int i = 0; i < 100; i++){
-            topicService.saveReply(RandomUtils.getRandomNumberByScope(1, 10),
-                                   RandomUtils.getRandomNumberByScope(1, 10),
+            topicService.saveReply(RandomUtil.getRandomNumberByScope(1, 10),
+                                   RandomUtil.getRandomNumberByScope(1, 10),
                                    "回复内容" + i);
             System.out.println("成功生成" + (i+1) + "条回复！");
         }

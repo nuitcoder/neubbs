@@ -7,7 +7,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 import org.neusoft.neubbs.dao.ITopicDAO;
 import org.neusoft.neubbs.entity.TopicDO;
-import org.neusoft.neubbs.util.JsonUtils;
+import org.neusoft.neubbs.utils.JsonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -81,7 +81,7 @@ public class TopicDAOTestCase {
     @Test
     public void test4_GetTopicById(){
         TopicDO topic = topicDAO.getTopicById(topicDAO.getTopicMaxId());
-        System.out.println("查询结果：" + JsonUtils.toJSONStringByObject(topic));
+        System.out.println("查询结果：" + JsonUtil.toJSONStringByObject(topic));
     }
 
     /**
@@ -92,7 +92,7 @@ public class TopicDAOTestCase {
         List<TopicDO> listTopic = topicDAO.listTopicDESCByCount(10);
 
         for(TopicDO topic: listTopic){
-            System.out.println(JsonUtils.toJSONStringByObject(topic));
+            System.out.println(JsonUtil.toJSONStringByObject(topic));
         }
     }
 
@@ -119,7 +119,7 @@ public class TopicDAOTestCase {
 
         System.out.println("********从" + startRow + "行开始," + "输出" + count + "条记录***********");
         for(TopicDO topic: listTopic){
-            System.out.println(JsonUtils.toJSONStringByObject(topic));
+            System.out.println(JsonUtil.toJSONStringByObject(topic));
         }
     }
 

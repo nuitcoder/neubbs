@@ -7,8 +7,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 import org.neusoft.neubbs.dao.IUserDAO;
 import org.neusoft.neubbs.entity.UserDO;
-import org.neusoft.neubbs.util.JsonUtils;
-import org.neusoft.neubbs.util.SecretUtils;
+import org.neusoft.neubbs.utils.JsonUtil;
+import org.neusoft.neubbs.utils.SecretUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.test.context.ContextConfiguration;
@@ -39,13 +39,13 @@ public class UserDAOTestCase {
             user.setEmail("test@test.com");
 
         //密码加密
-        String cipherText = SecretUtils.encryptUserPassword("123");
+        String cipherText = SecretUtil.encryptUserPassword("123");
             user.setPassword(cipherText);
 
         try{
             int effectRow = userDAO.saveUser(user);
             System.out.println("受影响行数：" + effectRow + ",新用户 id ：" + user.getId());
-            System.out.println("新用户信息：" + JsonUtils.toJSONStringByObject(userDAO.getUserById(user.getId())));
+            System.out.println("新用户信息：" + JsonUtil.toJSONStringByObject(userDAO.getUserById(user.getId())));
         }catch (DuplicateKeyException de){
             throw new DuplicateKeyException("插入用户失败，fu_name 和 fu_email 字段声明 UNIQUE KEY，不能重复！");
         }
@@ -64,7 +64,7 @@ public class UserDAOTestCase {
         int porinter = 0;
         for(String admin: adminArray){
             user.setName(admin);
-            user.setPassword(SecretUtils.encryptUserPassword("123456"));
+            user.setPassword(SecretUtil.encryptUserPassword("123456"));
             user.setEmail(emailArray[porinter++]);
 
             userDAO.saveUser(user); //注册用户
@@ -73,7 +73,7 @@ public class UserDAOTestCase {
 
             userDAO.updateUserStateForActivationByEmail(user.getEmail());//激活账户
 
-            //SendEmailUtils.sendEmail(emailArray[porinter++],
+            //SendEmailUtil.sendEmail(emailArray[porinter++],
             //                        "Nebbbs 开发团队",
             //                        "欢迎您成为 Neubbs 项目管理员\n您的的管理员帐号：" + admin + " 密码：123456");//发送邮件
 
@@ -110,7 +110,7 @@ public class UserDAOTestCase {
     @Test
     public void test31_GetUserById(){
         UserDO user = userDAO.getUserById(userDAO.getUserMaxId());//查询最新插入id
-        System.out.println("id 查询用户，查询结果：" + JsonUtils.toJSONStringByObject(user));
+        System.out.println("id 查询用户，查询结果：" + JsonUtil.toJSONStringByObject(user));
     }
 
     /**
@@ -119,7 +119,7 @@ public class UserDAOTestCase {
     @Test
     public void test32_GetUserByName(){
         UserDO user = userDAO.getUserByName("testuser");
-        System.out.println("name 查询用户，查询结果：" + JsonUtils.toJSONStringByObject(user));
+        System.out.println("name 查询用户，查询结果：" + JsonUtil.toJSONStringByObject(user));
     }
 
     /**
@@ -128,7 +128,7 @@ public class UserDAOTestCase {
     @Test
     public void test323_GetUserByEmail(){
         UserDO user = userDAO.getUserByEmail("526097449@qq.com1");
-        System.out.println("name 查询用户，查询结果：" + JsonUtils.toJSONStringByObject(user));
+        System.out.println("name 查询用户，查询结果：" + JsonUtil.toJSONStringByObject(user));
     }
 
 
@@ -140,7 +140,7 @@ public class UserDAOTestCase {
         List<UserDO> userList = userDAO.listAllAdminUser();
         System.out.println("查询所有管理员（权限为 admin）：");
         for(UserDO user : userList){
-            System.out.println(JsonUtils.toJSONStringByObject(user));
+            System.out.println(JsonUtil.toJSONStringByObject(user));
         }
     }
 
@@ -152,7 +152,7 @@ public class UserDAOTestCase {
         List<UserDO> userList = userDAO.listAssignDateRegisterUserByYearMonth(2017,10);
         System.out.println("查询2017年10月份注册的用户：");
         for(UserDO user : userList){
-            System.out.println(JsonUtils.toJSONStringByObject(user));
+            System.out.println(JsonUtil.toJSONStringByObject(user));
         }
     }
 
@@ -164,7 +164,7 @@ public class UserDAOTestCase {
         List<UserDO> userList = userDAO.listAllUser();
         System.out.println("获取所有用户：");
         for(UserDO user : userList){
-            System.out.println(JsonUtils.toJSONStringByObject(user));
+            System.out.println(JsonUtil.toJSONStringByObject(user));
         }
     }
 
@@ -173,7 +173,7 @@ public class UserDAOTestCase {
      */
     @Test
     public void test41_UpdateUserPasswordByName(){
-        String newPassword = SecretUtils.encryptUserPassword("888888");
+        String newPassword = SecretUtil.encryptUserPassword("888888");
         int effectRow = userDAO.updateUserPasswordByName("testuser", newPassword);
 
         System.out.println("更新 test 用户密码，更新行数：" + effectRow);
