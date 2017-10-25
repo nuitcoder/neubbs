@@ -77,7 +77,6 @@ public class ResponseJsonDTO {
         map.remove("password");
         map.remove("image");
         map.remove("rank");
-        map.remove("state");
         map.remove("createtime");
     }
 

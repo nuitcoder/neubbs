@@ -26,6 +26,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -179,33 +180,57 @@ public class AccountController {
         String username = (String)requestBodyParamsMap.get(AccountInfo.USERNAME);
         String password = (String)requestBodyParamsMap.get(AccountInfo.PASSWORD);
 
-        //用户，密码参数合法性检测（工具类链式传递，检测参数）
-        String errorInfo = RequestParamsCheckUtil
-                            .putParamKeys(new String[]{AccountInfo.USERNAME, AccountInfo.PASSWORD})
-                            .putParamValues(new String[]{username, password})
-                            .checkParamsNorm();
-        if (errorInfo != null) {
-            throw new ParamsErrorException(AccountInfo.PARAM_ERROR).log(errorInfo);
+        /*
+         * 参数合法性验证
+         *      1.判断用户输入 username 参数类型（用户名 or 用户邮箱）,是否未邮件类型（默认为 false）
+         *      2.参数合法性验证（只有符合邮箱格式，才能用邮箱登录）
+         */
+        StringBuilder errorInfo = new StringBuilder();
+        System.out.println(errorInfo + "toStinng()格式 " + errorInfo.toString());
+        boolean emailType = false;
+        if (PatternUtil.matchEmail(username)) {
+            String emailErrorInfo = RequestParamsCheckUtil.checkEmail(username);
+            if (emailErrorInfo != null) {
+                errorInfo.append(emailErrorInfo);
+            }
+
+            emailType = true;
+        } else {
+            String nameErrorInfo = RequestParamsCheckUtil.checkUsername(username);
+            if (nameErrorInfo != null) {
+                errorInfo.append(nameErrorInfo);
+            }
+        }
+        if (errorInfo.length() == 0) {
+            String passwordErrorInfo = RequestParamsCheckUtil.checkPassword(password);
+            if (passwordErrorInfo != null) {
+                errorInfo.append(passwordErrorInfo);
+            }
+        }
+        if (errorInfo.length() > 0) {
+            throw new ParamsErrorException(AccountInfo.PARAM_ERROR).log(errorInfo.toString());
         }
 
-        //用户是否存在（与用户账户密码错误抛出一样警告，防止通过 api 试出用户是否存在）
-        UserDO user = userService.getUserInfoByName(username);
-        Map<String, Object> userInfoMap = JsonUtil.toMapByObject(user);
-        if (userInfoMap == null) {
+        /*
+         * 用户验证
+         *      1.用户存在性（用户名 or 邮箱）（与用户账户密码错误抛出一样警告，防止通过 api 试出用户是否存在）
+         *      2.用户密码验证,先 MD5 加密，加密结果与数据库内结果对比
+         */
+        UserDO user = emailType ? userService.getUserInfoByEmail(username) : userService.getUserInfoByName(username);
+        if (user == null) {
             throw new AccountErrorException(AccountInfo.USERNAME_OR_PASSWORD_INCORRECT).log(username + LogWarnInfo.DATABASE_NO_EXIST_USER);
         }
-
-        //用户密码是否匹配（对用户输入进行加密，加密结果与数据库进行对比）
         String cipherText = SecretUtil.encryptUserPassword(password);
-        if (!cipherText.equals(userInfoMap.get(AccountInfo.PASSWORD))) {
+        if (!cipherText.equals(user.getPassword())) {
             throw new AccountErrorException(AccountInfo.USERNAME_OR_PASSWORD_INCORRECT).log(password + LogWarnInfo.USER_PASSWORD_INCORRECT);
         }
 
         /*
-         * 通过所有验证
+         * 通过验证后处理
          *      1.加密 user 数据，获取 authentication（用作 token，令牌，内含 id ，username，rank，state），存入客户端 Cookie
          *      2.在线登录人数 +1（获取应用上下文对象，获取在线人数对象）
-         *      3.返回成功状态 + authentication（给予前端 token）
+         *      3,构建 api 页面显示 JSON 数据（authentication 和 state）
+         *      4.返回成功状态
          */
         String authentication = JwtTokenUtil.createToken(user);
         CookieUtil.saveCookie(response, AccountInfo.AUTHENTICATION, authentication);
@@ -217,7 +242,15 @@ public class AccountController {
         }
         application.setAttribute(CountInfo.ONLINE_LOGIN_USER, ++onlineLoginUser);
 
-        return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, AccountInfo.AUTHENTICATION, authentication);
+        Map<String, Object> loginJsonMap = new HashMap<>();
+            loginJsonMap.put(AccountInfo.AUTHENTICATION, authentication);
+            if (user.getState() == 1) {
+                loginJsonMap.put(AccountInfo.STATE, true);
+            } else if(user.getState() == 0){
+                loginJsonMap.put(AccountInfo.STATE, false);
+            }
+
+        return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, loginJsonMap);
     }
 
     /**
@@ -568,10 +601,10 @@ public class AccountController {
         String randomPassword = RandomUtil.getRandomString(6);
 
         //修改密码（重新加密）(最后3个字符，为临时密码标识)
-        userService.alterUserPassword(user.getName(), SecretUtil.encryptUserPassword(randomPassword) + "neu");
+        userService.alterUserPassword(user.getName(), SecretUtil.encryptUserPassword(randomPassword));
 
         //构建邮件内容
-        String content = user.getEmail() + " 邮箱用户临时密码为：" + randomPassword + " ，（邮箱 + 临时密码登录）请登陆后尽快修改密码！";
+        String content = user.getEmail() + " 邮箱用户临时密码为：" + randomPassword + " ，请登陆后尽快修改密码！";
 
         //另启线程发送邮件，new Runnable(){}，lambda写法
         taskExecutor.execute(

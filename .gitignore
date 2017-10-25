@@ -1,10 +1,10 @@
 .idea/
-
 logs/
 out/
 target/
 
 *.iml
+*.log
 
 rebel.xml
 
