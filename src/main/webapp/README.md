@@ -5,12 +5,12 @@
 ## 切换 npm 国内源（仅需要操作一次）
 
 - 使用 npm 淘宝源安装 nrm
-```
+```bash
 $ npm install nrm -g --registry=https://registry.npm.taobao.org
 ```
 
 - 查看当前使用的 npm 源
-```
+```bash
 $ nrm ls
 
 # 输出
@@ -24,17 +24,17 @@ $ nrm ls
 ```
 
 - 使用 npm 淘宝源
-```
+```bash
 $ nrm use taobao
 ```
 
 ## 安装依赖
-```
+```bash
 $ npm install
 ```
 
 ## 编译
-```
+```bash
 $ npm run watch # 实时编译
 
 # 或者
