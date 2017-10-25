@@ -1,4 +1,5 @@
 import Validator from 'validatorjs'
+import _ from 'lodash'
 
 import api from '../api'
 
@@ -33,18 +34,41 @@ const register = (values) => {
 }
 
 const registerAsync = (values) => {
-  const { username } = values
+  const { username, email } = values
   return new Promise((resolve, reject) => {
-    if (username) {
-      api.account.unique({ username })
-        .then((res) => {
-          if (res.data.success) {
-            reject({ username: '用户名已占用' })
-          } else {
-            resolve()
-          }
-        })
+    const uniqueUsername = () => {
+      if (username !== '') {
+        return api.account.unique({ username })
+      }
+      return Promise.resolve(false)
     }
+
+    const uniqueEmail = () => {
+      if (email !== '') {
+        return api.account.unique({ email })
+      }
+      return Promise.resolve(false)
+    }
+
+    Promise.all([
+      uniqueUsername(),
+      uniqueEmail(),
+    ]).then(([usernameRes, emailRes]) => {
+      const errors = {}
+
+      if (usernameRes !== false && usernameRes.data.success) {
+        errors.username = '用户名已占用'
+      }
+      if (emailRes !== false && emailRes.data.success) {
+        errors.email = '邮箱已注册'
+      }
+
+      if (_.isEmpty(errors)) {
+        resolve()
+      } else {
+        reject(errors)
+      }
+    })
   })
 }
 

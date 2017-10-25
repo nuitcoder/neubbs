@@ -22,5 +22,5 @@ export default reduxForm({
   form: 'register',
   validate: validate.register,
   asyncValidate: validate.registerAsync,
-  asyncBlurFields: ['username'],
+  asyncBlurFields: ['username', 'email'],
 })(RegisterForm)
