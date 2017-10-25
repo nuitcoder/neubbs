@@ -33,17 +33,24 @@ import java.util.Map;
  */
 @Controller
 @RequestMapping("/api/topic")
-public class TopicInfoController {
+public class TopicController {
 
+    private final ITopicService topicService;
+
+    /**
+     * Constructor
+     */
     @Autowired
-    private ITopicService topicService;
+    public TopicController(ITopicService topicService){
+        this.topicService = topicService;
+    }
 
     /**
      * 1.发表话题
      *
-     * @param requestBodyParamsMap rquest请求的body参数
+     * @param requestBodyParamsMap reuest-body内JSON数据
      * @return ResponseJsonDTO 传输对象，api 显示
-     * @throws Exception
+     * @throws Exception 所有异常
      */
     @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/save", method = RequestMethod.POST)
@@ -77,9 +84,9 @@ public class TopicInfoController {
     /**
      * 2.发表回复
      *
-     * @param requetBodyParamsMap request请求body参数
-     * @return ResponseJsonDTO 传输对象，api 显示
-     * @throws Exception
+     * @param requetBodyParamsMap request-body内JSON数据
+     * @return ResponseJsonDTO 响应JSON传输对象
+     * @throws Exception 所有异常
      */
     @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/save-reply", method = RequestMethod.POST)
@@ -105,9 +112,9 @@ public class TopicInfoController {
     /**
      * 3.删除话题
      *
-     * @param requestBodyParamsMap request请求body参数
-     * @return ResponseJsonDTO 传输对象，api 显示
-     * @throws Exception
+     * @param requestBodyParamsMap request-body内JSON数据
+     * @return ResponseJsonDTO 响应Json传输对象
+     * @throws Exception 所有异常
      */
     @LoginAuthorization @AccountActivation @AdminRank
     @RequestMapping(value = "/remove", method = RequestMethod.POST)
@@ -132,9 +139,9 @@ public class TopicInfoController {
     /**
      * 4.删除回复
      *
-     * @param requetsBodyParamsMap request请求body参数
-     * @return ResponseJsonDTO 传输对象，api 显示
-     * @throws Exception
+     * @param requetsBodyParamsMap request-body内JSON数据
+     * @return ResponseJsonDTO 响应JSON传输对象
+     * @throws Exception 所有异常
      */
     @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/remove-reply", method = RequestMethod.POST)

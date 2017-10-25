@@ -34,12 +34,12 @@ public class ApiInterceptor implements HandlerInterceptor{
      * @param response http响应
      * @param handler 方法对象
      * @return boolean 返回结果（true-放行，false-拦截）
-     * @throws Exception
+     * @throws Exception 所有异常
      */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {//handler（动态代理对象）
         //登录验证
-        if (!doLoginAuthroization(request, handler)) {
+        if (!doLoginAuthorization(request, handler)) {
             //未通过验证，拦截
             return false;
         }
@@ -64,7 +64,7 @@ public class ApiInterceptor implements HandlerInterceptor{
      * @param response http响应
      * @param obj 方法对象
      * @param modelAndView 视图对象
-     * @throws Exception
+     * @throws Exception 所有异常
      */
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object obj, ModelAndView modelAndView) throws Exception {}
@@ -76,7 +76,7 @@ public class ApiInterceptor implements HandlerInterceptor{
      * @param response http响应
      * @param obj 方法对象
      * @param exception 异常对象（可处理函数所抛出的异常）
-     * @throws Exception
+     * @throws Exception 所有异常
      */
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object obj, Exception exception) throws Exception {}
@@ -88,9 +88,9 @@ public class ApiInterceptor implements HandlerInterceptor{
      * @param request http请求
      * @param handler 方法对象
      * @return Boolean 验证结果
-     * @throws Exception
+     * @throws Exception 所有异常
      */
-    private Boolean doLoginAuthroization(HttpServletRequest request, Object handler) throws  Exception{
+    private Boolean doLoginAuthorization(HttpServletRequest request, Object handler) throws  Exception{
 
         /*
          * 验证流程：
@@ -101,7 +101,7 @@ public class ApiInterceptor implements HandlerInterceptor{
          */
         boolean hasLoginAuthorization = AnnotationUtil.hasMethodAnnotation(handler, LoginAuthorization.class);
         if (hasLoginAuthorization) {
-            String authentication =  CookieUtil.getCookieValue(request, AccountInfo.AUTHENTICATION);;
+            String authentication =  CookieUtil.getCookieValue(request, AccountInfo.AUTHENTICATION);
             if (authentication != null) {
                 UserDO user = JwtTokenUtil.verifyToken(authentication, SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY);
                 if (user != null) {
@@ -126,7 +126,7 @@ public class ApiInterceptor implements HandlerInterceptor{
      * @param request http请求
      * @param handler 方法对象
      * @return Boolean 验证结果
-     * @throws Exception
+     * @throws Exception 所有异常
      */
     private Boolean doAccountActivation(HttpServletRequest request, Object handler) throws Exception{
         boolean hasAccountActivation = AnnotationUtil.hasMethodAnnotation(handler, AccountActivation.class);
@@ -134,6 +134,10 @@ public class ApiInterceptor implements HandlerInterceptor{
             String authentication = CookieUtil.getCookieValue(request, AccountInfo.AUTHENTICATION);
             if (authentication != null) {
                 UserDO user = JwtTokenUtil.verifyToken(authentication, SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY);
+                if (user == null) {
+                    //JWT Token 过期，解密失败
+                    throw new AccountErrorException(AccountInfo.TOKEN_EXPIRED).log(LogWarnInfo.AUTHENTICATION_TOKEN_ALREAD_EXPIRE_TIME);
+                }
                 if (user.getState() == 1) {
                     //通过验证
                     return true;
@@ -149,16 +153,19 @@ public class ApiInterceptor implements HandlerInterceptor{
     /**
      * 执行管理员权限验证
      *
-     * @param request
-     * @param handler
-     * @throws Exception
+     * @param request http请求
+     * @param handler 方法对象
+     * @throws Exception 所有异常
      */
-    public Boolean doAdminRank(HttpServletRequest request, Object handler) throws Exception{
+    private Boolean doAdminRank(HttpServletRequest request, Object handler) throws Exception{
         boolean hasAdminRank = AnnotationUtil.hasMethodAnnotation(handler, AdminRank.class);
         if (hasAdminRank) {
             String authentication = CookieUtil.getCookieValue(request,AccountInfo.AUTHENTICATION);
             if (authentication != null) {
                 UserDO user = JwtTokenUtil.verifyToken(authentication, SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY);
+                if (user == null) {
+                    throw new AccountErrorException(AccountInfo.TOKEN_EXPIRED).log(LogWarnInfo.AUTHENTICATION_TOKEN_ALREAD_EXPIRE_TIME);
+                }
                 if (AccountInfo.RANK_ADMIN.equals(user.getRank())) {
                     //通过验证
                     return true;

@@ -14,6 +14,7 @@ public interface LogWarnInfo {
     String NO_ACTIVATION_NO_LOGIN = " 账户未激活，无法登录";
     String NO_ACTIVATION_NO_PERMISSION_USE_API = "账户未激活，无权调用 api";
     String ACTIVATION_URL_ALREAD_EXPIRE_TIME = " 激活口令已经过期";
+    String AUTHENTICATION_TOKEN_ALREAD_EXPIRE_TIME = "授权口令已经过期";
     String ACTIVATION_FAIL_EMAIL_NO_REGISTER = "激活失败，该邮箱未注册";
     String EMAIL_NO_REGISTER_NO_SEND_EMAIL = " 邮箱未注册，无法发送邮件";
     String EMAIL_ACTIVATED_NO_AGAIN_SEND_EMAIL = " 邮箱用户已经激活，不重复发送邮件";
@@ -36,8 +37,7 @@ public interface LogWarnInfo {
     /*****************************File api**********************************/
     String USER_NO_CHOICE_UPLOAD_FILE = "用户没有选择上传文件 ";
     String FILE_TYPE_NO_MATCH_IMAGE_TYPE = " 文件类型不符合头像类型（jpg | png | jpeg）";
-    String USER_IMAGE_SAVE_DATABASE_FAIL = "用户头像，保存数据库失败，删除已上传图片";
-    String DELETE_IMAGE_FILE_FAIL = "删除图片文件失败,请手动处理仍然在服务器的文件";
+    String SERVER_NO_EXIST_UPLOAD_SAVE_DIRECTORY = "服务器不存在指定上传文件目录";
 
 
     /*****************************Api Token Interceptor**********************************/

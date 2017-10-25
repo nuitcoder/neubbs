@@ -14,7 +14,7 @@ public class IndexController {
 	 * 默认跳转到 index.jsp
 	 *
 	 * @return String
-	 * @throws Exception
+	 * @throws Exception 所有异常
 	 */
 	@RequestMapping(value = { "/*", "/*/*" })
 	public String index() throws Exception {

@@ -24,8 +24,8 @@ public class ApiFilter implements Filter {
      * @param req servlet请求
      * @param resp servlet响应
      * @param chain 过滤链
-     * @throws ServletException
-     * @throws IOException
+     * @throws ServletException Servlet异常
+     * @throws IOException IO异常
      */
     @Override
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws ServletException, IOException {

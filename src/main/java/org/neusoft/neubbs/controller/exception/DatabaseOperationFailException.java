@@ -1,7 +1,7 @@
 package org.neusoft.neubbs.controller.exception;
 
 /**
- * 数据库错误异常
+ * 数据库操作失败异常
  *
  * @author Suvan
  */

@@ -7,6 +7,7 @@ import org.neusoft.neubbs.constant.log.LogWarnInfo;
 import org.neusoft.neubbs.constant.secret.SecretInfo;
 import org.neusoft.neubbs.controller.annotation.AccountActivation;
 import org.neusoft.neubbs.controller.annotation.LoginAuthorization;
+import org.neusoft.neubbs.controller.exception.AccountErrorException;
 import org.neusoft.neubbs.controller.exception.FileUploadException;
 import org.neusoft.neubbs.dto.ResponseJsonDTO;
 import org.neusoft.neubbs.entity.UserDO;
@@ -35,18 +36,23 @@ import java.io.File;
 @RequestMapping("/api/file")
 public class FileController {
 
-    @Autowired
-    private IUserService userService;
+    private final IUserService userService;
 
-    private final String USER_IMAGE_PATH = "/WEB-INF/file/user/image/";
+    /**
+     * Constructor
+     */
+    @Autowired
+    public FileController(IUserService userService){
+        this.userService = userService;
+    }
 
     /**
      * 1.上传用户头像（新上传的会覆盖旧的）
      *
      * @param multipartFile 用户上传的文件对象
      * @param request http请求
-     * @return ResponseJsonDTO 传输对象，api 显示结果
-     * @throws Exception
+     * @return ResponseJsonDTO 响应JSON传输对象
+     * @throws Exception 所有异常
      */
     @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/image", method = RequestMethod.POST)
@@ -78,20 +84,24 @@ public class FileController {
 
         }
 
-        String serverPath = request.getServletContext().getRealPath(this.USER_IMAGE_PATH);
+        String serverPath = request.getServletContext().getRealPath(FileInfo.UPLOAD_USER_IMAGE_PATH);
 
         String authentication = CookieUtil.getCookieValue(request, AccountInfo.AUTHENTICATION);
-        UserDO user = JwtTokenUtil.verifyToken(authentication, SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY);
+        UserDO cookieUser = JwtTokenUtil.verifyToken(authentication, SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY);
+        if (cookieUser == null) {
+            throw new AccountErrorException(AccountInfo.TOKEN_EXPIRED).log(LogWarnInfo.AUTHENTICATION_TOKEN_ALREAD_EXPIRE_TIME);
+        }
 
-        String fileName = user.getId() + "_" + user.getName() + "_" + multipartFile.getOriginalFilename();
+        String fileName = cookieUser.getId() + "_" + cookieUser.getName() + "_" + multipartFile.getOriginalFilename();
         File imageFile = new File(serverPath, fileName);
         if (!imageFile.getParentFile().exists()) {
-            imageFile.getParentFile().mkdirs();
+           //服务器检测不到目录，抛出异常
+            throw new FileUploadException(FileInfo.NO_PARENT_DIRECTORY).log(LogWarnInfo.SERVER_NO_EXIST_UPLOAD_SAVE_DIRECTORY);
         }
 
         multipartFile.transferTo(imageFile);
 
-        userService.uploadUserImage(user.getName(),fileName);
+        userService.uploadUserImage(cookieUser.getName(),fileName);
 
         return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, FileInfo.UPLOAD_SUCCESS);
     }

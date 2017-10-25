@@ -36,7 +36,7 @@ public class ApiExceptionHandler implements HandlerExceptionResolver{
             ResponsePrintWriterUtil.outFailJSONMessage(response, e.getMessage());
         }
 
-        //根据不同异常打印日志
+        //匹配自定义异常，打印日志
         if(e instanceof ParamsErrorException){
             logger.warn(((ParamsErrorException) e).getLogMessage());
         } else if (e instanceof AccountErrorException) {
@@ -47,8 +47,11 @@ public class ApiExceptionHandler implements HandlerExceptionResolver{
             logger.warn(((FileUploadException) e).getLogMessage());
         } else if (e instanceof TopicErrorException) {
             logger.warn(((TopicErrorException) e).getLogMessage());
+        } else if (e instanceof DatabaseOperationFailException) {
+            logger.warn(((DatabaseOperationFailException) e).getLogMessage());
         }
 
+        //未处理异常，页面报错
         return null;
     }
 }
