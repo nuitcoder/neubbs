@@ -68,7 +68,7 @@ const auth = {
    *
    * @returns {promise} response promise
    */
-  resgister({ username, email, password}) {
+  resgister({ username, email, password }) {
     return api.account.register({ username, email, password })
       .then((response) => {
         const rdata = response.data

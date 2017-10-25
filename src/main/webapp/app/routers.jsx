@@ -1,9 +1,7 @@
 import React from 'react'
-import { createStore, combineReducers } from 'redux'
 import { Provider } from 'react-redux'
 import { Router, Route, IndexRoute, browserHistory } from 'react-router'
-import { syncHistoryWithStore, routerReducer } from 'react-router-redux'
-import { reducer as reduxFormReducer } from 'redux-form'
+import { syncHistoryWithStore } from 'react-router-redux'
 
 import App from './App'
 import HomePage from './pages/Home'
@@ -11,19 +9,10 @@ import LoginPage from './pages/Login'
 import RegisterPage from './pages/Register'
 import ValidatePage from './pages/Validate'
 
-import * as reducers from './reducers'
+import configureStore from './store/configureStore'
 import auth from './auth'
 
-const reducer = combineReducers({
-  ...reducers,
-  form: reduxFormReducer,
-  routing: routerReducer,
-})
-
-const store = createStore(
-  reducer,
-  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
-)
+const store = configureStore()
 const history = syncHistoryWithStore(browserHistory, store)
 
 const requireNotLogged = (_, replace) => {
