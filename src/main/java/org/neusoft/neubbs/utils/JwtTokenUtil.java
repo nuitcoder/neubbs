@@ -41,6 +41,12 @@ public class JwtTokenUtil {
     private static final String CLAIN_STATE = "state";
 
     /**
+     * 过期时间
+     */
+    private static final long EXPIRE_TIME_ONE_DAY = 86400000L;
+    private static final long EXPIRE_TIME_SERVEN_DAY = 604800000L;
+
+    /**
      * JWT 创建 token（传入 UserDO 对象）
      *
      * @param user 用户对象
@@ -54,7 +60,7 @@ public class JwtTokenUtil {
 
         //签发时间,与过期时间（过期无法解密）
         long iat = System.currentTimeMillis();
-        long ext = iat + SecretInfo.EXPIRETIME_SERVEN_DAY;
+        long ext = iat + EXPIRE_TIME_ONE_DAY;
         //long ext = iat + 1;//测试过期token是否无效
 
         //设置Playload,且使用HS256加密,生成token
@@ -69,7 +75,7 @@ public class JwtTokenUtil {
                                                 .withClaim(CLAIM_NAME, user.getName())
                                                 .withClaim(CLAIN_RANK, user.getRank())
                                                 .withClaim(CLAIN_STATE, user.getState())
-                                                    .sign(Algorithm.HMAC256(SecretInfo.TOKEN_SECRET_KEY));
+                                                    .sign(Algorithm.HMAC256(SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY));
 
         return token;
     }

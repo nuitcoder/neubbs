@@ -81,7 +81,7 @@ public class FileController {
         String serverPath = request.getServletContext().getRealPath(this.USER_IMAGE_PATH);
 
         String authentication = CookieUtil.getCookieValue(request, AccountInfo.AUTHENTICATION);
-        UserDO user = JwtTokenUtil.verifyToken(authentication, SecretInfo.TOKEN_SECRET_KEY);
+        UserDO user = JwtTokenUtil.verifyToken(authentication, SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY);
 
         String fileName = user.getId() + "_" + user.getName() + "_" + multipartFile.getOriginalFilename();
         File imageFile = new File(serverPath, fileName);

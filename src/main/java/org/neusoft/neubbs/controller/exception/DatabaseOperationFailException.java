@@ -5,17 +5,17 @@ package org.neusoft.neubbs.controller.exception;
  *
  * @author Suvan
  */
-public class DatabaseErrorException extends Exception implements IExceptionLog{
+public class DatabaseOperationFailException extends Exception implements IExceptionLog{
 
     private String logMessage;
 
     /**
      * Constructor
      */
-    public DatabaseErrorException(String message){
+    public DatabaseOperationFailException(String message){
         super(message);
     }
-    public DatabaseErrorException(String message, String logMessage){
+    public DatabaseOperationFailException(String message, String logMessage){
         super(message);
         this.logMessage = logMessage;
     }
@@ -28,7 +28,7 @@ public class DatabaseErrorException extends Exception implements IExceptionLog{
     }
 
     @Override
-    public DatabaseErrorException log(String logMessage) {
+    public DatabaseOperationFailException log(String logMessage) {
         return this;
     }
 }

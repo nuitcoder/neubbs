@@ -103,7 +103,7 @@ public class ApiInterceptor implements HandlerInterceptor{
         if (hasLoginAuthorization) {
             String authentication =  CookieUtil.getCookieValue(request, AccountInfo.AUTHENTICATION);;
             if (authentication != null) {
-                UserDO user = JwtTokenUtil.verifyToken(authentication, SecretInfo.TOKEN_SECRET_KEY);
+                UserDO user = JwtTokenUtil.verifyToken(authentication, SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY);
                 if (user != null) {
                     //通过验证
                     return true;
@@ -133,13 +133,13 @@ public class ApiInterceptor implements HandlerInterceptor{
         if (hasAccountActivation) {
             String authentication = CookieUtil.getCookieValue(request, AccountInfo.AUTHENTICATION);
             if (authentication != null) {
-                UserDO user = JwtTokenUtil.verifyToken(authentication, SecretInfo.TOKEN_SECRET_KEY);
+                UserDO user = JwtTokenUtil.verifyToken(authentication, SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY);
                 if (user.getState() == 1) {
                     //通过验证
                     return true;
                 }
 
-                throw new AccountErrorException(AccountInfo.NO_ACTIVATE).log(user.getName() + LogWarnInfo.NO_ACTIVATION_NO_USE_API);
+                throw new AccountErrorException(AccountInfo.NO_ACTIVATE).log(user.getName() + LogWarnInfo.NO_ACTIVATION_NO_PERMISSION_USE_API);
             }
         }
 
@@ -158,7 +158,7 @@ public class ApiInterceptor implements HandlerInterceptor{
         if (hasAdminRank) {
             String authentication = CookieUtil.getCookieValue(request,AccountInfo.AUTHENTICATION);
             if (authentication != null) {
-                UserDO user = JwtTokenUtil.verifyToken(authentication, SecretInfo.TOKEN_SECRET_KEY);
+                UserDO user = JwtTokenUtil.verifyToken(authentication, SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY);
                 if (AccountInfo.RANK_ADMIN.equals(user.getRank())) {
                     //通过验证
                     return true;

@@ -1,6 +1,7 @@
 package org.neusoft.neubbs.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.sun.istack.internal.Nullable;
 
 import java.util.Date;
 
