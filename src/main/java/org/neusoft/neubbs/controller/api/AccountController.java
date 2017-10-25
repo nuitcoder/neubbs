@@ -30,18 +30,18 @@ import java.util.Map;
 
 /**
  *   账户 api
- *      1.获取用户信息
- *      2.登录
- *      3.注销
- *      4.注册
- *      5.修改密码
- *      6.修改邮箱
- *      7.验证激活状态
- *      8.账户激活（发送激活 email）
- *      9.激活账户（token 验证）
- *      10.图片验证码（页面生成图片）
- *      11.检查验证码（比较用户输入是否与图片一致）
- *      12.忘记密码（发送临时密码 email）
+ *      + 获取用户信息
+ *      + 获取用户激活状态
+ *      + 登录
+ *      + 注销
+ *      + 注册
+ *      + 修改密码
+ *      + 修改邮箱
+ *      + 账户激活（发送激活 email）
+ *      + 激活账户（验证 token）
+ *      + 图片验证码（页面生成图片）
+ *      + 检查验证码（比较用户输入是否与图片一致）
+ *      + 忘记密码（发送临时密码 email）
  *
  * @author Suvan
  */
@@ -64,7 +64,7 @@ public class AccountController {
     }
 
     /**
-     * 1.获取用户信息（AccountController 默认访问）
+     * 获取用户信息（AccountController 默认访问）
      *
      * 注解提示：
      *
@@ -131,7 +131,39 @@ public class AccountController {
     }
 
     /**
-     * 2.登录
+     * 获取用户激活状态
+     *
+     * @param username 用户名
+     * @return ResponseJsonDTO request-body内JSON数据
+     * @throws Exception 所有异常
+     */
+    @RequestMapping(value = "/state", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseJsonDTO verificationActivateState(@RequestParam(value = "username", required = false)String username) throws Exception{
+        /*
+         *  获取流程
+         *      1.参数合法合法性验证
+         *      2.用户是否存在
+         *      3.用户激活状态判断，返回（true-激活，false-未激活）
+         */
+        String errorInfo = RequestParamsCheckUtil.checkUsername(username);
+        if (errorInfo != null) {
+            throw new ParamsErrorException(AccountInfo.PARAM_ERROR).log(errorInfo);
+        }
+
+        UserDO user = userService.getUserInfoByName(username);
+        if (user == null) {
+            throw new AccountErrorException(AccountInfo.NO_USER).log(username + LogWarnInfo.DATABASE_NO_EXIST_USER);
+        }
+
+        if (user.getState() == AccountInfo.STATE_FAIL) {
+            return new ResponseJsonDTO(AjaxRequestStatus.FAIL);
+        }
+        return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS);
+    }
+
+    /**
+     * 登录
      *
      * @param requestBodyParamsMap  request-body内JSON数据
      * @param request http请求
@@ -189,7 +221,7 @@ public class AccountController {
     }
 
     /**
-     * 3.注销
+     * 注销
      *
      * @param request http请求
      * @param response http响应
@@ -214,7 +246,7 @@ public class AccountController {
     }
 
     /**
-     * 4.注册
+     * 注册
      *
      * @param requestBodyParamsMap request-body内JSON数据
      * @return ResponseJsonDTO 响应JSON传输对象
@@ -269,7 +301,7 @@ public class AccountController {
     }
 
     /**
-     * 5.修改密码
+     * 修改密码
      *
      * @param requestBodyParamsMap request-body内JSON数据
      * @return ResponseJsonDTO 相应JSON传输对象
@@ -306,7 +338,7 @@ public class AccountController {
     }
 
     /**
-     * 6.修改邮箱
+     * 修改邮箱
      *
      * @param requestBodyParamsMap request-body内JSON数据
      * @return ResponseJsonDTO 响应JSON传输对象
@@ -363,45 +395,13 @@ public class AccountController {
     }
 
     /**
-     * 7.验证激活状态
-     *
-     * @param username 用户名
-     * @return ResponseJsonDTO request-body内JSON数据
-     * @throws Exception 所有异常
-     */
-    @RequestMapping(value = "/activate", method = RequestMethod.GET)
-    @ResponseBody
-    public ResponseJsonDTO verificationActivateState(@RequestParam(value = "username", required = false)String username) throws Exception{
-        /*
-         *  获取流程
-         *      1.参数合法合法性验证
-         *      2.用户是否存在
-         *      3.用户激活状态判断，返回（true-激活，false-未激活）
-         */
-        String errorInfo = RequestParamsCheckUtil.checkUsername(username);
-        if (errorInfo != null) {
-            throw new ParamsErrorException(AccountInfo.PARAM_ERROR).log(errorInfo);
-        }
-
-        UserDO user = userService.getUserInfoByName(username);
-        if (user == null) {
-            throw new AccountErrorException(AccountInfo.NO_USER).log(username + LogWarnInfo.DATABASE_NO_EXIST_USER);
-        }
-
-        if (user.getState() == AccountInfo.STATE_FAIL) {
-            return new ResponseJsonDTO(AjaxRequestStatus.FAIL);
-        }
-        return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS);
-    }
-
-    /**
-     * 8.账户激活（发送激活 email）
+     * 账户激活（发送激活 email）
      *
      * @param requestBodyParamsMap request-body内JSON数据
      * @return ResponseJsonDTO 响应JSON传输对象
      * @throws Exception 所有异常
      */
-    @RequestMapping(value = "/activate-email", method = RequestMethod.POST, consumes = "application/json")
+    @RequestMapping(value = "/activate", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
     public ResponseJsonDTO sendActivateEmail(@RequestBody Map<String, Object> requestBodyParamsMap) throws Exception{
         String email = (String)requestBodyParamsMap.get(AccountInfo.EMAIL);
@@ -440,7 +440,7 @@ public class AccountController {
 
     
     /**
-     * 9.激活账户（ token 验证）
+     * 激活账户（ 验证 token ）
      *
      * @param token 传入的 token
      * @return ResponseJsonDTO request-body内JSON数据
@@ -476,7 +476,7 @@ public class AccountController {
     }
 
     /**
-     * 10.图片验证码（页面生成图片）
+     * 图片验证码（页面生成图片）
      *
      * @param request http请求
      * @param response http响应
@@ -510,7 +510,7 @@ public class AccountController {
     }
 
     /**
-     * 11.检查验证码（比较用户输入是否与图片一致）
+     * 检查验证码（比较用户输入是否与图片一致）
      *
      * @param captcha 用户输入验证码
      * @param request http请求
@@ -543,13 +543,13 @@ public class AccountController {
     }
 
     /**
-     * 12.忘记密码（发送临时密码 email）
+     * 忘记密码（发送临时密码 email）
      *
      * @param requestBodyParamsMap request-body内JSON数据
      * @return ResponseJsonDTO 响应JSON传输对象
      * @throws Exception 所有异常
      */
-    @RequestMapping(value = "/temporary-password-email", method = RequestMethod.POST)
+    @RequestMapping(value = "/forget-password", method = RequestMethod.POST)
     @ResponseBody
     public ResponseJsonDTO sendTemporaryPasswordEmail(@RequestBody Map<String, Object> requestBodyParamsMap) throws Exception{
         String email = (String)requestBodyParamsMap.get(AccountInfo.EMAIL);
