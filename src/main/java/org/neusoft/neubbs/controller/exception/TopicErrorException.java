@@ -18,10 +18,6 @@ public class TopicErrorException extends Exception implements IExceptionLog{
     public TopicErrorException(String message){
         super(message);
     }
-    public TopicErrorException(String message, String logMessage){
-        super(message);
-        this.logMessage = logMessage;
-    }
 
     /**
      * Getter

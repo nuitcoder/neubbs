@@ -18,10 +18,6 @@ public class TokenExpireException extends Exception implements IExceptionLog{
     public TokenExpireException(String message){
         super(message);
     }
-    public TokenExpireException(String message, String logMessage){
-        super(message);
-        this.logMessage = message;
-    }
 
     /**
      * Getter

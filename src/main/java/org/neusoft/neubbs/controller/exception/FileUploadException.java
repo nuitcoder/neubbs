@@ -18,10 +18,6 @@ public class FileUploadException extends Exception implements IExceptionLog{
     public FileUploadException(String message){
         super(message);
     }
-    public FileUploadException(String message, String logMessage) {
-        super(message);
-        this.logMessage = logMessage;
-    }
 
     /**
      * Getter

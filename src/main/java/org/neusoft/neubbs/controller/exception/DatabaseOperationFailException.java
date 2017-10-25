@@ -15,10 +15,6 @@ public class DatabaseOperationFailException extends Exception implements IExcept
     public DatabaseOperationFailException(String message){
         super(message);
     }
-    public DatabaseOperationFailException(String message, String logMessage){
-        super(message);
-        this.logMessage = logMessage;
-    }
 
     /**
      * Getter

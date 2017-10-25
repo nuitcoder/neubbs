@@ -19,10 +19,6 @@ public class AccountErrorException extends Exception implements IExceptionLog{
     public AccountErrorException(String message){
         super(message);
     }
-    public AccountErrorException(String message, String logMessage){
-        super(message);
-        this.logMessage = logMessage;
-    }
 
     /**
      * Getter

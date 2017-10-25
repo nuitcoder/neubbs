@@ -21,10 +21,6 @@ public class ParamsErrorException extends Exception implements IExceptionLog {
     public ParamsErrorException(String message){
         super(message);
     }
-    public ParamsErrorException(String message, String logMessage) {
-       super(message);
-       this.logMessage = logMessage;
-    }
 
     /**
      * Getter
