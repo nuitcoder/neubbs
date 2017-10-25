@@ -1,8 +1,12 @@
 import { routerReducer } from 'react-router-redux'
 import { reducer as reduxFormReducer } from 'redux-form'
 import { createStore, combineReducers, compose, applyMiddleware } from 'redux'
+import createSagaMiddleware from 'redux-saga'
 
-import * as reducers from '../reducers'
+import reducers from '../reducers'
+import rootSagas from '../sagas'
+
+const sagaMiddleware = createSagaMiddleware()
 
 function configureStore(initialState) {
   const rootReducer = combineReducers({
@@ -15,10 +19,11 @@ function configureStore(initialState) {
     rootReducer,
     initialState,
     compose(
-      applyMiddleware(),
+      applyMiddleware(sagaMiddleware),
       window.devToolsExtension && window.devToolsExtension(),
     ),
   )
+  sagaMiddleware.run(rootSagas)
 
   return store
 }

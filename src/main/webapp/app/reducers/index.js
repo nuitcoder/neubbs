@@ -1,1 +1,8 @@
-export topics from './topics'
+import account from './account'
+import topics from './topics'
+
+export default {
+  account,
+  topics,
+}
+

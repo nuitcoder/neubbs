@@ -1,7 +1,7 @@
 import * as types from '../constants/actionTypes'
 
 const initialState = {
-  loging: false,
+  sending: false,
   profile: {},
   error: '',
 }
@@ -12,11 +12,43 @@ export default function (state = initialState, action) {
     case types.LOGIN_REQUEST: {
       return {
         ...state,
+        error: '',
+        sending: true,
+      }
+    }
+    case types.LOGIN_SUCCESS: {
+      return {
+        ...state,
+        profile: payload,
+        sending: false,
+      }
+    }
+    case types.LOGIN_ERROR: {
+      return {
+        ...state,
+        error,
+        sending: false,
       }
     }
     case types.REGISTER_REQUEST: {
       return {
         ...state,
+        error: '',
+        sending: true,
+      }
+    }
+    case types.REGISTER_SUCCESS: {
+      return {
+        ...state,
+        profile: payload,
+        sending: false,
+      }
+    }
+    case types.REGISTER_ERROR: {
+      return {
+        ...state,
+        error,
+        sending: false,
       }
     }
     default:

@@ -18,6 +18,12 @@ class Login extends Component {
     this.handleSubmit = this.handleSubmit.bind(this)
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.error !== this.props.error) {
+      this.setState({ alertMessage: nextProps.error })
+    }
+  }
+
   handleAlertDismiss() {
     this.setState({
       alertMessage: '',
@@ -26,17 +32,6 @@ class Login extends Component {
 
   handleSubmit({ username, password }) {
     this.props.actions.login({ username, password })
-    // auth.login({ username, password })
-      // .then((res) => {
-        // const { data } = res
-        // if (data.success) {
-          // this.props.router.push('/')
-        // } else {
-          // this.setState({
-            // alertMessage: data.message,
-          // })
-        // }
-      // })
   }
 
   render() {
@@ -56,7 +51,7 @@ class Login extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    account: state.account,
+    ...state.account,
   }
 }
 

@@ -21,6 +21,12 @@ class Register extends Component {
     this.handleSubmit = this.handleSubmit.bind(this)
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.error !== this.props.error) {
+      this.setState({ alertMessage: nextProps.error })
+    }
+  }
+
   handleHideModal() {
     this.setState({
       showModal: false,
@@ -72,7 +78,7 @@ class Register extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    account: state.account,
+    ...state.account,
   }
 }
 
