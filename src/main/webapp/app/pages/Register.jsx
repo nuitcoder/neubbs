@@ -1,10 +1,12 @@
 import React, { Component } from 'react'
 import { Alert } from 'react-bootstrap'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
 
 import FormWrapper from '../components/FormWrapper'
 import RegisterForm from '../components/RegisterForm'
 import ActivateModal from '../components/ActivateModal'
-import api from '../api'
+import actions from '../actions'
 
 class Register extends Component {
   constructor(props) {
@@ -32,23 +34,24 @@ class Register extends Component {
   }
 
   handleSubmit({ username, email, password }) {
-    api.account.register({
-      username,
-      email,
-      password,
-    }).then((res) => {
-      const { data } = res
-      if (data.success) {
-        console.log('register success')
-        this.setState({
-          showModal: true,
-        })
-      } else {
-        this.setState({
-          alertMessage: data.message,
-        })
-      }
-    })
+    this.props.actions.register({ username, email, password })
+    // api.account.register({
+      // username,
+      // email,
+      // password,
+    // }).then((res) => {
+      // const { data } = res
+      // if (data.success) {
+        // console.log('register success')
+        // this.setState({
+          // showModal: true,
+        // })
+      // } else {
+        // this.setState({
+          // alertMessage: data.message,
+        // })
+      // }
+    // })
   }
 
   render() {
@@ -67,4 +70,19 @@ class Register extends Component {
   }
 }
 
-export default Register
+const mapStateToProps = (state) => {
+  return {
+    account: state.account,
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    actions: bindActionCreators(actions, dispatch),
+  }
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(Register)

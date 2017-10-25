@@ -2,7 +2,7 @@ const path = require('path')
 const webpack = require('webpack')
 
 module.exports = {
-  entry: './app/index.jsx',
+  entry: ['babel-polyfill', './app/index.jsx'],
   output: {
     path: path.join(__dirname, './resources/js'),
     filename: 'bundle.js',
