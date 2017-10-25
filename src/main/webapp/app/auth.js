@@ -1,13 +1,24 @@
 import api from './api'
 
-export default {
+const auth = {
   authenticated: false,
+
+  /**
+   * check whether the authenticated
+   *
+   * @returns {boolean} authenticated
+   */
+  checkAuth() {
+    const token = localStorage.getItem('token')
+    auth.authenticated = !!token
+    return auth.authenticated
+  },
 
   /**
    * login account and set auth
    *
    * @param {object} data login data(usernaem, password)
-   * @returns {undefined}
+   * @returns {promise} response promise
    */
   login(data) {
     const { username, password } = data
@@ -24,8 +35,8 @@ export default {
         localStorage.setItem('token', token)
         localStorage.setItem('username', username)
 
-        this.authenticated = true
-        if (this.onChange) this.onChange()
+        auth.authenticated = true
+        if (auth.onChange) auth.onChange()
       }
       return response
     })
@@ -34,7 +45,7 @@ export default {
   /**
    * logout account and remove auth
    *
-   * @returns {undefined}
+   * @returns {promise} response promise
    */
   logout() {
     return api.account.logout()
@@ -44,27 +55,38 @@ export default {
           localStorage.removeItem('token')
           localStorage.removeItem('username')
 
-          this.authenticated = false
-          if (this.onChange) this.onChange()
+          auth.authenticated = false
+          if (auth.onChange) auth.onChange()
         }
 
         return response
       })
   },
 
-  addListener(listener) {
-    this.onChange = listener
+  /**
+   * register account, auto login when register success
+   *
+   * @returns {promise} response promise
+   */
+  resgister({ username, email, password}) {
+    return api.account.register({ username, email, password })
+      .then((response) => {
+        const rdata = response.data
+        if (rdata.success) {
+          return auth.login({ username, password })
+        }
+        return response
+      })
   },
-
 
   /**
-   * check whether the authenticated
+   * add listener when auth changed
    *
-   * @returns {boolean} authenticated
+   * @returns {undefined}
    */
-  checkAuth() {
-    const token = localStorage.getItem('token')
-    this.authenticated = !!token
-    return this.authenticated
+  addListener(listener) {
+    auth.onChange = listener
   },
 }
+
+export default auth
