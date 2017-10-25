@@ -20,9 +20,9 @@ public interface ITopicService {
      * @param category 话题分类
      * @param title 话题标题
      * @param content 话题内容
-     * @return Boolean 保存结果
+     * @throws Exception 所有异常
      */
-    Boolean saveTopic(int userId, String category, String title, String content);
+    void saveTopic(int userId, String category, String title, String content) throws Exception;
 
     /**
      * 保存回复
@@ -30,25 +30,63 @@ public interface ITopicService {
      * @param userId 用户id
      * @param topicId 话题id
      * @param content 话题内容
-     * @return Boolean 保存结果
+     * @throws Exception 所有异常
      */
-    Boolean saveReply(int userId, int topicId, String content);
+    void saveReply(int userId, int topicId, String content) throws Exception;
 
     /**
      * 删除话题
      *
      * @param topicId 要删除的话题id
-     * @return Boolean 删除结果
+     * @throws Exception 所有异常
      */
-    Boolean removeTopic(int topicId);
+    void removeTopic(int topicId) throws Exception;
 
     /**
      * 删除回复
      *
      * @param replyId 回复id
-     * @return Boolean 删除结果
+     * @throws Exception 所有异常
      */
-    Boolean removeReply(int replyId);
+    void removeReply(int replyId) throws Exception;
+
+    /**
+     * 修改话题内容
+     *
+     * @param topicId 话题id
+     * @param content 新话题内容
+     * @throws Exception 所有异常
+     */
+    void alterTopicContent(int topicId, String content) throws Exception;
+
+    /**
+     * 修改话题回复内容
+     *
+     * @param replyId 回复id
+     * @param content 新回复内容
+     * @throws Exception 所有异常
+     */
+     void alterTopicReplyContent(int replyId, String content) throws Exception;
+
+    /**
+     * 修改主题统计
+     *
+     * @param topicId 话题id
+     * @param field 字段（read 或 agree）
+     * @param type 增减类型（add 或 cut）
+     * @throws Exception 所有异常
+     */
+     void alterTopicStatistics(int topicId, String field, String type) throws Exception;
+
+    /**
+     * 修改主题回复统计
+     *
+     * @param replyId 回复id
+     * @param field 字段（agree 或 agree）
+     * @param type 增减类型（add 或者 cut）
+     * @throws Exception 所有异常
+     */
+     void alterTopicReplyStatistics(int replyId, String field, String type) throws Exception;
 
     /**
      * 话获取话题（基本信息）
@@ -89,43 +127,5 @@ public interface ITopicService {
      * @return List<TopicReplyDO> 话题回复列表
      */
     List<TopicReplyDO> listTopicAllReply(int topicId);
-
-    /**
-     * 修改话题内容
-     *
-     * @param topicId 话题id
-     * @param content 新话题内容
-     * @return Boolean 修改结果
-     */
-    Boolean alterTopicContent(int topicId, String content);
-
-    /**
-     * 修改话题回复内容
-     *
-     * @param replyId 回复id
-     * @param content 新回复内容
-     * @return Boolean 修改结果
-     */
-    Boolean alterTopicReplyContent(int replyId, String content);
-
-    /**
-     * 修改主题统计
-     *
-     * @param topicId 话题id
-     * @param field 字段（read 或 agree）
-     * @param type 增减类型（add 或 cut）
-     * @return Boolean 修改结果
-     */
-    Boolean alterTopicStatistics(int topicId, String field, String type);
-
-    /**
-     * 修改主题回复统计
-     *
-     * @param replyId 回复id
-     * @param field 字段（agree 或 agree）
-     * @param type 增减类型（add 或者 cut）
-     * @return
-     */
-    Boolean alterTopicReplyStatistics(int replyId, String field, String type);
 
 }

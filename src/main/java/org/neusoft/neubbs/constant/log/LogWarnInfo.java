@@ -11,11 +11,9 @@ public interface LogWarnInfo {
     String DATABASE_NO_EXIST_USER = " 数据库中不存在该用户 ";
     String DATABASE_ALREAD_EXIST_USER = " 数据库已经存该用户 ";
 
-    String NO_ACTIVATION_NO_LOGIN = " 账户未激活，无法登录";
     String NO_ACTIVATION_NO_PERMISSION_USE_API = "账户未激活，无权调用 api";
     String ACTIVATION_URL_ALREAD_EXPIRE_TIME = " 激活口令已经过期";
     String AUTHENTICATION_TOKEN_ALREAD_EXPIRE_TIME = "授权口令已经过期";
-    String ACTIVATION_FAIL_EMAIL_NO_REGISTER = "激活失败，该邮箱未注册";
     String EMAIL_NO_REGISTER_NO_SEND_EMAIL = " 邮箱未注册，无法发送邮件";
     String EMAIL_ACTIVATED_NO_AGAIN_SEND_EMAIL = " 邮箱用户已经激活，不重复发送邮件";
     String EMAIL_OCCUPIED = " 邮箱已被占用";
@@ -45,4 +43,23 @@ public interface LogWarnInfo {
     String NO_PERMISSION_NEED_LOGIN = "无权访问 api，需登录";
     String USER_RANK_NO_ENOUGH_NO_ADMIN = "用户权限不足，非管理员用户无法调用此 api";
 
+
+    /******************************User Service*********************************/
+    String USER_SAVE_FAIL = "用户保存失败";
+    String USER_ALTER_FAIL = "用户修改失败";
+
+
+    /******************************Topic Service*********************************/
+    String TOPIC_SAVE_FAIL = "主题保存失败";
+    String TOPIC_CONTENT_SAVE_FAIL = "主题内容保存失败";
+    String TOPIC_REPLY_SAVE_FAIL = "主题回复保存失败";
+    String TOPIC_REMOVE_FAIL = "主题删除失败";
+    String TOPIC_CONTENT_REMOVE_FAIL = "主题内容删除失败";
+    String TOPIC_REPLY_REMOVE_FAIL = "主题回复删除失败";
+    String TOPIC_ALTER_FAIL = "主题修改失败";
+    String TOPIC_CONTENT_ALTER_FAIL = "主题内容修改失败";
+    String TOPIC_REPLY_ALTER_FAIL = "主题回复修改失败";
+
+
+    /******************************Redis Service*********************************/
 }

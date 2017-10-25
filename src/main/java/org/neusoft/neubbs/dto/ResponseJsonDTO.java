@@ -37,7 +37,7 @@ public class ResponseJsonDTO {
     public ResponseJsonDTO(Boolean success, String key, Object obj){
         this.success = success;
 
-        this.model = new HashMap<String, Object>();
+        this.model = new HashMap<>();
         this.model.put(key, obj);
     }
 
@@ -72,7 +72,7 @@ public class ResponseJsonDTO {
      *
      * @param map UserDO 对象的 map
      */
-    public void filterUserInfo(Map map){
+    private void filterUserInfo(Map map){
         map.remove("id");
         map.remove("password");
         map.remove("image");

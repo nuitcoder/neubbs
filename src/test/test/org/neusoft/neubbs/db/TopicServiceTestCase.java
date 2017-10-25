@@ -25,25 +25,23 @@ public class TopicServiceTestCase {
      *  保存话题
      */
     @Test
-    public void test_11_SaveTopic(){
-        boolean result = topicService.saveTopic(2, "java", "第一个标题哟","话题内容");
-        System.out.println("结果：" + result);
+    public void test_11_SaveTopic() throws Exception {
+            topicService.saveTopic(2, "java", "第一个标题哟","话题内容");
     }
 
     /**
      * 保存话题回复
      */
     @Test
-    public void test_12_SaveTopicReply(){
-        boolean result = topicService.saveReply(1,5,"第一条回复内容哟");
-        System.out.println("结果：" + result);
+    public void test_12_SaveTopicReply() throws Exception {
+            topicService.saveReply(1,5,"第一条回复内容哟");
     }
 
     /**
      * 保存 10 条话题内容 和 100 条回复，用于测试
      */
     @Ignore
-    public void test_13_SaveTopicAndReyply(){
+    public void test_13_SaveTopicAndReyply() throws Exception {
         //保存10条话
         for(int i = 0; i < 10; i++){
             topicService.saveTopic(RandomUtil.getRandomNumberByScope(1, 10),"类别" + i, "标题" + i, "内容" + 1);
@@ -65,16 +63,16 @@ public class TopicServiceTestCase {
      * 删除话题
      */
     @Test
-    public void test_21_RemoveTopic(){
-        System.out.println("删除结果：" + topicService.removeTopic(4));
+    public void test_21_RemoveTopic() throws Exception {
+            topicService.removeTopic(4);
     }
 
     /**
      * 删除话题回复
      */
     @Test
-    public void test_22_RemoveReply(){
-        System.out.println("删除结果：" + topicService.removeReply(5));
+    public void test_22_RemoveReply() throws Exception {
+            topicService.removeReply(5);
     }
 
 
@@ -83,16 +81,16 @@ public class TopicServiceTestCase {
      * 修改话题内容
      */
     @Test
-    public void test_41_AlterTopicContent(){
-        System.out.println("更新结果：" + topicService.alterTopicContent(2, "修改后的topic Content！"));
+    public void test_41_AlterTopicContent() throws Exception {
+            topicService.alterTopicContent(2, "修改后的topic Content！");
     }
 
     /**
      * 修改回复内容
      */
     @Test
-    public void test_42_AlterTopicReplyContent(){
-        System.out.println("更新结果：" + topicService.alterTopicReplyContent(6, "修改后的 topic Reply Content!") );
+    public void test_42_AlterTopicReplyContent() throws Exception {
+            topicService.alterTopicReplyContent(6, "修改后的 topic Reply Content!");
     }
 
 }

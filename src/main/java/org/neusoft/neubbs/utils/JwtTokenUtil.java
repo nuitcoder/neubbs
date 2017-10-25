@@ -36,22 +36,20 @@ public class JwtTokenUtil {
      */
     private static final  String CLAIM_NAME = "name";
     private static final String CLAIM_ID = "id";
-    private static final String CLAIN_RANK = "rank";
-    private static final String CLAIN_EMAIL = "email";
-    private static final String CLAIN_STATE = "state";
+    private static final String CLAIM_RANK = "rank";
+    private static final String CLAIM_STATE = "state";
 
     /**
      * 过期时间
      */
     private static final long EXPIRE_TIME_ONE_DAY = 86400000L;
-    private static final long EXPIRE_TIME_SERVEN_DAY = 604800000L;
 
     /**
      * JWT 创建 token（传入 UserDO 对象）
      *
      * @param user 用户对象
      * @return String 加密后密文
-     * @throws Exception
+     * @throws Exception 所有异常
      */
     public static String createToken(UserDO user) throws Exception{
         Map<String,Object> headerMap = new HashMap<String, Object>(2);
@@ -73,8 +71,8 @@ public class JwtTokenUtil {
                                           //.withExpiresAt(new Date(ext))   //永久有效，不需要过期时间
                                                 .withClaim(CLAIM_ID, user.getId())
                                                 .withClaim(CLAIM_NAME, user.getName())
-                                                .withClaim(CLAIN_RANK, user.getRank())
-                                                .withClaim(CLAIN_STATE, user.getState())
+                                                .withClaim(CLAIM_RANK, user.getRank())
+                                                .withClaim(CLAIM_STATE, user.getState())
                                                     .sign(Algorithm.HMAC256(SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY));
 
         return token;
@@ -107,8 +105,8 @@ public class JwtTokenUtil {
         //获取 Playload 的 username
         Claim idClaim = decodedJWT.getClaim(CLAIM_ID);
         Claim nameClaim = decodedJWT.getClaim(CLAIM_NAME);
-        Claim rankClaim = decodedJWT.getClaim(CLAIN_RANK);
-        Claim stateClaim = decodedJWT.getClaim(CLAIN_STATE);
+        Claim rankClaim = decodedJWT.getClaim(CLAIM_RANK);
+        Claim stateClaim = decodedJWT.getClaim(CLAIM_STATE);
 
         UserDO user = new UserDO();
             user.setId(idClaim.asInt());

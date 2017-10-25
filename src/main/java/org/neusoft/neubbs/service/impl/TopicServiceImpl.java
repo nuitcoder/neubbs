@@ -1,5 +1,8 @@
 package org.neusoft.neubbs.service.impl;
 
+import org.neusoft.neubbs.constant.db.DatabaseInfo;
+import org.neusoft.neubbs.constant.log.LogWarnInfo;
+import org.neusoft.neubbs.controller.exception.DatabaseOperationFailException;
 import org.neusoft.neubbs.dao.ITopicContentDAO;
 import org.neusoft.neubbs.dao.ITopicDAO;
 import org.neusoft.neubbs.dao.ITopicReplyDAO;
@@ -19,19 +22,25 @@ import java.util.List;
  * @author Suvan
  */
 @Service("topicServiceImpl")
-public class TopciServiceImpl implements ITopicService{
+public class TopicServiceImpl implements ITopicService{
 
-    @Autowired
-    private ITopicDAO topicDAO;
+    private final ITopicDAO topicDAO;
+    private final ITopicContentDAO topicContentDAO;
+    private final ITopicReplyDAO topicReplyDAO;
 
+    /**
+     * Constructor
+     */
     @Autowired
-    private ITopicContentDAO topicContentDAO;
+    public TopicServiceImpl(ITopicDAO topicDAO, ITopicContentDAO topicContentDAO, ITopicReplyDAO topicReplyDAO){
+        this.topicDAO = topicDAO;
+        this.topicContentDAO = topicContentDAO;
+        this.topicReplyDAO = topicReplyDAO;
+    }
 
-    @Autowired
-    private ITopicReplyDAO topicReplyDAO;
 
     @Override
-    public Boolean saveTopic(int userId, String category, String title, String content) {
+    public void saveTopic(int userId, String category, String title, String content) throws Exception{
         TopicDO topic = new TopicDO();
             topic.setUserid(userId);
             topic.setCategory(category);
@@ -39,7 +48,7 @@ public class TopciServiceImpl implements ITopicService{
 
         int topicEffectRow = topicDAO.saveTopic(topic);
         if (topicEffectRow == 0) {
-            return false;
+            throw new DatabaseOperationFailException(DatabaseInfo.DATABASE_EXCEPTION).log(LogWarnInfo.TOPIC_SAVE_FAIL);
         }
 
         TopicContentDO topicContent = new TopicContentDO();
@@ -48,14 +57,12 @@ public class TopciServiceImpl implements ITopicService{
 
         int topicContentEffectRow = topicContentDAO.saveTopicContent(topicContent);
         if (topicContentEffectRow == 0) {
-            return false;
+            throw new DatabaseOperationFailException(DatabaseInfo.DATABASE_EXCEPTION).log(LogWarnInfo.TOPIC_CONTENT_SAVE_FAIL);
         }
-
-        return true;
     }
 
     @Override
-    public Boolean saveReply(int userId, int topicId, String content) {
+    public void saveReply(int userId, int topicId, String content) throws Exception{
         TopicReplyDO topicReply = new TopicReplyDO();
             topicReply.setUserid(userId);
             topicReply.setTopicid(topicId);
@@ -63,46 +70,103 @@ public class TopciServiceImpl implements ITopicService{
 
         int topicReplyEffectRow = topicReplyDAO.saveTopicReply(topicReply);
         if (topicReplyEffectRow == 0) {
-            return false;
+            throw new DatabaseOperationFailException(DatabaseInfo.DATABASE_EXCEPTION).log(LogWarnInfo.TOPIC_REPLY_SAVE_FAIL);
         }
 
         int updateTopicCommentEffectRow = topicDAO.updateCommentAddOneById(topicId);
         int updateTopicLastreplyuserid = topicDAO.updateLastreplyuseridById(topicId, userId);
         int updateTopicLastreplytime  = topicDAO.updateLastreplytimeById(topicId, new Date());
         if (updateTopicCommentEffectRow == 0 || updateTopicLastreplyuserid == 0 || updateTopicLastreplytime == 0) {
-            return false;
+            throw new DatabaseOperationFailException(DatabaseInfo.DATABASE_EXCEPTION).log(LogWarnInfo.TOPIC_ALTER_FAIL);
         }
-
-        return true;
     }
 
     @Override
-    public Boolean removeTopic(int topicId){
+    public void removeTopic(int topicId) throws Exception{
         int removeTopicEffectRow = topicDAO.removeTopicById(topicId);
         int removeTopicContentEffectRow = topicContentDAO.removeTopicContentById(topicId);
         int removeTopicReplyEffectRow = topicReplyDAO.removeTopicReplyByTopicId(topicId);
         if (removeTopicEffectRow == 0 || removeTopicContentEffectRow == 0 || removeTopicReplyEffectRow == 0) {
-            return false;
+            throw new DatabaseOperationFailException(DatabaseInfo.DATABASE_EXCEPTION).log(LogWarnInfo.TOPIC_REMOVE_FAIL);
         }
-
-        return true;
     }
 
     @Override
-    public Boolean removeReply(int replyId) {
+    public void removeReply(int replyId) throws Exception{
        TopicReplyDO topicReply = topicReplyDAO.getTopicReplyById(replyId);
 
-       int removeTopicEffectRow = topicDAO.updateCommentCutOneById(topicReply.getTopicid());
-       if (removeTopicEffectRow == 0) {
-           return false;
+       int updateTopicEffectRow = topicDAO.updateCommentCutOneById(topicReply.getTopicid());
+       if (updateTopicEffectRow == 0) {
+           throw new DatabaseOperationFailException(DatabaseInfo.DATABASE_EXCEPTION).log(LogWarnInfo.TOPIC_ALTER_FAIL);
        }
 
        int removeTopicReplyEffectRow = topicReplyDAO.removeTopicReplyById(replyId);
        if (removeTopicReplyEffectRow == 0) {
-            return false;
+           throw new DatabaseOperationFailException(DatabaseInfo.DATABASE_EXCEPTION).log(LogWarnInfo.TOPIC_REPLY_REMOVE_FAIL);
        }
+    }
 
-       return true;
+    @Override
+    public void alterTopicContent(int topicId, String content) throws Exception{
+        int updateTopicContentEffectRow = topicContentDAO.updateContentByTopicId(topicId, content);
+        if (updateTopicContentEffectRow == 0) {
+            throw new DatabaseOperationFailException(DatabaseInfo.DATABASE_EXCEPTION).log(LogWarnInfo.TOPIC_CONTENT_ALTER_FAIL);
+        }
+    }
+
+    @Override
+    public void alterTopicReplyContent(int replyId, String content) throws Exception{
+        int updateTopicReplyEffectRow = topicReplyDAO.updateContentByIdByContent(replyId, content);
+        if (updateTopicReplyEffectRow == 0) {
+            throw new DatabaseOperationFailException(DatabaseInfo.DATABASE_EXCEPTION).log(LogWarnInfo.TOPIC_REPLY_ALTER_FAIL);
+        }
+    }
+
+    @Override
+    public void alterTopicStatistics(int topicId, String field, String type) throws Exception{
+        //int updateTopicContent
+        if ("add".equals(type)) {
+            if ("comment".equals(field)) {
+                topicDAO.updateCommentAddOneById(topicId);
+            } else if ("read".equals(field)) {
+                topicContentDAO.updateReadAddOneByTopicId(topicId);
+            } else if ("agree".equals(field)) {
+                topicContentDAO.updateAgreeAddOneByTopicId(topicId);
+            } else {
+
+            }
+
+        } else if ("cut".equals(type)) {
+            if ("comment".equals(field)) {
+                topicDAO.updateCommentCutOneById(topicId);
+            } else if ("agree".equals(field)) {
+                topicContentDAO.updateAgreeCutOneByTopicId(topicId);
+            } else{
+
+            }
+        }
+    }
+
+    @Override
+    public void alterTopicReplyStatistics(int replyId, String field, String type) throws Exception{
+        if ("add".equals(type)) {
+            if ("agree".equals(field)) {
+                topicReplyDAO.updateAgreeAddOneById(replyId);
+            } else if ("oppose".equals(field)) {
+                topicReplyDAO.updateOpposeAddOneById(replyId);
+            } else {
+            }
+
+
+        } else if ("cut".equals(type)) {
+            if ("agree".equals(field)) {
+                topicReplyDAO.updateAgreeCutOneById(replyId);
+            } else if ("oppose".equals(field)) {
+                topicReplyDAO.updateOpposeCutOneById(replyId);
+            } else {
+            }
+        }
+
     }
 
     @Override
@@ -128,84 +192,5 @@ public class TopciServiceImpl implements ITopicService{
     @Override
     public List<TopicReplyDO> listTopicAllReply(int topicId) {
         return topicReplyDAO.listTopicReplyByTopicId(topicId);
-    }
-
-    @Override
-    public Boolean alterTopicContent(int topicId, String content) {
-        int updateTopicContentEffectRow = topicContentDAO.updateContentByTopicId(topicId, content);
-        if (updateTopicContentEffectRow == 0) {
-            return false;
-        }
-
-        return true;
-    }
-
-    @Override
-    public Boolean alterTopicReplyContent(int replyId, String content) {
-       int updateTopicReplyEffectRow = topicReplyDAO.updateContentByIdByContent(replyId, content);
-        if (updateTopicReplyEffectRow == 0) {
-            return false;
-        }
-
-        return true;
-    }
-
-    @Override
-    public Boolean alterTopicStatistics(int topicId, String field, String type) {
-        //int updateTopicContent
-        if ("add".equals(type)) {
-            if ("comment".equals(field)) {
-                topicDAO.updateCommentAddOneById(topicId);
-            } else if ("read".equals(field)) {
-                topicContentDAO.updateReadAddOneByTopicId(topicId);
-            } else if ("agree".equals(field)) {
-                topicContentDAO.updateAgreeAddOneByTopicId(topicId);
-            } else {
-                return false;
-            }
-
-            return true;
-
-        } else if ("cut".equals(type)) {
-            if ("comment".equals(field)) {
-                topicDAO.updateCommentCutOneById(topicId);
-            } else if ("agree".equals(field)) {
-                topicContentDAO.updateAgreeCutOneByTopicId(topicId);
-            } else{
-                return false;
-            }
-
-            return true;
-        }
-
-        return false;
-    }
-
-    @Override
-    public Boolean alterTopicReplyStatistics(int replyId, String field, String type) {
-        if ("add".equals(type)) {
-            if ("agree".equals(field)) {
-                topicReplyDAO.updateAgreeAddOneById(replyId);
-            } else if ("oppose".equals(field)) {
-                topicReplyDAO.updateOpposeAddOneById(replyId);
-            } else {
-                return false;
-            }
-
-            return true;
-
-        } else if ("cut".equals(type)) {
-            if ("agree".equals(field)) {
-                topicReplyDAO.updateAgreeCutOneById(replyId);
-            } else if ("oppose".equals(field)) {
-                topicReplyDAO.updateOpposeCutOneById(replyId);
-            } else {
-                return false;
-            }
-
-            return true;
-        }
-
-        return false;
     }
 }

@@ -25,7 +25,7 @@ public class ResponseJsonListDTO {
         this.success = success;
         this.message = message;
 
-        this.model = new ArrayList<Map<String, Object>>();
+        this.model = new ArrayList<>();
         this.model.add(map);
     }
 
