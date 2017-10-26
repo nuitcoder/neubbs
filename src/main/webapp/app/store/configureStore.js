@@ -8,6 +8,12 @@ import rootSagas from '../sagas'
 
 const sagaMiddleware = createSagaMiddleware()
 
+function devToolsExtension() {
+  if (window.devToolsExtension) {
+    window.devToolsExtension()
+  }
+}
+
 function configureStore(initialState) {
   const rootReducer = combineReducers({
     ...reducers,
@@ -20,7 +26,7 @@ function configureStore(initialState) {
     initialState,
     compose(
       applyMiddleware(sagaMiddleware),
-      window.devToolsExtension && window.devToolsExtension(),
+      devToolsExtension(),
     ),
   )
   sagaMiddleware.run(rootSagas)

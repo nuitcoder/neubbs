@@ -5,18 +5,15 @@ import { connect } from 'react-redux'
 
 import FormWrapper from '../components/FormWrapper'
 import RegisterForm from '../components/RegisterForm'
-import ActivateModal from '../components/ActivateModal'
 import actions from '../actions'
 
 class Register extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      showModal: false,
       alertMessage: '',
     }
 
-    this.handleHideModal = this.handleHideModal.bind(this)
     this.handleAlertDismiss = this.handleAlertDismiss.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
   }
@@ -27,12 +24,6 @@ class Register extends Component {
     }
   }
 
-  handleHideModal() {
-    this.setState({
-      showModal: false,
-    })
-  }
-
   handleAlertDismiss() {
     this.setState({
       alertMessage: '',
@@ -41,23 +32,6 @@ class Register extends Component {
 
   handleSubmit({ username, email, password }) {
     this.props.actions.register({ username, email, password })
-    // api.account.register({
-      // username,
-      // email,
-      // password,
-    // }).then((res) => {
-      // const { data } = res
-      // if (data.success) {
-        // console.log('register success')
-        // this.setState({
-          // showModal: true,
-        // })
-      // } else {
-        // this.setState({
-          // alertMessage: data.message,
-        // })
-      // }
-    // })
   }
 
   render() {
@@ -70,7 +44,6 @@ class Register extends Component {
             {alertMessage}
           </Alert>}
         <RegisterForm onSubmit={this.handleSubmit} />
-        <ActivateModal show={this.state.showModal} onHide={this.handleHideModal} />
       </FormWrapper>
     )
   }

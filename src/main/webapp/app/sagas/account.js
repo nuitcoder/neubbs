@@ -4,6 +4,12 @@ import { browserHistory } from 'react-router'
 import auth from '../auth'
 import * as types from '../constants/actionTypes'
 
+/**
+ * login
+ *
+ * @param action
+ * @returns {undefined}
+ */
 export function* loginSaga(action) {
   const { username, password } = action.payload
 
@@ -21,6 +27,12 @@ export function* loginSaga(action) {
   }
 }
 
+/**
+ * register
+ *
+ * @param action
+ * @returns {undefined}
+ */
 export function* registerSaga(action) {
   const { username, email, password } = action.payload
 
