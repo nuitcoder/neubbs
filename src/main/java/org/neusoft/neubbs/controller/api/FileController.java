@@ -42,7 +42,7 @@ public class FileController {
      * Constructor
      */
     @Autowired
-    public FileController(IUserService userService){
+    public FileController(IUserService userService) {
         this.userService = userService;
     }
 
@@ -58,7 +58,7 @@ public class FileController {
     @RequestMapping(value = "/image", method = RequestMethod.POST)
     @ResponseBody
     public ResponseJsonDTO uploadUserImage(@RequestParam("image")MultipartFile multipartFile,
-                                           HttpServletRequest request) throws Exception{
+                                           HttpServletRequest request) throws Exception {
         /*
          * 文件上传
           *     1.判断上传文件是否为空
@@ -72,14 +72,16 @@ public class FileController {
          */
         if (multipartFile.isEmpty()) {
             // 抛出文件空异常
-            throw new FileUploadException(FileInfo.NO_CHOICE_PICTURE).log(LogWarnInfo.USER_NO_CHOICE_UPLOAD_FILE);
+            throw new FileUploadException(FileInfo.NO_CHOICE_PICTURE)
+                        .log(LogWarnInfo.USER_NO_CHOICE_UPLOAD_FILE);
         }
         String fileType = multipartFile.getContentType();
         if (!PatternUtil.matchUserImage(fileType)) {
             //抛出文件类型不匹配异常
-            throw new FileUploadException(FileInfo.PICTURE_FORMAT_WRONG).log( fileType + LogWarnInfo.FILE_TYPE_NO_MATCH_IMAGE_TYPE);
+            throw new FileUploadException(FileInfo.PICTURE_FORMAT_WRONG)
+                        .log(fileType + LogWarnInfo.FILE_TYPE_NO_MATCH_IMAGE_TYPE);
         }
-        if(multipartFile.getSize() >= FileInfo.SIZE_ONE_MB){
+        if (multipartFile.getSize() >= FileInfo.SIZE_ONE_MB) {
             //文件压缩处理
 
         }
@@ -89,19 +91,21 @@ public class FileController {
         String authentication = CookieUtil.getCookieValue(request, AccountInfo.AUTHENTICATION);
         UserDO cookieUser = JwtTokenUtil.verifyToken(authentication, SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY);
         if (cookieUser == null) {
-            throw new AccountErrorException(AccountInfo.TOKEN_EXPIRED).log(LogWarnInfo.AUTHENTICATION_TOKEN_ALREAD_EXPIRE_TIME);
+            throw new AccountErrorException(AccountInfo.TOKEN_EXPIRED)
+                        .log(LogWarnInfo.AUTHENTICATION_TOKEN_ALREAD_EXPIRE_TIME);
         }
 
         String fileName = cookieUser.getId() + "_" + cookieUser.getName() + "_" + multipartFile.getOriginalFilename();
         File imageFile = new File(serverPath, fileName);
         if (!imageFile.getParentFile().exists()) {
            //服务器检测不到目录，抛出异常
-            throw new FileUploadException(FileInfo.NO_PARENT_DIRECTORY).log(LogWarnInfo.SERVER_NO_EXIST_UPLOAD_SAVE_DIRECTORY);
+            throw new FileUploadException(FileInfo.NO_PARENT_DIRECTORY)
+                        .log(LogWarnInfo.SERVER_NO_EXIST_UPLOAD_SAVE_DIRECTORY);
         }
 
         multipartFile.transferTo(imageFile);
 
-        userService.uploadUserImage(cookieUser.getName(),fileName);
+        userService.uploadUserImage(cookieUser.getName(), fileName);
 
         return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, FileInfo.UPLOAD_SUCCESS);
     }

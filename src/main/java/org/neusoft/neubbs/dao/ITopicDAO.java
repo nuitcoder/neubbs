@@ -17,39 +17,39 @@ public interface ITopicDAO {
      * 保存话题
      *
      * @param topic 话题对象
-     * @return Integer 插入行数
+     * @return int 插入行数
      */
-    Integer saveTopic(TopicDO topic);
+    int saveTopic(TopicDO topic);
 
     /**
      * 删除话题
      *
-     * @param id 话题id
-     * @return Integer 删除行数
+     * @param topicId 话题id
+     * @return int 删除行数
      */
-    Integer removeTopicById(int id);
+    int removeTopicById(int topicId);
 
     /**
      * 统计话题总数
      *
-     * @return Integer 话题总数
+     * @return int 话题总数
      */
-    Integer countTopic();
+    int countTopic();
 
     /**
      * 获取话题最大id（表中最新插入的id）
      *
-     * @return Integer 最新话题id
+     * @return int 最新话题id
      */
-    Integer getTopicMaxId();
+    int getTopicMaxId();
 
     /**
      * 获取话题对象
      *
-     * @param id 话题id
+     * @param topicId 话题id
      * @return TopicDO 话题对象
      */
-    TopicDO getTopicById(int id);
+    TopicDO getTopicById(int topicId);
 
     /**
      * 获取最新的话题列表（降序，指定数量）
@@ -71,51 +71,52 @@ public interface ITopicDAO {
     /**
      * 更新话题分类
      *
-     * @param id 话题id
+     * @param topicId 话题id
      * @param category 新话题类别
-     * @return Integer 更新行数
+     * @return int 更新行数
      */
-    Integer updateCategoryById(int id, String category);
+    int updateCategoryById(int topicId, String category);
 
     /**
      * 更新话题名
      *
-     * @param id 话题内容
+     * @param topicId 话题内容
      * @param title 新话题名
-     * @return Integer 更新行数
+     * @return int 更新行数
      */
-    Integer updateTitleById(int id, String title);
+    int updateTitleById(int topicId, String title);
 
     /**
      * 更新评论回复数（自动 +1）
      *
-     * @param id 话题id
-     * @return Integer 更新行数
+     * @param topicId 话题id
+     * @return int 更新行数
      */
-    Integer updateCommentAddOneById(int id);
+    int updateCommentAddOneById(int topicId);
 
     /**
      * 更新评论回复数（自动 -1）
-     * @param id 话题id
-     * @return Integer 更新行数
+     * @param topicId 话题id
+     * @return int 更新行数
      */
-    Integer updateCommentCutOneById(int id);
+    int updateCommentCutOneById(int topicId);
 
     /**
      * 更新最后回复人id
      *
-     * @param id 最后回复人id
-     * @return Integer 更新行数
+     * @param topicId 话题
+     * @param lastreplyuserid 最后回复人id
+     * @return int 更新行数
      */
-    Integer updateLastreplyuseridById(int id, int lastreplyuserid);
+    int updateLastreplyuseridById(int topicId, int lastreplyuserid);
 
     /**
      * 更新最后回复时间
      *
-     * @param id 话题id
+     * @param topicId 话题id
      * @param lastreplytime 最后回复数
-     * @return Integer 更新行数
+     * @return int 更新行数
      */
-    Integer updateLastreplytimeById(int id, Date lastreplytime);
+    int updateLastreplytimeById(int topicId, Date lastreplytime);
 
 }

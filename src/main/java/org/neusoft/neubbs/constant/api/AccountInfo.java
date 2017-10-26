@@ -28,7 +28,7 @@ public interface AccountInfo {
 
     String NO_USER = "the user does not exist";
     String USERNAME_REGISTERED = "username has been registered";
-    String EMAIL_NO_REIGSTER= "the email is not registered";
+    String EMAIL_NO_REIGSTER = "the email is not registered";
     String EMAIL_REGISTERED = "the email has bean registered";
     String NO_ACTIVATE   = "the account has not been activated";
     String ACCOUNT_ACTIVATED = "the account has bean activated";
@@ -38,7 +38,7 @@ public interface AccountInfo {
     String USERNAME_OR_PASSWORD_INCORRECT = "username or password is incorrect";
     String CAPTCHA_INCORRECT = "input captcha incorrect";
 
-    String NO_PERMISSION= "no permission";
+    String NO_PERMISSION = "no permission";
     String LINK_INVALID = "invalid activation link";
     String TOKEN_EXPIRED = "token expired";
     String NO_GENERATE_CAPTCHA = "no generate captcha";
@@ -72,5 +72,10 @@ public interface AccountInfo {
      */
     long EXPIRE_TIME_ONE_DAY = 86400000L;
     long EXPIRE_TIME_SERVEN_DAY = 604800000L;
+
+    /**
+     * 临时密码长度
+     */
+    int FORGET_PASSWORD_RANDOM_LENGTH = 6;
 
 }

@@ -7,7 +7,7 @@ import org.neusoft.neubbs.entity.UserDO;
  *
  * @author Suvan
  */
-public interface IUserService{
+public interface IUserService {
 
     /**
      * 注册用户

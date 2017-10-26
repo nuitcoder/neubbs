@@ -21,63 +21,63 @@ public class TopicReplyDO {
     /**
      * Getter
      */
-    public Integer getId(){
+    public Integer getId() {
         return id;
     }
-    public Integer getUserid(){
+    public Integer getUserid() {
         return userid;
     }
-    public Integer getTopicid(){
+    public Integer getTopicid() {
         return topicid;
     }
-    public String getContent(){
+    public String getContent() {
         return content;
     }
-    public String getAgree(){
+    public String getAgree() {
         return agree;
     }
-    public String getOppose(){
+    public String getOppose() {
         return oppose;
     }
-    public Date getCreatetime(){
+    public Date getCreatetime() {
         return createtime;
     }
 
     /**
      * Setter
      */
-    public void setId(Integer id){
+    public void setId(Integer id) {
         this.id = id;
     }
-    public void setUserid(Integer userid){
+    public void setUserid(Integer userid) {
         this.userid = userid;
     }
-    public void setTopicid(Integer topicid){
+    public void setTopicid(Integer topicid) {
         this.topicid = topicid;
     }
-    public void setContent(String content){
+    public void setContent(String content) {
         this.content = content;
     }
-    public void setAgree(String agree){
+    public void setAgree(String agree) {
         this.agree = agree;
     }
-    public void setOppose(String oppose){
+    public void setOppose(String oppose) {
         this.oppose = oppose;
     }
-    public void setCreatetime(Date createtime){
+    public void setCreatetime(Date createtime) {
         this.createtime = createtime;
     }
 
     @Override
     public String toString() {
-        return "TopicReplyDO{" +
-                "id=" + id +
-                ", userid=" + userid +
-                ", topicid=" + topicid +
-                ", content='" + content + '\'' +
-                ", agree='" + agree + '\'' +
-                ", oppose='" + oppose + '\'' +
-                ", createtime=" + createtime +
-                '}';
+        return "TopicReplyDO{"
+                + "id=" + id
+                + ", userid=" + userid
+                + ", topicid=" + topicid
+                + ", content='" + content + '\''
+                + ", agree='" + agree + '\''
+                + ", oppose='" + oppose + '\''
+                + ", createtime=" + createtime
+                + '}';
     }
 }

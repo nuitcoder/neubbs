@@ -22,7 +22,7 @@ import java.util.List;
  * @author Suvan
  */
 @Service("topicServiceImpl")
-public class TopicServiceImpl implements ITopicService{
+public class TopicServiceImpl implements ITopicService {
 
     private final ITopicDAO topicDAO;
     private final ITopicContentDAO topicContentDAO;
@@ -32,7 +32,7 @@ public class TopicServiceImpl implements ITopicService{
      * Constructor
      */
     @Autowired
-    public TopicServiceImpl(ITopicDAO topicDAO, ITopicContentDAO topicContentDAO, ITopicReplyDAO topicReplyDAO){
+    public TopicServiceImpl(ITopicDAO topicDAO, ITopicContentDAO topicContentDAO, ITopicReplyDAO topicReplyDAO) {
         this.topicDAO = topicDAO;
         this.topicContentDAO = topicContentDAO;
         this.topicReplyDAO = topicReplyDAO;
@@ -40,7 +40,7 @@ public class TopicServiceImpl implements ITopicService{
 
 
     @Override
-    public void saveTopic(int userId, String category, String title, String content) throws Exception{
+    public void saveTopic(int userId, String category, String title, String content) throws Exception {
         TopicDO topic = new TopicDO();
             topic.setUserid(userId);
             topic.setCategory(category);
@@ -57,12 +57,13 @@ public class TopicServiceImpl implements ITopicService{
 
         int topicContentEffectRow = topicContentDAO.saveTopicContent(topicContent);
         if (topicContentEffectRow == 0) {
-            throw new DatabaseOperationFailException(DatabaseInfo.DATABASE_EXCEPTION).log(LogWarnInfo.TOPIC_CONTENT_SAVE_FAIL);
+            throw new DatabaseOperationFailException(DatabaseInfo.DATABASE_EXCEPTION)
+                        .log(LogWarnInfo.TOPIC_CONTENT_SAVE_FAIL);
         }
     }
 
     @Override
-    public void saveReply(int userId, int topicId, String content) throws Exception{
+    public void saveReply(int userId, int topicId, String content) throws Exception {
         TopicReplyDO topicReply = new TopicReplyDO();
             topicReply.setUserid(userId);
             topicReply.setTopicid(topicId);
@@ -70,7 +71,8 @@ public class TopicServiceImpl implements ITopicService{
 
         int topicReplyEffectRow = topicReplyDAO.saveTopicReply(topicReply);
         if (topicReplyEffectRow == 0) {
-            throw new DatabaseOperationFailException(DatabaseInfo.DATABASE_EXCEPTION).log(LogWarnInfo.TOPIC_REPLY_SAVE_FAIL);
+            throw new DatabaseOperationFailException(DatabaseInfo.DATABASE_EXCEPTION)
+                        .log(LogWarnInfo.TOPIC_REPLY_SAVE_FAIL);
         }
 
         int updateTopicCommentEffectRow = topicDAO.updateCommentAddOneById(topicId);
@@ -82,48 +84,53 @@ public class TopicServiceImpl implements ITopicService{
     }
 
     @Override
-    public void removeTopic(int topicId) throws Exception{
+    public void removeTopic(int topicId) throws Exception {
         int removeTopicEffectRow = topicDAO.removeTopicById(topicId);
         int removeTopicContentEffectRow = topicContentDAO.removeTopicContentById(topicId);
         int removeTopicReplyEffectRow = topicReplyDAO.removeTopicReplyByTopicId(topicId);
         if (removeTopicEffectRow == 0 || removeTopicContentEffectRow == 0 || removeTopicReplyEffectRow == 0) {
-            throw new DatabaseOperationFailException(DatabaseInfo.DATABASE_EXCEPTION).log(LogWarnInfo.TOPIC_REMOVE_FAIL);
+            throw new DatabaseOperationFailException(DatabaseInfo.DATABASE_EXCEPTION)
+                        .log(LogWarnInfo.TOPIC_REMOVE_FAIL);
         }
     }
 
     @Override
-    public void removeReply(int replyId) throws Exception{
+    public void removeReply(int replyId) throws Exception {
        TopicReplyDO topicReply = topicReplyDAO.getTopicReplyById(replyId);
 
        int updateTopicEffectRow = topicDAO.updateCommentCutOneById(topicReply.getTopicid());
        if (updateTopicEffectRow == 0) {
-           throw new DatabaseOperationFailException(DatabaseInfo.DATABASE_EXCEPTION).log(LogWarnInfo.TOPIC_ALTER_FAIL);
+           throw new DatabaseOperationFailException(DatabaseInfo.DATABASE_EXCEPTION)
+                        .log(LogWarnInfo.TOPIC_ALTER_FAIL);
        }
 
        int removeTopicReplyEffectRow = topicReplyDAO.removeTopicReplyById(replyId);
        if (removeTopicReplyEffectRow == 0) {
-           throw new DatabaseOperationFailException(DatabaseInfo.DATABASE_EXCEPTION).log(LogWarnInfo.TOPIC_REPLY_REMOVE_FAIL);
+           throw new DatabaseOperationFailException(DatabaseInfo.DATABASE_EXCEPTION)
+                        .log(LogWarnInfo.TOPIC_REPLY_REMOVE_FAIL);
        }
     }
 
     @Override
-    public void alterTopicContent(int topicId, String content) throws Exception{
+    public void alterTopicContent(int topicId, String content) throws Exception {
         int updateTopicContentEffectRow = topicContentDAO.updateContentByTopicId(topicId, content);
         if (updateTopicContentEffectRow == 0) {
-            throw new DatabaseOperationFailException(DatabaseInfo.DATABASE_EXCEPTION).log(LogWarnInfo.TOPIC_CONTENT_ALTER_FAIL);
+            throw new DatabaseOperationFailException(DatabaseInfo.DATABASE_EXCEPTION)
+                        .log(LogWarnInfo.TOPIC_CONTENT_ALTER_FAIL);
         }
     }
 
     @Override
-    public void alterTopicReplyContent(int replyId, String content) throws Exception{
+    public void alterTopicReplyContent(int replyId, String content) throws Exception {
         int updateTopicReplyEffectRow = topicReplyDAO.updateContentByIdByContent(replyId, content);
         if (updateTopicReplyEffectRow == 0) {
-            throw new DatabaseOperationFailException(DatabaseInfo.DATABASE_EXCEPTION).log(LogWarnInfo.TOPIC_REPLY_ALTER_FAIL);
+            throw new DatabaseOperationFailException(DatabaseInfo.DATABASE_EXCEPTION)
+                        .log(LogWarnInfo.TOPIC_REPLY_ALTER_FAIL);
         }
     }
 
     @Override
-    public void alterTopicStatistics(int topicId, String field, String type) throws Exception{
+    public void alterTopicStatistics(int topicId, String field, String type) throws Exception {
         //int updateTopicContent
         if ("add".equals(type)) {
             if ("comment".equals(field)) {
@@ -141,14 +148,14 @@ public class TopicServiceImpl implements ITopicService{
                 topicDAO.updateCommentCutOneById(topicId);
             } else if ("agree".equals(field)) {
                 topicContentDAO.updateAgreeCutOneByTopicId(topicId);
-            } else{
+            } else {
 
             }
         }
     }
 
     @Override
-    public void alterTopicReplyStatistics(int replyId, String field, String type) throws Exception{
+    public void alterTopicReplyStatistics(int replyId, String field, String type) throws Exception {
         if ("add".equals(type)) {
             if ("agree".equals(field)) {
                 topicReplyDAO.updateAgreeAddOneById(replyId);
@@ -180,7 +187,7 @@ public class TopicServiceImpl implements ITopicService{
     }
 
     @Override
-    public TopicReplyDO getReply(int replyId){
+    public TopicReplyDO getReply(int replyId) {
         return topicReplyDAO.getTopicReplyById(replyId);
     }
 

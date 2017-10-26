@@ -107,7 +107,7 @@ public interface ITopicService {
     /**
      * 获取话题回复
      *
-     * @param replyId
+     * @param replyId 回复id
      * @return TopicReplyDO 话题回复对象
      */
     TopicReplyDO getReply(int replyId);

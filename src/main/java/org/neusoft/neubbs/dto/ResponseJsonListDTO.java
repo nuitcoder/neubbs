@@ -21,7 +21,7 @@ public class ResponseJsonListDTO {
     /**
      * Constructor
      */
-    public ResponseJsonListDTO(Boolean success, String message, Map<String, Object> map){
+    public ResponseJsonListDTO(Boolean success, String message, Map<String, Object> map) {
         this.success = success;
         this.message = message;
 
@@ -32,35 +32,35 @@ public class ResponseJsonListDTO {
     /**
      * Getter
      */
-    public Boolean getSuccess(){
+    public Boolean getSuccess() {
         return success;
     }
-    public String getMessage(){
+    public String getMessage() {
         return message;
     }
-    public List<Map<String, Object>> getModel(){
+    public List<Map<String, Object>> getModel() {
         return model;
     }
 
     /**
      * Setter
      */
-    public void setSuccess(boolean success){
+    public void setSuccess(boolean success) {
         this.success = success;
     }
-    public void setMessage(String message){
+    public void setMessage(String message) {
         this.message = message;
     }
-    public void setModel(List<Map<String, Object>> listModel){
+    public void setModel(List<Map<String, Object>> listModel) {
         this.model = listModel;
     }
 
     @Override
     public String toString() {
-        return "ResponseJsonListDTO{" +
-                "success=" + success +
-                ", message='" + message + '\'' +
-                ", model=" + model +
-                '}';
+        return "ResponseJsonListDTO{"
+                + "success=" + success
+                + ", message='" + message + '\''
+                + ", model=" + model
+                + '}';
     }
 }

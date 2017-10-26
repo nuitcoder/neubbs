@@ -7,15 +7,19 @@ import java.util.Random;
  *
  * @author Suvan
  */
-public class RandomUtil {
+public final class RandomUtil {
+
+    private RandomUtil() {
+
+    }
 
     /**
      * 获取6位数随机数
      *
      * @return Integer 整型6位数随机数
      */
-    public static Integer getSixRandomNumber(){
-        return  (int)((Math.random() * 9 + 1) * 100000);
+    public static Integer getSixRandomNumber() {
+        return  (int) ((Math.random() * 9 + 1) * 100000);
     }
 
     /**
@@ -25,7 +29,7 @@ public class RandomUtil {
      * @param max 最大范围
      * @return Integer 生成随机数
      */
-    public static Integer getRandomNumberByScope(int min, int max){
+    public static Integer getRandomNumberByScope(int min, int max) {
         Random random = new Random();
 
         //.nextInt(可能出现的数字，从0开始的)，例如：.nextInt(99)  生成  0 <= number < 99
@@ -39,26 +43,26 @@ public class RandomUtil {
      * @param len 字符串长度
      * @return String 随机字符串
      */
-    public static String getRandomString(int len){
+    public static String getRandomString(int len) {
         StringBuilder sb = new StringBuilder();
 
         int point;
         int ascii;
-        for(int i = 0; i < len; i++){
+        for (int i = 0; i < len; i++) {
             //生成 “min <= 随机数 <= max ” 的随机数   int num = min + (int)(Math.random() * (max-min+1))
-            point = 1 + (int)(Math.random()*3);
+            point = 1 + (int) (Math.random() * 3);
 
             if (point == 1) {
                 //数字
-                sb.append((int)(Math.random() * 10));
+                sb.append((int) (Math.random() * 10));
             } else if (point == 2) {
                 //小写字母(97 - 122)
-                ascii = 97 + (int)(Math.random() * 26);
-                sb.append((char)ascii);
+                ascii = 97 + (int) (Math.random() * 26);
+                sb.append((char) ascii);
             } else if (point == 3) {
                 //大写字母（65 - 90）
-                ascii = 65 + (int)(Math.random() * 26);
-                sb.append((char)ascii);
+                ascii = 65 + (int) (Math.random() * 26);
+                sb.append((char) ascii);
             }
         }
 

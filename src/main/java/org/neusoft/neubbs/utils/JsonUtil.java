@@ -11,21 +11,26 @@ import java.util.Map;
  *
  * @author Suvan
  */
-public class JsonUtil {
+public final class JsonUtil {
+
+    private JsonUtil() {
+
+    }
+
     /**
      * 将Object对象转换为JSON格式字符串
      *
      * @param obj Object对象
      * @return String JSON格式字符串
-     * @throws JsonProcessingException
+     * @throws JsonProcessingException Json格式转换异常
      */
-    public static String toJSONStringByObject(Object obj){
+    public static String toJSONStringByObject(Object obj) {
         ObjectMapper mapper = new ObjectMapper();
 
         String json = null;
-        try{
+        try {
             json = mapper.writeValueAsString(obj);
-        }catch (JsonProcessingException jpe){}
+        } catch (JsonProcessingException jpe) { }
 
         return json;
     }
@@ -37,13 +42,13 @@ public class JsonUtil {
      * @return Map<String,Object>键值对
      * @throws IOException
      */
-    public static Map<String, Object> toMapByJSONString(String json){
+    public static Map<String, Object> toMapByJSONString(String json) {
         ObjectMapper mapper = new ObjectMapper();
 
         Map<String, Object> map = null;
-        try{
+        try {
             map = mapper.readValue(json, Map.class);
-        }catch (IOException ioe){}
+        } catch (IOException ioe) { }
 
         return map;
     }
@@ -54,15 +59,15 @@ public class JsonUtil {
      * @param obj Object对象
      * @return Map<Sttring,Object>键值对
      */
-    public static Map<String, Object> toMapByObject(Object obj){
+    public static Map<String, Object> toMapByObject(Object obj) {
         ObjectMapper mapper = new ObjectMapper();
         String json = null;
         Map<String, Object> map = null;
 
-        try{
+        try {
             json = mapper.writeValueAsString(obj);
             map = mapper.readValue(json, Map.class);
-        }catch (IOException e){}
+        } catch (IOException e) { }
 
         return map;
     }

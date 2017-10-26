@@ -9,26 +9,26 @@ import org.neusoft.neubbs.controller.annotation.ApiException;
  * @author Suvan
  */
 @ApiException
-public class AccountErrorException extends Exception implements IExceptionLog{
+public class AccountErrorException extends Exception implements IExceptionLog {
 
    private String logMessage;
 
     /**
      * Constructor
      */
-    public AccountErrorException(String message){
+    public AccountErrorException(String message) {
         super(message);
     }
 
     /**
      * Getter
      */
-    public String getLogMessage(){
+    public String getLogMessage() {
         return logMessage;
     }
 
     @Override
-    public AccountErrorException log(String logMessage){
+    public AccountErrorException log(String logMessage) {
         this.logMessage = logMessage;
         return this;
     }

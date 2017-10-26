@@ -17,32 +17,32 @@ public interface IUserDAO {
      *  保存用户
      *
      * @param user 用户对象
-     * @return Integer 插入行数
+     * @return int 插入行数
      */
-    Integer saveUser(UserDO user);
+    int saveUser(UserDO user);
 
     /**
      * 删除用户
      *
-     * @param id 用户id
-     * @return Integer 删除行数
+     * @param userId 用户id
+     * @return int 删除行数
      */
-    Integer removeUserById(int id);
+    int removeUserById(int userId);
 
     /**
      * 获取用户最大 id（最新插入的id）
      *
-     * @return Integer 最新插入用户id
+     * @return int 最新插入用户id
      */
-    Integer getUserMaxId();
+    int getUserMaxId();
 
     /**
      * id获取用户对象
      *
-     * @param id 用户对象
+     * @param userId 用户id
      * @return UserDO 用户对象
      */
-    UserDO getUserById(int id);
+    UserDO getUserById(int userId);
 
     /**
      * name 获取用户对象
@@ -86,45 +86,45 @@ public interface IUserDAO {
     /**
      * 更新用户密码
      *
-     * @param username 用户名
+     * @param name 用户名
      * @param password 用户密码
-     * @return Integer 更新行数
+     * @return int 更新行数
      */
-    Integer updateUserPasswordByName(String username, String password);
+    int updateUserPasswordByName(String name, String password);
 
     /**
      * 更新用户邮箱
      *
-     * @param username 用户名
+     * @param name 用户名
      * @param email 新邮箱
-     * @return Integer 更新行数
+     * @return int 更新行数
      */
-    Integer updateUserEmailByName(String username, String email);
+    int updateUserEmailByName(String name, String email);
 
     /**
      * 更新用户权限
      *
-     * @param username 用户名
+     * @param name 用户名
      * @param rank 用户权限
-     * @return Integer 更新行数
+     * @return int 更新行数
      */
-    Integer updateUserRankByName(String username, String rank);
+    int updateUserRankByName(String name, String rank);
 
     /**
      * 更新用户头像地址
      *
-     * @param username 用户名
+     * @param name 用户名
      * @param image 新头像地址
-     * @return Integer 更新行数
+     * @return int 更新行数
      */
-    Integer updateUserImageByName(String username, String image);
+    int updateUserImageByName(String name, String image);
 
     /**
      * 更新用户激活状态（直接激活，state字段修改为 1<0-未激活，1-激活>）
      *
      * @param email 用户邮箱
-     * @return Integer 更新行数
+     * @return int 更新行数
      */
-    Integer updateUserStateForActivationByEmail(String email);
+    int updateUserStateForActivationByEmail(String email);
 
 }

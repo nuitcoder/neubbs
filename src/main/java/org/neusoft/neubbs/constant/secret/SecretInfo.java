@@ -5,7 +5,7 @@ package org.neusoft.neubbs.constant.secret;
  *
  * @author Suvan
  */
-public interface SecretInfo{
+public interface SecretInfo {
     /**
      * JWT Token 登录密钥
      */

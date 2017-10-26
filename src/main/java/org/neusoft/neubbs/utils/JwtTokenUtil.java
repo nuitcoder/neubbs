@@ -18,7 +18,7 @@ import java.util.Map;
  *
  * @author Suvan
  */
-public class JwtTokenUtil {
+public final class JwtTokenUtil {
 
     private static final String JWT = "JWT";
     private static final String HS256 = "HS256";
@@ -30,6 +30,10 @@ public class JwtTokenUtil {
     private static final String SET_ISSUER = "neubbs";
     private static final String SET_SUBJECT =  "www.neubbs.com";
     private static final String SET_AUDIENCE = "count@neubbs.com";
+
+    private JwtTokenUtil() {
+
+    }
 
     /**
      * Claim参数（保存用户信息）
@@ -51,8 +55,8 @@ public class JwtTokenUtil {
      * @return String 加密后密文
      * @throws Exception 所有异常
      */
-    public static String createToken(UserDO user) throws Exception{
-        Map<String,Object> headerMap = new HashMap<String, Object>(2);
+    public static String createToken(UserDO user) throws Exception {
+        Map<String, Object> headerMap = new HashMap<String, Object>();
             headerMap.put(HEADER_ALG, HS256);
             headerMap.put(HEADER_TYP, JWT);
 
@@ -86,17 +90,17 @@ public class JwtTokenUtil {
      * @return UserDO 用户对象
      * @throws Exception
      */
-    public static UserDO verifyToken(String token, String secretKey){
+    public static UserDO verifyToken(String token, String secretKey) {
         JWTVerifier verifier = null;
         DecodedJWT decodedJWT = null;
-        try{
+        try {
             //解密HS256算法
              verifier = com.auth0.jwt.JWT.require(Algorithm.HMAC256(secretKey)).build();
 
             //解码Base5
             decodedJWT = verifier.verify(token);
 
-        }catch (UnsupportedEncodingException ue){
+        } catch (UnsupportedEncodingException ue) {
             return null;
         } catch (TokenExpiredException tee) {      //token过期
             return null;

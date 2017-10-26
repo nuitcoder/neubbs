@@ -6,6 +6,6 @@ package org.neusoft.neubbs.constant.ajax;
  * @author Suvan
  */
 public interface AjaxRequestStatus {
-    Boolean SUCCESS = true;
-    Boolean FAIL = false;
+    boolean SUCCESS = true;
+    boolean FAIL = false;
 }

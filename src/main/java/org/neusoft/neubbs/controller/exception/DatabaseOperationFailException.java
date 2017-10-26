@@ -5,26 +5,27 @@ package org.neusoft.neubbs.controller.exception;
  *
  * @author Suvan
  */
-public class DatabaseOperationFailException extends Exception implements IExceptionLog{
+public class DatabaseOperationFailException extends Exception implements IExceptionLog {
 
     private String logMessage;
 
     /**
      * Constructor
      */
-    public DatabaseOperationFailException(String message){
+    public DatabaseOperationFailException(String message) {
         super(message);
     }
 
     /**
      * Getter
      */
-    public String getLogMessage(){
+    public String getLogMessage() {
         return logMessage;
     }
 
     @Override
     public DatabaseOperationFailException log(String logMessage) {
+        this.logMessage = logMessage;
         return this;
     }
 }

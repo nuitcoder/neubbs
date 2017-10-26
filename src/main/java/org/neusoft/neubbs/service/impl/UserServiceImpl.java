@@ -23,13 +23,13 @@ public class UserServiceImpl implements IUserService {
      * Constuctor
      */
     @Autowired
-    public UserServiceImpl(IUserDAO userDAO){
+    public UserServiceImpl(IUserDAO userDAO) {
         this.userDAO = userDAO;
     }
 
 
     @Override
-    public void registerUser(UserDO user) throws Exception{
+    public void registerUser(UserDO user) throws Exception {
         int effectRow = userDAO.saveUser(user);
         if (effectRow == 0) {
             //处理异常
@@ -38,12 +38,12 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public UserDO getUserInfoById(int id){
+    public UserDO getUserInfoById(int id) {
         return userDAO.getUserById(id);
     }
 
     @Override
-   public UserDO getUserInfoByName(String username){
+   public UserDO getUserInfoByName(String username) {
        return userDAO.getUserByName(username);
    }
 
@@ -53,7 +53,7 @@ public class UserServiceImpl implements IUserService {
     }
 
    @Override
-   public void alterUserPassword(String username, String password) throws Exception{
+   public void alterUserPassword(String username, String password) throws Exception {
        int effectRow = userDAO.updateUserPasswordByName(username, password);
        if (effectRow == 0) {
             throw new DatabaseOperationFailException(DatabaseInfo.DATABASE_EXCEPTION).log(LogWarnInfo.USER_ALTER_FAIL);
@@ -61,7 +61,7 @@ public class UserServiceImpl implements IUserService {
    }
 
    @Override
-   public void alterUserEmail(String username, String email) throws Exception{
+   public void alterUserEmail(String username, String email) throws Exception {
        int effectRow = userDAO.updateUserEmailByName(username, email);
        if (effectRow == 0) {
             throw new DatabaseOperationFailException(DatabaseInfo.DATABASE_EXCEPTION).log(LogWarnInfo.USER_ALTER_FAIL);
@@ -77,8 +77,8 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public void uploadUserImage(String username, String image) throws Exception{
-       int effectRow = userDAO.updateUserImageByName(username, image);
+    public void uploadUserImage(String username, String image) throws Exception {
+        int effectRow = userDAO.updateUserImageByName(username, image);
         if (effectRow == 0) {
             throw new DatabaseOperationFailException(DatabaseInfo.DATABASE_EXCEPTION).log(LogWarnInfo.USER_ALTER_FAIL);
         }

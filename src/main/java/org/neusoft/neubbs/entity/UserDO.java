@@ -1,7 +1,6 @@
 package org.neusoft.neubbs.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.sun.istack.internal.Nullable;
 
 import java.util.Date;
 
@@ -9,13 +8,9 @@ import java.util.Date;
  *  forum_user表 领域对象
  *  【Domain Object】
  *
- *  注解提醒：
- *      @JsonIgnore 可在字段名上加入此注解，则不进行序列化
- *
  *  @author Suvan
  */
 public class UserDO {
-
     private Integer id;
 
     private String name;
@@ -38,44 +33,44 @@ public class UserDO {
     /**
      * Getter
      */
-    public Integer getId(){
+    public Integer getId() {
         return  id;
     }
-    public String getName(){
+    public String getName() {
         return  name;
     }
-    public String getPassword(){
+    public String getPassword() {
         return password;
     }
-    public String getEmail(){
+    public String getEmail() {
         return email;
     }
-    public String getSex(){
+    public String getSex() {
         return birthday;
     }
-    public String getBirthday(){
+    public String getBirthday() {
         return birthday;
     }
-    public String getAddress(){
+    public String getAddress() {
         return address;
     }
-    public String getDescription(){
+    public String getDescription() {
         return description;
     }
-    public String getPersonalprofile(){
+    public String getPersonalprofile() {
         return personalprofile;
     }
-    public String getImage(){
+    public String getImage() {
         return image;
     }
-    public String getRank(){
+    public String getRank() {
         return rank;
     }
-    public Integer getState(){
+    public Integer getState() {
         return state;
     }
     @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
-    public Date getCreatetime(){
+    public Date getCreatetime() {
         return createtime;
     }
 
@@ -103,19 +98,19 @@ public class UserDO {
     public void setAddress(String address) {
         this.address = address;
     }
-    public void setDescription(String description){
+    public void setDescription(String description) {
         this.description = description;
     }
-    public void setPersonalprofile(String personalprofile){
+    public void setPersonalprofile(String personalprofile) {
         this.personalprofile = personalprofile;
     }
-    public void setImage(String image){
+    public void setImage(String image) {
         this.image = image;
     }
-    public void setRank(String rank){
+    public void setRank(String rank) {
         this.rank = rank;
     }
-    public void setState(Integer state){
+    public void setState(Integer state) {
         this.state = state;
     }
     public void setCreatetime(Date createtime) {
@@ -124,20 +119,20 @@ public class UserDO {
 
     @Override
     public String toString() {
-        return "UserDO{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", password='" + password + '\'' +
-                ", email='" + email + '\'' +
-                ", sex='" + sex + '\'' +
-                ", birthday='" + birthday + '\'' +
-                ", address='" + address + '\'' +
-                ", description='" + description + '\'' +
-                ", personalprofile='" + personalprofile + '\'' +
-                ", image='" + image + '\'' +
-                ", rank='" + rank + '\'' +
-                ", state=" + state +
-                ", createtime=" + createtime +
-                '}';
+        return "UserDO{"
+                + "id=" + id
+                + ", name='" + name + '\''
+                + ", password='" + password + '\''
+                + ", email='" + email + '\''
+                + ", sex='" + sex + '\''
+                + ", birthday='" + birthday + '\''
+                + ", address='" + address + '\''
+                + ", description='" + description + '\''
+                + ", personalprofile='" + personalprofile + '\''
+                + ", image='" + image + '\''
+                + ", rank='" + rank + '\''
+                + ", state=" + state
+                + ", createtime=" + createtime
+                + '}';
     }
 }

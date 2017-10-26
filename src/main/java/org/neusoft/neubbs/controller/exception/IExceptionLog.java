@@ -8,9 +8,9 @@ package org.neusoft.neubbs.controller.exception;
 public interface IExceptionLog {
 
     /**
-     * 获取日志信息
+     * 储存日志信息
      *
-     * @param logMessage
+     * @param logMessage 日志信息
      * @return this
      */
     Object log(String logMessage);

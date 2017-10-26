@@ -14,11 +14,23 @@ import org.neusoft.neubbs.controller.exception.TokenExpireException;
 import org.neusoft.neubbs.dto.ResponseJsonDTO;
 import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.service.IUserService;
-import org.neusoft.neubbs.utils.*;
+import org.neusoft.neubbs.utils.CookieUtil;
+import org.neusoft.neubbs.utils.JsonUtil;
+import org.neusoft.neubbs.utils.JwtTokenUtil;
+import org.neusoft.neubbs.utils.PatternUtil;
+import org.neusoft.neubbs.utils.RandomUtil;
+import org.neusoft.neubbs.utils.RequestParamsCheckUtil;
+import org.neusoft.neubbs.utils.SecretUtil;
+import org.neusoft.neubbs.utils.SendEmailUtil;
+import org.neusoft.neubbs.utils.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.imageio.ImageIO;
 import javax.servlet.ServletContext;
@@ -28,6 +40,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
+
 
 /**
  *   账户 api
@@ -58,7 +71,7 @@ public class AccountController {
      * Constructor（自动注入）
      */
     @Autowired
-    public AccountController(IUserService userService,ThreadPoolTaskExecutor taskExecutor,Producer captchaProducer){
+    public AccountController(IUserService userService, ThreadPoolTaskExecutor taskExecutor, Producer captchaProducer) {
         this.userService = userService;
         this.taskExecutor = taskExecutor;
         this.captchaProducer = captchaProducer;
@@ -70,15 +83,16 @@ public class AccountController {
      * 注解提示：
      *
      * @param username 用户名
+     * @param email 邮箱
      * @param request http请求
      * @return ResponseJsonDTO 响应 JSON 传输对象
      * @throws Exception 所有异常
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
     @ResponseBody
-    public ResponseJsonDTO getUserInformation(@RequestParam(value = "username", required = false)String username,
-                                              @RequestParam(value = "email", required = false)String email,
-                                                 HttpServletRequest request) throws Exception{
+    public ResponseJsonDTO getUserInformation(@RequestParam(value = "username", required = false) String username,
+                                              @RequestParam(value = "email", required = false) String email,
+                                                 HttpServletRequest request) throws Exception {
         /*
          * 获取用户信息
          *      1.判断输入参数（username 或者 email）,优先选择 username，其次 email
@@ -95,8 +109,9 @@ public class AccountController {
              }
 
              user = userService.getUserInfoByName(username);
-             if(user == null){
-                 throw new AccountErrorException(AccountInfo.NO_USER).log(username + LogWarnInfo.DATABASE_NO_EXIST_USER);
+             if (user == null) {
+                 throw new AccountErrorException(AccountInfo.NO_USER)
+                            .log(username + LogWarnInfo.DATABASE_NO_EXIST_USER);
              }
 
         } else if (email != null) {
@@ -114,7 +129,8 @@ public class AccountController {
 
         } else {
             //获取不到 username or email 参数
-            throw new ParamsErrorException(AccountInfo.PARAM_ERROR).log(LogWarnInfo.MISSING_USERNAME_OR_EMAIL_PARAM_NO_GET_ACCOUNT_INFO);
+            throw new ParamsErrorException(AccountInfo.PARAM_ERROR)
+                        .log(LogWarnInfo.MISSING_USERNAME_OR_EMAIL_PARAM_NO_GET_ACCOUNT_INFO);
         }
 
         /*
@@ -140,7 +156,7 @@ public class AccountController {
      */
     @RequestMapping(value = "/state", method = RequestMethod.GET)
     @ResponseBody
-    public ResponseJsonDTO verificationActivateState(@RequestParam(value = "username", required = false)String username) throws Exception{
+    public ResponseJsonDTO verificationActivateState(@RequestParam(value = "username", required = false)String username) throws Exception {
         /*
          *  获取流程
          *      1.参数合法合法性验证
@@ -172,13 +188,13 @@ public class AccountController {
      * @return ResponseJsonDTO 响应JSON传输对象
      * @throws Exception 所有异常
      */
-    @RequestMapping(value = "/login", method = RequestMethod.POST, consumes = "application/json") //指定处理Content-Type 类型
+    @RequestMapping(value = "/login", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
-    public ResponseJsonDTO login(@RequestBody Map<String,Object> requestBodyParamsMap,
+    public ResponseJsonDTO login(@RequestBody Map<String, Object> requestBodyParamsMap,
                                         HttpServletRequest request, HttpServletResponse response) throws Exception {
         //获取 username 和 password
-        String username = (String)requestBodyParamsMap.get(AccountInfo.USERNAME);
-        String password = (String)requestBodyParamsMap.get(AccountInfo.PASSWORD);
+        String username = (String) requestBodyParamsMap.get(AccountInfo.USERNAME);
+        String password = (String) requestBodyParamsMap.get(AccountInfo.PASSWORD);
 
         /*
          * 参数合法性验证
@@ -186,7 +202,6 @@ public class AccountController {
          *      2.参数合法性验证（只有符合邮箱格式，才能用邮箱登录）
          */
         StringBuilder errorInfo = new StringBuilder();
-        System.out.println(errorInfo + "toStinng()格式 " + errorInfo.toString());
         boolean emailType = false;
         if (PatternUtil.matchEmail(username)) {
             String emailErrorInfo = RequestParamsCheckUtil.checkEmail(username);
@@ -218,11 +233,13 @@ public class AccountController {
          */
         UserDO user = emailType ? userService.getUserInfoByEmail(username) : userService.getUserInfoByName(username);
         if (user == null) {
-            throw new AccountErrorException(AccountInfo.USERNAME_OR_PASSWORD_INCORRECT).log(username + LogWarnInfo.DATABASE_NO_EXIST_USER);
+            throw new AccountErrorException(AccountInfo.USERNAME_OR_PASSWORD_INCORRECT)
+                        .log(username + LogWarnInfo.DATABASE_NO_EXIST_USER);
         }
         String cipherText = SecretUtil.encryptUserPassword(password);
         if (!cipherText.equals(user.getPassword())) {
-            throw new AccountErrorException(AccountInfo.USERNAME_OR_PASSWORD_INCORRECT).log(password + LogWarnInfo.USER_PASSWORD_INCORRECT);
+            throw new AccountErrorException(AccountInfo.USERNAME_OR_PASSWORD_INCORRECT)
+                        .log(password + LogWarnInfo.USER_PASSWORD_INCORRECT);
         }
 
         /*
@@ -246,7 +263,7 @@ public class AccountController {
             loginJsonMap.put(AccountInfo.AUTHENTICATION, authentication);
             if (user.getState() == 1) {
                 loginJsonMap.put(AccountInfo.STATE, true);
-            } else if(user.getState() == 0){
+            } else if (user.getState() == 0) {
                 loginJsonMap.put(AccountInfo.STATE, false);
             }
 
@@ -264,14 +281,14 @@ public class AccountController {
     @LoginAuthorization
     @RequestMapping(value = "/logout", method = RequestMethod.GET)
     @ResponseBody
-    public ResponseJsonDTO logout(HttpServletRequest request,HttpServletResponse response) throws Exception{
+    public ResponseJsonDTO logout(HttpServletRequest request, HttpServletResponse response) throws Exception {
         //删除Cookie
         CookieUtil.removeCookie(request, response, AccountInfo.AUTHENTICATION);
 
         //在线登录人数-1
         ServletContext application = request.getServletContext();
-        Integer onlineLoginUser = (Integer)application.getAttribute(CountInfo.ONLINE_LOGIN_USER);
-        if(onlineLoginUser != null){
+        Integer onlineLoginUser = (Integer) application.getAttribute(CountInfo.ONLINE_LOGIN_USER);
+        if (onlineLoginUser != null) {
             application.setAttribute(CountInfo.ONLINE_LOGIN_USER, --onlineLoginUser);
         }
 
@@ -288,9 +305,9 @@ public class AccountController {
     @RequestMapping(value = "/register", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
     public ResponseJsonDTO register(@RequestBody Map<String, Object> requestBodyParamsMap) throws Exception {
-        String username = (String)requestBodyParamsMap.get(AccountInfo.USERNAME);
-        String password = (String)requestBodyParamsMap.get(AccountInfo.PASSWORD);
-        String email = (String)requestBodyParamsMap.get(AccountInfo.EMAIL);
+        String username = (String) requestBodyParamsMap.get(AccountInfo.USERNAME);
+        String password = (String) requestBodyParamsMap.get(AccountInfo.PASSWORD);
+        String email = (String) requestBodyParamsMap.get(AccountInfo.EMAIL);
 
         String errorInfo = RequestParamsCheckUtil
                             .putParamKeys(new String[]{AccountInfo.USERNAME, AccountInfo.PASSWORD, AccountInfo.EMAIL})
@@ -308,11 +325,13 @@ public class AccountController {
         UserDO user;
         user = userService.getUserInfoByName(username);
         if (user != null) {
-            throw new AccountErrorException(AccountInfo.USERNAME_REGISTERED).log(username + LogWarnInfo.DATABASE_ALREAD_EXIST_USER);
+            throw new AccountErrorException(AccountInfo.USERNAME_REGISTERED)
+                        .log(username + LogWarnInfo.DATABASE_ALREAD_EXIST_USER);
         }
         user = userService.getUserInfoByEmail(email);
         if (user != null) {
-            throw new AccountErrorException(AccountInfo.EMAIL_REGISTERED).log(email + LogWarnInfo.DATABASE_ALREAD_EXIST_USER);
+            throw new AccountErrorException(AccountInfo.EMAIL_REGISTERED)
+                        .log(email + LogWarnInfo.DATABASE_ALREAD_EXIST_USER);
         }
 
         //注册操作
@@ -337,6 +356,7 @@ public class AccountController {
      * 修改密码
      *
      * @param requestBodyParamsMap request-body内JSON数据
+     * @param request http请求
      * @return ResponseJsonDTO 相应JSON传输对象
      * @throws Exception 所有异常
      */
@@ -344,9 +364,9 @@ public class AccountController {
     @RequestMapping(value = "/update-password", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
     public ResponseJsonDTO updatePassword(@RequestBody Map<String, Object> requestBodyParamsMap,
-                                            HttpServletRequest request) throws Exception{
-        String username = (String)requestBodyParamsMap.get(AccountInfo.USERNAME);
-        String password = (String)requestBodyParamsMap.get(AccountInfo.PASSWORD);
+                                            HttpServletRequest request) throws Exception {
+        String username = (String) requestBodyParamsMap.get(AccountInfo.USERNAME);
+        String password = (String) requestBodyParamsMap.get(AccountInfo.PASSWORD);
 
         String errorInfo = RequestParamsCheckUtil
                             .putParamKeys(new String[]{AccountInfo.USERNAME, AccountInfo.PASSWORD})
@@ -374,6 +394,8 @@ public class AccountController {
      * 修改邮箱
      *
      * @param requestBodyParamsMap request-body内JSON数据
+     * @param request http请求
+     * @param response http响应
      * @return ResponseJsonDTO 响应JSON传输对象
      * @throws Exception 所有异常
      */
@@ -381,7 +403,7 @@ public class AccountController {
     @RequestMapping(value = "/update-email", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
     public ResponseJsonDTO updateEmail(@RequestBody Map<String, Object> requestBodyParamsMap,
-                                           HttpServletRequest request, HttpServletResponse response) throws Exception{
+                                           HttpServletRequest request, HttpServletResponse response) throws Exception {
         /*
          * 修改邮箱验证
          *      1.参数合法性
@@ -391,8 +413,8 @@ public class AccountController {
          *      5.数据库验证邮箱是否被注册
          *      6.修改邮箱
          */
-        String username = (String)requestBodyParamsMap.get(AccountInfo.USERNAME);
-        String email = (String)requestBodyParamsMap.get(AccountInfo.EMAIL);
+        String username = (String) requestBodyParamsMap.get(AccountInfo.USERNAME);
+        String email = (String) requestBodyParamsMap.get(AccountInfo.EMAIL);
 
         String errorInof = RequestParamsCheckUtil
                                 .putParamKeys(new String[]{AccountInfo.USERNAME, AccountInfo.EMAIL})
@@ -408,14 +430,16 @@ public class AccountController {
             throw new AccountErrorException(AccountInfo.NO_PERMISSION).log(LogWarnInfo.NO_PERMISSION_UPDATE_OTHER_USER);
         }
         if (cookieUser.getState() == AccountInfo.STATE_SUCCESS) {
-            throw new AccountErrorException(AccountInfo.ACCOUNT_ACTIVATED).log(LogWarnInfo.EMAIL_ACTIVATED_NO_AGAIN_SEND_EMAIL);
+            throw new AccountErrorException(AccountInfo.ACCOUNT_ACTIVATED)
+                        .log(LogWarnInfo.EMAIL_ACTIVATED_NO_AGAIN_SEND_EMAIL);
         }
 
         UserDO user = userService.getUserInfoByName(username);
         if (user.getState() == AccountInfo.STATE_SUCCESS) {
               //重新存储 Cookie
-              CookieUtil.saveCookie(response, AccountInfo.AUTHENTICATION,JwtTokenUtil.createToken(cookieUser));
-              throw new AccountErrorException(AccountInfo.ACCOUNT_ACTIVATED).log(email + LogWarnInfo.EMAIL_ACTIVATED_NO_AGAIN_SEND_EMAIL);
+              CookieUtil.saveCookie(response, AccountInfo.AUTHENTICATION, JwtTokenUtil.createToken(cookieUser));
+              throw new AccountErrorException(AccountInfo.ACCOUNT_ACTIVATED)
+                            .log(email + LogWarnInfo.EMAIL_ACTIVATED_NO_AGAIN_SEND_EMAIL);
         }
         if (userService.getUserInfoByEmail(email) != null) {
             throw new AccountErrorException(AccountInfo.EMAIL_REGISTERED).log(email + LogWarnInfo.EMAIL_OCCUPIED);
@@ -436,8 +460,8 @@ public class AccountController {
      */
     @RequestMapping(value = "/activate", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
-    public ResponseJsonDTO sendActivateEmail(@RequestBody Map<String, Object> requestBodyParamsMap) throws Exception{
-        String email = (String)requestBodyParamsMap.get(AccountInfo.EMAIL);
+    public ResponseJsonDTO sendActivateEmail(@RequestBody Map<String, Object> requestBodyParamsMap) throws Exception {
+        String email = (String) requestBodyParamsMap.get(AccountInfo.EMAIL);
 
         String errorInfo = RequestParamsCheckUtil.checkEmail(email);
         if (errorInfo != null) {
@@ -446,13 +470,15 @@ public class AccountController {
 
         //邮箱是否存在
         UserDO user = userService.getUserInfoByEmail(email);
-        if(user == null){
-            throw new AccountErrorException(AccountInfo.EMAIL_NO_REIGSTER).log(email + LogWarnInfo.EMAIL_NO_REGISTER_NO_SEND_EMAIL);
+        if (user == null) {
+            throw new AccountErrorException(AccountInfo.EMAIL_NO_REIGSTER)
+                        .log(email + LogWarnInfo.EMAIL_NO_REGISTER_NO_SEND_EMAIL);
         }
 
         //账户激活状态（0-未激活，1-已激活），激活的无法再次发送邮件
-        if(user.getState() == AccountInfo.STATE_SUCCESS){
-            throw new AccountErrorException(AccountInfo.ACCOUNT_ACTIVATED).log(email + LogWarnInfo.EMAIL_ACTIVATED_NO_AGAIN_SEND_EMAIL);
+        if (user.getState() == AccountInfo.STATE_SUCCESS) {
+            throw new AccountErrorException(AccountInfo.ACCOUNT_ACTIVATED)
+                        .log(email + LogWarnInfo.EMAIL_ACTIVATED_NO_AGAIN_SEND_EMAIL);
         }
 
         //构建 token（用户邮箱 + 过期时间）
@@ -464,7 +490,7 @@ public class AccountController {
 
         //发送邮件（Spring 线程池，另启线程），new Runnable(){},lambda 写法
         taskExecutor.execute(
-                () -> SendEmailUtil.sendEmail(email, " Neubbs 账户激活" , content)
+                () -> SendEmailUtil.sendEmail(email, " Neubbs 账户激活", content)
         );
 
         //返回发送成息信息
@@ -481,7 +507,7 @@ public class AccountController {
      */
     @RequestMapping(value = "/validate", method = RequestMethod.GET)
     @ResponseBody
-    public ResponseJsonDTO validateEmailToken(@RequestParam(value = "token", required = false)String token) throws Exception{
+    public ResponseJsonDTO validateEmailToken(@RequestParam(value = "token", required = false)String token) throws Exception {
         String errorInfo = RequestParamsCheckUtil.checkToken(token);
         if (errorInfo != null) {
             throw new ParamsErrorException(errorInfo).log(errorInfo);
@@ -493,13 +519,14 @@ public class AccountController {
           *    2. 明文分组，获取参数
          */
         String plainText = SecretUtil.decryptBase64(token);
-        String [] array = plainText.split("-");
+        String[] array = plainText.split("-");
         String email = array[0];
         String expireTime = array[1];
 
         //过期判断（1 天）
-        if(StringUtil.isExpire(expireTime)){
-            throw new TokenExpireException(AccountInfo.LINK_INVALID).log(token + LogWarnInfo.ACTIVATION_URL_ALREAD_EXPIRE_TIME);
+        if (StringUtil.isExpire(expireTime)) {
+            throw new TokenExpireException(AccountInfo.LINK_INVALID)
+                        .log(token + LogWarnInfo.ACTIVATION_URL_ALREAD_EXPIRE_TIME);
         }
 
         //激活账户
@@ -516,7 +543,7 @@ public class AccountController {
      * @throws Exception 所有异常
      */
     @RequestMapping(value = "/captcha", method = RequestMethod.GET)
-    public void getCaptchaPicture(HttpServletRequest request, HttpServletResponse response) throws Exception{
+    public void getCaptchaPicture(HttpServletRequest request, HttpServletResponse response) throws Exception {
         /*
          * 生成验证码步骤
          *      1.设置 response
@@ -535,7 +562,7 @@ public class AccountController {
         BufferedImage bi = captchaProducer.createImage(capText);
         ServletOutputStream out = response.getOutputStream();
         ImageIO.write(bi, "jpg", out);
-        try{
+        try {
             out.flush();
         } finally {
             out.close();
@@ -552,7 +579,7 @@ public class AccountController {
      */
     @RequestMapping(value = "/check-captcha", method = RequestMethod.GET)
     @ResponseBody
-    public ResponseJsonDTO checkCaptcha(@RequestParam(value = "captcha", required = false)String captcha, HttpServletRequest request) throws Exception{
+    public ResponseJsonDTO checkCaptcha(@RequestParam(value = "captcha", required = false)String captcha, HttpServletRequest request) throws Exception {
         //参数检查(空与长度)
         String errorInfo = RequestParamsCheckUtil.checkCaptcha(captcha);
         if (errorInfo != null) {
@@ -564,11 +591,11 @@ public class AccountController {
          *      1.是否有生成验证码
          *      2.验证码是否匹配
          */
-        String sessionCaptcha = (String)request.getSession().getAttribute(AccountInfo.SESSION_CAPTCHA);
-        if(StringUtil.isEmpty(sessionCaptcha)){
+        String sessionCaptcha = (String) request.getSession().getAttribute(AccountInfo.SESSION_CAPTCHA);
+        if (StringUtil.isEmpty(sessionCaptcha)) {
             throw new AccountErrorException(AccountInfo.NO_GENERATE_CAPTCHA).log(LogWarnInfo.NO_GENERATE_CAPTCHA_NO_VERIFY);
         }
-        if(!captcha.equals(sessionCaptcha)){
+        if (!captcha.equals(sessionCaptcha)) {
             throw new AccountErrorException(AccountInfo.CAPTCHA_INCORRECT).log(LogWarnInfo.CAPTCHA_INCORRECT);
         }
 
@@ -584,8 +611,8 @@ public class AccountController {
      */
     @RequestMapping(value = "/forget-password", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseJsonDTO sendTemporaryPasswordEmail(@RequestBody Map<String, Object> requestBodyParamsMap) throws Exception{
-        String email = (String)requestBodyParamsMap.get(AccountInfo.EMAIL);
+    public ResponseJsonDTO sendTemporaryPasswordEmail(@RequestBody Map<String, Object> requestBodyParamsMap) throws Exception {
+        String email = (String) requestBodyParamsMap.get(AccountInfo.EMAIL);
 
         String errorInfo = RequestParamsCheckUtil.checkEmail(email);
         if (errorInfo != null) {
@@ -594,11 +621,12 @@ public class AccountController {
 
         UserDO user = userService.getUserInfoByEmail(email);
         if (user == null) {
-            throw new AccountErrorException(AccountInfo.EMAIL_NO_REIGSTER).log(LogWarnInfo.EMAIL_NO_REGISTER_NO_SEND_EMAIL);
+            throw new AccountErrorException(AccountInfo.EMAIL_NO_REIGSTER)
+                        .log(LogWarnInfo.EMAIL_NO_REGISTER_NO_SEND_EMAIL);
         }
 
         //生成新密码（随机字符串，len = 6）
-        String randomPassword = RandomUtil.getRandomString(6);
+        String randomPassword = RandomUtil.getRandomString(AccountInfo.FORGET_PASSWORD_RANDOM_LENGTH);
 
         //修改密码（重新加密）(最后3个字符，为临时密码标识)
         userService.alterUserPassword(user.getName(), SecretUtil.encryptUserPassword(randomPassword));
