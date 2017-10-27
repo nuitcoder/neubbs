@@ -18,56 +18,5 @@
 + MySQL-5.7
 + Redis-3.0.503
 
-
-# 目录结构
-```
-neubbs
-├──README.md
-├──pom.xml                                                                                                 
-├──src                                                                                         
-│  ├─main                                                                                            
-│  │  ├─java                                                                                         
-│  │  │  └─org                                                                                       
-│  │  │      └─neusoft                                                                               
-│  │  │          └─neubbs                                                                            
-│  │  │              ├─constant                                                                                                            
-│  │  │              │  ├─ajax         
-│  │  │              │  ├─api         
-│  │  │              │  ├─log         
-│  │  │              │  ├─secret         
-│  │  │              ├─controller            
-│  │  │              │  ├─annotation         
-│  │  │              │  ├─api                
-│  │  │              │  ├─exception                
-│  │  │              │  ├─filter             
-│  │  │              │  ├─handler             
-│  │  │              │  └─interceptor                                                                                                                
-│  │  │              │  └─listener                                                                                                                
-│  │  │              ├─dao                                                                           
-│  │  │              ├─dto                                                                           
-│  │  │              ├─entity                                                                        
-│  │  │              ├─service                                                                       
-│  │  │              │  └─impl                                                                       
-│  │  │              └─util                                                                          
-│  │  ├─resources
-│  │  │  └─mapping
-│  │  │  │  jdbc.properties
-│  │  │  │  log4j.properties
-│  │  │  │  redis.properties
-│  │  │  │  spring-context.xml
-│  │  │  │  spring-mvc.xml
-│  │  │  │  spring-mybatis-context.xml
-│  │  │  └─spring-redis-context.xml                                                             
-│  │  ├─sql                                                                                          
-│  │  └─webapp                                                                                       
-│  │      ├─app                                                                                      
-│  │      │  ├─components                                                                            
-│  │      │  ├─layouts                                                                               
-│  │      │  └─reducers                                                                              
-│  │      ├─resources                                                                                
-│  │      │  └─css                                                                                   
-│  │      └─WEB-INF                                                                                  
-│  │          └─jsp                                                                                  
-│  └─test                                                                                                                                                                                                                          
-                                                                                                     
-```
+#### API
++ 请参考[后端 API 交互协议](https://github.com/nuitcoder/neubbs/wiki/%E5%90%8E%E7%AB%AF-API-%E4%BA%A4%E4%BA%92%E5%8D%8F%E8%AE%AE)
