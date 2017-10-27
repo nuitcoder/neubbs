@@ -69,6 +69,9 @@ public final class RequestParamsCheckUtil {
 
     /**
      * 检查用户名
+     *      1.非空检查
+     *      2.长度检查
+     *      3.正则检查
      *
      * @param username 用户名
      * @return String 错误信息
@@ -76,19 +79,11 @@ public final class RequestParamsCheckUtil {
     public static String checkUsername(String username) {
         String errorInfo  = null;
 
-        //非空检查
         if (StringUtil.isEmpty(username)) {
             errorInfo = WARN_USERNAME_NO_NULL;
-            return errorInfo;
-        }
-
-        //长度检查
-        if (!StringUtil.isScope(username, USERNAME_LENGTH_MIN, USERNAME_LENGTH_MAX)) {
+        } else if (!StringUtil.isScope(username, USERNAME_LENGTH_MIN, USERNAME_LENGTH_MAX)) {
             errorInfo = WARN_USERNAME_LENGTH_NO_MATCH_SCOPE;
-        }
-
-        //正则检查
-        if (!PatternUtil.matchUsername(username)) {
+        } else if (!PatternUtil.matchUsername(username)) {
             errorInfo = WARN_USERNAME_STYLE_NO_MEET_NORM;
         }
 
@@ -97,42 +92,47 @@ public final class RequestParamsCheckUtil {
 
     /**
      * 检查密码
+     *      1.非空
+     *      2.长度
      *
      * @param password 用户密码
      * @return String 错误信息
      */
     public static String checkPassword(String password) {
+        String errorInfo = null;
+
         if (StringUtil.isEmpty(password)) {
-            return WARN_PASSWORD_NO_NULL;
+            errorInfo = WARN_PASSWORD_NO_NULL;
+        } else if (!StringUtil.isScope(password, PASSWORD_LENGTH_MIN, PASSWORD_LENGTH_MAX)) {
+            errorInfo =  WARN_PASSWORD_LENGTH_NO_MATCH_SCOPE;
         }
 
-        if (!StringUtil.isScope(password, PASSWORD_LENGTH_MIN, PASSWORD_LENGTH_MAX)) {
-            return WARN_PASSWORD_LENGTH_NO_MATCH_SCOPE;
-        }
-
-        return null;
+        return errorInfo;
     }
 
     /**
      * 检查邮箱
+     *      1.非空
+     *      2.长度
      *
      * @param email 用户邮箱
      * @return String 错误信息
      */
     public static String checkEmail(String email) {
+        String errorInfo = null;
+
         if (StringUtil.isEmpty(email)) {
-            return WARN_EMAIL_NO_NULL;
+            errorInfo = WARN_EMAIL_NO_NULL;
+        } else if (!PatternUtil.matchEmail(email)) {
+            errorInfo = WARN_EMAIL_STYLE_NO_MEET_NORM;
         }
 
-        if (!PatternUtil.matchEmail(email)) {
-            return WARN_EMAIL_STYLE_NO_MEET_NORM;
-        }
-
-        return null;
+        return errorInfo;
     }
 
     /**
      * 检测 token
+     *      1.非空
      *
      * @param token 密文
      * @return String 错误信息
@@ -147,41 +147,49 @@ public final class RequestParamsCheckUtil {
 
     /**
      * 检测 captcha
+     *      1.非空
+     *      2.长度
+     *
      * @param captcha 验证码
      * @return String 错误信息
      */
     public static String checkCaptcha(String captcha) {
+        String errorInfo = null;
+
         if (StringUtil.isEmpty(captcha)) {
-            return WARN_CAPTCHA_NO_NULL;
+            errorInfo = WARN_CAPTCHA_NO_NULL;
+        } else if (!StringUtil.isScope(captcha, CAPTCHA_LENGTH, CAPTCHA_LENGTH)) {
+            errorInfo = WARN_CAPTCHA_LENGTH_NO_MATCH_SCOPE;
         }
 
-        if (!StringUtil.isScope(captcha, CAPTCHA_LENGTH, CAPTCHA_LENGTH)) {
-            return WARN_CAPTCHA_LENGTH_NO_MATCH_SCOPE;
-        }
-
-        return null;
+        return errorInfo;
     }
 
     /**
      * 检查 id
+     *      1.非空
+     *      2.长度
      *
      * @param id id类型参数
      * @return String 错误信息
      */
     public static String checkId(String id) {
+        String errorInfo = null;
+
         if (StringUtil.isEmpty(id) || "null".equals(id)) {
-            return WARN_ID_NO_NULL;
+            errorInfo = WARN_ID_NO_NULL;
+        } else if (!StringUtil.isScope(id, ONE_LENGTH, ID_LENGTH_MAX)) {
+            errorInfo = WARN_ID_LENGTH_NO_MATCH_SCOPE;
         }
 
-        if (!StringUtil.isScope(id, ONE_LENGTH, ID_LENGTH_MAX)) {
-            return WARN_ID_LENGTH_NO_MATCH_SCOPE;
-        }
-
-        return null;
+        return errorInfo;
     }
 
     /**
      * 检查话题类别
+     *      1.长度
+     *      2.非空
+     *      3.正则
      *
      * @param category 话题分类
      * @return String 错误信息
@@ -191,14 +199,9 @@ public final class RequestParamsCheckUtil {
 
         if (StringUtil.isEmpty(category)) {
             errorInfo = WARN_CAPTCHA_NO_NULL;
-            return errorInfo;
-        }
-
-        if (!StringUtil.isScope(category, ONE_LENGTH, CATEGORY_LENGTH_MAX)) {
+        } else if (!StringUtil.isScope(category, ONE_LENGTH, CATEGORY_LENGTH_MAX)) {
             errorInfo = WARN_CATEGORY_LENGTH_NO_MATCH_SCOPE;
-        }
-
-        if (!PatternUtil.matchTopicCategory(category)) {
+        } else if (!PatternUtil.matchTopicCategory(category)) {
             errorInfo = WARN_CATEGORY_STYLE_NO_MEET_NORM;
         }
 
@@ -258,7 +261,7 @@ public final class RequestParamsCheckUtil {
      */
     public static RequestParamsCheckUtil putParamKeys(String[] paramKeys) {
         RequestParamsCheckUtil rpcu = new RequestParamsCheckUtil();
-        rpcu.requestParamsMap = new LinkedHashMap<>();
+            rpcu.requestParamsMap = new LinkedHashMap<>();
 
         for (int i = 0, len = paramKeys.length; i < len; i++) {
             rpcu.requestParamsMap.put(paramKeys[i], null);
@@ -291,9 +294,9 @@ public final class RequestParamsCheckUtil {
         StringBuilder errorInfo = new StringBuilder();
 
         //参数空检测
-        errorInfo.append(paramsNullNorm());
-        if (errorInfo.length() > 0) {
-            return errorInfo.toString();
+        String nullErrorInfo = paramsNullNorm();
+        if (nullErrorInfo != null) {
+            return nullErrorInfo;
         }
 
         //参数合法性检测（长度，正则格式）
@@ -398,7 +401,7 @@ public final class RequestParamsCheckUtil {
             return WARN_USERNAME_STYLE_NO_MEET_NORM;
         }
 
-        return null;
+        return "";
     }
     /**
      * 【私有】检测密码规范（用于链式调用）
@@ -411,7 +414,7 @@ public final class RequestParamsCheckUtil {
             return WARN_PASSWORD_LENGTH_NO_MATCH_SCOPE;
         }
 
-        return null;
+        return "";
     }
     /**
      * 【私有】检测邮箱规范（用于链式调用）
@@ -424,7 +427,7 @@ public final class RequestParamsCheckUtil {
             return WARN_EMAIL_STYLE_NO_MEET_NORM;
         }
 
-        return null;
+        return "";
     }
 
     /**
@@ -438,7 +441,7 @@ public final class RequestParamsCheckUtil {
             return WARN_ID_LENGTH_NO_MATCH_SCOPE;
         }
 
-        return null;
+        return "";
     }
 
     /**
@@ -456,7 +459,7 @@ public final class RequestParamsCheckUtil {
             return WARN_CATEGORY_STYLE_NO_MEET_NORM;
         }
 
-        return null;
+        return "";
     }
 
     /**
@@ -470,7 +473,7 @@ public final class RequestParamsCheckUtil {
             return WARN_TITLE_LENGTH_NO_MATCH_SCOPE;
         }
 
-        return null;
+        return "";
     }
 
     /**
@@ -484,7 +487,7 @@ public final class RequestParamsCheckUtil {
             return WARN_CAPTCHA_LENGTH_NO_MATCH_SCOPE;
         }
 
-        return null;
+        return "";
     }
     /*** end ***/
 }

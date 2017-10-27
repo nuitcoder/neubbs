@@ -156,7 +156,7 @@ public final class AccountController {
             throw new AccountErrorException(AccountInfo.NO_USER).log(username + LogWarnInfo.ACCOUNT_01);
         }
 
-        if (user.getState() == AccountInfo.STATE_SUCCESS) {
+        if (user.getState() == AccountInfo.STATE_FAIL) {
             return new ResponseJsonDTO(AjaxRequestStatus.FAIL);
         }
         return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS);
@@ -194,7 +194,7 @@ public final class AccountController {
         String password = (String) requestBodyParamsMap.get(AccountInfo.PASSWORD);
 
         //A.参数合法性验证
-        boolean emailType = PatternUtil.isPureNumber(username);
+        boolean emailType = PatternUtil.matchEmail(username);
         String usernameParamsKeyType = emailType ? AccountInfo.EMAIL : AccountInfo.USERNAME;
         String errorInfo = RequestParamsCheckUtil
                             .putParamKeys(new String[]{usernameParamsKeyType, AccountInfo.PASSWORD})
