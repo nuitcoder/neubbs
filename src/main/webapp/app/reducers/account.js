@@ -1,3 +1,23 @@
+<<<<<<< HEAD
+import {
+  ADD_ACCOUNT,
+} from '../constants/actionTypes'
+
+const initialState = {
+  username: '',
+  email: '',
+}
+
+export default (state = initialState, action) => {
+  const { type, payload } = action
+  switch (type) {
+    case ADD_ACCOUNT: {
+      const { username, email } = payload
+      return {
+        ...state,
+        username,
+        email,
+=======
 import * as types from '../constants/actionTypes'
 
 const initialState = {
@@ -49,6 +69,7 @@ export default function (state = initialState, action) {
         ...state,
         error,
         sending: false,
+>>>>>>> fb40a7c27c30c5d94b1ea5f4a2e76179f18b45b3
       }
     }
     default:
