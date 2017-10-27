@@ -79,6 +79,7 @@ public final class RequestParamsCheckUtil {
         //非空检查
         if (StringUtil.isEmpty(username)) {
             errorInfo = WARN_USERNAME_NO_NULL;
+            return errorInfo;
         }
 
         //长度检查
@@ -190,6 +191,7 @@ public final class RequestParamsCheckUtil {
 
         if (StringUtil.isEmpty(category)) {
             errorInfo = WARN_CAPTCHA_NO_NULL;
+            return errorInfo;
         }
 
         if (!StringUtil.isScope(category, ONE_LENGTH, CATEGORY_LENGTH_MAX)) {
@@ -256,7 +258,7 @@ public final class RequestParamsCheckUtil {
      */
     public static RequestParamsCheckUtil putParamKeys(String[] paramKeys) {
         RequestParamsCheckUtil rpcu = new RequestParamsCheckUtil();
-        rpcu.requestParamsMap = new LinkedHashMap<String, String>();
+        rpcu.requestParamsMap = new LinkedHashMap<>();
 
         for (int i = 0, len = paramKeys.length; i < len; i++) {
             rpcu.requestParamsMap.put(paramKeys[i], null);
