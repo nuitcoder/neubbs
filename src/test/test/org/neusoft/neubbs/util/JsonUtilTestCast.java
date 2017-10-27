@@ -6,6 +6,7 @@ import org.junit.runners.JUnit4;
 import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.utils.JsonUtil;
 
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -55,8 +56,10 @@ public class JsonUtilTestCast {
 
         Map<String, Object> map = JsonUtil.toMapByObject(user);
 
-        for(String key: map.keySet()){
-            System.out.println(key + " : " + map.get(key));
+        Iterator iterator = map.keySet().iterator();
+        while (iterator.hasNext()) {
+            String key = (String) iterator.next();
+            System.out.println(key + "：" + map.get(key));
         }
      }
 }

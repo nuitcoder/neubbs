@@ -6,7 +6,6 @@ package org.neusoft.neubbs.constant.log;
  * @author Suvan
  */
 public interface LogWarnInfo {
-
     /*****************************Account api**********************************/
     String DATABASE_NO_EXIST_USER = " 数据库中不存在该用户 ";
     String DATABASE_ALREAD_EXIST_USER = " 数据库已经存该用户 ";

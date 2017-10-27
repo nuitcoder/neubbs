@@ -40,8 +40,6 @@ public final class SecretUtil {
         } catch (NoSuchAlgorithmException noe) {
             //找不到指定算法
             return null;
-        } catch (Exception e) {
-            return null;
         }
 
         StringBuilder md5Code = new StringBuilder(new BigInteger(1, secretBytes).toString(16));
@@ -158,13 +156,13 @@ public final class SecretUtil {
 
         } catch (NoSuchPaddingException e) {
             e.printStackTrace();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (InvalidKeyException e) {
-            e.printStackTrace();
         } catch (BadPaddingException e) {
             e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
         } catch (IllegalBlockSizeException e) {
+            e.printStackTrace();
+        } catch (InvalidKeyException e) {
             e.printStackTrace();
         }
 

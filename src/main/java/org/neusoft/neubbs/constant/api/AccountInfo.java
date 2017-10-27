@@ -78,4 +78,9 @@ public interface AccountInfo {
      */
     int FORGET_PASSWORD_RANDOM_LENGTH = 6;
 
+    /**
+     * 长度设置
+     */
+    int LENGTH_TWO = 2;
+
 }

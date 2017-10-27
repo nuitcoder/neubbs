@@ -11,11 +11,11 @@ import javax.servlet.http.HttpSessionListener;
  *
  *  @author Suvan
  */
-public class ApiSessionListener implements HttpSessionListener{
+public class ApiSessionListener implements HttpSessionListener {
 
     /**
      * Session 创建时调用
-     * @param httpSessionEvent
+     * @param httpSessionEvent httpSession事件
      */
     @Override
     public void sessionCreated(HttpSessionEvent httpSessionEvent) {
@@ -29,14 +29,14 @@ public class ApiSessionListener implements HttpSessionListener{
         }
 
         //在线访问用户 +1
-        onlineUser ++;
+        onlineUser++;
 
         application.setAttribute(CountInfo.ONLINE_VISIT_USER, onlineUser);
     }
 
     /**
      * Session 销毁时调用
-     * @param httpSessionEvent
+     * @param httpSessionEvent httpSession事件
      */
     @Override
     public void sessionDestroyed(HttpSessionEvent httpSessionEvent) {
@@ -48,7 +48,7 @@ public class ApiSessionListener implements HttpSessionListener{
             onlineUser = 0;
         } else {
             //在线访问人数-1
-            onlineUser --;
+            onlineUser--;
         }
 
         application.setAttribute(CountInfo.ONLINE_VISIT_USER, onlineUser);

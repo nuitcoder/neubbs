@@ -10,10 +10,10 @@ import org.junit.runners.JUnit4;
  * 测试 Log4j 日志框架
  */
 @RunWith(JUnit4.class)
-public class testLog4j {
+public class TestLog4j {
 
     //public static Logger logger = Logger.getRootLogger();
-    private Logger LOGGER = Logger.getLogger(testLog4j.class);
+    private Logger LOGGER = Logger.getLogger(TestLog4j.class);
 
     /**
      * 测试打印信息

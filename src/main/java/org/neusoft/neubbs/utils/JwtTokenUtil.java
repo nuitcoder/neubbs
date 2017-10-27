@@ -62,7 +62,7 @@ public final class JwtTokenUtil {
 
         //签发时间,与过期时间（过期无法解密）
         long iat = System.currentTimeMillis();
-        long ext = iat + EXPIRE_TIME_ONE_DAY;
+        //long ext = iat + EXPIRE_TIME_ONE_DAY;
         //long ext = iat + 1;//测试过期token是否无效
 
         //设置Playload,且使用HS256加密,生成token
