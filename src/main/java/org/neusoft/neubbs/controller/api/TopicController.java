@@ -129,7 +129,7 @@ public class TopicController {
         }
 
         if (topicService.getTopic(topicId) == null) {
-            throw new TopicErrorException(TopicInfo.NO_TOPIC).log(LogWarnInfo.NO_EXIST_TOPIC);
+            throw new TopicErrorException(TopicInfo.NO_TOPIC).log(LogWarnInfo.TOPIC_01);
         }
 
         topicService.removeTopic(topicId);
@@ -156,7 +156,7 @@ public class TopicController {
         }
 
         if (topicService.getReply(replyId) == null) {
-            throw new TopicErrorException(TopicInfo.NO_REPLY).log(LogWarnInfo.NO_EXIST_REPLY);
+            throw new TopicErrorException(TopicInfo.NO_REPLY).log(LogWarnInfo.TOPIC_02);
         }
 
         topicService.removeReply(replyId);

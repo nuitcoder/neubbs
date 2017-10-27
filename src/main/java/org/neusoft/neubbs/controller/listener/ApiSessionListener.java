@@ -22,7 +22,7 @@ public class ApiSessionListener implements HttpSessionListener {
         //获取全局上下文
         ServletContext application = httpSessionEvent.getSession().getServletContext();
 
-        Integer onlineUser = (Integer)application.getAttribute(CountInfo.ONLINE_VISIT_USER);
+        Integer onlineUser = (Integer) application.getAttribute(CountInfo.ONLINE_VISIT_USER);
 
         if (onlineUser == null) {
             onlineUser = 0;
@@ -42,7 +42,7 @@ public class ApiSessionListener implements HttpSessionListener {
     public void sessionDestroyed(HttpSessionEvent httpSessionEvent) {
         ServletContext application = httpSessionEvent.getSession().getServletContext();
 
-        Integer onlineUser = (Integer)application.getAttribute("onlineVisitUser");
+        Integer onlineUser = (Integer) application.getAttribute("onlineVisitUser");
 
         if (onlineUser == null) {
             onlineUser = 0;

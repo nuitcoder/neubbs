@@ -140,7 +140,7 @@ public class TopicServiceImpl implements ITopicService {
             } else if ("agree".equals(field)) {
                 topicContentDAO.updateAgreeAddOneByTopicId(topicId);
             } else {
-
+                throw new Exception();
             }
 
         } else if ("cut".equals(type)) {
@@ -149,7 +149,7 @@ public class TopicServiceImpl implements ITopicService {
             } else if ("agree".equals(field)) {
                 topicContentDAO.updateAgreeCutOneByTopicId(topicId);
             } else {
-
+                throw new Exception();
             }
         }
     }
@@ -162,6 +162,7 @@ public class TopicServiceImpl implements ITopicService {
             } else if ("oppose".equals(field)) {
                 topicReplyDAO.updateOpposeAddOneById(replyId);
             } else {
+                throw new Exception();
             }
 
 
@@ -171,6 +172,7 @@ public class TopicServiceImpl implements ITopicService {
             } else if ("oppose".equals(field)) {
                 topicReplyDAO.updateOpposeCutOneById(replyId);
             } else {
+                throw new Exception();
             }
         }
 

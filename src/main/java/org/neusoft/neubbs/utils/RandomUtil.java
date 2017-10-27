@@ -9,6 +9,17 @@ import java.util.Random;
  */
 public final class RandomUtil {
 
+    private static final int ZERO = 0;
+    private static final int ONE = 1;
+    private static final int TWO = 2;
+    private static final int THREE = 3;
+    private static final int NINE = 9;
+    private static final int TEN = 10;
+    private static final int TWENTY_SIX = 26;
+    private static final int SIXTY_FIVE = 65;
+    private static final int NINETH_SEVEN = 97;
+    private static final int TEN_THOUSAND = 10000;
+
     private RandomUtil() {
 
     }
@@ -19,7 +30,7 @@ public final class RandomUtil {
      * @return Integer 整型6位数随机数
      */
     public static Integer getSixRandomNumber() {
-        return  (int) ((Math.random() * 9 + 1) * 100000);
+        return  (int) ((Math.random() * NINE + ONE) * TEN_THOUSAND);
     }
 
     /**
@@ -34,7 +45,7 @@ public final class RandomUtil {
 
         //.nextInt(可能出现的数字，从0开始的)，例如：.nextInt(99)  生成  0 <= number < 99
         // 0~99区间.nextInt(100),  1~100区间.nextInt(99) + 1，64~128区间.nextInt(65) + 64
-        return random.nextInt(max - min + 1) + min;
+        return random.nextInt(max - min + ONE) + min;
     }
 
     /**
@@ -50,18 +61,18 @@ public final class RandomUtil {
         int ascii;
         for (int i = 0; i < len; i++) {
             //生成 “min <= 随机数 <= max ” 的随机数   int num = min + (int)(Math.random() * (max-min+1))
-            point = 1 + (int) (Math.random() * 3);
+            point = 1 + (int) (Math.random() * THREE);
 
-            if (point == 1) {
+            if (point == ONE) {
                 //数字
-                sb.append((int) (Math.random() * 10));
-            } else if (point == 2) {
+                sb.append((int) (Math.random() * TEN));
+            } else if (point == TWO) {
                 //小写字母(97 - 122)
-                ascii = 97 + (int) (Math.random() * 26);
+                ascii = NINETH_SEVEN + (int) (Math.random() * TWENTY_SIX);
                 sb.append((char) ascii);
-            } else if (point == 3) {
+            } else if (point == THREE) {
                 //大写字母（65 - 90）
-                ascii = 65 + (int) (Math.random() * 26);
+                ascii = SIXTY_FIVE + (int) (Math.random() * TWENTY_SIX);
                 sb.append((char) ascii);
             }
         }

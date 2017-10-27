@@ -5,12 +5,14 @@ package org.neusoft.neubbs.constant.api;
  *
  * @author Suvan
  */
-public interface CountInfo {
-    String ONLINE_VISIT_USER = "onlineVisitUser";
-    String ONLINE_LOGIN_USER = "onlineLoginUser";
+public final class CountInfo {
+    private CountInfo() { }
+
+    public static final String ONLINE_VISIT_USER = "onlineVisitUser";
+    public static final String ONLINE_LOGIN_USER = "onlineLoginUser";
 
     /**
      * Count api 警告信息
      */
-    String PARAM_ERROR  = "incorrect input parameter";
+    public static final String PARAM_ERROR  = "incorrect input parameter";
 }

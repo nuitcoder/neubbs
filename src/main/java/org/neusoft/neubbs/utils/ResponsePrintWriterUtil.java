@@ -21,6 +21,8 @@ public final class ResponsePrintWriterUtil {
     private static final String CHARACTER_ENCODING = "utf-8";
     private static final String CONTENT_TYPE = "application/json;charset=UTF-8";
 
+    private static final int LENGTH_TWO = 2;
+
     private ResponsePrintWriterUtil() {
 
     }
@@ -35,7 +37,7 @@ public final class ResponsePrintWriterUtil {
     public static void outFailJSONMessage(HttpServletResponse response, String failMessage) {
 
         //构造 Map ,并指定初始大小
-        Map<String, Object> map = new HashMap<String, Object>(2);
+        Map<String, Object> map = new HashMap<String, Object>(LENGTH_TWO);
             map.put(SUCCESS_STATES, SUCCESS_STATES_FAIL);
             map.put(MESSAGE, failMessage);
 

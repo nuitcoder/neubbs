@@ -5,6 +5,8 @@ package org.neusoft.neubbs.constant.db;
  *
  * @author Suvan
  */
-public interface DatabaseInfo {
-    String DATABASE_EXCEPTION = "database exception";
+public final class DatabaseInfo {
+    private DatabaseInfo() { }
+
+    public static final String DATABASE_EXCEPTION = "database exception";
 }

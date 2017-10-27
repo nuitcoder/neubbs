@@ -3,84 +3,86 @@ package org.neusoft.neubbs.constant.api;
 /**
  * 用户信息
  *
- * @author Suvan
+ //* @author Suvan
  */
-public interface AccountInfo {
-    String ID = "id";
-    String USERNAME = "username";
-    String NAME = "name";
-    String PASSWORD = "password";
-    String EMAIL = "email";
-    String SEX = "sex";
-    String BIRTHDAY = "birthday";
-    String ADDRESS = "address";
-    String DESCRIPTION = "description";
-    String PERSONALPROFILE = "personalprofile";
-    String IMAGE = "image";
-    String RANK = "rank";
-    String STATE = "state";
-    String CREATETIME = "createtime";
+public final class AccountInfo {
+    private AccountInfo() { }
+
+    public static final String ID = "id";
+    public static final String USERNAME = "username";
+    public static final String NAME = "name";
+    public static final String PASSWORD = "password";
+    public static final String EMAIL = "email";
+    public static final String SEX = "sex";
+    public static final String BIRTHDAY = "birthday";
+    public static final  String ADDRESS = "address";
+    public static final  String DESCRIPTION = "description";
+    public static final String PERSONALPROFILE = "personalprofile";
+    public static final String IMAGE = "image";
+    public static final String RANK = "rank";
+    public static final  String STATE = "state";
+    public static final String CREATETIME = "createtime";
 
     /**
      * Account api 警告信息
      */
-    String PARAM_ERROR  = "incorrect input parameter";
+    public static final String PARAM_ERROR  = "incorrect input parameter";
 
-    String NO_USER = "the user does not exist";
-    String USERNAME_REGISTERED = "username has been registered";
-    String EMAIL_NO_REIGSTER = "the email is not registered";
-    String EMAIL_REGISTERED = "the email has bean registered";
-    String NO_ACTIVATE   = "the account has not been activated";
-    String ACCOUNT_ACTIVATED = "the account has bean activated";
-    String ACTIVATION_SUCCESSFUL =  "activate success";
+    public static final String NO_USER = "the user does not exist";
+    public static final String USERNAME_REGISTERED = "username has been registered";
+    public static final String EMAIL_NO_REIGSTER = "the email is not registered";
+    public static final String EMAIL_REGISTERED = "the email has bean registered";
+    public static final String NO_ACTIVATE   = "the account has not been activated";
+    public static final String ACCOUNT_ACTIVATED = "the account has bean activated";
+    public static final String ACTIVATION_SUCCESSFUL =  "activate success";
 
-    String PASSWORD_ERROR = "user password is incorrect";
-    String USERNAME_OR_PASSWORD_INCORRECT = "username or password is incorrect";
-    String CAPTCHA_INCORRECT = "input captcha incorrect";
+    public static final String PASSWORD_ERROR = "user password is incorrect";
+    public static final String USERNAME_OR_PASSWORD_INCORRECT = "username or password is incorrect";
+    public static final String CAPTCHA_INCORRECT = "input captcha incorrect";
 
-    String NO_PERMISSION = "no permission";
-    String LINK_INVALID = "invalid activation link";
-    String TOKEN_EXPIRED = "token expired";
-    String NO_GENERATE_CAPTCHA = "no generate captcha";
+    public static final String NO_PERMISSION = "no permission";
+    public static final String LINK_INVALID = "invalid activation link";
+    public static final String TOKEN_EXPIRED = "token expired";
+    public static final String NO_GENERATE_CAPTCHA = "no generate captcha";
 
-    String MAIL_SEND_SUCCESS = "mail send success";
+    public static final String MAIL_SEND_SUCCESS = "mail send success";
 
     /**
      * 发送邮件
      */
-    String MAIL_ACCOUNT_ACTIVATION_URL = "http://localhost:8080/api/account/validate?token=";
+    public static final String MAIL_ACCOUNT_ACTIVATION_URL = "http://localhost:8080/api/account/validate?token=";
 
     /**
      * 验证码（储存在 Session）
      */
-    String SESSION_CAPTCHA = "captcha";
+    public static final String SESSION_CAPTCHA = "captcha";
 
     /**
      * token 验证
      */
-    String AUTHENTICATION = "authentication";
-    String RANK_ADMIN = "admin";
+    public static final String AUTHENTICATION = "authentication";
+    public static final String RANK_ADMIN = "admin";
 
     /**
      * 激活状态
      */
-    int STATE_SUCCESS = 1;
-    int STATE_FAIL = 0;
+    public static final int STATE_SUCCESS = 1;
+    public static final int STATE_FAIL = 0;
 
     /**
      * 过期时间（时间戳，ms）
      */
-    long EXPIRE_TIME_ONE_DAY = 86400000L;
-    long EXPIRE_TIME_SERVEN_DAY = 604800000L;
+    public static final long EXPIRE_TIME_ONE_DAY = 86400000L;
+    public static final long EXPIRE_TIME_SERVEN_DAY = 604800000L;
 
     /**
      * 临时密码长度
      */
-    int FORGET_PASSWORD_RANDOM_LENGTH = 6;
+    public static final int FORGET_PASSWORD_RANDOM_LENGTH = 6;
 
     /**
      * 长度设置
      */
-    int LENGTH_TWO = 2;
+    public static final int LENGTH_TWO = 2;
 
 }

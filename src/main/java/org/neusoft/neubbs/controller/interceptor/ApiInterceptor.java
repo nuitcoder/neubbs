@@ -37,7 +37,8 @@ public class ApiInterceptor implements HandlerInterceptor {
      * @throws Exception 所有异常
      */
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
+                                Object handler) throws Exception {
         //登录验证，账户激活，管理员级别
         if (!doLoginAuthorization(request, handler)
                 || !doAccountActivation(request, handler)
@@ -59,7 +60,8 @@ public class ApiInterceptor implements HandlerInterceptor {
      * @throws Exception 所有异常
      */
     @Override
-    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object obj, ModelAndView modelAndView) throws Exception { }
+    public void postHandle(HttpServletRequest request, HttpServletResponse response,
+                                Object obj, ModelAndView modelAndView) throws Exception { }
 
     /**
      * 请求完成成立（MVC 控制器 DispatcherServlet 完全处理完请求后调用，可用于清理资源）
@@ -71,7 +73,8 @@ public class ApiInterceptor implements HandlerInterceptor {
      * @throws Exception 所有异常
      */
     @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object obj, Exception exception) throws Exception { }
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response,
+                                    Object obj, Exception exception) throws Exception { }
 
 
     /**
@@ -101,10 +104,10 @@ public class ApiInterceptor implements HandlerInterceptor {
                     return true;
                 }
 
-                throw new AccountErrorException(AccountInfo.TOKEN_EXPIRED).log(LogWarnInfo.TOKEN_ALREAD_EXPIRE);
+                throw new AccountErrorException(AccountInfo.TOKEN_EXPIRED).log(LogWarnInfo.INTERCEPTRO_01);
             } else {
                 //无登录，无权访问 api
-                throw new AccountErrorException(AccountInfo.NO_PERMISSION).log(LogWarnInfo.NO_PERMISSION_NEED_LOGIN);
+                throw new AccountErrorException(AccountInfo.NO_PERMISSION).log(LogWarnInfo.INTERCEPTRO_02);
             }
         }
 
@@ -129,7 +132,7 @@ public class ApiInterceptor implements HandlerInterceptor {
                 if (user == null) {
                     //JWT Token 过期，解密失败
                     throw new AccountErrorException(AccountInfo.TOKEN_EXPIRED)
-                                .log(LogWarnInfo.AUTHENTICATION_TOKEN_ALREAD_EXPIRE_TIME);
+                                .log(LogWarnInfo.ACCOUNT_05);
                 }
                 if (user.getState() == 1) {
                     //通过验证
@@ -137,7 +140,7 @@ public class ApiInterceptor implements HandlerInterceptor {
                 }
 
                 throw new AccountErrorException(AccountInfo.NO_ACTIVATE)
-                            .log(user.getName() + LogWarnInfo.NO_ACTIVATION_NO_PERMISSION_USE_API);
+                            .log(user.getName() + LogWarnInfo.ACCOUNT_03);
             }
         }
 
@@ -160,15 +163,14 @@ public class ApiInterceptor implements HandlerInterceptor {
                 UserDO user = JwtTokenUtil.verifyToken(authentication, SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY);
                 if (user == null) {
                     throw new AccountErrorException(AccountInfo.TOKEN_EXPIRED)
-                                .log(LogWarnInfo.AUTHENTICATION_TOKEN_ALREAD_EXPIRE_TIME);
+                                .log(LogWarnInfo.ACCOUNT_05);
                 }
                 if (AccountInfo.RANK_ADMIN.equals(user.getRank())) {
                     //通过验证
                     return true;
                 }
 
-                throw new AccountErrorException(AccountInfo.NO_PERMISSION)
-                            .log(LogWarnInfo.USER_RANK_NO_ENOUGH_NO_ADMIN);
+                throw new AccountErrorException(AccountInfo.NO_PERMISSION).log(LogWarnInfo.INTERCEPTRO_03);
             }
         }
 

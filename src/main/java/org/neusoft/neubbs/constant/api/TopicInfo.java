@@ -5,35 +5,37 @@ package org.neusoft.neubbs.constant.api;
  *
  * @author Suvan
  */
-public interface TopicInfo {
-    String ID = "id";
-    String CATEGORY = "category";
-    String TITLE = "title";
-    String COMMENT = "comment";
-    String LASTREPLYUSERID = "lastreplyuserid";
-    String LASTREPLYTIME = "lastreplytime";
-    String CREATETIME = "createtime";
+public final class TopicInfo {
+    private TopicInfo() { }
 
-    String TOPICID = "topicid";
-    String CONTENT = "content";
-    String READ = "read";
-    String AGREE = "agree";
+    public static final String ID = "id";
+    public static final String CATEGORY = "category";
+    public static final String TITLE = "title";
+    public static final String COMMENT = "comment";
+    public static final String LASTREPLYUSERID = "lastreplyuserid";
+    public static final String LASTREPLYTIME = "lastreplytime";
+    public static final String CREATETIME = "createtime";
 
-    String USERID = "userid";
-    String OPPOSE = "oppose";
-    String REPLYID = "replyid";
+    public static final String TOPICID = "topicid";
+    public static final String CONTENT = "content";
+    public static final String READ = "read";
+    public static final String AGREE = "agree";
+
+    public static final String USERID = "userid";
+    public static final String OPPOSE = "oppose";
+    public static final String REPLYID = "replyid";
 
 
     /**
      * Topic api 警告信息
      */
-    String PARAM_ERROR  = "incorrect input parameter";
-    String NO_TOPIC = "no topic";
-    String NO_REPLY = "no reply";
-    String SAVE_TOPIC_SUCCESS = "save the topic success";
-    String SAVE_REPLY_SUCCESS = "save the reply success";
-    String REMOVE_TOPIC_SUCCESS = "remove the topic success";
-    String REMOVE_REPLY_SUCCESS = "remove the reply success";
-    String ALTER_TOPIC_CONTENT_SUCCESS = "alter topic content success";
-    String ALTER_REPLY_CONTENT_SUCCESS = "alter reply content success";
+    public static final String PARAM_ERROR  = "incorrect input parameter";
+    public static final String NO_TOPIC = "no topic";
+    public static final String NO_REPLY = "no reply";
+    public static final String SAVE_TOPIC_SUCCESS = "save the topic success";
+    public static final String SAVE_REPLY_SUCCESS = "save the reply success";
+    public static final String REMOVE_TOPIC_SUCCESS = "remove the topic success";
+    public static final String REMOVE_REPLY_SUCCESS = "remove the reply success";
+    public static final String ALTER_TOPIC_CONTENT_SUCCESS = "alter topic content success";
+    public static final String ALTER_REPLY_CONTENT_SUCCESS = "alter reply content success";
 }

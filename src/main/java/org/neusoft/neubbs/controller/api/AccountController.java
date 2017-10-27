@@ -105,8 +105,7 @@ public final class AccountController {
                                                  HttpServletRequest request) throws Exception {
         //A.参数处理
         if (username == null && email == null) {
-            throw new ParamsErrorException(AccountInfo.PARAM_ERROR)
-                        .log(LogWarnInfo.MISSING_USERNAME_OR_EMAIL_PARAM_NO_GET_ACCOUNT_INFO);
+            throw new ParamsErrorException(AccountInfo.PARAM_ERROR).log(LogWarnInfo.ACCOUNT_13);
         }
 
         boolean usernameType = username != null;
@@ -120,7 +119,7 @@ public final class AccountController {
         UserDO user = usernameType ? userService.getUserInfoByName(username)
                                    : userService.getUserInfoByEmail(email);
         if (user == null) {
-            throw new AccountErrorException(AccountInfo.NO_USER).log(LogWarnInfo.DATABASE_NO_EXIST_USER);
+            throw new AccountErrorException(AccountInfo.NO_USER).log(LogWarnInfo.ACCOUNT_01);
         }
 
         //B.判断登录状态
@@ -154,10 +153,10 @@ public final class AccountController {
 
         UserDO user = userService.getUserInfoByName(username);
         if (user == null) {
-            throw new AccountErrorException(AccountInfo.NO_USER).log(username + LogWarnInfo.DATABASE_NO_EXIST_USER);
+            throw new AccountErrorException(AccountInfo.NO_USER).log(username + LogWarnInfo.ACCOUNT_01);
         }
 
-        if (user.getState() == AccountInfo.STATE_FAIL) {
+        if (user.getState() == AccountInfo.STATE_SUCCESS) {
             return new ResponseJsonDTO(AjaxRequestStatus.FAIL);
         }
         return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS);
@@ -209,12 +208,12 @@ public final class AccountController {
         UserDO user = emailType ? userService.getUserInfoByEmail(username) : userService.getUserInfoByName(username);
         if (user == null) {
             throw new AccountErrorException(AccountInfo.USERNAME_OR_PASSWORD_INCORRECT)
-                        .log(username + LogWarnInfo.DATABASE_NO_EXIST_USER);
+                        .log(username + LogWarnInfo.ACCOUNT_01);
         }
         String cipherText = SecretUtil.encryptUserPassword(password);
         if (!cipherText.equals(user.getPassword())) {
             throw new AccountErrorException(AccountInfo.USERNAME_OR_PASSWORD_INCORRECT)
-                        .log(password + LogWarnInfo.USER_PASSWORD_INCORRECT);
+                        .log(password + LogWarnInfo.ACCOUNT_09);
         }
 
         //C.通过所有验证后处理
@@ -302,12 +301,10 @@ public final class AccountController {
 
         //B.用户邮箱存在性判断
         if (userService.getUserInfoByName(username) != null) {
-            throw new AccountErrorException(AccountInfo.USERNAME_REGISTERED)
-                        .log(username + LogWarnInfo.DATABASE_ALREAD_EXIST_USER);
+            throw new AccountErrorException(AccountInfo.USERNAME_REGISTERED).log(username + LogWarnInfo.ACCOUNT_02);
         }
         if (userService.getUserInfoByEmail(email) != null) {
-            throw new AccountErrorException(AccountInfo.EMAIL_REGISTERED)
-                        .log(email + LogWarnInfo.DATABASE_ALREAD_EXIST_USER);
+            throw new AccountErrorException(AccountInfo.EMAIL_REGISTERED).log(email + LogWarnInfo.ACCOUNT_02);
         }
 
         //C.注册操作
@@ -364,8 +361,7 @@ public final class AccountController {
         String authentication = CookieUtil.getCookieValue(request, AccountInfo.AUTHENTICATION);
         UserDO cookieUser = JwtTokenUtil.verifyToken(authentication, SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY);
         if (cookieUser == null || !username.equals(cookieUser.getName())) {
-            throw new AccountErrorException(AccountInfo.NO_PERMISSION)
-                        .log(LogWarnInfo.NO_PERMISSION_UPDATE_OTHER_USER);
+            throw new AccountErrorException(AccountInfo.NO_PERMISSION).log(LogWarnInfo.ACCOUNT_12);
         }
 
         //C.更新密码
@@ -419,11 +415,10 @@ public final class AccountController {
         String authentication = CookieUtil.getCookieValue(request, AccountInfo.AUTHENTICATION);
         UserDO cookieUser = JwtTokenUtil.verifyToken(authentication, SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY);
         if (cookieUser == null || !username.equals(cookieUser.getName())) {
-            throw new AccountErrorException(AccountInfo.NO_PERMISSION).log(LogWarnInfo.NO_PERMISSION_UPDATE_OTHER_USER);
+            throw new AccountErrorException(AccountInfo.NO_PERMISSION).log(LogWarnInfo.ACCOUNT_12);
         }
         if (cookieUser.getState() == AccountInfo.STATE_SUCCESS) {
-            throw new AccountErrorException(AccountInfo.ACCOUNT_ACTIVATED)
-                        .log(LogWarnInfo.EMAIL_ACTIVATED_NO_AGAIN_SEND_EMAIL);
+            throw new AccountErrorException(AccountInfo.ACCOUNT_ACTIVATED).log(LogWarnInfo.ACCOUNT_07);
         }
 
         //数据库验证
@@ -431,10 +426,10 @@ public final class AccountController {
               //重新存储 Cookie
               CookieUtil.saveCookie(response, AccountInfo.AUTHENTICATION, JwtTokenUtil.createToken(cookieUser));
               throw new AccountErrorException(AccountInfo.ACCOUNT_ACTIVATED)
-                            .log(email + LogWarnInfo.EMAIL_ACTIVATED_NO_AGAIN_SEND_EMAIL);
+                            .log(email + LogWarnInfo.ACCOUNT_07);
         }
         if (userService.getUserInfoByEmail(email) != null) {
-            throw new AccountErrorException(AccountInfo.EMAIL_REGISTERED).log(email + LogWarnInfo.EMAIL_OCCUPIED);
+            throw new AccountErrorException(AccountInfo.EMAIL_REGISTERED).log(email + LogWarnInfo.ACCOUNT_08);
         }
 
         //更改邮箱
@@ -477,12 +472,10 @@ public final class AccountController {
         //B.判断邮箱用户
         UserDO user = userService.getUserInfoByEmail(email);
         if (user == null) {
-            throw new AccountErrorException(AccountInfo.EMAIL_NO_REIGSTER)
-                        .log(email + LogWarnInfo.EMAIL_NO_REGISTER_NO_SEND_EMAIL);
+            throw new AccountErrorException(AccountInfo.EMAIL_NO_REIGSTER).log(email + LogWarnInfo.ACCOUNT_06);
         }
         if (user.getState() == AccountInfo.STATE_SUCCESS) {
-            throw new AccountErrorException(AccountInfo.ACCOUNT_ACTIVATED)
-                        .log(email + LogWarnInfo.EMAIL_ACTIVATED_NO_AGAIN_SEND_EMAIL);
+            throw new AccountErrorException(AccountInfo.ACCOUNT_ACTIVATED).log(email + LogWarnInfo.ACCOUNT_07);
         }
 
         //C.发送哟件
@@ -536,8 +529,7 @@ public final class AccountController {
         String expireTime = array[1];
 
         if (StringUtil.isExpire(expireTime)) {
-            throw new TokenExpireException(AccountInfo.LINK_INVALID)
-                        .log(token + LogWarnInfo.ACTIVATION_URL_ALREAD_EXPIRE_TIME);
+            throw new TokenExpireException(AccountInfo.LINK_INVALID).log(token + LogWarnInfo.ACCOUNT_05);
         }
 
         //C.激活用户
@@ -611,12 +603,10 @@ public final class AccountController {
         //B.检查验证码是否正确
         String sessionCaptcha = (String) request.getSession().getAttribute(AccountInfo.SESSION_CAPTCHA);
         if (StringUtil.isEmpty(sessionCaptcha)) {
-            throw new AccountErrorException(AccountInfo.NO_GENERATE_CAPTCHA)
-                        .log(LogWarnInfo.NO_GENERATE_CAPTCHA_NO_VERIFY);
+            throw new AccountErrorException(AccountInfo.NO_GENERATE_CAPTCHA).log(LogWarnInfo.ACCOUNT_10);
         }
         if (!captcha.equals(sessionCaptcha)) {
-            throw new AccountErrorException(AccountInfo.CAPTCHA_INCORRECT)
-                        .log(LogWarnInfo.CAPTCHA_INCORRECT);
+            throw new AccountErrorException(AccountInfo.CAPTCHA_INCORRECT).log(LogWarnInfo.ACCOUNT_11);
         }
 
         return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS);
@@ -659,8 +649,7 @@ public final class AccountController {
         //B.邮箱用户存在性
         UserDO user = userService.getUserInfoByEmail(email);
         if (user == null) {
-            throw new AccountErrorException(AccountInfo.EMAIL_NO_REIGSTER)
-                        .log(LogWarnInfo.EMAIL_NO_REGISTER_NO_SEND_EMAIL);
+            throw new AccountErrorException(AccountInfo.EMAIL_NO_REIGSTER).log(LogWarnInfo.ACCOUNT_06);
         }
 
         //C.更改密码

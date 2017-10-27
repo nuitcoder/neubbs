@@ -20,8 +20,13 @@ import java.util.Base64;
  * @author Suvan
  */
 public final class SecretUtil {
-    private static final Integer MDT_STRING_LENGTH = 32;
+    private static final int MDT_STRING_LENGTH = 32;
     private static final String AES_SEED = "密钥种子";
+
+    private static final int TWO = 2;
+    private static final int SIXTEEN = 16;
+    private static final int ZEROXFF = 0xFF;
+
 
     private SecretUtil() {
 
@@ -42,7 +47,7 @@ public final class SecretUtil {
             return null;
         }
 
-        StringBuilder md5Code = new StringBuilder(new BigInteger(1, secretBytes).toString(16));
+        StringBuilder md5Code = new StringBuilder(new BigInteger(1, secretBytes).toString(SIXTEEN));
         //如果生成数字未满 32位，需要前面补0
         for (int i = 1; i < MDT_STRING_LENGTH - md5Code.length(); i++) {
             md5Code.insert(0, "0");
@@ -217,7 +222,7 @@ public final class SecretUtil {
     private static String parseTo16String(byte[] buf) {
         StringBuffer sb = new StringBuffer();
         for (int i = 0; i < buf.length; i++) {
-            String hex = Integer.toHexString(buf[i] & 0xFF);
+            String hex = Integer.toHexString(buf[i] & ZEROXFF);
             if (hex.length() == 1) {
                 hex = '0' + hex;
             }
@@ -236,11 +241,11 @@ public final class SecretUtil {
         if (hexStr.length() < 1) {
             return null;
         }
-        byte[] result = new byte[hexStr.length() / 2];
-        for (int i = 0; i < hexStr.length() / 2; i++) {
-            int high = Integer.parseInt(hexStr.substring(i * 2, i * 2 + 1), 16);
-            int low = Integer.parseInt(hexStr.substring(i * 2 + 1, i * 2 + 2), 16);
-            result[i] = (byte) (high * 16 + low);
+        byte[] result = new byte[hexStr.length() / TWO];
+        for (int i = 0; i < hexStr.length() / TWO; i++) {
+            int high = Integer.parseInt(hexStr.substring(i * TWO, i * TWO + 1), SIXTEEN);
+            int low = Integer.parseInt(hexStr.substring(i * TWO + 1, i * TWO + TWO), SIXTEEN);
+            result[i] = (byte) (high * SIXTEEN + low);
         }
         return result;
     }

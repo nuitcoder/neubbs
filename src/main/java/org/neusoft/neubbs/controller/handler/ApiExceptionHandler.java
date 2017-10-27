@@ -35,7 +35,8 @@ public class ApiExceptionHandler implements HandlerExceptionResolver {
      * @return ModelAndView 视图对象
      */
     @Override
-    public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object o, Exception e) {
+    public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response,
+                                            Object o, Exception e) {
         //api 页面输出错误信息（只输出 Api 指定异常）
         if (AnnotationUtil.hasClassAnnotation(e.getClass(), ApiException.class)) {
             ResponsePrintWriterUtil.outFailJSONMessage(response, e.getMessage());

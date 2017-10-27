@@ -58,7 +58,8 @@ public final class RequestParamsCheckUtil {
 
     private static final String WARN_USERNAME_STYLE_NO_MEET_NORM = "参数 username ，格式不符合规范（A-Z a-z 0-9），请重新输入！";
     private static final String WARN_EMAIL_STYLE_NO_MEET_NORM = "参数 email，邮箱格式不符合规范（xxx@xx.xxx），请重新输入！";
-    private static final String WARN_CATEGORY_STYLE_NO_MEET_NORM = "参数 category，格式不规范（仅包含中英文，不能有数字 or 特殊字符），请重新输入！";
+    private static final String WARN_CATEGORY_STYLE_NO_MEET_NORM = "参数 category，格式不规范"
+                                                                + "（仅包含中英文，不能有数字 or 特殊字符），请重新输入！";
 
     private Map<String, String> requestParamsMap;
 
@@ -285,6 +286,52 @@ public final class RequestParamsCheckUtil {
      * @return String 错误信息
      */
     public String checkParamsNorm() {
+        StringBuilder errorInfo = new StringBuilder();
+
+        //参数空检测
+        errorInfo.append(paramsNullNorm());
+        if (errorInfo.length() > 0) {
+            return errorInfo.toString();
+        }
+
+        //参数合法性检测（长度，正则格式）
+        errorInfo.setLength(0);
+        String key = null;
+        String value = null;
+        for (Map.Entry<String, String> param: requestParamsMap.entrySet()) {
+            key = param.getKey();
+            value = param.getValue();
+
+            if (key.equals(USERNAME)) {
+                errorInfo.append(checkUsernameNorm(value));
+            } else if (key.equals(PASSWORD)) {
+                errorInfo.append(checkPasswordNorm(value));
+            } else if (key.equals(EMAIL)) {
+                errorInfo.append(checkEmailNorm(value));
+            } else if (key.equals(ID) || key.equals(USERID) || key.equals(TOPICID)) {
+                errorInfo.append(checkIdNorm(value));
+            } else if (key.equals(CATEGORY)) {
+                errorInfo.append(checkCategoryNorm(value));
+            } else if (key.equals(TITLE)) {
+                errorInfo.append(checkTitleNorm(value));
+            } else if (key.equals(CONTENT)) {
+                errorInfo.append(checkCategoryNorm(value));
+            }
+
+            if (errorInfo.length() > 0) {
+                return errorInfo.toString();
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * 【私有】参数集合空检测
+     *
+     * @return String 错误信息
+     */
+    private String paramsNullNorm() {
         //储存错误信息
         StringBuilder errorInfo = new StringBuilder();
 
@@ -324,67 +371,17 @@ public final class RequestParamsCheckUtil {
                     errorInfo.append(WARN_CONTENT_NO_NULL);
                 }
             }
-        }
 
-        //有错误信息直接输出
-        if (errorInfo.length() > 0) {
-            return errorInfo.toString();
-        }
-
-        //参数合法性检测（长度，正则格式）
-        String usernameNormErrorInfo = null;
-        String passwordNormErrorInfo = null;
-        String emailNormErrorInfo = null;
-        String idNormErrofInfo = null;
-        String categoryNormErrofrInfo = null;
-        String titleNormErrorInfo = null;
-        String contentNormErrorInfo = null;
-        key = null;
-        value = null;
-        for (Map.Entry<String, String> param: requestParamsMap.entrySet()) {
-            key = param.getKey();
-            value = param.getValue();
-
-            if (key.equals(USERNAME)) {
-                usernameNormErrorInfo = checkUsernameNorm(value);
-                if (usernameNormErrorInfo != null) {
-                    return usernameNormErrorInfo;
-                }
-            } else if (key.equals(PASSWORD)) {
-                passwordNormErrorInfo = checkPasswordNorm(value);
-                if (passwordNormErrorInfo != null) {
-                    return passwordNormErrorInfo;
-                }
-            } else if (key.equals(EMAIL)) {
-                emailNormErrorInfo = checkEmailNorm(value);
-                if (emailNormErrorInfo != null) {
-                    return emailNormErrorInfo;
-                }
-            } else if (key.equals(ID) || key.equals(USERID) || key.equals(TOPICID)) {
-                idNormErrofInfo = checkIdNorm(value);
-                if (idNormErrofInfo != null) {
-                    return idNormErrofInfo;
-                }
-            } else if (key.equals(CATEGORY)) {
-                categoryNormErrofrInfo = checkCategoryNorm(value);
-                if (categoryNormErrofrInfo != null) {
-                    return categoryNormErrofrInfo;
-                }
-            } else if (key.equals(TITLE)) {
-                titleNormErrorInfo = checkTitleNorm(value);
-                if (titleNormErrorInfo != null) {
-                    return titleNormErrorInfo;
-                }
-            } else if (key.equals(CONTENT)) {
-                contentNormErrorInfo = checkContentNorm(value);
-                if (categoryNormErrofrInfo != null) {
-                    return contentNormErrorInfo;
-                }
+            //有错误信息直接输出
+            if (errorInfo.length() > 0) {
+                return errorInfo.toString();
             }
         }
 
         return null;
     }
+
+
     /**
      * 【私有】检测用户名规范（用于链式调用）
      *

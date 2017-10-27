@@ -81,7 +81,6 @@ public final class SendEmailUtil {
 
         //构建消息
         MimeMessage message = new MimeMessage(mailSession);
-
             try {
                 //设置发件人 + 昵称
                 message.setFrom(new InternetAddress(FROM_USERNAME, FROM_PERSONNAME));

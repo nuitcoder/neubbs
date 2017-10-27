@@ -79,16 +79,4 @@ public final class CookieUtil {
 
         return null;
     }
-
-    /**
-     * 打印客户端所有 Cookie
-     *
-     * @param request http请求
-     */
-    public static void printCookie(HttpServletRequest request) {
-        int count = 1;
-        for (Cookie cookie: request.getCookies()) {
-            System.out.println("\n" + (count++) + " : " + cookie.getName() + "---" + cookie.getValue());
-        }
-    }
 }
