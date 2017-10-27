@@ -8,19 +8,23 @@ import java.util.regex.Pattern;
  *
  * @author Suvan
  */
-public class StringUtil {
+public final class StringUtil {
+    private StringUtil() {
+
+    }
+
     /**
      * 空判断（true - 为空）
      *
      * @param str 输入字符串
      * @return Boolean 检测结果
      */
-    public static Boolean isEmpty(String str){
+    public static Boolean isEmpty(String str) {
         if (str == null || str.length() == 0) {
             return true;
-        } else {
-            return false;
         }
+
+        return false;
     }
 
     /**
@@ -31,13 +35,13 @@ public class StringUtil {
      * @param max 最大值
      * @return Boolean 检测结果
      */
-    public static Boolean isScope(String str, int min, int max){
+    public static Boolean isScope(String str, int min, int max) {
         if (min <= str.length() && str.length() <= max) {
             //符合条件
             return true;
-        } else {
-            return false;
         }
+
+        return false;
     }
 
     /**
@@ -47,7 +51,7 @@ public class StringUtil {
      * @param regexp 正则表达式
      * @return Boolean 检测结果
      */
-    public static Boolean isPattern(String str, String regexp){
+    public static Boolean isPattern(String str, String regexp) {
         Pattern pattern = Pattern.compile(regexp);
         Matcher matcher = pattern.matcher(str);
 
@@ -60,15 +64,15 @@ public class StringUtil {
      * @param expireTime 过期指定时间（时间戳）
      * @return Boolean 检测结果
      */
-    public static Boolean isExpire(String expireTime){
+    public static Boolean isExpire(String expireTime) {
         long now = System.currentTimeMillis();
 
         if (Long.parseLong(expireTime) > now) {
             return false;
-        } else {
-            //过期
-            return true;
         }
+
+        //过期
+        return true;
     }
 
     /**
@@ -77,7 +81,7 @@ public class StringUtil {
      * @param url 输入字符串
      * @return String 生成的HTML字符串
      */
-    public static String createEmailActivationHtmlString(String url){
+    public static String createEmailActivationHtmlString(String url) {
         StringBuffer sb = new StringBuffer();
             sb.append("<html><head></head><body><h1>Neubbs 帐号活邮件，点击激活帐号</h1><br>");
             sb.append("<a href=\"" + url + "\">");

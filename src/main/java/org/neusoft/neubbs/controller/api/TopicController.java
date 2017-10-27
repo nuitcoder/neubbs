@@ -33,22 +33,29 @@ import java.util.Map;
  */
 @Controller
 @RequestMapping("/api/topic")
-public class TopicInfoController {
+public class TopicController {
 
+    private final ITopicService topicService;
+
+    /**
+     * Constructor
+     */
     @Autowired
-    private ITopicService topicService;
+    public TopicController(ITopicService topicService) {
+        this.topicService = topicService;
+    }
 
     /**
      * 1.发表话题
      *
-     * @param requestBodyParamsMap rquest请求的body参数
+     * @param requestBodyParamsMap reuest-body内JSON数据
      * @return ResponseJsonDTO 传输对象，api 显示
-     * @throws Exception
+     * @throws Exception 所有异常
      */
     @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseJsonDTO saveTopic(@RequestBody Map<String, Object> requestBodyParamsMap) throws Exception{
+    public ResponseJsonDTO saveTopic(@RequestBody Map<String, Object> requestBodyParamsMap) throws Exception {
         /*
          * 发表流程
          *      1. requestBody 获取参数
@@ -56,13 +63,14 @@ public class TopicInfoController {
          *      3. 持久化到数据库
           *     4. 返回成功提示信息
          */
-        Integer userId = (Integer)requestBodyParamsMap.get(TopicInfo.USERID);
-        String category = (String)requestBodyParamsMap.get(TopicInfo.CATEGORY);
-        String title = (String)requestBodyParamsMap.get(TopicInfo.TITLE);
-        String content = (String)requestBodyParamsMap.get(TopicInfo.CONTENT);
+        Integer userId = (Integer) requestBodyParamsMap.get(TopicInfo.USERID);
+        String category = (String) requestBodyParamsMap.get(TopicInfo.CATEGORY);
+        String title = (String) requestBodyParamsMap.get(TopicInfo.TITLE);
+        String content = (String) requestBodyParamsMap.get(TopicInfo.CONTENT);
 
         String errorInfo = RequestParamsCheckUtil
-                                .putParamKeys(new String[]{TopicInfo.USERID, TopicInfo.CATEGORY, TopicInfo.TITLE, TopicInfo.CONTENT})
+                                .putParamKeys(new String[]{TopicInfo.USERID, TopicInfo.CATEGORY,
+                                                                TopicInfo.TITLE, TopicInfo.CONTENT})
                                 .putParamValues(new String[]{String.valueOf(userId), category, title, content})
                                 .checkParamsNorm();
         if (errorInfo != null) {
@@ -77,17 +85,17 @@ public class TopicInfoController {
     /**
      * 2.发表回复
      *
-     * @param requetBodyParamsMap request请求body参数
-     * @return ResponseJsonDTO 传输对象，api 显示
-     * @throws Exception
+     * @param requetBodyParamsMap request-body内JSON数据
+     * @return ResponseJsonDTO 响应JSON传输对象
+     * @throws Exception 所有异常
      */
     @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/save-reply", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseJsonDTO saveReply(@RequestBody Map<String, Object> requetBodyParamsMap) throws Exception{
-        Integer userId = (Integer)requetBodyParamsMap.get(TopicInfo.USERID);
-        Integer topicId = (Integer)requetBodyParamsMap.get(TopicInfo.TOPICID);
-        String content = (String)requetBodyParamsMap.get(TopicInfo.CONTENT);
+    public ResponseJsonDTO saveReply(@RequestBody Map<String, Object> requetBodyParamsMap) throws Exception {
+        Integer userId = (Integer) requetBodyParamsMap.get(TopicInfo.USERID);
+        Integer topicId = (Integer) requetBodyParamsMap.get(TopicInfo.TOPICID);
+        String content = (String) requetBodyParamsMap.get(TopicInfo.CONTENT);
 
         String errorInfo = RequestParamsCheckUtil
                                 .putParamKeys(new String[]{TopicInfo.USERID, TopicInfo.TOPICID, TopicInfo.CONTENT})
@@ -105,15 +113,15 @@ public class TopicInfoController {
     /**
      * 3.删除话题
      *
-     * @param requestBodyParamsMap request请求body参数
-     * @return ResponseJsonDTO 传输对象，api 显示
-     * @throws Exception
+     * @param requestBodyParamsMap request-body内JSON数据
+     * @return ResponseJsonDTO 响应Json传输对象
+     * @throws Exception 所有异常
      */
     @LoginAuthorization @AccountActivation @AdminRank
     @RequestMapping(value = "/remove", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseJsonDTO removeTopic(@RequestBody Map<String, Object> requestBodyParamsMap) throws Exception{
-        Integer topicId = (Integer)requestBodyParamsMap.get(TopicInfo.TOPICID);
+    public ResponseJsonDTO removeTopic(@RequestBody Map<String, Object> requestBodyParamsMap) throws Exception {
+        Integer topicId = (Integer) requestBodyParamsMap.get(TopicInfo.TOPICID);
 
         String errorInfo = RequestParamsCheckUtil.checkId(String.valueOf(topicId));
         if (errorInfo != null) {
@@ -132,15 +140,15 @@ public class TopicInfoController {
     /**
      * 4.删除回复
      *
-     * @param requetsBodyParamsMap request请求body参数
-     * @return ResponseJsonDTO 传输对象，api 显示
-     * @throws Exception
+     * @param requetsBodyParamsMap request-body内JSON数据
+     * @return ResponseJsonDTO 响应JSON传输对象
+     * @throws Exception 所有异常
      */
     @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/remove-reply", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseJsonDTO removeReply(@RequestBody Map<String, Object> requetsBodyParamsMap) throws Exception{
-        Integer replyId = (Integer)requetsBodyParamsMap.get(TopicInfo.REPLYID);
+    public ResponseJsonDTO removeReply(@RequestBody Map<String, Object> requetsBodyParamsMap) throws Exception {
+        Integer replyId = (Integer) requetsBodyParamsMap.get(TopicInfo.REPLYID);
 
         String errorInfo = RequestParamsCheckUtil.checkId(String.valueOf(replyId));
         if (errorInfo != null) {

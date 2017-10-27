@@ -1,5 +1,4 @@
 const initialState = {
-  number: 1,
 }
 
 export default (state = initialState, action) => {

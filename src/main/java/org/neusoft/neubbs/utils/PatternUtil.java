@@ -8,15 +8,19 @@ import java.util.regex.Pattern;
  *
  * @author Suvan
  */
-public class PatternUtil {
+public final class PatternUtil {
 
      private static final String EXIST_NU_PURE_NUMBER = "[^0-9]";
      private static final String MATCH_USERNAME = "^[A-Za-z0-9]{3,20}$";
-     private static final String MATCH_EMAIL =  "^([a-z0-9A-Z]+[-|\\.]?)+[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-zA-Z]{2,}$";  ;
+     private static final String MATCH_EMAIL = "^([a-z0-9A-Z]+[-|\\.]?)+[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-zA-Z]{2,}$";
      private static final String MATCH_IMAGE_SUFFIX =  ".+(.JPEG|.jpeg|.JPG|.jpg|.GIF|.gif|.BMP|.bmp|.PNG|.png)$";
      private static final String COVER_IMAGE_TYPE = ".+/(JPG|jpg|PNG|png|JPEG|jpeg)";
      private static final String MATCH_CHINESE = "[\\u4e00-\\u9fa5]";
      private static final String MATCH_CHINESE_AND_ENGLISH = "^[\\u4e00-\\u9fa5a-zA-Z]+$";
+
+    private PatternUtil() {
+
+    }
 
     /**
      * 是否为纯数字检测（检测是否存在非 0 ~ 9 字符）
@@ -41,7 +45,7 @@ public class PatternUtil {
      * @param username 用户名字符串
      * @return Boolean 匹配结果
      */
-    public static Boolean matchUsername(String username){
+    public static Boolean matchUsername(String username) {
         Pattern pattern = Pattern.compile(MATCH_USERNAME);
         Matcher matcher = pattern.matcher(username);
 
@@ -55,7 +59,7 @@ public class PatternUtil {
      * @param email 邮箱字符串
      * @return Boolean 匹配结果
      */
-    public static Boolean matchEmail(String email){
+    public static Boolean matchEmail(String email) {
         Pattern pattern = Pattern.compile(MATCH_EMAIL);
         Matcher matcher = pattern.matcher(email);
 
@@ -69,7 +73,7 @@ public class PatternUtil {
      * @param imageType 图片类型字符串
      * @return Boolean 匹配结果
      */
-    public static Boolean matchUserImage(String imageType){
+    public static Boolean matchUserImage(String imageType) {
         Pattern pattern = Pattern.compile(COVER_IMAGE_TYPE);
         Matcher matcher = pattern.matcher(imageType);
 
@@ -82,7 +86,7 @@ public class PatternUtil {
      * @param category 话题分类
      * @return Boolean 匹配结果
      */
-    public static Boolean matchTopicCategory(String category){
+    public static Boolean matchTopicCategory(String category) {
        Pattern pattern = Pattern.compile(MATCH_CHINESE_AND_ENGLISH);
        Matcher matcher = pattern.matcher(category);
 

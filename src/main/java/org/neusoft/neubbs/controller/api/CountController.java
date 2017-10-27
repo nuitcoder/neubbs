@@ -25,13 +25,13 @@ public class CountController {
      * 1.在线访问人数
      *
      * @param request http请求
-     * @return ResponseJsonDTO 传输对象，api 显示结果
-     * @throws Exception
+     * @return ResponseJsonDTO 响应JSON传输对象
+     * @throws Exception 所有异常
      */
     @LoginAuthorization
     @RequestMapping(value = "/visit")
     @ResponseBody
-    public ResponseJsonDTO onlineVisitUser(HttpServletRequest request) throws Exception{
+    public ResponseJsonDTO onlineVisitUser(HttpServletRequest request) throws Exception {
         Integer onlineVisitUser = (Integer) request.getServletContext().getAttribute(CountInfo.ONLINE_VISIT_USER);
 
         return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, CountInfo.ONLINE_VISIT_USER, onlineVisitUser);
@@ -41,14 +41,14 @@ public class CountController {
      * 2.在线登录人数
      *
      * @param request http请求
-     * @return ResponseJsonDTO 传输对象， api 显示结果
-     * @throws Exception
+     * @return ResponseJsonDTO 响应JSON传输对象
+     * @throws Exception 所有异常
      */
     @LoginAuthorization
     @RequestMapping(value = "/login")
     @ResponseBody
-    public ResponseJsonDTO onlineLoginUser(HttpServletRequest request) throws Exception{
-        Integer onlineLoginUser = (Integer)request.getServletContext().getAttribute(CountInfo.ONLINE_LOGIN_USER);
+    public ResponseJsonDTO onlineLoginUser(HttpServletRequest request) throws Exception {
+        Integer onlineLoginUser = (Integer) request.getServletContext().getAttribute(CountInfo.ONLINE_LOGIN_USER);
 
         return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, CountInfo.ONLINE_LOGIN_USER, onlineLoginUser);
     }

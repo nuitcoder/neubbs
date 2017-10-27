@@ -8,25 +8,21 @@ import org.neusoft.neubbs.controller.annotation.ApiException;
  * @author Suvan
  */
 @ApiException
-public class TopicErrorException extends Exception implements IExceptionLog{
+public class TopicErrorException extends Exception implements IExceptionLog {
 
     private String logMessage;
 
     /**
      * Constructor
      */
-    public TopicErrorException(String message){
+    public TopicErrorException(String message) {
         super(message);
-    }
-    public TopicErrorException(String message, String logMessage){
-        super(message);
-        this.logMessage = logMessage;
     }
 
     /**
      * Getter
      */
-    public String getLogMessage(){
+    public String getLogMessage() {
         return logMessage;
     }
 

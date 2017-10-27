@@ -18,7 +18,7 @@ import java.util.Map;
  *
  * @author Suvan
  */
-public class JwtTokenUtil {
+public final class JwtTokenUtil {
 
     private static final String JWT = "JWT";
     private static final String HS256 = "HS256";
@@ -31,30 +31,38 @@ public class JwtTokenUtil {
     private static final String SET_SUBJECT =  "www.neubbs.com";
     private static final String SET_AUDIENCE = "count@neubbs.com";
 
+    private JwtTokenUtil() {
+
+    }
+
     /**
      * Claim参数（保存用户信息）
      */
     private static final  String CLAIM_NAME = "name";
     private static final String CLAIM_ID = "id";
-    private static final String CLAIN_RANK = "rank";
-    private static final String CLAIN_EMAIL = "email";
-    private static final String CLAIN_STATE = "state";
+    private static final String CLAIM_RANK = "rank";
+    private static final String CLAIM_STATE = "state";
+
+    /**
+     * 过期时间
+     */
+    private static final long EXPIRE_TIME_ONE_DAY = 86400000L;
 
     /**
      * JWT 创建 token（传入 UserDO 对象）
      *
      * @param user 用户对象
      * @return String 加密后密文
-     * @throws Exception
+     * @throws Exception 所有异常
      */
-    public static String createToken(UserDO user) throws Exception{
-        Map<String,Object> headerMap = new HashMap<String, Object>(2);
+    public static String createToken(UserDO user) throws Exception {
+        Map<String, Object> headerMap = new HashMap<String, Object>();
             headerMap.put(HEADER_ALG, HS256);
             headerMap.put(HEADER_TYP, JWT);
 
         //签发时间,与过期时间（过期无法解密）
         long iat = System.currentTimeMillis();
-        long ext = iat + SecretInfo.EXPIRETIME_SERVEN_DAY;
+        long ext = iat + EXPIRE_TIME_ONE_DAY;
         //long ext = iat + 1;//测试过期token是否无效
 
         //设置Playload,且使用HS256加密,生成token
@@ -67,9 +75,9 @@ public class JwtTokenUtil {
                                           //.withExpiresAt(new Date(ext))   //永久有效，不需要过期时间
                                                 .withClaim(CLAIM_ID, user.getId())
                                                 .withClaim(CLAIM_NAME, user.getName())
-                                                .withClaim(CLAIN_RANK, user.getRank())
-                                                .withClaim(CLAIN_STATE, user.getState())
-                                                    .sign(Algorithm.HMAC256(SecretInfo.TOKEN_SECRET_KEY));
+                                                .withClaim(CLAIM_RANK, user.getRank())
+                                                .withClaim(CLAIM_STATE, user.getState())
+                                                    .sign(Algorithm.HMAC256(SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY));
 
         return token;
     }
@@ -82,17 +90,17 @@ public class JwtTokenUtil {
      * @return UserDO 用户对象
      * @throws Exception
      */
-    public static UserDO verifyToken(String token, String secretKey){
+    public static UserDO verifyToken(String token, String secretKey) {
         JWTVerifier verifier = null;
         DecodedJWT decodedJWT = null;
-        try{
+        try {
             //解密HS256算法
              verifier = com.auth0.jwt.JWT.require(Algorithm.HMAC256(secretKey)).build();
 
             //解码Base5
             decodedJWT = verifier.verify(token);
 
-        }catch (UnsupportedEncodingException ue){
+        } catch (UnsupportedEncodingException ue) {
             return null;
         } catch (TokenExpiredException tee) {      //token过期
             return null;
@@ -101,8 +109,8 @@ public class JwtTokenUtil {
         //获取 Playload 的 username
         Claim idClaim = decodedJWT.getClaim(CLAIM_ID);
         Claim nameClaim = decodedJWT.getClaim(CLAIM_NAME);
-        Claim rankClaim = decodedJWT.getClaim(CLAIN_RANK);
-        Claim stateClaim = decodedJWT.getClaim(CLAIN_STATE);
+        Claim rankClaim = decodedJWT.getClaim(CLAIM_RANK);
+        Claim stateClaim = decodedJWT.getClaim(CLAIM_STATE);
 
         UserDO user = new UserDO();
             user.setId(idClaim.asInt());

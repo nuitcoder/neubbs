@@ -5,29 +5,31 @@ import { connect } from 'react-redux'
 
 import FormWrapper from '../components/FormWrapper'
 import RegisterForm from '../components/RegisterForm'
+<<<<<<< HEAD
 import ActivateModal from '../components/ActivateModal'
 
 import actions from '../actions'
 import auth from '../auth'
 import api from '../api'
+=======
+import actions from '../actions'
+>>>>>>> fb40a7c27c30c5d94b1ea5f4a2e76179f18b45b3
 
 class Register extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      showModal: false,
       alertMessage: '',
     }
 
-    this.handleHideModal = this.handleHideModal.bind(this)
     this.handleAlertDismiss = this.handleAlertDismiss.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
   }
 
-  handleHideModal() {
-    this.setState({
-      showModal: false,
-    })
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.error !== this.props.error) {
+      this.setState({ alertMessage: nextProps.error })
+    }
   }
 
   handleAlertDismiss() {
@@ -37,6 +39,7 @@ class Register extends Component {
   }
 
   handleSubmit({ username, email, password }) {
+<<<<<<< HEAD
     api.account.register({
       username,
       email,
@@ -65,6 +68,9 @@ class Register extends Component {
         })
       }
     })
+=======
+    this.props.actions.register({ username, email, password })
+>>>>>>> fb40a7c27c30c5d94b1ea5f4a2e76179f18b45b3
   }
 
   render() {
@@ -77,22 +83,30 @@ class Register extends Component {
             {alertMessage}
           </Alert>}
         <RegisterForm onSubmit={this.handleSubmit} />
-        <ActivateModal show={this.state.showModal} onHide={this.handleHideModal} />
       </FormWrapper>
     )
   }
 }
 
 const mapStateToProps = (state) => {
+<<<<<<< HEAD
   const { account } = state
   return {
     account,
+=======
+  return {
+    ...state.account,
+>>>>>>> fb40a7c27c30c5d94b1ea5f4a2e76179f18b45b3
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
+<<<<<<< HEAD
     actions: bindActionCreators(actions, dispatch)
+=======
+    actions: bindActionCreators(actions, dispatch),
+>>>>>>> fb40a7c27c30c5d94b1ea5f4a2e76179f18b45b3
   }
 }
 

@@ -2,7 +2,11 @@ package org.neusoft.neubbs.utils;
 
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
-import javax.mail.*;
+import javax.mail.Authenticator;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.io.UnsupportedEncodingException;
@@ -13,31 +17,35 @@ import java.util.Properties;
  *
  * @author Suvan
  */
-public class SendEmailUtil {
+public final class SendEmailUtil {
     /**
      * 发送邮件的账户
      */
-    private final static String FROM_USERNAME = "suvan@liushuwei.cn";
-    private final static String FROM_AUTHORIZATIONCODE = "23h235i2vhKwUgbg";
-    private final static String FROM_PERSONNAME = "Neubbs 管理员";
+    private static final String FROM_USERNAME = "suvan@liushuwei.cn";
+    private static final String FROM_AUTHORIZATIONCODE = "23h235i2vhKwUgbg";
+    private static final String FROM_PERSONNAME = "Neubbs 管理员";
 
     /**
      * 邮件格式
      */
-    private final static String FROM_SUBJECT_ENCODING = "UTF-8";
-    private final static String FROM_CONTENT_TYPE = "text/html;charset=UTF-8";
+    private static final String FROM_SUBJECT_ENCODING = "UTF-8";
+    private static final String FROM_CONTENT_TYPE = "text/html;charset=UTF-8";
 
     /**
      * 腾讯企业邮箱
      */
-    private final static String TO_HOST = "smtp.exmail.qq.com";
-    private final static String TO_SMTP = "smtp";
-    private final static String TO_AUTH = "mail.smtp.auth";
-    private final static String TO_AUTH_TRUE = "true";
-    private final static String TO_MAIL_SMTP_SOCKETFACTORY_CLASS = "mail.smtp.socketFactory.class";
-    private final static String TO_JAVAX_NET_SSL_SSLSOCKETFACTORY = "javax.net.ssl.SSLSocketFactory";
-    private final static String TO_MAIL_SMTP_SOCKETFACTORY_PORT = "mail.smtp.socketFactory.port";
-    private final static String TO_SMTP_SSL_PROT = "465";
+    private static final String TO_HOST = "smtp.exmail.qq.com";
+    private static final String TO_SMTP = "smtp";
+    private static final String TO_AUTH = "mail.smtp.auth";
+    private static final String TO_AUTH_TRUE = "true";
+    private static final String TO_MAIL_SMTP_SOCKETFACTORY_CLASS = "mail.smtp.socketFactory.class";
+    private static final String TO_JAVAX_NET_SSL_SSLSOCKETFACTORY = "javax.net.ssl.SSLSocketFactory";
+    private static final String TO_MAIL_SMTP_SOCKETFACTORY_PORT = "mail.smtp.socketFactory.port";
+    private static final String TO_SMTP_SSL_PROT = "465";
+
+    private SendEmailUtil() {
+
+    }
 
     /**
      * 发送邮件
@@ -46,7 +54,7 @@ public class SendEmailUtil {
      * @param subject 发送主题
      * @param content 发送内容
      */
-   public static void  sendEmail(String email, String subject, String content){
+   public static void  sendEmail(String email, String subject, String content) {
         //构造邮件请求
         JavaMailSenderImpl sender = new JavaMailSenderImpl();
             sender.setUsername(FROM_USERNAME);
@@ -66,7 +74,7 @@ public class SendEmailUtil {
        //构建连接
         Session mailSession = Session.getDefaultInstance(properties, new Authenticator() {
             @Override
-            protected PasswordAuthentication getPasswordAuthentication() {//授权信息
+            protected PasswordAuthentication getPasswordAuthentication() {
                 return new PasswordAuthentication(FROM_USERNAME, FROM_AUTHORIZATIONCODE);
             }
         });
@@ -74,7 +82,7 @@ public class SendEmailUtil {
         //构建消息
         MimeMessage message = new MimeMessage(mailSession);
 
-            try{
+            try {
                 //设置发件人 + 昵称
                 message.setFrom(new InternetAddress(FROM_USERNAME, FROM_PERSONNAME));
 
@@ -88,9 +96,9 @@ public class SendEmailUtil {
                 //保存更改
                 message.saveChanges();
 
-            } catch (UnsupportedEncodingException uee){
+            } catch (UnsupportedEncodingException uee) {
                 uee.printStackTrace();
-            } catch (MessagingException me){
+            } catch (MessagingException me) {
                 me.printStackTrace();
             }
 

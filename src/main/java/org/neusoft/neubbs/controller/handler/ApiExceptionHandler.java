@@ -2,7 +2,12 @@ package org.neusoft.neubbs.controller.handler;
 
 import org.apache.log4j.Logger;
 import org.neusoft.neubbs.controller.annotation.ApiException;
-import org.neusoft.neubbs.controller.exception.*;
+import org.neusoft.neubbs.controller.exception.AccountErrorException;
+import org.neusoft.neubbs.controller.exception.DatabaseOperationFailException;
+import org.neusoft.neubbs.controller.exception.FileUploadException;
+import org.neusoft.neubbs.controller.exception.ParamsErrorException;
+import org.neusoft.neubbs.controller.exception.TokenExpireException;
+import org.neusoft.neubbs.controller.exception.TopicErrorException;
 import org.neusoft.neubbs.utils.AnnotationUtil;
 import org.neusoft.neubbs.utils.ResponsePrintWriterUtil;
 import org.springframework.web.servlet.HandlerExceptionResolver;
@@ -16,9 +21,9 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author suvan
  */
-public class ApiExceptionHandler implements HandlerExceptionResolver{
+public class ApiExceptionHandler implements HandlerExceptionResolver {
 
-    private static final Logger logger = Logger.getLogger(ApiExceptionHandler.class);
+    private static final Logger LOGGER = Logger.getLogger(ApiExceptionHandler.class);
 
     /**
      * 解析异常
@@ -36,19 +41,22 @@ public class ApiExceptionHandler implements HandlerExceptionResolver{
             ResponsePrintWriterUtil.outFailJSONMessage(response, e.getMessage());
         }
 
-        //根据不同异常打印日志
-        if(e instanceof ParamsErrorException){
-            logger.warn(((ParamsErrorException) e).getLogMessage());
+        //匹配自定义异常，打印日志
+        if (e instanceof ParamsErrorException) {
+            LOGGER.warn(((ParamsErrorException) e).getLogMessage());
         } else if (e instanceof AccountErrorException) {
-            logger.warn(((AccountErrorException) e).getLogMessage());
+            LOGGER.warn(((AccountErrorException) e).getLogMessage());
         } else if (e instanceof TokenExpireException) {
-            logger.warn(((TokenExpireException) e).getLogMessage());
+            LOGGER.warn(((TokenExpireException) e).getLogMessage());
         } else if (e instanceof FileUploadException) {
-            logger.warn(((FileUploadException) e).getLogMessage());
+            LOGGER.warn(((FileUploadException) e).getLogMessage());
         } else if (e instanceof TopicErrorException) {
-            logger.warn(((TopicErrorException) e).getLogMessage());
+            LOGGER.warn(((TopicErrorException) e).getLogMessage());
+        } else if (e instanceof DatabaseOperationFailException) {
+            LOGGER.warn(((DatabaseOperationFailException) e).getLogMessage());
         }
 
+        //未处理异常，页面报错
         return null;
     }
 }

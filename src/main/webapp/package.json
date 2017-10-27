@@ -24,13 +24,19 @@
     "react-router-redux": "^4.0.8",
     "redux": "^3.7.2",
     "redux-actions": "^2.2.1",
+<<<<<<< HEAD
+=======
+    "redux-devtools-extension": "^2.13.2",
+>>>>>>> fb40a7c27c30c5d94b1ea5f4a2e76179f18b45b3
     "redux-form": "^7.1.1",
+    "redux-saga": "^0.16.0",
     "styled-components": "^2.1.2",
     "validatorjs": "^3.13.5"
   },
   "devDependencies": {
     "babel-core": "^6.14.0",
     "babel-loader": "^6.2.5",
+    "babel-polyfill": "^6.26.0",
     "babel-preset-env": "^1.6.0",
     "babel-preset-react": "^6.16.0",
     "babel-preset-stage-1": "^6.24.1",

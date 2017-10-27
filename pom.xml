@@ -231,7 +231,7 @@
       <version>1.1.41</version>
     </dependency>
 
-    <!-- log EE  -->
+    <!-- Java EE  -->
     <dependency>
       <groupId>javax</groupId>
       <artifactId>javaee-api</artifactId><!-- ja -->

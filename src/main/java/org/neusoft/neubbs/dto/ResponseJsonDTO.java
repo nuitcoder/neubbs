@@ -12,7 +12,7 @@ import java.util.Map;
  * @author Suvan
  */
 public class ResponseJsonDTO {
-    private Boolean success;
+    private boolean success;
     private String message;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -20,50 +20,50 @@ public class ResponseJsonDTO {
 
     /**
      * Constructor
-     */
-    public ResponseJsonDTO(Boolean success){  //请求成功，则返回 true，message = null
+ */
+    public ResponseJsonDTO(Boolean success) {  //请求成功，则返回 true，message = null
         this.success = success;
     }
-    public ResponseJsonDTO(Boolean success, String message){ //失败，发回提示信息
+    public ResponseJsonDTO(Boolean success, String message) { //失败，发回提示信息
         this.success = success;
         this.message = message;
     }
-    public ResponseJsonDTO(Boolean success, Map<String, Object> map){ //成功获取到数据不需要提示信息
+    public ResponseJsonDTO(Boolean success, Map<String, Object> map) { //成功获取到数据不需要提示信息
         this.success = success;
         this.model = map;
 
         filterUserInfo(map);
     }
-    public ResponseJsonDTO(Boolean success, String key, Object obj){
+    public ResponseJsonDTO(Boolean success, String key, Object obj) {
         this.success = success;
 
-        this.model = new HashMap<String, Object>();
+        this.model = new HashMap<>();
         this.model.put(key, obj);
     }
 
     /**
      *Getter
      */
-    public Boolean getSuccess(){
+    public Boolean getSuccess() {
         return  success;
     }
-    public String getMessage(){
+    public String getMessage() {
         return message;
     }
-    public Map<String, Object> getModel(){
+    public Map<String, Object> getModel() {
         return model;
     }
 
     /**
      * Setter
      */
-    public void setSuccess(Boolean success){
+    public void setSuccess(boolean success) {
         this.success = success;
     }
-    public void setMessage(String message){
+    public void setMessage(String message) {
         this.message = message;
     }
-    public void setModel(Map<String, Object> model){
+    public void setModel(Map<String, Object> model) {
         this.model = model;
     }
 
@@ -72,21 +72,20 @@ public class ResponseJsonDTO {
      *
      * @param map UserDO 对象的 map
      */
-    public void filterUserInfo(Map map){
+    private void filterUserInfo(Map map) {
         map.remove("id");
         map.remove("password");
         map.remove("image");
         map.remove("rank");
-        map.remove("state");
         map.remove("createtime");
     }
 
     @Override
     public String toString() {
-        return "ResponseJsonDTO{" +
-                "success=" + success +
-                ", message='" + message + '\'' +
-                ", model=" + model +
-                '}';
+        return "ResponseJsonDTO{"
+                + "success=" + success
+                + ", message='" + message + '\''
+                + ", model=" + model
+                + '}';
     }
 }

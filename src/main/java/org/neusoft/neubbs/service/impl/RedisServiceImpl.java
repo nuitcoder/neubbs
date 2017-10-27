@@ -14,41 +14,41 @@ import java.util.concurrent.TimeUnit;
  * @author Suvan
  */
 @Service("redisServiceImpl")
-public class RedisServiceImpl implements IRedisService{
+public class RedisServiceImpl implements IRedisService {
 
     @Autowired
     private RedisTemplate redisTemplate;
 
     @Override
-    public void save(String key, String value){
+    public void save(String key, String value) {
         ValueOperations<String, String> vo = redisTemplate.opsForValue();
         vo.set(key, value);
     }
 
     @Override
-    public void save(String key, String value, long time){
-        redisTemplate.opsForValue().set(key, value , time, TimeUnit.MILLISECONDS);
+    public void save(String key, String value, long time) {
+        redisTemplate.opsForValue().set(key, value, time, TimeUnit.MILLISECONDS);
     }
 
     @Override
-    public void remove(String key){
+    public void remove(String key) {
         redisTemplate.opsForValue().getOperations().delete(key);
     }
 
     @Override
-    public String getValue(String key){
+    public String getValue(String key) {
        ValueOperations<String, String> vo = redisTemplate.opsForValue();
 
        return vo.get(key);
     }
 
     @Override
-    public Long getExpireTime(String key){
-        return redisTemplate.getExpire(key,TimeUnit.MILLISECONDS);
+    public Long getExpireTime(String key) {
+        return redisTemplate.getExpire(key, TimeUnit.MILLISECONDS);
     }
 
     @Override
-    public void update(String key, String value){
+    public void update(String key, String value) {
         redisTemplate.opsForValue().set(key, value);
     }
 }

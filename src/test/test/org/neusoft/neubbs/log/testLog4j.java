@@ -13,7 +13,7 @@ import org.junit.runners.JUnit4;
 public class testLog4j {
 
     //public static Logger logger = Logger.getRootLogger();
-    public static Logger logger = Logger.getLogger(testLog4j.class);
+    private Logger LOGGER = Logger.getLogger(testLog4j.class);
 
     /**
      * 测试打印信息
@@ -23,11 +23,11 @@ public class testLog4j {
         //BasicConfigurator.configure(); //进行默认配置
         //PropertyConfigurator.configure("");//可设置配置文件路径，默认是找默认会在 CLASSPATH 寻找 Log4j.properties 文件
 
-        logger.setLevel(Level.DEBUG); //日志级别
-        logger.fatal("致命信息");
-        logger.error("错误信息");
-        logger.warn("警告信息");
-        logger.info("输出信息");
-        logger.debug("调试信息");
+        LOGGER.setLevel(Level.DEBUG); //日志级别
+        LOGGER.fatal("致命信息");
+        LOGGER.error("错误信息");
+        LOGGER.warn("警告信息");
+        LOGGER.info("输出信息");
+        LOGGER.debug("调试信息");
     }
 }

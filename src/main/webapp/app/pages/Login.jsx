@@ -1,9 +1,11 @@
 import React, { Component } from 'react'
 import { Alert } from 'react-bootstrap'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
 
 import FormWrapper from '../components/FormWrapper'
 import LoginForm from '../components/LoginForm'
-import auth from '../auth'
+import actions from '../actions'
 
 class Login extends Component {
   constructor(props) {
@@ -16,6 +18,12 @@ class Login extends Component {
     this.handleSubmit = this.handleSubmit.bind(this)
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.error !== this.props.error) {
+      this.setState({ alertMessage: nextProps.error })
+    }
+  }
+
   handleAlertDismiss() {
     this.setState({
       alertMessage: '',
@@ -23,17 +31,7 @@ class Login extends Component {
   }
 
   handleSubmit({ username, password }) {
-    auth.login({ username, password })
-      .then((res) => {
-        const { data } = res
-        if (data.success) {
-          this.props.router.push('/')
-        } else {
-          this.setState({
-            alertMessage: data.message,
-          })
-        }
-      })
+    this.props.actions.login({ username, password })
   }
 
   render() {
@@ -51,4 +49,19 @@ class Login extends Component {
   }
 }
 
-export default Login
+const mapStateToProps = (state) => {
+  return {
+    ...state.account,
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    actions: bindActionCreators(actions, dispatch),
+  }
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(Login)

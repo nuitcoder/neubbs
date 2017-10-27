@@ -1,6 +1,11 @@
 package org.neusoft.neubbs.utils;
 
-import javax.crypto.*;
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.KeyGenerator;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.InvalidKeyException;
@@ -14,11 +19,13 @@ import java.util.Base64;
  *
  * @author Suvan
  */
-public class SecretUtil {
-
+public final class SecretUtil {
     private static final Integer MDT_STRING_LENGTH = 32;
-
     private static final String AES_SEED = "密钥种子";
+
+    private SecretUtil() {
+
+    }
 
     /**
      * 加密 MD5（消息摘要算法）
@@ -26,20 +33,20 @@ public class SecretUtil {
      * @param plainText 明文（待加密的字符串）
      * @return String 密文
      */
-    public static String encryptMD5(String plainText){
-        byte [] secretBytes = null;
-        try{
+    public static String encryptMD5(String plainText) {
+        byte[] secretBytes = null;
+        try {
             secretBytes = MessageDigest.getInstance("md5").digest(plainText.getBytes());
-        }catch (NoSuchAlgorithmException noe){
+        } catch (NoSuchAlgorithmException noe) {
             //找不到指定算法
             return null;
-        }catch (Exception e){
+        } catch (Exception e) {
             return null;
         }
 
         StringBuilder md5Code = new StringBuilder(new BigInteger(1, secretBytes).toString(16));
         //如果生成数字未满 32位，需要前面补0
-        for(int i = 1; i < MDT_STRING_LENGTH - md5Code.length(); i++){
+        for (int i = 1; i < MDT_STRING_LENGTH - md5Code.length(); i++) {
             md5Code.insert(0, "0");
         }
 
@@ -52,7 +59,7 @@ public class SecretUtil {
      * @param password 用户密码
      * @return String 密文
      */
-    public static String encryptUserPassword(String password){
+    public static String encryptUserPassword(String password) {
         //一次 密码 MD5 加密
         String ciphertext = encryptMD5(password);
         String salt = password;
@@ -72,9 +79,9 @@ public class SecretUtil {
      * @param email 用户邮箱
      * @return String 密文
      */
-    public static String encryptBase64(String email){
+    public static String encryptBase64(String email) {
         String token = null;
-        try{
+        try {
             token = Base64.getUrlEncoder().encodeToString(email.getBytes("utf-8"));
         } catch (UnsupportedEncodingException ue) {
             return null;
@@ -89,7 +96,7 @@ public class SecretUtil {
      * @param token Base64密文
      * @return String 明文
      */
-    public static String decryptBase64(String token){
+    public static String decryptBase64(String token) {
         return new String(Base64.getDecoder().decode(token));
     }
 
@@ -98,7 +105,7 @@ public class SecretUtil {
      *
      * @return SecretKey 密钥实例
      */
-    public static SecretKey getAESKey(){
+    public static SecretKey getAESKey() {
         /*
          * 获取密钥
          *      1.密钥生成
@@ -106,7 +113,7 @@ public class SecretUtil {
          *      3.生成密钥
          *      4.获取密钥字
          */
-        try{
+        try {
             KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
             SecureRandom random = new SecureRandom();
             random.setSeed(AES_SEED.getBytes());
@@ -128,7 +135,7 @@ public class SecretUtil {
      * @param plainText 明文
      * @return 密文
      */
-    public static String encryptAES(SecretKey secretKey, String plainText){
+    public static String encryptAES(SecretKey secretKey, String plainText) {
         /*
          * AES 加密
          *      1.指定算法，获取 Cipher 对象
@@ -140,12 +147,12 @@ public class SecretUtil {
          *             根据网上的方法，加密后，byte 转为16进制，再转为 String
          */
         String cipherText = null;
-        try{
+        try {
             Cipher cipher = Cipher.getInstance("AES");
             cipher.init(Cipher.ENCRYPT_MODE, secretKey);
 
             cipher.update(plainText.getBytes());
-            byte [] cipherByte = cipher.doFinal();
+            byte[] cipherByte = cipher.doFinal();
 
             cipherText = parseTo16String(cipherByte);
 
@@ -171,7 +178,7 @@ public class SecretUtil {
      * @param cipherText 密文
      * @return String 明文
      */
-    public static String decryptAES(SecretKey secretKey, String cipherText){
+    public static String decryptAES(SecretKey secretKey, String cipherText) {
         /*
          * AES 加密
          *      1.指定算法，获取 Cipher 对象
@@ -181,11 +188,11 @@ public class SecretUtil {
          */
 
        String plainText = null;
-       try{
+       try {
            Cipher cipher = Cipher.getInstance("AES");
            cipher.init(Cipher.DECRYPT_MODE, secretKey);
 
-           byte [] plainByte = cipher.doFinal(parseHexStr2Byte(cipherText));
+           byte[] plainByte = cipher.doFinal(parseHexStr2Byte(cipherText));
            plainText = new String(plainByte);
 
        } catch (NoSuchPaddingException e) {
@@ -206,10 +213,10 @@ public class SecretUtil {
     /**
      * 将二进制转换成16进制
      *
-     * @param buf
+     * @param buf 字节数组
      * @return String 转换后字符串
      */
-    public static String parseTo16String(byte [] buf) {
+    private static String parseTo16String(byte[] buf) {
         StringBuffer sb = new StringBuffer();
         for (int i = 0; i < buf.length; i++) {
             String hex = Integer.toHexString(buf[i] & 0xFF);
@@ -227,14 +234,14 @@ public class SecretUtil {
      * @param hexStr 16进制密文字符串
      * @return byte[] 2进制字符
      */
-    public static byte[] parseHexStr2Byte(String hexStr) {
+    private static byte[] parseHexStr2Byte(String hexStr) {
         if (hexStr.length() < 1) {
             return null;
         }
-        byte[] result = new byte[hexStr.length()/2];
-        for (int i = 0;i< hexStr.length()/2; i++) {
-            int high = Integer.parseInt(hexStr.substring(i*2, i*2+1), 16);
-            int low = Integer.parseInt(hexStr.substring(i*2+1, i*2+2), 16);
+        byte[] result = new byte[hexStr.length() / 2];
+        for (int i = 0; i < hexStr.length() / 2; i++) {
+            int high = Integer.parseInt(hexStr.substring(i * 2, i * 2 + 1), 16);
+            int low = Integer.parseInt(hexStr.substring(i * 2 + 1, i * 2 + 2), 16);
             result[i] = (byte) (high * 16 + low);
         }
         return result;

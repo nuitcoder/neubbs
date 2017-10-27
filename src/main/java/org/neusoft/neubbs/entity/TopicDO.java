@@ -22,70 +22,70 @@ public class TopicDO {
     /**
      * Getter
      */
-    public Integer getId(){
+    public Integer getId() {
         return id;
     }
-    public Integer getUserid(){
+    public Integer getUserid() {
         return userid;
     }
-    public String getCategory(){
+    public String getCategory() {
         return category;
     }
-    public String getTitle(){
+    public String getTitle() {
         return title;
     }
-    public String getComment(){
+    public String getComment() {
         return comment;
     }
-    public Integer getLastreplyuserid(){
+    public Integer getLastreplyuserid() {
         return lastreplyuserid;
     }
-    public Date getLastreplytime(){
+    public Date getLastreplytime() {
         return lastreplytime;
     }
-    private Date getCreatetime(){
+    private Date getCreatetime() {
         return createtime;
     }
 
     /**
      * Setter
      */
-    public void setId(Integer id){
+    public void setId(Integer id) {
         this.id = id;
     }
-    public void setUserid(Integer userid){
+    public void setUserid(Integer userid) {
         this.userid = userid;
     }
-    public void setCategory(String category){
+    public void setCategory(String category) {
         this.category = category;
     }
-    public void setTitle(String title){
+    public void setTitle(String title) {
         this.title = title;
     }
-    public void setComment(String comment){
+    public void setComment(String comment) {
         this.comment = comment;
     }
-    public void setLastreplyuserid(Integer lastreplyuserid){
+    public void setLastreplyuserid(Integer lastreplyuserid) {
         this.lastreplyuserid = lastreplyuserid;
     }
-    public void setLastreplytime(Date lastreplytime){
+    public void setLastreplytime(Date lastreplytime) {
         this.lastreplytime = lastreplytime;
     }
-    public void setCreatetime(Date createtime){
+    public void setCreatetime(Date createtime) {
         this.createtime = createtime;
     }
 
     @Override
     public String toString() {
-        return "TopicDO{" +
-                "id=" + id +
-                ", userid=" + userid +
-                ", category='" + category + '\'' +
-                ", title='" + title + '\'' +
-                ", comment='" + comment + '\'' +
-                ", lastreplyuserid=" + lastreplyuserid +
-                ", lastreplytime=" + lastreplytime +
-                ", createtime=" + createtime +
-                '}';
+        return "TopicDO{"
+                + "id=" + id
+                + ", userid=" + userid
+                + ", category='" + category + '\''
+                + ", title='" + title + '\''
+                + ", comment='" + comment + '\''
+                + ", lastreplyuserid=" + lastreplyuserid
+                + ", lastreplytime=" + lastreplytime
+                + ", createtime=" + createtime
+                + '}';
     }
 }

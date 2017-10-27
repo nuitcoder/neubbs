@@ -11,8 +11,7 @@ import java.util.Map;
  *
  *  @author Suvan
  */
-public class RequestParamsCheckUtil {
-
+public final class RequestParamsCheckUtil {
     private static final String USERNAME = "username";
     private static final String PASSWORD = "password";
     private static final String EMAIL = "email";
@@ -63,29 +62,35 @@ public class RequestParamsCheckUtil {
 
     private Map<String, String> requestParamsMap;
 
+    private RequestParamsCheckUtil() {
+
+    }
+
     /**
      * 检查用户名
      *
      * @param username 用户名
      * @return String 错误信息
      */
-    public static String checkUsername(String username){
+    public static String checkUsername(String username) {
+        String errorInfo  = null;
+
         //非空检查
-        if(StringUtil.isEmpty(username)){
-            return WARN_USERNAME_NO_NULL;
+        if (StringUtil.isEmpty(username)) {
+            errorInfo = WARN_USERNAME_NO_NULL;
         }
 
         //长度检查
-        if(!StringUtil.isScope(username, USERNAME_LENGTH_MIN, USERNAME_LENGTH_MAX)){
-            return WARN_USERNAME_LENGTH_NO_MATCH_SCOPE;
+        if (!StringUtil.isScope(username, USERNAME_LENGTH_MIN, USERNAME_LENGTH_MAX)) {
+            errorInfo = WARN_USERNAME_LENGTH_NO_MATCH_SCOPE;
         }
 
         //正则检查
-        if(!PatternUtil.matchUsername(username)){
-            return WARN_USERNAME_STYLE_NO_MEET_NORM;
+        if (!PatternUtil.matchUsername(username)) {
+            errorInfo = WARN_USERNAME_STYLE_NO_MEET_NORM;
         }
 
-        return null;
+        return errorInfo;
     }
 
     /**
@@ -94,12 +99,12 @@ public class RequestParamsCheckUtil {
      * @param password 用户密码
      * @return String 错误信息
      */
-    public static String checkPassword(String password){
+    public static String checkPassword(String password) {
         if (StringUtil.isEmpty(password)) {
             return WARN_PASSWORD_NO_NULL;
         }
 
-        if(!StringUtil.isScope(password, PASSWORD_LENGTH_MIN, PASSWORD_LENGTH_MAX)){
+        if (!StringUtil.isScope(password, PASSWORD_LENGTH_MIN, PASSWORD_LENGTH_MAX)) {
             return WARN_PASSWORD_LENGTH_NO_MATCH_SCOPE;
         }
 
@@ -112,8 +117,8 @@ public class RequestParamsCheckUtil {
      * @param email 用户邮箱
      * @return String 错误信息
      */
-    public static String checkEmail(String email){
-        if(StringUtil.isEmpty(email)){
+    public static String checkEmail(String email) {
+        if (StringUtil.isEmpty(email)) {
             return WARN_EMAIL_NO_NULL;
         }
 
@@ -130,7 +135,7 @@ public class RequestParamsCheckUtil {
      * @param token 密文
      * @return String 错误信息
      */
-    public static String checkToken(String token){
+    public static String checkToken(String token) {
         if (StringUtil.isEmpty(token)) {
             return WARN_TOKEN_NO_NULL;
         }
@@ -143,7 +148,7 @@ public class RequestParamsCheckUtil {
      * @param captcha 验证码
      * @return String 错误信息
      */
-    public static String checkCaptcha(String captcha){
+    public static String checkCaptcha(String captcha) {
         if (StringUtil.isEmpty(captcha)) {
             return WARN_CAPTCHA_NO_NULL;
         }
@@ -161,7 +166,7 @@ public class RequestParamsCheckUtil {
      * @param id id类型参数
      * @return String 错误信息
      */
-    public static String checkId(String id){
+    public static String checkId(String id) {
         if (StringUtil.isEmpty(id) || "null".equals(id)) {
             return WARN_ID_NO_NULL;
         }
@@ -179,20 +184,22 @@ public class RequestParamsCheckUtil {
      * @param category 话题分类
      * @return String 错误信息
      */
-    public static String checkCategory(String category){
+    public static String checkCategory(String category) {
+        String errorInfo = null;
+
         if (StringUtil.isEmpty(category)) {
-            return WARN_CAPTCHA_NO_NULL;
+            errorInfo = WARN_CAPTCHA_NO_NULL;
         }
 
         if (!StringUtil.isScope(category, ONE_LENGTH, CATEGORY_LENGTH_MAX)) {
-            return WARN_CATEGORY_LENGTH_NO_MATCH_SCOPE;
+            errorInfo = WARN_CATEGORY_LENGTH_NO_MATCH_SCOPE;
         }
 
         if (!PatternUtil.matchTopicCategory(category)) {
-            return WARN_CATEGORY_STYLE_NO_MEET_NORM;
+            errorInfo = WARN_CATEGORY_STYLE_NO_MEET_NORM;
         }
 
-        return null;
+        return errorInfo;
     }
 
     /**
@@ -201,7 +208,7 @@ public class RequestParamsCheckUtil {
      * @param title 话题标题
      * @return String 错误信息
      */
-    public static String checkTitle(String title){
+    public static String checkTitle(String title) {
         if (StringUtil.isEmpty(title)) {
             return WARN_TITLE_NO_NULL;
         }
@@ -219,7 +226,7 @@ public class RequestParamsCheckUtil {
      * @param content 话题内容
      * @return String 错误信息
      */
-    public static String checkContent(String content){
+    public static String checkContent(String content) {
         if (StringUtil.isEmpty(content)) {
             return WARN_CONTENT_NO_NULL;
         }
@@ -246,11 +253,11 @@ public class RequestParamsCheckUtil {
      * @param paramKeys 需要检测的类型参数数组
      * @return RequestParamsCheckUtil 工具类自调用
      */
-    public static RequestParamsCheckUtil putParamKeys(String [] paramKeys){
+    public static RequestParamsCheckUtil putParamKeys(String[] paramKeys) {
         RequestParamsCheckUtil rpcu = new RequestParamsCheckUtil();
         rpcu.requestParamsMap = new LinkedHashMap<String, String>();
 
-        for(int i = 0 , len = paramKeys.length; i < len; i++){
+        for (int i = 0, len = paramKeys.length; i < len; i++) {
             rpcu.requestParamsMap.put(paramKeys[i], null);
         }
 
@@ -263,9 +270,9 @@ public class RequestParamsCheckUtil {
      * @param paramValues 参数 Value 数组
      * @return RequestParamsCheckUtil 工具类自调用
      */
-    public RequestParamsCheckUtil putParamValues(String [] paramValues){
+    public RequestParamsCheckUtil putParamValues(String[] paramValues) {
         int pointer = 0;
-        for(String key: requestParamsMap.keySet()){
+        for (String key: requestParamsMap.keySet()) {
            requestParamsMap.put(key, paramValues[pointer++]);
         }
 
@@ -277,14 +284,14 @@ public class RequestParamsCheckUtil {
      *
      * @return String 错误信息
      */
-    public String checkParamsNorm(){
+    public String checkParamsNorm() {
         //储存错误信息
         StringBuilder errorInfo = new StringBuilder();
 
         //非空检测
         String key = null;
         String value = null;
-        for(Map.Entry<String, String> param : requestParamsMap.entrySet()){
+        for (Map.Entry<String, String> param : requestParamsMap.entrySet()) {
             key = param.getKey();
             value = param.getValue();
 
@@ -384,11 +391,11 @@ public class RequestParamsCheckUtil {
      * @param username 用户名
      * @return String 错误信息
      */
-    private String checkUsernameNorm(String username){
-        if(!StringUtil.isScope(username, USERNAME_LENGTH_MIN, USERNAME_LENGTH_MAX)){
+    private String checkUsernameNorm(String username) {
+        if (!StringUtil.isScope(username, USERNAME_LENGTH_MIN, USERNAME_LENGTH_MAX)) {
             return WARN_USERNAME_LENGTH_NO_MATCH_SCOPE;
         }
-        if(!PatternUtil.matchUsername(username)){
+        if (!PatternUtil.matchUsername(username)) {
             return WARN_USERNAME_STYLE_NO_MEET_NORM;
         }
 
@@ -400,8 +407,8 @@ public class RequestParamsCheckUtil {
      * @param password 用户密码
      * @return String 错误信息
      */
-    private String checkPasswordNorm(String password){
-        if(!StringUtil.isScope(password, PASSWORD_LENGTH_MIN, PASSWORD_LENGTH_MAX)){
+    private String checkPasswordNorm(String password) {
+        if (!StringUtil.isScope(password, PASSWORD_LENGTH_MIN, PASSWORD_LENGTH_MAX)) {
             return WARN_PASSWORD_LENGTH_NO_MATCH_SCOPE;
         }
 
@@ -413,7 +420,7 @@ public class RequestParamsCheckUtil {
      * @param email 用户邮箱
      * @return 错误信息
      */
-    private String checkEmailNorm(String email){
+    private String checkEmailNorm(String email) {
         if (!PatternUtil.matchEmail(email)) {
             return WARN_EMAIL_STYLE_NO_MEET_NORM;
         }
@@ -427,7 +434,7 @@ public class RequestParamsCheckUtil {
      * @param id id类型参数
      * @return String 错误信息
      */
-    private static String checkIdNorm(String id){
+    private static String checkIdNorm(String id) {
         if (!StringUtil.isScope(id, ONE_LENGTH, ID_LENGTH_MAX)) {
             return WARN_ID_LENGTH_NO_MATCH_SCOPE;
         }
@@ -441,7 +448,7 @@ public class RequestParamsCheckUtil {
      * @param category 话题分类
      * @return String 错误信息
      */
-    private static String checkCategoryNorm(String category){
+    private static String checkCategoryNorm(String category) {
         if (!StringUtil.isScope(category, ONE_LENGTH, CATEGORY_LENGTH_MAX)) {
             return WARN_CATEGORY_LENGTH_NO_MATCH_SCOPE;
         }
@@ -459,7 +466,7 @@ public class RequestParamsCheckUtil {
      * @param title 话题标题
      * @return String 错误信息
      */
-    private static String checkTitleNorm(String title){
+    private static String checkTitleNorm(String title) {
         if (!StringUtil.isScope(title, ONE_LENGTH, TITLE_LENGTH_MAX)) {
             return WARN_TITLE_LENGTH_NO_MATCH_SCOPE;
         }
@@ -473,7 +480,7 @@ public class RequestParamsCheckUtil {
      * @param content 话题内容
      * @return String 错误信息
      */
-    private static String checkContentNorm(String content){
+    private static String checkContentNorm(String content) {
         if (!StringUtil.isScope(content, ONE_LENGTH, CONTENT_LENGTH_MAX)) {
             return WARN_CAPTCHA_LENGTH_NO_MATCH_SCOPE;
         }

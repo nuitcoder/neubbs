@@ -10,25 +10,31 @@ import java.lang.reflect.Method;
  *
  * @author Suvan
  */
-public class AnnotationUtil {
+public final class AnnotationUtil {
+
+    private AnnotationUtil() {
+
+    }
+
     /**
      * （方法级）是否存在指定注解
      *
      * @param handler 方法对象（拦截器内的 Object handler）
+     * @param c 注解的运行时Class
      * @return Boolean （true 存在，false-不存在）
      */
-    public static Boolean hasMethodAnnotation(Object handler, Class c){
+    public static Boolean hasMethodAnnotation(Object handler, Class c) {
          //不属于方法级跳过（默认不存在）
-        if(!(handler instanceof HandlerMethod)){
+        if (!(handler instanceof HandlerMethod)) {
             return false;
         }
 
         //获取注解
-        HandlerMethod handlerMethod = (HandlerMethod)handler;
+        HandlerMethod handlerMethod = (HandlerMethod) handler;
         Method method = handlerMethod.getMethod();
         Annotation annotation = method.getAnnotation(c);
-        if(annotation == null){
-                return false;
+        if (annotation == null) {
+            return false;
         }
 
         //存在
@@ -42,7 +48,7 @@ public class AnnotationUtil {
      * @param annotationClass 指定注解类的 Class
      * @return Boolean
      */
-    public static Boolean hasClassAnnotation(Class objClass, Class annotationClass){
+    public static Boolean hasClassAnnotation(Class objClass, Class annotationClass) {
         Annotation annotation = objClass.getAnnotation(annotationClass);
         if (annotation != null) {
             return true;

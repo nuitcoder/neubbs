@@ -16,16 +16,16 @@ public class TopicContentDO {
     /**
      * Getter
      */
-    public Integer getId(){
+    public Integer getId() {
         return id;
     }
-    public Integer getTopicid(){
+    public Integer getTopicid() {
         return topicid;
     }
-    public String getContent(){
+    public String getContent() {
         return content;
     }
-    public String getRead(){
+    public String getRead() {
         return read;
     }
     public String getAgree() {
@@ -36,30 +36,30 @@ public class TopicContentDO {
     /**
      * Setter
      */
-    public void setId(Integer id){
+    public void setId(Integer id) {
         this.id = id;
     }
-    public void setTopicid(Integer topicid){
+    public void setTopicid(Integer topicid) {
         this.topicid = topicid;
     }
-    public void setContent(String content){
+    public void setContent(String content) {
         this.content = content;
     }
-    public void setRead(String read){
+    public void setRead(String read) {
         this.read = read;
     }
-    public void setAgree(String agree){
+    public void setAgree(String agree) {
         this.agree = agree;
     }
 
     @Override
     public String toString() {
-        return "TopicContentDO{" +
-                "id=" + id +
-                ", topicid=" + topicid +
-                ", content='" + content + '\'' +
-                ", read='" + read + '\'' +
-                ", agree='" + agree + '\'' +
-                '}';
+        return "TopicContentDO{"
+                + "id=" + id
+                + ", topicid=" + topicid
+                + ", content='" + content + '\''
+                + ", read='" + read + '\''
+                + ", agree='" + agree + '\''
+                + '}';
     }
 }
