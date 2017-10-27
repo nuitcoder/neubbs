@@ -38,14 +38,14 @@ const registerAsync = (values) => {
   return new Promise((resolve, reject) => {
     const uniqueUsername = () => {
       if (username !== '') {
-        return api.account.unique({ username })
+        return api.account.uniqueByName(username)
       }
       return Promise.resolve(false)
     }
 
     const uniqueEmail = () => {
       if (email !== '') {
-        return api.account.unique({ email })
+        return api.account.uniqueByEmail(email)
       }
       return Promise.resolve(false)
     }

@@ -19,8 +19,8 @@ class Login extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.error !== this.props.error) {
-      this.setState({ alertMessage: nextProps.error })
+    if (nextProps.account.error !== this.props.account.error) {
+      this.setState({ alertMessage: nextProps.account.error })
     }
   }
 
@@ -51,7 +51,7 @@ class Login extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    ...state.account,
+    account: state.account,
   }
 }
 

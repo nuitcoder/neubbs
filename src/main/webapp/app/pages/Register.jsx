@@ -5,15 +5,7 @@ import { connect } from 'react-redux'
 
 import FormWrapper from '../components/FormWrapper'
 import RegisterForm from '../components/RegisterForm'
-<<<<<<< HEAD
-import ActivateModal from '../components/ActivateModal'
-
 import actions from '../actions'
-import auth from '../auth'
-import api from '../api'
-=======
-import actions from '../actions'
->>>>>>> fb40a7c27c30c5d94b1ea5f4a2e76179f18b45b3
 
 class Register extends Component {
   constructor(props) {
@@ -27,8 +19,8 @@ class Register extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.error !== this.props.error) {
-      this.setState({ alertMessage: nextProps.error })
+    if (nextProps.account.error !== this.props.account.error) {
+      this.setState({ alertMessage: nextProps.account.error })
     }
   }
 
@@ -95,8 +87,12 @@ const mapStateToProps = (state) => {
     account,
 =======
   return {
+<<<<<<< HEAD
     ...state.account,
 >>>>>>> fb40a7c27c30c5d94b1ea5f4a2e76179f18b45b3
+=======
+    account: state.account,
+>>>>>>> feat: add activate alert & modal, check when refresh or login account
   }
 }
 

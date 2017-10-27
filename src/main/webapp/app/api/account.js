@@ -4,6 +4,7 @@ import {
   LOGIN_API_URL,
   LOGOUT_API_URL,
   REGISTER_API_URL,
+  ACTIVATE_STATE_API_URL,
 } from '../constants/api'
 
 const account = {
@@ -11,11 +12,12 @@ const account = {
   /**
    * login account
    *
-   * @param {object} data post data(username, password)
+   * @param {string} username
+   * @param {string} password
    * @returns {promise} login ajax promise
    */
-  login(data) {
-    return axios.post(LOGIN_API_URL, data)
+  login(username, password) {
+    return axios.post(LOGIN_API_URL, { username, password })
   },
 
   /**
@@ -28,19 +30,57 @@ const account = {
   },
 
   /**
-   * check account unique
+   * register account
    *
-   * @param {object} params get params(username, email, password)
    * @returns {promise} register ajax promise
    */
-  unique(params) {
-    return axios.get(ACCOUNT_API_URL, {
-      params,
+  register(username, email, password) {
+    return axios.post(REGISTER_API_URL, {
+      username,
+      email,
+      password,
     })
   },
 
-  register(data) {
-    return axios.post(REGISTER_API_URL, data)
+  /**
+   * check account unique by username
+   *
+   * @param {string} username
+   * @returns {promise} register ajax promise
+   */
+  uniqueByName(username) {
+    return axios.get(ACCOUNT_API_URL, {
+      params: {
+        username,
+      },
+    })
+  },
+
+  /**
+   * check account unique by email
+   *
+   * @param {string} email
+   * @returns {promise} register ajax promise
+   */
+  uniqueByEmail(email) {
+    return axios.get(ACCOUNT_API_URL, {
+      params: {
+        email,
+      },
+    })
+  },
+
+  /**
+   * get account activate status
+   *
+   * @returns {promise} activate ajax promise
+   */
+  activate(username) {
+    return axios.get(ACTIVATE_STATE_API_URL, {
+      params: {
+        username,
+      },
+    })
   },
 }
 

@@ -22,18 +22,27 @@ import * as types from '../constants/actionTypes'
 
 const initialState = {
   sending: false,
-  profile: {},
+  profile: {
+    username: localStorage.getItem('username'),
+  },
+  activate: true,
   error: '',
 }
 
 export default function (state = initialState, action) {
   const { type, payload, error } = action
   switch (type) {
-    case types.LOGIN_REQUEST: {
+    case types.REQUEST_SENDING: {
       return {
         ...state,
         error: '',
         sending: true,
+      }
+    }
+    case types.ACTIVATE_SUCCESS: {
+      return {
+        ...state,
+        activate: payload.activate,
       }
     }
     case types.LOGIN_SUCCESS: {
@@ -43,18 +52,11 @@ export default function (state = initialState, action) {
         sending: false,
       }
     }
-    case types.LOGIN_ERROR: {
+    case types.LOGOUT_SUCCESS: {
       return {
         ...state,
-        error,
-        sending: false,
-      }
-    }
-    case types.REGISTER_REQUEST: {
-      return {
-        ...state,
-        error: '',
-        sending: true,
+        profile: {},
+        activate: true,
       }
     }
     case types.REGISTER_SUCCESS: {
@@ -64,7 +66,7 @@ export default function (state = initialState, action) {
         sending: false,
       }
     }
-    case types.REGISTER_ERROR: {
+    case types.REQUEST_ERROR: {
       return {
         ...state,
         error,

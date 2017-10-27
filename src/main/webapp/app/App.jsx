@@ -1,8 +1,13 @@
 import React, { Component } from 'react'
-import { injectGlobal } from 'styled-components'
+import styled, { injectGlobal } from 'styled-components'
+import { Grid } from 'react-bootstrap'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
 
 import Header from './components/Header'
+import Activate from './components/Activate'
 import auth from './auth'
+import actions from './actions'
 
 // eslint-disable-next-line no-unused-expressions
 injectGlobal`
@@ -12,6 +17,11 @@ injectGlobal`
     font-size: 14px;
     font-family: Helvetica, Arial, "PingFang SC", Roboto, "Microsoft Yahei", sans-serif;
   }
+`
+
+const StyledGrid = styled(Grid)`
+  padding-top: 20px;
+  padding-bottom: 20px;
 `
 
 class App extends Component {
@@ -24,6 +34,16 @@ class App extends Component {
     this.onAuthChange = this.onAuthChange.bind(this)
   }
 
+  componentWillMount() {
+    console.log(this.props)
+    if (this.state.isLogin) {
+      const { username } = this.props.account.profile
+
+      this.props.actions.activate({ username })
+    }
+  }
+
+
   componentDidMount() {
     auth.addListener(this.onAuthChange)
   }
@@ -35,17 +55,34 @@ class App extends Component {
 
   render() {
     const { isLogin } = this.state
-    const { children, router } = this.props
+    const { children, router, account } = this.props
 
     return (
       <div className="app">
         <Header router={router} isLogin={isLogin} />
-        <div id="main" className="container">
+        {isLogin &&
+          <Activate activate={account.activate} />}
+        <StyledGrid id="main">
           {children}
-        </div>
+        </StyledGrid>
       </div>
     )
   }
 }
 
-export default App
+const mapStateToProps = (state) => {
+  return {
+    ...state,
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    actions: bindActionCreators(actions, dispatch),
+  }
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(App)

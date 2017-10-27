@@ -3,14 +3,17 @@ import { Link } from 'react-router'
 import styled from 'styled-components'
 import PropTypes from 'prop-types'
 import { Navbar, Nav, NavItem } from 'react-bootstrap'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
 
-import auth from '../auth'
+import actions from '../actions'
 
 const LOGIN_EVENT_KEY = 'LOGIN'
 const LOGOUT_EVENT_KEY = 'LOGOUT'
 const REGISTER_EVENT_KEY = 'REGISTER'
 
 const StyledNavbar = styled(Navbar)`
+  margin-bottom: 0px;
   background-color: #fff;
   box-shadow: 0 1px 1px rgba(0, 0, 0, .05);
 `
@@ -44,11 +47,7 @@ class Header extends Component {
         router.push('/account/login')
         break
       case LOGOUT_EVENT_KEY:
-        auth.logout().then((res) => {
-          if (res.data.success) {
-            router.push('/account/login')
-          }
-        })
+        this.props.actions.logout()
         break
       case REGISTER_EVENT_KEY:
         router.push('/account/register')
@@ -102,8 +101,25 @@ class Header extends Component {
 }
 
 Header.PropTypes = {
-  router: PropTypes.object.isRequired,
   isLogin: PropTypes.bool.isRequired,
+  router: PropTypes.object.isRequired,
+  account: PropTypes.object.isRequired,
+  actions: PropTypes.func.isRequired,
 }
 
-export default Header
+const mapStateToProps = (state) => {
+  return {
+    account: state.account,
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    actions: bindActionCreators(actions, dispatch),
+  }
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(Header)

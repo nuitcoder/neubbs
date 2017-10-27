@@ -1,13 +1,14 @@
-<<<<<<< HEAD
-export const ADD_ACCOUNT = 'ADD_ACCOUNT';
-=======
-// login
+export const REQUEST_SENDING = 'REQUEST_SENDING'
+export const REQUEST_ERROR = 'REQUEST_ERROR'
+
 export const LOGIN_REQUEST = 'LOGIN_REQUEST'
 export const LOGIN_SUCCESS = 'LOGIN_SUCCESS'
-export const LOGIN_ERROR = 'LOGIN_ERROR'
 
-// register
+export const ACTIVATE_REQUEST = 'ACTIVATE_REQUEST'
+export const ACTIVATE_SUCCESS = 'ACTIVATE_SUCCESS'
+
+export const LOGOUT_REQUEST = 'LOGOUT_REQUEST'
+export const LOGOUT_SUCCESS = 'LOGOUT_SUCCESS'
+
 export const REGISTER_REQUEST = 'REGISTER_REQUEST'
 export const REGISTER_SUCCESS = 'REGISTER_SUCCESS'
-export const REGISTER_ERROR = 'REGISTER_ERROR'
->>>>>>> fb40a7c27c30c5d94b1ea5f4a2e76179f18b45b3
