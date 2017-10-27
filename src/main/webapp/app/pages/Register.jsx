@@ -31,38 +31,7 @@ class Register extends Component {
   }
 
   handleSubmit({ username, email, password }) {
-<<<<<<< HEAD
-    api.account.register({
-      username,
-      email,
-      password,
-    }).then((res) => {
-      const { data } = res
-      if (data.success) {
-        console.log('register success')
-
-        // TODO: login when not active
-        auth.login({ username, password })
-          .then((res) => {
-            console.log(res)
-            const { data } = res
-            if (data.success) {
-              console.log('login success')
-            }
-          })
-
-        this.setState({
-          showModal: true,
-        })
-      } else {
-        this.setState({
-          alertMessage: data.message,
-        })
-      }
-    })
-=======
     this.props.actions.register({ username, email, password })
->>>>>>> fb40a7c27c30c5d94b1ea5f4a2e76179f18b45b3
   }
 
   render() {
@@ -81,28 +50,14 @@ class Register extends Component {
 }
 
 const mapStateToProps = (state) => {
-<<<<<<< HEAD
-  const { account } = state
   return {
-    account,
-=======
-  return {
-<<<<<<< HEAD
-    ...state.account,
->>>>>>> fb40a7c27c30c5d94b1ea5f4a2e76179f18b45b3
-=======
     account: state.account,
->>>>>>> feat: add activate alert & modal, check when refresh or login account
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-<<<<<<< HEAD
-    actions: bindActionCreators(actions, dispatch)
-=======
     actions: bindActionCreators(actions, dispatch),
->>>>>>> fb40a7c27c30c5d94b1ea5f4a2e76179f18b45b3
   }
 }
 

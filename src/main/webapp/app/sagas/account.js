@@ -70,6 +70,8 @@ export function* registerSaga(action) {
           email,
         },
       })
+      yield put({ type: types.ACTIVATE_REQUEST, payload: { username } })
+
       browserHistory.push('/')
     } else {
       yield put({ type: types.REQUEST_ERROR, error: data.message })

@@ -24,10 +24,7 @@
     "react-router-redux": "^4.0.8",
     "redux": "^3.7.2",
     "redux-actions": "^2.2.1",
-<<<<<<< HEAD
-=======
     "redux-devtools-extension": "^2.13.2",
->>>>>>> fb40a7c27c30c5d94b1ea5f4a2e76179f18b45b3
     "redux-form": "^7.1.1",
     "redux-saga": "^0.16.0",
     "styled-components": "^2.1.2",
