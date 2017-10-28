@@ -8,6 +8,7 @@ function* rootSagas() {
     takeLatest(types.LOGIN_REQUEST, account.loginSaga),
     takeLatest(types.LOGOUT_REQUEST, account.logoutSaga),
     takeLatest(types.REGISTER_REQUEST, account.registerSaga),
+    takeLatest(types.GET_PROFILE_REQUEST, account.profileSaga),
     takeLatest(types.ACTIVATE_REQUEST, account.activateSaga),
   ]
 }

@@ -82,6 +82,19 @@ const account = {
       },
     })
   },
+
+  /**
+   * get account profile
+   *
+   * @returns {promise} profile ajax promise
+   */
+  profile(username) {
+    return axios.get(ACCOUNT_API_URL, {
+      params: {
+        username,
+      },
+    })
+  },
 }
 
 export default account

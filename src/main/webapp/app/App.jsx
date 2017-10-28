@@ -35,14 +35,11 @@ class App extends Component {
   }
 
   componentWillMount() {
-    console.log(this.props)
     if (this.state.isLogin) {
-      const { username } = this.props.account.profile
-
-      this.props.actions.activate({ username })
+      const username = localStorage.getItem('username')
+      this.props.actions.profile({ username })
     }
   }
-
 
   componentDidMount() {
     auth.addListener(this.onAuthChange)
@@ -61,7 +58,7 @@ class App extends Component {
       <div className="app">
         <Header router={router} isLogin={isLogin} />
         {isLogin &&
-          <Activate activate={account.activate} />}
+          <Activate activate={account.activate} profile={account.profile} />}
         <StyledGrid id="main">
           {children}
         </StyledGrid>

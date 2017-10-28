@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { Alert, Grid, Button, Modal } from 'react-bootstrap'
 import styled from 'styled-components'
+import _ from 'lodash'
 
 const StyledAlert = styled(Alert)`
   margin-bottom: 0px;
@@ -50,12 +51,33 @@ class Activate extends Component {
     this.setState({ showModal: false })
   }
 
-  render() {
-    const { showAlert, showModal } = this.state
+  renderModal() {
+    const { profile } = this.props
+    return (
+      <Modal show={this.state.showModal} onHide={this.hideActivateModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>请激活账号</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Alert bsStyle="warning">
+            为了使用投票、评论、关注等功能，请激活你的账号
+          </Alert>
+          <p>
+            你的邮件：
+            <span>{profile.email}</span>
+          </p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button>前往邮箱查收</Button>
+        </Modal.Footer>
+      </Modal>
+    )
+  }
 
+  render() {
     return (
       <div>
-        {showAlert &&
+        {this.state.showAlert &&
           <StyledAlert bsStyle="warning" onDismiss={this.handleAlertDismiss}>
             <StyledGrid componentClass="p">
               你的账号尚未激活，投票、评论、关注等功能将无法使用
@@ -68,24 +90,14 @@ class Activate extends Component {
               </StyledButton>
             </StyledGrid>
           </StyledAlert>}
-
-        <Modal show={showModal} onHide={this.hideActivateModal}>
-          <Modal.Header closeButton>
-            <Modal.Title>请激活账号</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <p>激活账号</p>
-          </Modal.Body>
-          <Modal.Footer>
-            {/* <Button onClick={onHide}>Close</Button> */}
-          </Modal.Footer>
-        </Modal>
+        {this.renderModal()}
       </div>
     )
   }
 }
 
 Activate.PropTypes = {
+  profile: PropTypes.object.isRequired,
   activate: PropTypes.bool.isRequired,
 }
 
