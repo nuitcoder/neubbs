@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -47,7 +48,7 @@ public final class JsonUtil {
 
         Map<String, Object> map = null;
         try {
-            map = mapper.readValue(json, Map.class);
+            map = mapper.readValue(json, LinkedHashMap.class);
         } catch (IOException ioe) { }
 
         return map;
@@ -66,7 +67,7 @@ public final class JsonUtil {
 
         try {
             json = mapper.writeValueAsString(obj);
-            map = mapper.readValue(json, Map.class);
+            map = mapper.readValue(json, LinkedHashMap.class);
         } catch (IOException e) { }
 
         return map;

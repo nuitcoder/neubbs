@@ -17,6 +17,7 @@ import org.neusoft.neubbs.service.IUserService;
 import org.neusoft.neubbs.utils.CookieUtil;
 import org.neusoft.neubbs.utils.JsonUtil;
 import org.neusoft.neubbs.utils.JwtTokenUtil;
+import org.neusoft.neubbs.utils.MapFilterUtil;
 import org.neusoft.neubbs.utils.PatternUtil;
 import org.neusoft.neubbs.utils.RandomUtil;
 import org.neusoft.neubbs.utils.RequestParamsCheckUtil;
@@ -83,14 +84,17 @@ public final class AccountController {
      * 业务流程
      *      A.参数处理
      *          1.判断输入参数（是否存在 username or email）
-     *          2.判断参数类型（若 username 不为空，默认为用户名类型）
+     *          2.判断参数类型（若 username 不为空，默认为用户名类型）（username 可支持用户名和邮箱）
      *          3.参数检查（不同参数类型，不同方式检查）
-     *          4.数据库获取用户信息（不同参数类型，不同方式获取）
+     *
+     *      B.数据库获取账户信息
+     *          1.不同参数类型，不同方式获取
      *
      *      B.判断登录状态
      *          1.获取认证信息（Cookie 内 authentication，得到 JWT加密数据）
      *              <1-a>未登录，返回 true，不返回用户信息
-     *              <1-b>已登录，返回 true，同时返回用户信息（需将 UserDO 通过 JsonUtil 转为 Map）
+     *              <1-b>已登录，返回 true，同时返回用户信息（需将 UserDO 通过 JsonUtil 转为 Map，通过 MapFilter 过滤无用信息）
+     *
      *
      * @param username 用户名
      * @param email 邮箱
@@ -108,26 +112,46 @@ public final class AccountController {
             throw new ParamsErrorException(AccountInfo.PARAM_ERROR).log(LogWarnInfo.ACCOUNT_13);
         }
 
-        boolean usernameType = username != null;
+        boolean emailType = false;
+        String errorInfo = null;
+        if (username != null) {
+            emailType = PatternUtil.matchEmail(username);
+            errorInfo = emailType ? RequestParamsCheckUtil.checkEmail(username)
+                                  : RequestParamsCheckUtil.checkUsername(username);
+        } else if (email != null) {
+            emailType = true;
+            errorInfo = RequestParamsCheckUtil.checkEmail(email);
+        } else {
+            throw new AccountErrorException(AccountInfo.PARAM_ERROR).log(LogWarnInfo.ACCOUNT_13);
+        }
 
-        String errorInfo = usernameType ? RequestParamsCheckUtil.checkUsername(username)
-                                        : RequestParamsCheckUtil.checkEmail(email);
         if (errorInfo != null) {
             throw new ParamsErrorException(AccountInfo.PARAM_ERROR).log(errorInfo);
         }
 
-        UserDO user = usernameType ? userService.getUserInfoByName(username)
-                                   : userService.getUserInfoByEmail(email);
-        if (user == null) {
-            throw new AccountErrorException(AccountInfo.NO_USER).log(LogWarnInfo.ACCOUNT_01);
+        //.B数据库获取用户信息
+        UserDO user = null;
+        if (username != null && emailType) {
+            user = userService.getUserInfoByEmail(username);
+        } else {
+            user = emailType ? userService.getUserInfoByEmail(email)
+                             : userService.getUserInfoByName(username);
         }
+
+        if (user == null) {
+            throw new AccountErrorException(null).log(LogWarnInfo.ACCOUNT_01);
+        }
+
 
         //B.判断登录状态
         String authentication =  CookieUtil.getCookieValue(request, AccountInfo.AUTHENTICATION);
         if (authentication == null) {
             return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS);
         }
-        return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, JsonUtil.toMapByObject(user));
+
+        Map userInfoMap = JsonUtil.toMapByObject(user);
+        MapFilterUtil.filterUserInfo(userInfoMap);
+        return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, userInfoMap);
     }
 
     /**
@@ -317,7 +341,9 @@ public final class AccountController {
 
         UserDO dbUser = userService.getUserInfoById(user.getId());
 
-        return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, JsonUtil.toMapByObject(dbUser));
+        Map userInfoMap = JsonUtil.toMapByObject(dbUser);
+        MapFilterUtil.filterUserInfo(userInfoMap);
+        return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, userInfoMap);
     }
 
     /**

@@ -20,19 +20,21 @@ public class ResponseJsonDTO {
 
     /**
      * Constructor
- */
-    public ResponseJsonDTO(Boolean success) {  //请求成功，则返回 true，message = null
+     *      1.仅返回成功状态（message = null）
+     *      2.返回成功状态 + 提示信息
+     *      3.返回成功状态（message = null） + 响应数据
+     *      4.返回成功状态（message =null） + 响应数据（适用单条 key-value 情况）
+     */
+    public ResponseJsonDTO(Boolean success) {
         this.success = success;
     }
-    public ResponseJsonDTO(Boolean success, String message) { //失败，发回提示信息
+    public ResponseJsonDTO(Boolean success, String message) {
         this.success = success;
         this.message = message;
     }
-    public ResponseJsonDTO(Boolean success, Map<String, Object> map) { //成功获取到数据不需要提示信息
+    public ResponseJsonDTO(Boolean success, Map<String, Object> map) {
         this.success = success;
         this.model = map;
-
-        filterUserInfo(map);
     }
     public ResponseJsonDTO(Boolean success, String key, Object obj) {
         this.success = success;
@@ -65,19 +67,6 @@ public class ResponseJsonDTO {
     }
     public void setModel(Map<String, Object> model) {
         this.model = model;
-    }
-
-    /**
-     * 过滤用户信息
-     *
-     * @param map UserDO 对象的 map
-     */
-    private void filterUserInfo(Map map) {
-        map.remove("id");
-        map.remove("password");
-        map.remove("image");
-        map.remove("rank");
-        map.remove("createtime");
     }
 
     @Override

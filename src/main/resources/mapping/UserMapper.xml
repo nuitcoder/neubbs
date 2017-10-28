@@ -6,11 +6,10 @@
         <result column="fu_name" property="name" javaType="String" jdbcType="VARCHAR" />
         <result column="fu_password" property="password" javaType="String" jdbcType="VARCHAR" />
         <result column="fu_email" property="email" javaType="String" jdbcType="VARCHAR" />
-        <result column="fu_sex" property="sex" javaType="String" jdbcType="VARCHAR" />
+        <result column="fu_sex" property="sex" javaType="Integer" jdbcType="VARCHAR" />
         <result column="fu_birthday" property="birthday" javaType="String" jdbcType="VARCHAR" />
-        <result column="fu_address" property="address" javaType="String" jdbcType="VARCHAR" />
+        <result column="fu_position" property="position" javaType="String" jdbcType="VARCHAR" />
         <result column="fu_description" property="description" javaType="String" jdbcType="VARCHAR" />
-        <result column="fu_personalprofile" property="personalprofile" javaType="String" jdbcType="VARCHAR" />
         <result column="fu_image" property="image" javaType="String" jdbcType="VARCHAR" />
         <result column="fu_rank" property="rank" javaType="String" jdbcType="VARCHAR" />
         <result column="fu_state" property="state" javaType="Integer" jdbcType="INTEGER" />
@@ -38,30 +37,30 @@
         SELECT MAX(fu_id) FROM forum_user;
     </select>
     <select id="getUserById" parameterType="java.lang.Integer" resultMap="UserMap">
-        SELECT fu_id,fu_name,fu_password,fu_email,fu_sex,fu_birthday,fu_address,fu_description,fu_personalprofile,fu_image,fu_rank,fu_state,fu_createtime
+        SELECT fu_id,fu_name,fu_password,fu_email,fu_sex,fu_birthday,fu_position,fu_description,fu_image,fu_rank,fu_state,fu_createtime
         FROM forum_user WHERE fu_id = #{id, jdbcType = INTEGER};
     </select>
     <select id="getUserByName" parameterType="java.lang.String" resultMap="UserMap">
-        SELECT fu_id,fu_name,fu_password,fu_email,fu_sex,fu_birthday,fu_address,fu_description,fu_personalprofile,fu_image,fu_rank,fu_state,fu_createtime
+        SELECT fu_id,fu_name,fu_password,fu_email,fu_sex,fu_birthday,fu_position,fu_description,fu_image,fu_rank,fu_state,fu_createtime
         FROM forum_user WHERE fu_name = #{name, jdbcType = VARCHAR};
     </select>
     <select id="getUserByEmail" parameterType="java.lang.String" resultMap="UserMap">
-        SELECT fu_id,fu_name,fu_password,fu_email,fu_sex,fu_birthday,fu_address,fu_description,fu_personalprofile,fu_image,fu_rank,fu_state,fu_createtime
+        SELECT fu_id,fu_name,fu_password,fu_email,fu_sex,fu_birthday,fu_position,fu_description,fu_image,fu_rank,fu_state,fu_createtime
         FROM forum_user WHERE fu_email = #{email, jdbcType = VARCHAR};
     </select>
     <select id="listAllAdminUser" resultMap="UserMap"><!-- <![CDATA[ ]]>内容会被解析器忽略 -->
         <![CDATA[
-                  SELECT fu_id,fu_name,fu_password,fu_email,fu_sex,fu_birthday,fu_address,fu_description,fu_personalprofile,fu_image,fu_rank,fu_state,fu_createtime
+                  SELECT fu_id,fu_name,fu_password,fu_email,fu_sex,fu_birthday,fu_position,fu_description,fu_image,fu_rank,fu_state,fu_createtime
                  FROM forum_user WHERE fu_rank = 'admin';
             ]]>
     </select>
     <select id="listAssignDateRegisterUserByYearMonth" resultMap="UserMap">
-        SELECT fu_id,fu_name,fu_password,fu_email,fu_sex,fu_birthday,fu_address,fu_description,fu_personalprofile,fu_image,fu_rank,fu_state,fu_createtime
+        SELECT fu_id,fu_name,fu_password,fu_email,fu_sex,fu_birthday,fu_position,fu_description,fu_image,fu_rank,fu_state,fu_createtime
         FROM forum_user
         WHERE YEAR(fu_createtime) = #{param1, jdbcType = INTEGER} AND MONTH(fu_createtime) = #{param2, jdbcType = INTEGER};
     </select>
     <select id="listAllUser" resultMap="UserMap">
-        SELECT fu_id,fu_name,fu_password,fu_email,fu_sex,fu_birthday,fu_address,fu_description,fu_personalprofile,fu_image,fu_rank,fu_state,fu_createtime
+        SELECT fu_id,fu_name,fu_password,fu_email,fu_sex,fu_birthday,fu_position,fu_description,fu_image,fu_rank,fu_state,fu_createtime
         FROM forum_user;
     </select>
 
@@ -85,7 +84,7 @@
         UPDATE forum_user SET fu_state = 1
         WHERE fu_email = #{email, jdbcType = VARCHAR}
     </update>
-    <update id="truncateUserTable"><!-- 删减表 -->
-        TRUNCATE TABLE ${tableName}
+    <update id="truncateUserTable"><!-- 删减表  ${tableName}-->
+        TRUNCATE TABLE forum_user
     </update>
 </mapper>

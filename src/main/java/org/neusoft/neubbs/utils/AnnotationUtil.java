@@ -21,9 +21,9 @@ public final class AnnotationUtil {
      *
      * @param handler 方法对象（拦截器内的 Object handler）
      * @param c 注解的运行时Class
-     * @return Boolean （true 存在，false-不存在）
+     * @return boolean （true 存在，false-不存在）
      */
-    public static Boolean hasMethodAnnotation(Object handler, Class c) {
+    public static boolean hasMethodAnnotation(Object handler, Class c) {
          //不属于方法级跳过（默认不存在）
         if (!(handler instanceof HandlerMethod)) {
             return false;
@@ -46,9 +46,9 @@ public final class AnnotationUtil {
      *
      * @param objClass 类的运行时 Class
      * @param annotationClass 指定注解类的 Class
-     * @return Boolean
+     * @return boolean
      */
-    public static Boolean hasClassAnnotation(Class objClass, Class annotationClass) {
+    public static boolean hasClassAnnotation(Class objClass, Class annotationClass) {
         Annotation annotation = objClass.getAnnotation(annotationClass);
         if (annotation != null) {
             return true;

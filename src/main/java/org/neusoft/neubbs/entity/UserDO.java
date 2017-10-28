@@ -17,12 +17,13 @@ public class UserDO {
 
     private String password;
     private String email;
-    private String sex;
+
+    private Integer sex;
+
     private String birthday;
-    private String address;
+    private String position;
 
     private String description;
-    private String personalprofile;
     private String image;
 
     private String rank;
@@ -37,7 +38,7 @@ public class UserDO {
         return  id;
     }
     public String getName() {
-        return  name;
+        return name;
     }
     public String getPassword() {
         return password;
@@ -45,20 +46,17 @@ public class UserDO {
     public String getEmail() {
         return email;
     }
-    public String getSex() {
-        return birthday;
+    public Integer getSex() {
+        return sex;
     }
     public String getBirthday() {
         return birthday;
     }
-    public String getAddress() {
-        return address;
+    public String getPosition() {
+        return position;
     }
     public String getDescription() {
         return description;
-    }
-    public String getPersonalprofile() {
-        return personalprofile;
     }
     public String getImage() {
         return image;
@@ -89,20 +87,17 @@ public class UserDO {
     public void setEmail(String email) {
         this.email = email;
     }
-    public void setSex(String sex) {
+    public void setSex(Integer sex) {
         this.sex = sex;
     }
     public void setBirthday(String birthday) {
         this.birthday = birthday;
     }
-    public void setAddress(String address) {
-        this.address = address;
+    public void setPosition(String position) {
+        this.position = position;
     }
     public void setDescription(String description) {
         this.description = description;
-    }
-    public void setPersonalprofile(String personalprofile) {
-        this.personalprofile = personalprofile;
     }
     public void setImage(String image) {
         this.image = image;
@@ -126,9 +121,8 @@ public class UserDO {
                 + ", email='" + email + '\''
                 + ", sex='" + sex + '\''
                 + ", birthday='" + birthday + '\''
-                + ", address='" + address + '\''
+                + ", position='" + position + '\''
                 + ", description='" + description + '\''
-                + ", personalprofile='" + personalprofile + '\''
                 + ", image='" + image + '\''
                 + ", rank='" + rank + '\''
                 + ", state=" + state

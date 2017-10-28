@@ -127,4 +127,8 @@ public interface IUserDAO {
      */
     int updateUserStateForActivationByEmail(String email);
 
+    /**
+     * 删减表
+     */
+    void truncateUserTable();
 }
