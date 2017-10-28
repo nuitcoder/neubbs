@@ -1,4 +1,4 @@
-package test.org.neusoft.neubbs.db;
+package test.org.neusoft.neubbs.service;
 
 import org.junit.Ignore;
 import org.junit.Test;

@@ -10,12 +10,12 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
 /**
- * Login Api 测试 ，模拟 http 测试  Collector 内接口
+ * Account api 测试
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
 @ContextConfiguration(locations = {"classpath:spring-context.xml"})
-public class LoginCollectorTestCase {
+public class AccountCollectorTestCase {
     @Mock
     private MockMvc mockMvc;
 

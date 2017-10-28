@@ -52,7 +52,6 @@ public class JsonUtilTestCast {
         UserDO user = new UserDO();
             user.setId(1);
             user.setName("testoneuser");
-            user.setAddress("中国某地");
 
         Map<String, Object> map = JsonUtil.toMapByObject(user);
 

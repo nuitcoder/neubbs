@@ -1,4 +1,4 @@
-package test.org.neusoft.neubbs.db;
+package test.org.neusoft.neubbs.dao;
 
 import org.junit.FixMethodOrder;
 import org.junit.Ignore;

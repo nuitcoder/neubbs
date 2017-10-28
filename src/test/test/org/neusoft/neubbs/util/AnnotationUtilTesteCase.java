@@ -1,5 +1,7 @@
 package test.org.neusoft.neubbs.util;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -15,16 +17,29 @@ import org.neusoft.neubbs.utils.AnnotationUtil;
  */
 @RunWith(JUnit4.class)
 public class AnnotationUtilTesteCase {
-    /**
-     * 测试 指定类，是否存在指定注解
-     */
-    @Test
-    public void testHashClassAnnotation(){
-        boolean existResult = AnnotationUtil.hasClassAnnotation(FileUploadException.class, ApiException.class);
-        System.out.println("FileUploadException 是否存在 @ApiException：" + existResult);
 
-        existResult = AnnotationUtil.hasClassAnnotation(AccountController.class, ApiException.class);
-        System.out.println("AccountController 是否存在 @ApiException：" + existResult);
+    @BeforeClass
+    public static void init() {
+        System.out.println("*************************** 开始测试 AnnotationUitl ****************************");
     }
 
+    /**
+     * 测试 hasMethdoAnnotation()
+     */
+    @Test
+    public void testHasMethodAnnotation(){
+        Class[] testClass = {FileUploadException.class, AccountController.class};
+        Class specificAnnotationsh = ApiException.class;
+        for(Class c : testClass) {
+            System.out.println("判断 " + c.getName() + " 是否包含 @" + specificAnnotationsh.getName() + "注解！");
+            if (!AnnotationUtil.hasClassAnnotation(c, specificAnnotationsh)) {
+                throw new NullPointerException(c.getName() + "不存在指定注解" + specificAnnotationsh.getName());
+            }
+        }
+    }
+
+    @AfterClass
+    public static void destroy() {
+        System.out.println("*************************** AnnotationUtil 测试完成 ****************************");
+    }
 }
