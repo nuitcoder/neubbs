@@ -4,13 +4,13 @@
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans
                         http://www.springframework.org/schema/beans/spring-beans-3.1.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
-	<!-- 配置数据源（dbcp连接池） -->
-	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+	<!-- 【云】配置数据源（dbcp连接池）-->
+	<bean id="cloudDataSource" class="org.apache.commons.dbcp.BasicDataSource"
 		  destroy-method="close">
 		<property name="driverClassName" value="${driver}" />
-		<property name="url" value="${url}" />
-		<property name="username" value="${username}" />
-		<property name="password" value="${password}" />
+		<property name="url" value="${cloud.url}" />
+		<property name="username" value="${cloud.username}" />
+		<property name="password" value="${cloud.password}" />
 		<property name="initialSize" value="${initialSize}"></property>
 		<property name="maxActive" value="${maxActive}"></property>
 		<property name="maxIdle" value="${maxIdle}"></property>
@@ -18,20 +18,42 @@
 		<property name="maxWait" value="${maxWait}"></property>
 	</bean>
 
+	<!--【本地】数据源 -->
+	<bean id="localDataSource" class="org.apache.commons.dbcp.BasicDataSource">
+		<property name="driverClassName" value="${driver}" />
+		<property name="url" value="${localhost.url}" />
+		<property name="username" value="${localhost.username}" />
+		<property name="password" value="${localhost.password}" />
+	</bean>
+
+    <!-- 统一数据源（动态切换） -->
+	<bean id="dynamicDataSource" class="org.neusoft.neubbs.controller.data.DynamicDataSource">
+		<property name="targetDataSources">
+			<map key-type="java.lang.String">
+				<!-- 通过不同 key 决定使用哪个数据源 -->
+				<entry value-ref="cloudDataSource" key="cloudDataSourceMysql"></entry>
+				<entry value-ref="localDataSource" key="localDataSourceMysql"></entry>
+			</map>
+		</property>
+		<!-- 设置默认 dataSource (云数据源) -->
+		<property name="defaultTargetDataSource" ref="cloudDataSource"></property>
+	</bean>
+
+
 	<!-- 注入数据源  and Mapper.xml（数据库配置文件） -->
 	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
-		<property name="dataSource" ref="dataSource" />	<!--注入数据库连接池-->
+		<property name="dataSource" ref="dynamicDataSource" /><!-- 注入数据库连接池 -->
 		<property name="mapperLocations" value="classpath:/mapping/*.xml" /><!-- 指定路径所有xml -->
 	</bean>
 
 	 <!--注入DAO and SQL会话工厂-->
 	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-		<property name="basePackage" value="org.neusoft.neubbs.dao" />					<!-- DAO接口所在包名，Spring会自动查找其下的类 -->
-		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />	<!-- 注入sqlSessionFactory -->
+		<property name="basePackage" value="org.neusoft.neubbs.dao" /><!-- DAO接口所在包名，Spring会自动查找其下的类 -->
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" /><!-- 注入sqlSessionFactory -->
 	</bean>
 
 	<!-- 配置事务管理器 -->
 	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-		<property name="dataSource" ref="dataSource" />
+		<property name="dataSource" ref="dynamicDataSource" /><!-- 指定数据源 -->
 	</bean>
 </beans>

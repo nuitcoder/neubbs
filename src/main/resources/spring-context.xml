@@ -7,7 +7,7 @@
                         http://www.springframework.org/schema/context
                         http://www.springframework.org/schema/context/spring-context-3.1.xsd">
 
-	<!-- 自动扫描（根据注解，自动注入相应Bean） -->
+	<!-- 自动扫描（根据注解，自动注入相应Bean）-->
 	<context:component-scan base-package="org.neusoft.neubbs" />
 
 	<!-- 注入配置文件 -->

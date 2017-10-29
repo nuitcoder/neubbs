@@ -1,12 +1,11 @@
 package test.org.neusoft.neubbs.dao;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.junit.Assert;
-import org.junit.FixMethodOrder;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.MethodSorters;
+import org.neusoft.neubbs.controller.handler.SwitchDataSourceHandler;
 import org.neusoft.neubbs.dao.IUserDAO;
 import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.utils.JsonUtil;
@@ -16,9 +15,6 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import javax.transaction.Transactional;
-import javax.xml.registry.infomodel.User;
-import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -33,12 +29,19 @@ public class UserDAOTestCase {
     @Autowired
     IUserDAO userDAO;
 
+    @BeforeClass
+    public static void init() {
+         //设置数据源云数据源（默认是使用云数据源） or 本地数据源
+//        SwitchDataSourceHandler.setDataSourceType(SwitchDataSourceHandler.CLOUD_DATA_SOURCE_MYSQL);
+        SwitchDataSourceHandler.setDataSourceType(SwitchDataSourceHandler.LOCALHOST_DATA_SOURCE_MYSQL);
+    }
+
     /**
      * 添加测试用户
      */
-    @Ignore
+    @Test
 //  @Transactional //方法级别事务回滚（声明单个方法）
-    public void testSaveUser() throws Exception{
+    public void testSaveUser() throws Exception {
         UserDO user = new UserDO();
             user.setName("testUser");
             user.setPassword(SecretUtil.encryptUserPassword("123456"));

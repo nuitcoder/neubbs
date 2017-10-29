@@ -1,6 +1,6 @@
 package org.neusoft.neubbs.utils;
 
-import java.util.LinkedHashMap;
+
 import java.util.Map;
 
 /**
@@ -45,6 +45,6 @@ public final class MapFilterUtil {
       userInfoMap.put(USERNAME, userInfoMap.get(NAME));
 
       //删除 id,name,password,image,rank,state,createtime
-      removeKeys(userInfoMap, new String []{ID, NAME, PASSWORD, IMAGE, RANK, STATE, CREATETIME});
+      removeKeys(userInfoMap, new String[]{ID, NAME, PASSWORD, IMAGE, RANK, STATE, CREATETIME});
    }
 }
