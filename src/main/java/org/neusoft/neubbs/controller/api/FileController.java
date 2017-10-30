@@ -92,7 +92,7 @@ public class FileController {
             throw new AccountErrorException(AccountInfo.TOKEN_EXPIRED).log(LogWarnInfo.ACCOUNT_05);
         }
 
-        String fileName = cookieUser.getId() + "_" + cookieUser.getName() + "_" + multipartFile.getOriginalFilename();
+        String fileName = cookieUser.getId() + "_" + System.currentTimeMillis() + "_" + multipartFile.getOriginalFilename();
         File imageFile = new File(serverPath, fileName);
         if (!imageFile.getParentFile().exists()) {
            //服务器检测不到目录，抛出异常
