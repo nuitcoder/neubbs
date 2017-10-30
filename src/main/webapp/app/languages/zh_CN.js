@@ -27,6 +27,18 @@ export default {
   'validate.password_confirmation.required': '请输入确认密码',
   'validate.password_confirmation.same': '确认密码错误',
 
+  // Activate
+  'activate.alert.text': '你的账号尚未激活，投票、评论、关注等功能将无法使用',
+  'activate.alert.button': '马上激活',
+  'activate.modal.title': '请激活账号',
+  'activate.modal.alert': '为了使用投票、评论、关注等功能，请激活你的账号',
+  'activate.modal.email': '你的邮箱：',
+  'activate.modal.change_email': '修改邮箱',
+  'activate.modal.tips': '激活邮件已发送，请注意查收（注意检查回收站、垃圾箱中是否有激活邮件）',
+  'activate.modal.unrevd': '如果仍未收到，请尝试',
+  'activate.modal.retry': '重新发送激活邮件',
+  'activate.modal.go_inbox': '前往邮箱查看',
+
   // Message
   'username or password is incorrect': '用户名或密码错误',
 }

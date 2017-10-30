@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { Alert, Grid, Button, Modal } from 'react-bootstrap'
 import styled from 'styled-components'
 import { Link } from 'react-router'
+import { FormattedMessage } from 'react-intl'
 import LinkToInbox from 'link-to-inbox'
 
 const StyledAlert = styled(Alert)`
@@ -91,37 +92,43 @@ class Activate extends Component {
   }
 
   renderModal() {
-    const { email } = this.props.profile
-    const inbox = LinkToInbox.getHref(email)
+    const { profile } = this.props
+    const inbox = LinkToInbox.getHref(profile.email)
 
     return (
       <Modal show={this.state.showModal} onHide={this.hideActivateModal}>
         <Modal.Header closeButton>
-          <Modal.Title>请激活账号</Modal.Title>
+          <Modal.Title>
+            <FormattedMessage id="activate.modal.title" />
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Alert bsStyle="warning">
-            为了使用投票、评论、关注等功能，请激活你的账号
+            <FormattedMessage id="activate.modal.alert" />
           </Alert>
           <ActivateLabel>
-            你的邮件：
-            <ActivateEmail>{email}</ActivateEmail>
-            <ActivateLink>不正确？</ActivateLink>
+            <FormattedMessage id="activate.modal.email" />
+            <ActivateEmail>{profile.email}</ActivateEmail>
+            <ActivateLink>
+              <FormattedMessage id="activate.modal.change_email" />
+            </ActivateLink>
           </ActivateLabel>
           <ActivateTips>
             <ActivateLabel>
-              激活邮件已发送，请注意查收（注意检查回收站、垃圾箱中是否有激活邮件）
+              <FormattedMessage id="activate.modal.tips" />
             </ActivateLabel>
             <ActivateLabel>
-              如果仍未收到，请尝试
-              <ActivateLink>重新发送激活邮件</ActivateLink>
+              <FormattedMessage id="activate.modal.unrevd" />
+              <ActivateLink>
+                <FormattedMessage id="activate.modal.retry" />
+              </ActivateLink>
             </ActivateLabel>
           </ActivateTips>
         </Modal.Body>
         <Modal.Footer>
           <Button>
             <StyledLink to={inbox} target="_blank">
-              前往邮箱查收
+              <FormattedMessage id="activate.modal.go_inbox" />
             </StyledLink>
           </Button>
         </Modal.Footer>
@@ -130,24 +137,22 @@ class Activate extends Component {
   }
 
   render() {
-    const { email } = this.props.profile
-
     return (
       <div>
         {this.state.showAlert &&
           <StyledAlert bsStyle="warning" onDismiss={this.handleAlertDismiss}>
             <StyledGrid componentClass="p">
-              你的账号尚未激活，投票、评论、关注等功能将无法使用
+              <FormattedMessage id="activate.alert.text" />
               <StyledButton
                 bsStyle="warning"
                 bsSize="xsmall"
                 onClick={this.showActivateModal}
               >
-                马上激活
+                <FormattedMessage id="activate.alert.button" />
               </StyledButton>
             </StyledGrid>
           </StyledAlert>}
-        {email && this.renderModal()}
+        {this.props.profile.email && this.renderModal()}
       </div>
     )
   }
