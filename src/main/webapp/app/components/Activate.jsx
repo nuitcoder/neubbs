@@ -16,8 +16,13 @@ const StyledButton = styled(Button)`
   font-weight: lighter;
 `
 
-const ActivateLabel = styled.span`
+const ActivateTips = styled.div`
+  margin-top: 20px;
+`
+
+const ActivateLabel = styled.p`
   color: #666;
+  margin-bottom: 5px;
 `
 
 const ActivateEmail = styled.span`
@@ -27,6 +32,8 @@ const ActivateEmail = styled.span`
 
 const ActivateLink = styled.a`
   color: #dd4c4f;
+  margin-left: 10px;
+  cursor: pointer;
 
   &:hover {
     color: #dd4c4f;
@@ -83,6 +90,15 @@ class Activate extends Component {
             <ActivateEmail>{profile.email}</ActivateEmail>
             <ActivateLink>不正确？</ActivateLink>
           </ActivateLabel>
+          <ActivateTips>
+            <ActivateLabel>
+              激活邮件已发送，请注意查收（注意检查回收站、垃圾箱中是否有激活邮件）
+            </ActivateLabel>
+            <ActivateLabel>
+              如果仍未收到，请尝试
+              <ActivateLink>重新发送激活邮件</ActivateLink>
+            </ActivateLabel>
+          </ActivateTips>
         </Modal.Body>
         <Modal.Footer>
           <Button>前往邮箱查收</Button>
