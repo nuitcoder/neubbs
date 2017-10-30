@@ -2,10 +2,9 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { Alert, Grid, Button, Modal } from 'react-bootstrap'
 import styled from 'styled-components'
-import _ from 'lodash'
 
 const StyledAlert = styled(Alert)`
-  margin-bottom: 0px;
+  margin-bottom: 0;
 `
 
 const StyledGrid = styled(Grid)`
@@ -15,6 +14,23 @@ const StyledGrid = styled(Grid)`
 const StyledButton = styled(Button)`
   margin-left: 10px;
   font-weight: lighter;
+`
+
+const ActivateLabel = styled.span`
+  color: #666;
+`
+
+const ActivateEmail = styled.span`
+  color: #333;
+  font-size: 18px;
+`
+
+const ActivateLink = styled.a`
+  color: #dd4c4f;
+
+  &:hover {
+    color: #dd4c4f;
+  }
 `
 
 class Activate extends Component {
@@ -62,10 +78,11 @@ class Activate extends Component {
           <Alert bsStyle="warning">
             为了使用投票、评论、关注等功能，请激活你的账号
           </Alert>
-          <p>
+          <ActivateLabel>
             你的邮件：
-            <span>{profile.email}</span>
-          </p>
+            <ActivateEmail>{profile.email}</ActivateEmail>
+            <ActivateLink>不正确？</ActivateLink>
+          </ActivateLabel>
         </Modal.Body>
         <Modal.Footer>
           <Button>前往邮箱查收</Button>

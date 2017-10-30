@@ -13,9 +13,9 @@ const LOGOUT_EVENT_KEY = 'LOGOUT'
 const REGISTER_EVENT_KEY = 'REGISTER'
 
 const StyledNavbar = styled(Navbar)`
-  margin-bottom: 0px;
+  margin-bottom: 0;
   background-color: #fff;
-  box-shadow: 0 1px 1px rgba(0, 0, 0, .05);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
 `
 
 const StyledLogoLink = styled(Link)`

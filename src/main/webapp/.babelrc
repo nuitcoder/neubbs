@@ -3,5 +3,6 @@
     "env",
     "react",
     "stage-1"
-  ]
+  ],
+  "plugins": ["babel-plugin-styled-components"]
 }
