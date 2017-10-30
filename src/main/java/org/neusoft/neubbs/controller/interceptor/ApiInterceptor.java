@@ -85,7 +85,7 @@ public class ApiInterceptor implements HandlerInterceptor {
      * @return boolean 验证结果
      * @throws Exception 所有异常
      */
-    private boolean doLoginAuthorization(HttpServletRequest request, Object handler) throws  Exception {
+    private boolean doLoginAuthorization(HttpServletRequest request, Object handler) throws Exception {
 
         /*
          * 验证流程：
@@ -94,8 +94,7 @@ public class ApiInterceptor implements HandlerInterceptor {
          *      3.解密 authentication（过期无法解密），获取用户信息（UserDO 对象）
          *      4.判断（能获取用户信息，表示已经登录）
          */
-        boolean hasLoginAuthorization = AnnotationUtil.hasMethodAnnotation(handler, LoginAuthorization.class);
-        if (hasLoginAuthorization) {
+        if (AnnotationUtil.hasMethodAnnotation(handler, LoginAuthorization.class)) {
             String authentication =  CookieUtil.getCookieValue(request, AccountInfo.AUTHENTICATION);
             if (authentication != null) {
                 UserDO user = JwtTokenUtil.verifyToken(authentication, SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY);
@@ -124,8 +123,8 @@ public class ApiInterceptor implements HandlerInterceptor {
      * @throws Exception 所有异常
      */
     private boolean doAccountActivation(HttpServletRequest request, Object handler) throws Exception {
-        boolean hasAccountActivation = AnnotationUtil.hasMethodAnnotation(handler, AccountActivation.class);
-        if (hasAccountActivation) {
+
+        if (AnnotationUtil.hasMethodAnnotation(handler, AccountActivation.class)) {
             String authentication = CookieUtil.getCookieValue(request, AccountInfo.AUTHENTICATION);
             if (authentication != null) {
                 UserDO user = JwtTokenUtil.verifyToken(authentication, SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY);
@@ -139,8 +138,7 @@ public class ApiInterceptor implements HandlerInterceptor {
                     return true;
                 }
 
-                throw new AccountErrorException(AccountInfo.NO_ACTIVATE)
-                            .log(user.getName() + LogWarnInfo.ACCOUNT_03);
+                throw new AccountErrorException(AccountInfo.NO_ACTIVATE).log(user.getName() + LogWarnInfo.ACCOUNT_03);
             }
         }
 
@@ -156,14 +154,12 @@ public class ApiInterceptor implements HandlerInterceptor {
      * @throws Exception 所有异常
      */
     private boolean doAdminRank(HttpServletRequest request, Object handler) throws Exception {
-        boolean hasAdminRank = AnnotationUtil.hasMethodAnnotation(handler, AdminRank.class);
-        if (hasAdminRank) {
+        if (AnnotationUtil.hasMethodAnnotation(handler, AdminRank.class)) {
             String authentication = CookieUtil.getCookieValue(request, AccountInfo.AUTHENTICATION);
             if (authentication != null) {
                 UserDO user = JwtTokenUtil.verifyToken(authentication, SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY);
                 if (user == null) {
-                    throw new AccountErrorException(AccountInfo.TOKEN_EXPIRED)
-                                .log(LogWarnInfo.ACCOUNT_05);
+                    throw new AccountErrorException(AccountInfo.TOKEN_EXPIRED).log(LogWarnInfo.ACCOUNT_05);
                 }
                 if (AccountInfo.RANK_ADMIN.equals(user.getRank())) {
                     //通过验证

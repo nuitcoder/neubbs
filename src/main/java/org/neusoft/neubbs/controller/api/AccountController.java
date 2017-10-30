@@ -139,7 +139,7 @@ public final class AccountController {
         }
 
         if (user == null) {
-            throw new AccountErrorException(null).log(LogWarnInfo.ACCOUNT_01);
+            throw new AccountErrorException(AccountInfo.NO_USER).log(LogWarnInfo.ACCOUNT_01);
         }
 
 

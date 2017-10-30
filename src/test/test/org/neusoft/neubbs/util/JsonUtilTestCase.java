@@ -13,7 +13,7 @@ import java.util.Map;
  * JSON 工具类 测试用例
  */
 @RunWith(JUnit4.class)
-public class JsonUtilTestCast {
+public class JsonUtilTestCase {
 
     /**
      * 将 Object 对象转为字符串

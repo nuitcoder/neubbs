@@ -17,7 +17,7 @@ public final class AnnotationUtil {
     }
 
     /**
-     * （方法级）是否存在指定注解
+     * （方法级）（拦截器）是否存在指定注解
      *
      * @param handler 方法对象（拦截器内的 Object handler）
      * @param c 注解的运行时Class
@@ -44,9 +44,9 @@ public final class AnnotationUtil {
     /**
      * （类 or 接口级）是否存在指定注解
      *
-     * @param objClass 类的运行时 Class
-     * @param annotationClass 指定注解类的 Class
-     * @return boolean
+     * @param objClass 类.class
+     * @param annotationClass 注解.lass
+     * @return boolean 存在结果
      */
     public static boolean hasClassAnnotation(Class objClass, Class annotationClass) {
         Annotation annotation = objClass.getAnnotation(annotationClass);
