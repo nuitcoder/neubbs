@@ -93,7 +93,6 @@ export function* profileSaga(action) {
 
   yield put({ type: types.REQUEST_SENDING })
   const { data } = yield call(api.account.profile, username)
-  console.log(data)
   try {
     if (data.success) {
       yield put({ type: types.GET_PROFILE_SUCCESS, payload: data.model })

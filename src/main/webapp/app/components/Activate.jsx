@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { Alert, Grid, Button, Modal } from 'react-bootstrap'
 import styled from 'styled-components'
+import { Link } from 'react-router'
+import LinkToInbox from 'link-to-inbox'
 
 const StyledAlert = styled(Alert)`
   margin-bottom: 0;
@@ -14,6 +16,20 @@ const StyledGrid = styled(Grid)`
 const StyledButton = styled(Button)`
   margin-left: 10px;
   font-weight: lighter;
+
+  &:focus {
+    outline: none;
+  }
+`
+
+const StyledLink = styled(Link)`
+  color: #333;
+  text-decoration: none;
+
+  &:hover {
+    color: #333;
+    text-decoration: none;
+  }
 `
 
 const ActivateTips = styled.div`
@@ -21,8 +37,8 @@ const ActivateTips = styled.div`
 `
 
 const ActivateLabel = styled.p`
-  color: #666;
-  margin-bottom: 5px;
+  color: #777;
+  margin-bottom: 0;
 `
 
 const ActivateEmail = styled.span`
@@ -75,7 +91,9 @@ class Activate extends Component {
   }
 
   renderModal() {
-    const { profile } = this.props
+    const { email } = this.props.profile
+    const inbox = LinkToInbox.getHref(email)
+
     return (
       <Modal show={this.state.showModal} onHide={this.hideActivateModal}>
         <Modal.Header closeButton>
@@ -87,7 +105,7 @@ class Activate extends Component {
           </Alert>
           <ActivateLabel>
             你的邮件：
-            <ActivateEmail>{profile.email}</ActivateEmail>
+            <ActivateEmail>{email}</ActivateEmail>
             <ActivateLink>不正确？</ActivateLink>
           </ActivateLabel>
           <ActivateTips>
@@ -101,13 +119,19 @@ class Activate extends Component {
           </ActivateTips>
         </Modal.Body>
         <Modal.Footer>
-          <Button>前往邮箱查收</Button>
+          <Button>
+            <StyledLink to={inbox} target="_blank">
+              前往邮箱查收
+            </StyledLink>
+          </Button>
         </Modal.Footer>
       </Modal>
     )
   }
 
   render() {
+    const { email } = this.props.profile
+
     return (
       <div>
         {this.state.showAlert &&
@@ -123,7 +147,7 @@ class Activate extends Component {
               </StyledButton>
             </StyledGrid>
           </StyledAlert>}
-        {this.renderModal()}
+        {email && this.renderModal()}
       </div>
     )
   }

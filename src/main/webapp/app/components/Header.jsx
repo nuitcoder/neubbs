@@ -5,6 +5,7 @@ import PropTypes from 'prop-types'
 import { Navbar, Nav, NavItem } from 'react-bootstrap'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
+import { injectIntl } from 'react-intl'
 
 import actions from '../actions'
 
@@ -58,20 +59,31 @@ class Header extends Component {
   }
 
   renderRightNavbar() {
-    const { isLogin } = this.props
+    const { isLogin, intl } = this.props
+    const { formatMessage } = intl
+
+    const loginMsg = formatMessage({ id: 'header.login' })
+    const registerMsg = formatMessage({ id: 'header.register' })
+    const logoutMsg = formatMessage({ id: 'header.logout' })
 
     if (isLogin) {
       return (
         <Nav onSelect={this.handleRightNavbar} pullRight>
-          <NavItem eventKey={LOGOUT_EVENT_KEY}>退出</NavItem>
+          <NavItem eventKey={LOGOUT_EVENT_KEY}>
+            {logoutMsg}
+          </NavItem>
         </Nav>
       )
     }
 
     return (
       <Nav onSelect={this.handleRightNavbar} pullRight>
-        <NavItem eventKey={REGISTER_EVENT_KEY}>注册</NavItem>
-        <NavItem eventKey={LOGIN_EVENT_KEY}>登录</NavItem>
+        <NavItem eventKey={REGISTER_EVENT_KEY}>
+          {registerMsg}
+        </NavItem>
+        <NavItem eventKey={LOGIN_EVENT_KEY}>
+          {loginMsg}
+        </NavItem>
       </Nav>
     )
   }
@@ -119,7 +131,7 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-export default connect(
+export default injectIntl(connect(
   mapStateToProps,
   mapDispatchToProps,
-)(Header)
+)(Header))

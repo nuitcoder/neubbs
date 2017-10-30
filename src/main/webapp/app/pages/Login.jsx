@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { Alert } from 'react-bootstrap'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
+import { injectIntl } from 'react-intl'
 
 import FormWrapper from '../components/FormWrapper'
 import LoginForm from '../components/LoginForm'
@@ -11,7 +12,7 @@ class Login extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      alertMessage: '',
+      message: '',
     }
 
     this.handleAlertDismiss = this.handleAlertDismiss.bind(this)
@@ -20,13 +21,13 @@ class Login extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.account.error !== this.props.account.error) {
-      this.setState({ alertMessage: nextProps.account.error })
+      this.setState({ message: nextProps.account.error })
     }
   }
 
   handleAlertDismiss() {
     this.setState({
-      alertMessage: '',
+      message: '',
     })
   }
 
@@ -35,13 +36,17 @@ class Login extends Component {
   }
 
   render() {
-    const { alertMessage } = this.state
+    const { message } = this.state
+    const { intl: { formatMessage } } = this.props
+
+    const titleMsg = formatMessage({ id: 'form.title.login' })
+    const alertMsg = message && formatMessage({ id: message })
 
     return (
-      <FormWrapper title="用户登录">
-        {alertMessage !== '' &&
+      <FormWrapper title={titleMsg}>
+        {message !== '' &&
           <Alert bsStyle="danger" onDismiss={this.handleAlertDismiss}>
-            {alertMessage}
+            {alertMsg}
           </Alert>}
         <LoginForm onSubmit={this.handleSubmit} />
       </FormWrapper>
@@ -64,4 +69,4 @@ const mapDispatchToProps = (dispatch) => {
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(Login)
+)(injectIntl(Login))

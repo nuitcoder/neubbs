@@ -28,7 +28,9 @@ const FormContent = styled.div`
 const FormWrapper = ({ title, children }) => {
   return (
     <Wrapper>
-      <FormHeader>{title}</FormHeader>
+      <FormHeader>
+        {title}
+      </FormHeader>
       <FormContent>
         {children}
       </FormContent>
