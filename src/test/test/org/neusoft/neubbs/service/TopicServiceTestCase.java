@@ -82,7 +82,7 @@ public class TopicServiceTestCase {
      */
     @Test
     public void test_41_AlterTopicContent() throws Exception {
-            topicService.alterTopicContent(2, "修改后的topic Content！");
+//            topicService.alterTopicContent(2, "修改后的topic Content！");
     }
 
     /**
@@ -90,7 +90,7 @@ public class TopicServiceTestCase {
      */
     @Test
     public void test_42_AlterTopicReplyContent() throws Exception {
-            topicService.alterTopicReplyContent(6, "修改后的 topic Reply Content!");
+//            topicService.alterReplyContent(6, "修改后的 topic Reply Content!");
     }
 
 }

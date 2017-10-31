@@ -1,5 +1,7 @@
 package org.neusoft.neubbs.utils;
 
+import com.sun.org.apache.regexp.internal.RE;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -23,6 +25,7 @@ public final class RequestParamsCheckUtil {
     private static final String CATEGORY = "category";
     private static final String TITLE = "title";
     private static final String CONTENT = "content";
+    private static final String REPLY = "reply";
 
     private static final Integer USERNAME_LENGTH_MIN = 3;
     private static final Integer USERNAME_LENGTH_MAX = 15;
@@ -34,6 +37,7 @@ public final class RequestParamsCheckUtil {
     private static final Integer CATEGORY_LENGTH_MAX = 20;
     private static final Integer TITLE_LENGTH_MAX = 50;
     private static final Integer CONTENT_LENGTH_MAX = 10000;
+    private static final Integer REPLY_LENGTH_MAX = 150;
 
     /**
      * 错误提示信息
@@ -47,6 +51,7 @@ public final class RequestParamsCheckUtil {
     private static final String WARN_CATEGORY_NO_NULL = "参数 category，不能为空；";
     private static final String WARN_TITLE_NO_NULL = "参数 title，不能为空；";
     private static final String WARN_CONTENT_NO_NULL = "参数 content，不能为空；";
+    private static final String WARN_REPLY_CONTENT_NO_NULL = "参数 reply content 不能为空";
 
     private static final String WARN_USERNAME_LENGTH_NO_MATCH_SCOPE = "参数 username ，长度不符合范围（ 3 <= length <= 15）";
     private static final String WARN_PASSWORD_LENGTH_NO_MATCH_SCOPE = "参数 password，长度不符合范围（6 <= length <= 16）";
@@ -55,6 +60,7 @@ public final class RequestParamsCheckUtil {
     private static final String WARN_CATEGORY_LENGTH_NO_MATCH_SCOPE = "参数 category，长度不符合范围（1 <= length <= 20）";
     private static final String WARN_TITLE_LENGTH_NO_MATCH_SCOPE = "参数 title，长度不符合规范（1 <= length <= 50）";
     private static final String WARN_CONTENT_LENGTH_NO_MATCH_SCOPE = "参数 content，长度不符合规范（1 <= length < 10000）";
+    private static final String WARN_REPLY_CONTENT_LENGTH_NO_MATCH_SCOPE = "参数 reply content 长度不符合规范（1 <= length < 150）";
 
     private static final String WARN_USERNAME_STYLE_NO_MEET_NORM = "参数 username ，格式不符合规范（A-Z a-z 0-9），请重新输入！";
     private static final String WARN_EMAIL_STYLE_NO_MEET_NORM = "参数 email，邮箱格式不符合规范（xxx@xx.xxx），请重新输入！";
@@ -245,6 +251,24 @@ public final class RequestParamsCheckUtil {
     }
 
     /**
+     * 检查回复内容
+     *
+     * @param content 回复内容
+     * @return String 错误信息
+     */
+    public static String checkReply(String content) {
+        if (StringUtil.isEmpty(content)) {
+            return WARN_REPLY_CONTENT_NO_NULL;
+        }
+
+       if(StringUtil.isScope(content, ONE_LENGTH, CONTENT_LENGTH_MAX)) {
+            return WARN_REPLY_CONTENT_LENGTH_NO_MATCH_SCOPE;
+       }
+
+        return null;
+    }
+
+    /**
      * 参数集合非空检测 ，链式调用
      *
      *    String errorInfo = RequestParamsCheckUtil
@@ -321,6 +345,8 @@ public final class RequestParamsCheckUtil {
                 errorInfo.append(checkTitleNorm(value));
             } else if (key.equals(CONTENT)) {
                 errorInfo.append(checkCategoryNorm(value));
+            } else if (key.equals(REPLY)) {
+                errorInfo.append(checkReplyNorm(value));
             }
 
             if (errorInfo.length() > 0) {
@@ -374,6 +400,10 @@ public final class RequestParamsCheckUtil {
             } else if (key.equals(CONTENT)) {
                 if (StringUtil.isEmpty(value)) {
                     errorInfo.append(WARN_CONTENT_NO_NULL);
+                }
+            } else if (key.equals(REPLY)) {
+                if (StringUtil.isEmpty(value)) {
+                    errorInfo.append(WARN_REPLY_CONTENT_NO_NULL);
                 }
             }
 
@@ -485,6 +515,20 @@ public final class RequestParamsCheckUtil {
     private static String checkContentNorm(String content) {
         if (!StringUtil.isScope(content, ONE_LENGTH, CONTENT_LENGTH_MAX)) {
             return WARN_CAPTCHA_LENGTH_NO_MATCH_SCOPE;
+        }
+
+        return "";
+    }
+
+    /**
+     * 【私有】检查回复内容（用于链式调用）
+     *
+     * @param content 话题内容
+     * @return String 错误信息
+     */
+    private static String checkReplyNorm(String content) {
+        if (!StringUtil.isScope(content, ONE_LENGTH, REPLY_LENGTH_MAX)) {
+            return WARN_REPLY_CONTENT_LENGTH_NO_MATCH_SCOPE;
         }
 
         return "";

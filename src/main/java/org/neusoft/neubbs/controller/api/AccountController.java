@@ -363,7 +363,7 @@ public final class AccountController {
      *
      * @param requestBodyParamsMap request-body内JSON数据
      * @param request http请求
-     * @return ResponseJsonDTO 相应JSON传输对象
+     * @return ResponseJsonDTO 响应JSON传输对象
      * @throws Exception 所有异常
      */
     @LoginAuthorization @AccountActivation

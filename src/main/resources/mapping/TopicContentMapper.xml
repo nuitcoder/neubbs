@@ -20,7 +20,7 @@
    </insert>
 
    <delete id="removeTopicContentById" parameterType="java.lang.Integer">
-      DELETE FROM forum_topic_content WHERE ftc_id = #{id, jdbcType = INTEGER}
+      DELETE FROM forum_topic_content WHERE ft_id = #{id, jdbcType = INTEGER}
    </delete>
 
    <select id="getTopicContentMaxId" resultType="java.lang.Integer">

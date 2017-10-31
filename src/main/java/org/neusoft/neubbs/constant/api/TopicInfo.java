@@ -25,6 +25,8 @@ public final class TopicInfo {
     public static final String OPPOSE = "oppose";
     public static final String REPLYID = "replyid";
 
+    public static final String REPLY = "reply";
+
 
     /**
      * Topic api 警告信息

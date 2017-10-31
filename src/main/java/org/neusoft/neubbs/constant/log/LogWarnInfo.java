@@ -29,8 +29,8 @@ public final class LogWarnInfo {
 
 
     /*****************************Topic api**********************************/
-    public static final String TOPIC_01 = "不存在指定主题，请检查输入（主题 id）";
-    public static final String TOPIC_02 = "不存在指定回复，请检查输入（回复 id）";
+//    public static final String TOPIC_01 = "不存在指定主题，请检查输入（主题 id）";
+//    public static final String TOPIC_02 = "不存在指定回复，请检查输入（回复 id）";
 
 
     /*****************************File api**********************************/
@@ -51,15 +51,17 @@ public final class LogWarnInfo {
 
 
     /******************************Topic Service*********************************/
-    public static final String TOPIC_SAVE_FAIL = "主题保存失败";
-    public static final String TOPIC_CONTENT_SAVE_FAIL = "主题内容保存失败";
-    public static final String TOPIC_REPLY_SAVE_FAIL = "主题回复保存失败";
-    public static final String TOPIC_REMOVE_FAIL = "主题删除失败";
-    public static final String TOPIC_CONTENT_REMOVE_FAIL = "主题内容删除失败";
-    public static final String TOPIC_REPLY_REMOVE_FAIL = "主题回复删除失败";
-    public static final String TOPIC_ALTER_FAIL = "主题修改失败";
-    public static final String TOPIC_CONTENT_ALTER_FAIL = "主题内容修改失败";
-    public static final String TOPIC_REPLY_ALTER_FAIL = "主题回复修改失败";
+    public static final String TOPIC_01 = "主题保存失败";
+    public static final String TOPIC_02 = "主题内容保存失败";
+    public static final String TOPIC_03 = "主题回复保存失败";
+    public static final String TOPIC_04 = "主题删除失败";
+    public static final String TOPIC_05 = "主题内容删除失败";
+    public static final String TOPIC_06 = "主题回复删除失败";
+    public static final String TOPIC_07 = "主题修改失败";
+    public static final String TOPIC_08 = "主题内容修改失败";
+    public static final String TOPIC_09 = "主题回复修改失败";
+    public static final String TOPIC_10 = "不存在主题";
+    public static final String TOPIC_11 = "不存在回复";
 
 
     /******************************Redis Service*********************************/
