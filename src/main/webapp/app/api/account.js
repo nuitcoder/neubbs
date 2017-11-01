@@ -1,10 +1,12 @@
 import axios from 'axios'
 import {
-  ACCOUNT_API_URL,
-  LOGIN_API_URL,
-  LOGOUT_API_URL,
-  REGISTER_API_URL,
-  ACTIVATE_STATE_API_URL,
+  ACCOUNT_URL,
+  LOGIN_URL,
+  LOGOUT_URL,
+  REGISTER_URL,
+  ACTIVATE_STATE_URL,
+  UPDATE_EMAIL_URL,
+  SEND_ACTIVATE_EMAIL_URL,
 } from '../constants/api'
 
 const account = {
@@ -17,7 +19,7 @@ const account = {
    * @returns {promise} login ajax promise
    */
   login(username, password) {
-    return axios.post(LOGIN_API_URL, { username, password })
+    return axios.post(LOGIN_URL, { username, password })
   },
 
   /**
@@ -26,7 +28,7 @@ const account = {
    * @returns {promise} logout ajax promise
    */
   logout() {
-    return axios.get(LOGOUT_API_URL)
+    return axios.get(LOGOUT_URL)
   },
 
   /**
@@ -35,7 +37,7 @@ const account = {
    * @returns {promise} register ajax promise
    */
   register(username, email, password) {
-    return axios.post(REGISTER_API_URL, {
+    return axios.post(REGISTER_URL, {
       username,
       email,
       password,
@@ -49,7 +51,7 @@ const account = {
    * @returns {promise} register ajax promise
    */
   uniqueByName(username) {
-    return axios.get(ACCOUNT_API_URL, {
+    return axios.get(ACCOUNT_URL, {
       params: {
         username,
       },
@@ -63,7 +65,7 @@ const account = {
    * @returns {promise} register ajax promise
    */
   uniqueByEmail(email) {
-    return axios.get(ACCOUNT_API_URL, {
+    return axios.get(ACCOUNT_URL, {
       params: {
         email,
       },
@@ -76,7 +78,7 @@ const account = {
    * @returns {promise} activate ajax promise
    */
   activate(username) {
-    return axios.get(ACTIVATE_STATE_API_URL, {
+    return axios.get(ACTIVATE_STATE_URL, {
       params: {
         username,
       },
@@ -89,11 +91,19 @@ const account = {
    * @returns {promise} profile ajax promise
    */
   profile(username) {
-    return axios.get(ACCOUNT_API_URL, {
+    return axios.get(ACCOUNT_URL, {
       params: {
         username,
       },
     })
+  },
+
+  updateEmail(username, email) {
+    return axios.post(UPDATE_EMAIL_URL, { username, email })
+  },
+
+  sendActivateEmail(email) {
+    return axios.post(SEND_ACTIVATE_EMAIL_URL, { email })
   },
 }
 

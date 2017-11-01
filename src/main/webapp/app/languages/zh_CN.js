@@ -37,6 +37,7 @@ export default {
   'activate.modal.tips': '激活邮件已发送，请注意查收（注意检查回收站、垃圾箱中是否有激活邮件）',
   'activate.modal.unrevd': '如果仍未收到，请尝试',
   'activate.modal.retry': '重新发送激活邮件',
+  'activate.modal.countdown': '激活邮箱已发送（{count}s）',
   'activate.modal.go_inbox': '前往邮箱查看',
 
   // Message
