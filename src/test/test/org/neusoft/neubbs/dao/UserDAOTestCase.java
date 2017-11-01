@@ -39,7 +39,7 @@ public class UserDAOTestCase {
     /**
      * 添加测试用户
      */
-    @Test
+    @Ignore
 //  @Transactional //方法级别事务回滚（声明单个方法）
     public void testSaveUser() throws Exception {
         UserDO user = new UserDO();

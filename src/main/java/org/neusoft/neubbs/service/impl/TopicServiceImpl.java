@@ -134,7 +134,7 @@ public class TopicServiceImpl implements ITopicService {
         }
 
         //删除指定主题所有回复
-        int removeTopicReplyEffectRow = topicReplyDAO.removeTopicReplyByTopicId(topicId);
+        int removeTopicReplyEffectRow = topicReplyDAO.removeListTopicReplyByTopicId(topicId);
     }
 
     @Override

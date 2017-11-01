@@ -35,7 +35,7 @@ public interface ITopicReplyDAO {
      * @param topicId 话题id
      * @return int 删除行数
      */
-    int removeTopicReplyByTopicId(int topicId);
+    int removeListTopicReplyByTopicId(int topicId);
 
     /**
      * 获取话题回复总数
@@ -75,7 +75,7 @@ public interface ITopicReplyDAO {
      * @param id 回复id
      * @return int 更新行数
      */
-    int updateAgreeAddOneById(int id);
+    int updateAgreeAddOneById(int replyId);
 
     /**
      * 更新点赞数（自动 -1）

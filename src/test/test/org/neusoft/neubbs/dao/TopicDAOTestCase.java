@@ -1,10 +1,15 @@
 package test.org.neusoft.neubbs.dao;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
+import org.neusoft.neubbs.controller.handler.SwitchDataSourceHandler;
 import org.neusoft.neubbs.dao.ITopicDAO;
 import org.neusoft.neubbs.entity.TopicDO;
 import org.neusoft.neubbs.utils.JsonUtil;
@@ -20,98 +25,107 @@ import java.util.List;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:spring-context.xml"})
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
-//@Transactional
 public class TopicDAOTestCase {
 
     @Autowired
     ITopicDAO topicDAO;
 
+   @BeforeClass
+   public static void init() {
+       SwitchDataSourceHandler.setDataSourceType(SwitchDataSourceHandler.LOCALHOST_DATA_SOURCE_MYSQL);
+   }
+
     /**
-     * 插入主题
+     * 插入话题
      */
-    @Test
-    //@Transactional
-    public void test1_SaveTopic(){
+    @Ignore
+    public void testSaveTopic(){
         TopicDO topic = new TopicDO();
             topic.setUserid(1);
             topic.setCategory("testtopic");
-            topic.setTitle("测试主题");
+            topic.setTitle("测试话题");
 
-        int effectRow = topicDAO.saveTopic(topic);
-        System.out.println("插入行数：" + effectRow + "，新主题的id = " + topic.getId());
+        Assert.assertNotEquals(topicDAO.saveTopic(topic), 0);
+        System.out.println("插入新话题:" + JsonUtil.toJSONStringByObject(topic));
+    }
+
+    /**
+     * 插入 100 条话题，用于测试
+     */
+    @Ignore
+    public void testSaveTopic_100() {
+        //插入100行数据进行测试（用户 id 必须存在，受外键约束）
+        for(int i = 1; i <= 100; i++){
+            TopicDO topic = new TopicDO();
+            topic.setUserid(i % 5 + 1);
+            topic.setCategory("分类" + i + "种");
+            topic.setTitle("主题" + i + "号");
+
+            topicDAO.saveTopic(topic);
+            System.out.println("成功插入第" + i + "行数据");
+        }
     }
 
     /**
      * 删除主题
      */
     @Test
-    public void test2_RemoveTopicById(){
+    public void testRemoveTopicById(){
        TopicDO topic = new TopicDO();
-            topic.setUserid(1);
+            topic.setUserid(98);
             topic.setCategory("remove");
-            topic.setTitle("即将被删除的主题");
+            topic.setTitle("即将被删除的话题");
 
-        topicDAO.saveTopic(topic);
-
-        int effectRow = topicDAO.removeTopicById(topic.getId());
-        System.out.println("删除 id = " + topic.getId()  + " 的主题，删除行数: " + effectRow);
+        Assert.assertNotEquals(topicDAO.saveTopic(topic), 0);
+        Assert.assertNotEquals(topicDAO.removeTopicById(topic.getId()), 0);
+        System.out.println("删除话题 id = " + topic.getId());
     }
 
     /**
-     * 统计主题总数
+     * 统计话题总数
      */
     @Test
-    public void test3_CountTopic(){
-        int topicTotal = topicDAO.countTopic();
-        System.out.println("主题总数：" + topicTotal);
+    public void testCountTopic(){
+        System.out.println("话题总数：" + topicDAO.countTopic());
     }
 
     /**
-     * 查询最新插入的id
-     */
-    @Ignore
-    public void testGetTopicMaxId(){
-        System.out.println("最新插入的 id =" + topicDAO.getTopicMaxId());
-    }
-
-    /**
-     * id 查询主题
+     * 查询 id 最大值（最新插入 id）
      */
     @Test
-    public void test4_GetTopicById(){
+    public void testTopicMaxId(){
+        System.out.println("最大值 id = " + topicDAO.getTopicMaxId());
+    }
+
+    /**
+     * id 查询话题
+     */
+    @Test
+    public void testTopicById(){
         TopicDO topic = topicDAO.getTopicById(topicDAO.getTopicMaxId());
-        System.out.println("查询结果：" + JsonUtil.toJSONStringByObject(topic));
+
+        Assert.assertNotNull(topic);
+        System.out.println("id 查询话题（最新插入）" + JsonUtil.toJSONStringByObject(topic));
     }
 
     /**
-     *  逆序获取话题列表（指定数量）
+     * 获取话题列表（逆序-最新插入，指定数量）
      */
     @Test
-    public void test4_ListTopicDESCByCount(){
+    public void testListTopicDESCByCount(){
         List<TopicDO> listTopic = topicDAO.listTopicDESCByCount(10);
 
         for(TopicDO topic: listTopic){
-            System.out.println(JsonUtil.toJSONStringByObject(topic));
+            System.out.println("话题信息：" + JsonUtil.toJSONStringByObject(topic));
         }
     }
 
 
     /**
-     * 分页查询 forum_topic 表所有记录
+     * 获取话题列表（指定开始行数，数量）
      */
     @Test
-    public void test5_ListTopicByStartByCount(){
-        //插入100行数据进行测试
-        //for(int i = 0; i < 100; i++){
-        //    TopicDO topic = new TopicDO();
-        //        topic.setUserid(i);
-        //        topic.setCategory("分类" + i + "种");
-        //        topic.setTitle("主题" + i + "号");
-        //
-        //        topicDAO.saveTopic(topic);
-        //        System.out.println("成功插入第" + i + "行数据");
-        //}
+    public void testListTopicByStartByCount(){
 
         int startRow = 0;
         int count = 10;
@@ -121,60 +135,58 @@ public class TopicDAOTestCase {
         for(TopicDO topic: listTopic){
             System.out.println(JsonUtil.toJSONStringByObject(topic));
         }
+        System.out.println("*************************** 结束 ****************************");
     }
 
     /**
      * 更新分类
      */
-    @Test
-    public void test61_UpdateCategoryById(){
-        int effectRow = topicDAO.updateCategoryById(topicDAO.getTopicMaxId(), "已经更新分类");
-        System.out.println("修改标题，已更新行数：" + effectRow);
+    @Ignore
+    public void testUpdateCategoryById(){
+        String newCategory = "新更新分类";
+        Assert.assertNotEquals(topicDAO.updateCategoryById(topicDAO.getTopicMaxId(), newCategory), 0);
     }
 
     /**
      * 更新标题
      */
-    @Test
-    public void tes6222_UpdateTitle(){
-        int effectRow = topicDAO.updateTitleById(topicDAO.getTopicMaxId(), "已经更新标题");
-        System.out.println("修改标题，已更新行数：" + effectRow);
+    @Ignore
+    public void testUpdateTitle(){
+        String newTitle = "新标题";
+        Assert.assertNotEquals(topicDAO.updateTitleById(topicDAO.getTopicMaxId(), newTitle), 0);
     }
 
     /**
      * 更新评论数（自动 +1）
      */
-    @Test
-    public void test63_UpdateCommentById(){
-        int effectRow = topicDAO.updateCommentAddOneById(topicDAO.getTopicMaxId());
-        System.out.println("评论数+1，已更新行数：" + effectRow);
+    @Ignore
+    public void testUpdateCommentAddOneById(){
+        Assert.assertNotEquals(topicDAO.updateCommentAddOneById(topicDAO.getTopicMaxId()), 0);
     }
 
     /**
      * 更新评论数（自动 -1）
      */
-    @Test
-    public void test633_UpdateCommentById(){
-        int effectRow = topicDAO.updateCommentCutOneById(topicDAO.getTopicMaxId());
-        System.out.println("评论数-1，已更新行数：" + effectRow);
+    @Ignore
+    public void testUpdateCommentCutOneById(){
+        Assert.assertNotEquals(topicDAO.updateCommentCutOneById(topicDAO.getTopicMaxId()), 0);
     }
 
     /**
-     * 更新最后回复id
+     * 更新最后回复 id
+     *      - id 有外键约束
      */
-    @Test
-    public void test64_UpdateLastreplyuseridById(){
-        int effectRow = topicDAO.updateLastreplyuseridById(topicDAO.getTopicMaxId(),20);
-        System.out.println("更新最后回复人id,已更新行数：" + effectRow);
+    @Ignore
+    public void testUpdateLastreplyuseridById(){
+        int newLastReplyUserId = 1;
+        Assert.assertNotEquals(topicDAO.updateLastreplyuseridById(topicDAO.getTopicMaxId(), newLastReplyUserId), 0);
     }
 
     /**
      * 更新最后回复时间
      */
-    @Test
-    public void test65_UpdateLastreplytimeById(){
-        Date date = new Date();
-        int effectRow = topicDAO.updateLastreplytimeById(topicDAO.getTopicMaxId(), date);
-        System.out.println("修改最后回复时间，已影响行数：" + effectRow);
+    @Ignore
+    public void testUpdateLastreplytimeById(){
+        Assert.assertNotEquals(topicDAO.updateLastreplytimeById(topicDAO.getTopicMaxId(), new Date()), 0);
     }
 }

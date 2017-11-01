@@ -29,7 +29,7 @@ public interface ITopicContentDAO {
     /**
      * 获取话题总数
      *
-     * @return int 话题总数
+     * @return int 话题内容最大id（ftr_id）
      */
     int getTopicContentMaxId();
 

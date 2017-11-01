@@ -28,7 +28,7 @@
    </select>
    <select id="getTopicContentById" parameterType="java.lang.Integer" resultMap="TopicContentMap">
       SELECT ftc_id, ft_id, ftc_content, ftc_read, ftc_agree
-      FROM forum_topic_content WHERE ftc_id = #{id, jdbcType = INTEGER}
+      FROM forum_topic_content WHERE ft_id = #{id, jdbcType = INTEGER}
    </select>
 
    <update id="updateContentByTopicId">

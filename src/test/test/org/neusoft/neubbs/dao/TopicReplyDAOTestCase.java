@@ -1,10 +1,14 @@
 package test.org.neusoft.neubbs.dao;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
+import org.neusoft.neubbs.controller.handler.SwitchDataSourceHandler;
 import org.neusoft.neubbs.dao.ITopicReplyDAO;
 import org.neusoft.neubbs.entity.TopicReplyDO;
 import org.neusoft.neubbs.utils.JsonUtil;
@@ -19,139 +23,142 @@ import java.util.List;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:spring-context.xml"})
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
-//@Transactional
 public class TopicReplyDAOTestCase {
 
     @Autowired
     ITopicReplyDAO topicReplyDAO;
 
+    @BeforeClass
+    public static void init() {
+        SwitchDataSourceHandler.setDataSourceType(SwitchDataSourceHandler.LOCALHOST_DATA_SOURCE_MYSQL);
+    }
+
     /**
      * 保存回复
+     *      - 用户 id 受外键约束
+     *      - 话题 id 受外键约束
      */
-    @Test
-    //@Transactional
-    public void test1_SaveTopicReply(){
+    @Ignore
+    public void testSaveTopicReply(){
         TopicReplyDO topicReply = new TopicReplyDO();
             topicReply.setUserid(1);
             topicReply.setTopicid(1);
             topicReply.setContent("第一篇评论内容");
 
-        int effectRow = topicReplyDAO.saveTopicReply(topicReply);
-        System.out.println("插入行数：" + effectRow + "，新回复 id = " + topicReply.getId());
+        Assert.assertNotEquals(topicReplyDAO.saveTopicReply(topicReply), 0);
+        System.out.println("插入话题回复：" + JsonUtil.toJSONStringByObject(topicReply));
     }
 
     /**
-     * 删除回复
+     * 保存 100 条回复
      */
-    @Test
-    public void test2_RemoveTopicReplyById(){
+    @Ignore
+    public void testSaveTopicReply_100() {
         TopicReplyDO topicReply = new TopicReplyDO();
-            topicReply.setUserid(2);
-            topicReply.setTopicid(2);
+        for(int i = 1; i <= 100; i++) {
+            topicReply.setUserid(i % 5 + 1);
+            topicReply.setTopicid(1 + (int)(Math.random() * 100));
+            topicReply.setContent("第 " + i + " 条回复内容");
+
+            Assert.assertNotEquals(topicReplyDAO.saveTopicReply(topicReply), 0);
+            System.out.println("成功插入 " + i + " 条回复！");
+        }
+    }
+
+    /**
+     * id 删除回复
+     */
+    @Ignore
+    public void testRemoveTopicReplyById(){
+        TopicReplyDO topicReply = new TopicReplyDO();
+            topicReply.setUserid(1);
+            topicReply.setTopicid(1);
             topicReply.setContent("即将删除的回复");
 
-        topicReplyDAO.saveTopicReply(topicReply);
-
-        int effectRow = topicReplyDAO.removeTopicReplyById(topicReply.getId());
-        System.out.println("删除id = " + topicReply.getId() + " 的主题，删除行数 " + effectRow);
+        Assert.assertNotEquals(topicReplyDAO.saveTopicReply(topicReply), 0);
+        Assert.assertNotEquals(topicReplyDAO.removeTopicReplyById(topicReply.getId()), 0);
+        System.out.println("删除话题回复 replyId = " + topicReply.getId());
     }
 
     /**
      * 删除回复（指定话题id，所有回复）
      */
-    @Test
-    public void test22_RemoveTopicReplyByTopicId(){
-        TopicReplyDO topicReply = new TopicReplyDO();
-        for(int i = 0; i < 5; i++){
-            topicReply.setUserid(3);
-            topicReply.setTopicid(3);
-            topicReply.setContent("即将被删除话题id=3的5条回复之一");
-
-            topicReplyDAO.saveTopicReply(topicReply);
-        }
-        System.out.println("成功插入 5 条 topicId = 3 的回复");
-
-        int effectRow = topicReplyDAO.removeTopicReplyByTopicId(3);
-        System.out.println("删除 话题id = 3 的所有回复，删除行数：" + effectRow);
-
+    @Ignore
+    public void testRemoveListTopicReplyByTopicId(){
+        int effectRow = topicReplyDAO.removeListTopicReplyByTopicId(2);
+        Assert.assertNotEquals(effectRow, 0);
+        System.out.println("删除指定话题 id 的 " + effectRow + " 条回复！");
     }
 
     /**
-     * 获取最近插入的 id
+     * 获取最大回复 id（ftr_id，最新插入id）
      */
-    @Ignore
+    @Test
     public void testGetTopicReplyMaxId(){
-        System.out.println("最近插入的id:" + topicReplyDAO.getTopicReplyMaxId());
+        System.out.println("最大回复 id = " + topicReplyDAO.getTopicReplyMaxId());
     }
 
     /**
      * id 获取指定回复
      */
     @Test
-    public void test3_GetTopicReplyById(){
-        int maxId = topicReplyDAO.getTopicReplyMaxId();
-        System.out.println("最新插入的id ：" + maxId);
-
-        TopicReplyDO topicReply = topicReplyDAO.getTopicReplyById(maxId);
-
-        System.out.println("查询 id = 1 的回复，查询结果：" + JsonUtil.toJSONStringByObject(topicReply));
+    public void testGetTopicReplyById(){
+        TopicReplyDO topicReply = topicReplyDAO.getTopicReplyById(topicReplyDAO.getTopicReplyMaxId());
+        Assert.assertNotNull(topicReply);
+        System.out.println("查询回复信息：" + JsonUtil.toJSONStringByObject(topicReply));
     }
 
     /**
-     * 获取话题回复列表（指定话题id）
+     * 指定话题 id，获取话题回复列表
      */
     @Test
-    public void test33_listTopicReplyByTopicId(){
+    public void testlistTopicReplyByTopicId(){
         List<TopicReplyDO> listTopicReply = topicReplyDAO.listTopicReplyByTopicId(1);
 
+        System.out.println("*************************** 查询 topicid = 1 的话题回复 ****************************");
         for(TopicReplyDO topicReply: listTopicReply){
             System.out.println(JsonUtil.toJSONStringByObject(topicReply));
         }
     }
 
     /**
-     * 更新回复内容
+     * replyId 更新回复内容
      */
-    @Test
-    public void test4_UpdateContentByIdByContent(){
-        int effectRow = topicReplyDAO.updateContentByIdByContent(1, "已更新回复内容");
-        System.out.println("更新 id = 1 的回复,\"内容\"，更新行数：" + effectRow);
+    @Ignore
+    public void testUpdateContentByIdByContent(){
+        String newContent = "新回复内容";
+        Assert.assertNotEquals(topicReplyDAO.updateContentByIdByContent(topicReplyDAO.getTopicReplyMaxId(), newContent), 0);
     }
 
     /**
-     * 点赞数 + 1
+     * 回复点赞数（自动 +1）
      */
-    @Test
-    public void test5_UpdateAgreeAddOneById(){
-        int effectRow = topicReplyDAO.updateAgreeAddOneById(topicReplyDAO.getTopicReplyMaxId());
-        System.out.println("更新回复，点赞数+1，更新结果" + effectRow);
+    @Ignore
+    public void testUpdateAgreeAddOneById(){
+        Assert.assertNotEquals(topicReplyDAO.updateAgreeAddOneById(topicReplyDAO.getTopicReplyMaxId()), 0);
     }
 
     /**
-     * 点赞数 - 1
+     * 回复点赞数（自动 -1）
      */
-    @Test
-    public void test55_UpdateAgreeCutOneById(){
-        int effectRow = topicReplyDAO.updateAgreeCutOneById(topicReplyDAO.getTopicReplyMaxId());
-        System.out.println("更新回复，点赞数-1，更新结果" + effectRow);
+    @Ignore
+    public void testUpdateAgreeCutOneById(){
+        Assert.assertNotEquals(topicReplyDAO.updateAgreeCutOneById(topicReplyDAO.getTopicReplyMaxId()), 0);
     }
 
     /**
-     * 反对数 + 1
+     * 回复反对数（自动 +1）
      */
-    @Test
-    public void test6_UpdateOpposeAddOneById(){
-        int effectRow = topicReplyDAO.updateOpposeAddOneById(topicReplyDAO.getTopicReplyMaxId());
-        System.out.println("更新回复，反对数+1，更新行数：" + effectRow);
+    @Ignore
+    public void testUpdateOpposeAddOneById(){
+        Assert.assertNotEquals(topicReplyDAO.updateOpposeAddOneById(topicReplyDAO.getTopicReplyMaxId()), 0);
     }
 
-
     /**
-     * 反对数 - 1
+     * 回复反对数（自动 -1）
      */
-    @Test
-    public void test66_UpdateOpposeCutOneById(){
-        int effectRow = topicReplyDAO.updateOpposeCutOneById(topicReplyDAO.getTopicReplyMaxId());
-        System.out.println("更新回复，反对数-1，更新行数：" + effectRow);
-    }}
+    @Ignore
+    public void testUpdateOpposeCutOneById(){
+        Assert.assertNotEquals(topicReplyDAO.updateOpposeCutOneById(topicReplyDAO.getTopicReplyMaxId()), 0);
+    }
+}

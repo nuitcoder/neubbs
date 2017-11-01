@@ -25,7 +25,7 @@
    <delete id="removeTopicReplyById" parameterType="java.lang.Integer">
       DELETE FROM forum_topic_reply WHERE ftr_id = #{id, jdbcType = INTEGER}
    </delete>
-   <delete id="removeTopicReplyByTopicId" parameterType="java.lang.Integer">
+   <delete id="removeListTopicReplyByTopicId" parameterType="java.lang.Integer">
       DELETE FROM forum_topic_reply WHERE ft_id = #{ft_id, jdbcType = INTEGER}
    </delete>
 
