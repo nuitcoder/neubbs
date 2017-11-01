@@ -15,6 +15,19 @@ const auth = {
   },
 
   /**
+   *  clear authenticated
+   *
+   * @returns {undefined}
+   */
+  clearAuth() {
+    localStorage.removeItem('token')
+    localStorage.removeItem('username')
+    auth.authenticated = false
+
+    if (auth.onChange) auth.onChange()
+  },
+
+  /**
    * login account and set auth
    *
    * @param {object} data login data(usernaem, password)

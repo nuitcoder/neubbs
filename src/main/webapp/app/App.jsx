@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 import styled, { injectGlobal } from 'styled-components'
 import { Grid } from 'react-bootstrap'
 import { connect } from 'react-redux'
@@ -65,6 +66,15 @@ class App extends Component {
       </div>
     )
   }
+}
+
+App.propTypes = {
+  children: PropTypes.element.isRequired,
+  router: PropTypes.object.isRequired,
+  actions: PropTypes.shape({
+    profile: PropTypes.func.isRequired,
+  }).isRequired,
+  account: PropTypes.object.isRequired,
 }
 
 const mapStateToProps = (state) => {

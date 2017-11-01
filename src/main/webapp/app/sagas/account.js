@@ -94,10 +94,11 @@ export function* profileSaga(action) {
   yield put({ type: types.REQUEST_SENDING })
   const { data } = yield call(api.account.profile, username)
   try {
-    if (data.success) {
+    if (data.success && data.model) {
       yield put({ type: types.GET_PROFILE_SUCCESS, payload: data.model })
       yield put({ type: types.ACTIVATE_REQUEST, payload: { username } })
     } else {
+      auth.clearAuth()
       yield put({ type: types.REQUEST_ERROR, error: data.message })
     }
   } catch (err) {
