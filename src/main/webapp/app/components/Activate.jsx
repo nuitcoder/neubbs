@@ -150,6 +150,8 @@ class Activate extends Component {
             if (res.data.success) {
               this.setState({
                 showEmailInput: false,
+              }, () => {
+                this.sendActivateEmail()
               })
             }
           })
