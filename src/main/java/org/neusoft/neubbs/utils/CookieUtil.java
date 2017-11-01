@@ -36,7 +36,8 @@ public final class CookieUtil {
      */
     public static void saveCookie(HttpServletResponse response, String cookieName, String cookieValue) {
         Cookie cookie = new Cookie(cookieName, cookieValue);
-            cookie.setMaxAge(EXPIRETIME_THIRTY_DAY);
+        //不设置时间
+//            cookie.setMaxAge(EXPIRETIME_THIRTY_DAY);
             cookie.setPath(PATH);
             cookie.setHttpOnly(HTTPONLY_TRUE);
 
@@ -53,7 +54,7 @@ public final class CookieUtil {
     public static void removeCookie(HttpServletRequest request, HttpServletResponse response, String cookieName) {
         for (Cookie cookie : request.getCookies()) {
             if (cookieName.equals(cookie.getName())) {
-                cookie.setMaxAge(EXPIRETIME_ZERO);
+//                cookie.setMaxAge(EXPIRETIME_ZERO);
                 cookie.setPath(PATH);
                 cookie.setHttpOnly(HTTPONLY_TRUE);
 
