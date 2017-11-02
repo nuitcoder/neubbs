@@ -1,0 +1,59 @@
+package org.neusoft.neubbs.constant.api;
+
+/**
+ * Api 警告信息
+ *
+ * @author Suvan
+ */
+public final class ApiMessage {
+
+    private ApiMessage() { }
+
+    public static final String PARAM_ERROR  = "incorrect input parameter";
+    public static final String DATABASE_EXCEPTION = "database exception";
+
+    /**
+     * Account api 警告信息
+     */
+    public static final String NO_USER = "the user does not exist";
+    public static final String USERNAME_REGISTERED = "username has been registered";
+    public static final String EMAIL_REGISTERED = "the email has bean registered";
+    public static final String NO_ACTIVATE   = "the account has not been activated";
+    public static final String ACCOUNT_ACTIVATED = "the account has bean activated";
+    public static final String ACTIVATION_SUCCESSFUL =  "activate success";
+
+    public static final String USERNAME_OR_PASSWORD_INCORRECT = "username or password is incorrect";
+    public static final String CAPTCHA_INCORRECT = "input captcha incorrect";
+
+    public static final String NO_PERMISSION = "no permission";
+    public static final String LINK_INVALID = "invalid activation link";
+    public static final String TOKEN_EXPIRED = "token expired";
+    public static final String NO_GENERATE_CAPTCHA = "no generate captcha";
+
+    public static final String MAIL_SEND_SUCCESS = "mail send success";
+
+    /**
+     * Count api 警告信息
+     */
+
+    /**
+     * File api 警告信息
+     */
+    public static final String NO_CHOICE_PICTURE = "no choice to upload picture";
+    public static final String PICTURE_FORMAT_WRONG = "user upload picture type is wrong,"
+            + " only *.jpg or *.png or *.jpeg";
+    public static final String NO_PARENT_DIRECTORY = "there is no parent directory";
+    public static final String UPLOAD_SUCCESS = "upload success";
+
+    /**
+     * Topic api 警告信息
+     */
+    public static final String NO_TOPIC = "no topic";
+    public static final String NO_REPLY = "no reply";
+    public static final String SAVE_TOPIC_SUCCESS = "save the topic success";
+    public static final String SAVE_REPLY_SUCCESS = "save the reply success";
+    public static final String REMOVE_TOPIC_SUCCESS = "remove the topic success";
+    public static final String REMOVE_REPLY_SUCCESS = "remove the reply success";
+    public static final String ALTER_TOPIC_CONTENT_SUCCESS = "alter topic content success";
+    public static final String ALTER_REPLY_CONTENT_SUCCESS = "alter reply content success";
+}

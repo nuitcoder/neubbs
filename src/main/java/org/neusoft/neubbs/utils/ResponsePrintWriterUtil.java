@@ -1,5 +1,7 @@
 package org.neusoft.neubbs.utils;
 
+import org.neusoft.neubbs.constant.api.SetConst;
+
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -14,39 +16,27 @@ import java.util.Map;
  */
 public final class ResponsePrintWriterUtil {
 
-    private static final String  SUCCESS_STATES = "success";
-    private static final Boolean SUCCESS_STATES_FAIL = false;
-    private static final String MESSAGE = "message";
-
-    private static final String CHARACTER_ENCODING = "utf-8";
-    private static final String CONTENT_TYPE = "application/json;charset=UTF-8";
-
-    private static final int LENGTH_TWO = 2;
-
-    private ResponsePrintWriterUtil() {
-
-    }
+    private ResponsePrintWriterUtil() { }
 
     /**
      * 输出失败 JSON 信息
      *
      * @param response 用户响应
      * @param failMessage 失败信息
-     * @throws IOException
      */
     public static void outFailJSONMessage(HttpServletResponse response, String failMessage) {
 
         //构造 Map ,并指定初始大小
-        Map<String, Object> map = new HashMap<String, Object>(LENGTH_TWO);
-            map.put(SUCCESS_STATES, SUCCESS_STATES_FAIL);
-            map.put(MESSAGE, failMessage);
+        Map<String, Object> map = new HashMap<>(SetConst.LENGTH_TWO);
+            map.put("success", false);
+            map.put("message", failMessage);
 
         //将 Map 转换为 JSON 格式字符串
         String json = JsonUtil.toJSONStringByObject(map);
 
         //设定相应类型
-        response.setCharacterEncoding(CHARACTER_ENCODING);
-        response.setContentType(CONTENT_TYPE);
+        response.setCharacterEncoding(SetConst.CHARACTER_ENCODING);
+        response.setContentType(SetConst.CONTENT_TYPE);
 
         //输出与关闭资源
         PrintWriter writer = null;

@@ -6,6 +6,7 @@ package org.neusoft.neubbs.constant.ajax;
  * @author Suvan
  */
 public final class AjaxRequestStatus {
+
     private AjaxRequestStatus() { }
 
     public static final boolean SUCCESS = true;

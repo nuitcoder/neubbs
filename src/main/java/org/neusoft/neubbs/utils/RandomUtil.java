@@ -9,6 +9,8 @@ import java.util.Random;
  */
 public final class RandomUtil {
 
+    private RandomUtil() { }
+
     private static final int ZERO = 0;
     private static final int ONE = 1;
     private static final int TWO = 2;
@@ -19,10 +21,6 @@ public final class RandomUtil {
     private static final int SIXTY_FIVE = 65;
     private static final int NINETH_SEVEN = 97;
     private static final int TEN_THOUSAND = 10000;
-
-    private RandomUtil() {
-
-    }
 
     /**
      * 获取6位数随机数
@@ -59,9 +57,9 @@ public final class RandomUtil {
 
         int point;
         int ascii;
-        for (int i = 0; i < len; i++) {
+        for (int i = ZERO; i < len; i++) {
             //生成 “min <= 随机数 <= max ” 的随机数   int num = min + (int)(Math.random() * (max-min+1))
-            point = 1 + (int) (Math.random() * THREE);
+            point = ONE + (int) (Math.random() * THREE);
 
             if (point == ONE) {
                 //数字

@@ -14,9 +14,7 @@ import java.util.Map;
  */
 public final class JsonUtil {
 
-    private JsonUtil() {
-
-    }
+    private JsonUtil() { }
 
     /**
      * 将Object对象转换为JSON格式字符串

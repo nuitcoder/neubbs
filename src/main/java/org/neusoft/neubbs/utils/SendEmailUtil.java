@@ -18,6 +18,9 @@ import java.util.Properties;
  * @author Suvan
  */
 public final class SendEmailUtil {
+
+    private SendEmailUtil() { }
+
     /**
      * 发送邮件的账户
      */
@@ -42,10 +45,6 @@ public final class SendEmailUtil {
     private static final String TO_JAVAX_NET_SSL_SSLSOCKETFACTORY = "javax.net.ssl.SSLSocketFactory";
     private static final String TO_MAIL_SMTP_SOCKETFACTORY_PORT = "mail.smtp.socketFactory.port";
     private static final String TO_SMTP_SSL_PROT = "465";
-
-    private SendEmailUtil() {
-
-    }
 
     /**
      * 发送邮件
@@ -95,13 +94,11 @@ public final class SendEmailUtil {
                 //保存更改
                 message.saveChanges();
 
-            } catch (UnsupportedEncodingException uee) {
+            } catch (UnsupportedEncodingException | MessagingException uee) {
                 uee.printStackTrace();
-            } catch (MessagingException me) {
-                me.printStackTrace();
             }
 
-        //发送邮件
+       //发送邮件
         sender.send(message);
     }
 }

@@ -5,8 +5,9 @@ package org.neusoft.neubbs.constant.log;
  *
  * @author Suvan
  */
-public final class LogWarnInfo {
-    private LogWarnInfo() { }
+public final class LogWarn {
+
+    private LogWarn() { }
 
     /*****************************Account api**********************************/
     public static final String ACCOUNT_01 = " 数据库中不存在该用户 ";
@@ -16,7 +17,7 @@ public final class LogWarnInfo {
     public static final String ACCOUNT_04 = " 激活口令已经过期";
     public static final String ACCOUNT_05 = "授权口令已经过期";
     public static final String ACCOUNT_06 = " 邮箱未注册，无法发送邮件";
-    public static final String ACCOUNT_07 = " 邮箱用户已经激活，不重复发送邮件";
+    public static final String ACCOUNT_07 = " 用户已经激活，无法修改邮箱";
     public static final String ACCOUNT_08 = " 邮箱已被占用";
 
     public static final String ACCOUNT_09 = " 用户密码不正确";
@@ -62,7 +63,4 @@ public final class LogWarnInfo {
     public static final String TOPIC_09 = "主题回复修改失败";
     public static final String TOPIC_10 = "不存在主题";
     public static final String TOPIC_11 = "不存在回复";
-
-
-    /******************************Redis Service*********************************/
 }

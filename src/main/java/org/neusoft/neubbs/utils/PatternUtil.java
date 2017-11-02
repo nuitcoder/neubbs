@@ -10,18 +10,17 @@ import java.util.regex.Pattern;
  */
 public final class PatternUtil {
 
-     private static final String EXIST_NU_PURE_NUMBER = "[^0-9]";
-     private static final String MATCH_USERNAME = "^[A-Za-z0-9]{3,20}$";
-     private static final String MATCH_EMAIL = "^([a-z0-9A-Z]+[-|\\.]?)+[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)"
+    private PatternUtil() { }
+
+    private static final String EXIST_NU_PURE_NUMBER = "[^0-9]";
+    private static final String MATCH_USERNAME = "^[A-Za-z0-9]{3,20}$";
+    private static final String MATCH_EMAIL = "^([a-z0-9A-Z]+[-|\\.]?)+[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)"
                                                 + "+[a-zA-Z]{2,}$";
-     private static final String MATCH_IMAGE_SUFFIX =  ".+(.JPEG|.jpeg|.JPG|.jpg|.GIF|.gif|.BMP|.bmp|.PNG|.png)$";
-     private static final String COVER_IMAGE_TYPE = ".+/(JPG|jpg|PNG|png|JPEG|jpeg)";
-     private static final String MATCH_CHINESE = "[\\u4e00-\\u9fa5]";
-     private static final String MATCH_CHINESE_AND_ENGLISH = "^[\\u4e00-\\u9fa5a-zA-Z]+$";
+    private static final String MATCH_IMAGE_SUFFIX =  ".+(.JPEG|.jpeg|.JPG|.jpg|.GIF|.gif|.BMP|.bmp|.PNG|.png)$";
+    private static final String COVER_IMAGE_TYPE = ".+/(JPG|jpg|PNG|png|JPEG|jpeg)";
+    private static final String MATCH_CHINESE = "[\\u4e00-\\u9fa5]";
+    private static final String MATCH_CHINESE_AND_ENGLISH = "^[\\u4e00-\\u9fa5a-zA-Z]+$";
 
-    private PatternUtil() {
-
-    }
 
     /**
      * 是否为纯数字检测（检测是否存在非 0 ~ 9 字符）

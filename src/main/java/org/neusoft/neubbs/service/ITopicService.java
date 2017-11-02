@@ -1,11 +1,5 @@
 package org.neusoft.neubbs.service;
 
-import org.neusoft.neubbs.entity.TopicContentDO;
-import org.neusoft.neubbs.entity.TopicDO;
-import org.neusoft.neubbs.entity.TopicReplyDO;
-
-import java.util.List;
-
 /**
  * 话题业务接口
  *
@@ -61,7 +55,7 @@ public interface ITopicService {
      * @param content 新话题内容
      * @throws Exception 所有异常
      */
-    void alterTopicContent(int topicId,String category, String title, String content) throws Exception;
+    void alterTopicContent(int topicId, String category, String title, String content) throws Exception;
 
     /**
      * 修改回复内容

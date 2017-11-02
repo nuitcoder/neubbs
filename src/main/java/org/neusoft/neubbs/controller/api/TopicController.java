@@ -1,18 +1,14 @@
 package org.neusoft.neubbs.controller.api;
 
-import jdk.nashorn.internal.ir.RuntimeNode;
 import org.neusoft.neubbs.constant.ajax.AjaxRequestStatus;
-import org.neusoft.neubbs.constant.api.TopicInfo;
-import org.neusoft.neubbs.constant.log.LogWarnInfo;
+import org.neusoft.neubbs.constant.api.ParamConst;
+import org.neusoft.neubbs.constant.api.SetConst;
 import org.neusoft.neubbs.controller.annotation.AccountActivation;
 import org.neusoft.neubbs.controller.annotation.AdminRank;
 import org.neusoft.neubbs.controller.annotation.LoginAuthorization;
-import org.neusoft.neubbs.controller.exception.ParamsErrorException;
-import org.neusoft.neubbs.controller.exception.TopicErrorException;
-import org.neusoft.neubbs.controller.handler.SwitchDataSourceHandler;
 import org.neusoft.neubbs.dto.ResponseJsonDTO;
 import org.neusoft.neubbs.service.ITopicService;
-import org.neusoft.neubbs.utils.RequestParamsCheckUtil;
+import org.neusoft.neubbs.utils.RequestParamCheckUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.jms.Topic;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -64,23 +60,21 @@ public class TopicController {
     @RequestMapping(value = "/topic", method = RequestMethod.POST)
     @ResponseBody
     public ResponseJsonDTO saveTopic(@RequestBody Map<String, Object> requestBodyParamsMap) throws Exception {
-        Integer userId = (Integer) requestBodyParamsMap.get(TopicInfo.USERID);
-        String category = (String) requestBodyParamsMap.get(TopicInfo.CATEGORY);
-        String title = (String) requestBodyParamsMap.get(TopicInfo.TITLE);
-        String content = (String) requestBodyParamsMap.get(TopicInfo.CONTENT);
+        Integer userId = (Integer) requestBodyParamsMap.get(ParamConst.USER_ID);
+        String category = (String) requestBodyParamsMap.get(ParamConst.CATEGORY);
+        String title = (String) requestBodyParamsMap.get(ParamConst.TITLE);
+        String content = (String) requestBodyParamsMap.get(ParamConst.CONTENT);
 
-        String errorInfo = RequestParamsCheckUtil
-                                .putParamKeys(new String[]{TopicInfo.ID, TopicInfo.CATEGORY,
-                                                                TopicInfo.TITLE, TopicInfo.CONTENT})
-                                .putParamValues(new String[]{String.valueOf(userId), category, title, content})
-                                .checkParamsNorm();
-        if (errorInfo != null) {
-            throw new ParamsErrorException(TopicInfo.PARAM_ERROR).log(errorInfo);
-        }
+        Map<String, String> typeParamMap = new HashMap<>(SetConst.SIZE_FOUR);
+            typeParamMap.put(ParamConst.ID, String.valueOf(userId));
+            typeParamMap.put(ParamConst.CATEGORY, category);
+            typeParamMap.put(ParamConst.TITLE, title);
+            typeParamMap.put(ParamConst.TOPIC_CONTENT, content);
+        RequestParamCheckUtil.check(typeParamMap);
 
         int topicId = topicService.saveTopic(userId, category, title, content);
 
-        return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, TopicInfo.TOPICID, topicId);
+        return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, ParamConst.TOPIC_ID, topicId);
     }
 
     /**
@@ -99,21 +93,18 @@ public class TopicController {
     @RequestMapping(value = "/topic/reply", method = RequestMethod.POST)
     @ResponseBody
     public ResponseJsonDTO saveReply(@RequestBody Map<String, Object> requetBodyParamsMap) throws Exception {
-        Integer userId = (Integer) requetBodyParamsMap.get(TopicInfo.USERID);
-        Integer topicId = (Integer) requetBodyParamsMap.get(TopicInfo.TOPICID);
-        String content = (String) requetBodyParamsMap.get(TopicInfo.CONTENT);
+        Integer userId = (Integer) requetBodyParamsMap.get(ParamConst.USER_ID);
+        Integer topicId = (Integer) requetBodyParamsMap.get(ParamConst.TOPIC_ID);
+        String content = (String) requetBodyParamsMap.get(ParamConst.CONTENT);
 
-        String errorInfo = RequestParamsCheckUtil
-                                .putParamKeys(new String[]{TopicInfo.USERID, TopicInfo.TOPICID, TopicInfo.CONTENT})
-                                .putParamValues(new String[]{String.valueOf(userId), String.valueOf(topicId), content})
-                                .checkParamsNorm();
-        if (errorInfo != null) {
-            throw new ParamsErrorException(TopicInfo.PARAM_ERROR).log(errorInfo);
-        }
+        Map<String, String> typeParmaMap = new HashMap<>(SetConst.SIZE_THREE);
+            typeParmaMap.put(ParamConst.ID, String.valueOf(userId));
+            typeParmaMap.put(ParamConst.ID, String.valueOf(topicId));
+            typeParmaMap.put(ParamConst.REPLY_CONTENT, content);
 
         int replyId = topicService.saveReply(userId, topicId, content);
 
-        return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, TopicInfo.REPLYID, replyId);
+        return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, ParamConst.REPLY_ID, replyId);
     }
 
     /**
@@ -132,12 +123,9 @@ public class TopicController {
     @RequestMapping(value = "/topic-remove", method = RequestMethod.POST)
     @ResponseBody
     public ResponseJsonDTO removeTopic(@RequestBody Map<String, Object> requestBodyParamsMap) throws Exception {
-        Integer topicId = (Integer) requestBodyParamsMap.get(TopicInfo.TOPICID);
+        Integer topicId = (Integer) requestBodyParamsMap.get(ParamConst.TOPIC_ID);
 
-        String errorInfo = RequestParamsCheckUtil.checkId(String.valueOf(topicId));
-        if (errorInfo != null) {
-            throw new ParamsErrorException(TopicInfo.PARAM_ERROR).log(errorInfo);
-        }
+        RequestParamCheckUtil.check(ParamConst.ID, String.valueOf(topicId));
 
         topicService.removeTopic(topicId);
 
@@ -160,12 +148,9 @@ public class TopicController {
     @RequestMapping(value = "/topic/reply-remove", method = RequestMethod.POST)
     @ResponseBody
     public ResponseJsonDTO removeReply(@RequestBody Map<String, Object> requestBodyParamsMap) throws Exception {
-        Integer replyId = (Integer) requestBodyParamsMap.get(TopicInfo.REPLYID);
+        int replyId = (Integer) requestBodyParamsMap.get(ParamConst.REPLY_ID);
 
-        String errorInfo = RequestParamsCheckUtil.checkId(String.valueOf(replyId));
-        if (errorInfo != null) {
-            throw new ParamsErrorException(TopicInfo.PARAM_ERROR).log(errorInfo);
-        }
+        RequestParamCheckUtil.check(ParamConst.ID, String.valueOf(replyId));
 
         topicService.removeReply(replyId);
 
@@ -188,19 +173,17 @@ public class TopicController {
     @RequestMapping(value = "/topic/content-update", method = RequestMethod.POST)
     @ResponseBody
     public ResponseJsonDTO updateTopicContent(@RequestBody Map<String, Object> requestBodyParamsMap) throws Exception {
-        Integer topicId = (Integer) requestBodyParamsMap.get(TopicInfo.TOPICID);
-        String category = (String) requestBodyParamsMap.get(TopicInfo.CATEGORY);
-        String title = (String) requestBodyParamsMap.get(TopicInfo.TITLE);
-        String content = (String) requestBodyParamsMap.get(TopicInfo.CATEGORY);
+        Integer topicId = (Integer) requestBodyParamsMap.get(ParamConst.TOPIC_ID);
+        String category = (String) requestBodyParamsMap.get(ParamConst.CATEGORY);
+        String title = (String) requestBodyParamsMap.get(ParamConst.TITLE);
+        String content = (String) requestBodyParamsMap.get(ParamConst.CATEGORY);
 
-        String errorInfo = RequestParamsCheckUtil.putParamKeys(new String[] {TopicInfo.ID, TopicInfo.TITLE,
-                                                                                TopicInfo.CATEGORY, TopicInfo.CONTENT})
-                                                 .putParamValues(new String[] {String.valueOf(topicId), title,
-                                                                                category, content})
-                                                 .checkParamsNorm();
-        if (errorInfo != null) {
-            throw new ParamsErrorException(TopicInfo.PARAM_ERROR).log(errorInfo);
-        }
+        Map<String, String> typeParamMap = new HashMap<>(SetConst.SIZE_FOUR);
+            typeParamMap.put(ParamConst.ID, String.valueOf(topicId));
+            typeParamMap.put(ParamConst.CATEGORY, category);
+            typeParamMap.put(ParamConst.TITLE, title);
+            typeParamMap.put(ParamConst.TOPIC_CONTENT, content);
+        RequestParamCheckUtil.check(typeParamMap);
 
         topicService.alterTopicContent(topicId, category, title, content);
 
@@ -215,26 +198,22 @@ public class TopicController {
      *      B.数据库操作
      *      C.返回状态
      *
-     * @param requestBodyParamsMap
-     * @return
-     * @throws Exception
+     * @param requestBodyParamsMap request-body内JSON数据
+     * @return ResponseJsonDTO 响应JSON传输对象
+     * @throws Exception 所有异常
      */
    @LoginAuthorization @AccountActivation
    @RequestMapping(value = "/topic/reply/content-update", method = RequestMethod.POST)
    @ResponseBody
    public ResponseJsonDTO updateReplyContent(@RequestBody Map<String, Object> requestBodyParamsMap) throws Exception {
-       Integer replyId = (Integer) requestBodyParamsMap.get(TopicInfo.REPLYID);
-       String content = (String) requestBodyParamsMap.get(TopicInfo.CONTENT);
+       Integer replyId = (Integer) requestBodyParamsMap.get(ParamConst.REPLY_ID);
+       String content = (String) requestBodyParamsMap.get(ParamConst.CONTENT);
 
-       //这里需加入回复内容检查类型
-       String errorInfo = RequestParamsCheckUtil.putParamKeys(new String[] {TopicInfo.ID, TopicInfo.REPLY})
-                                                .putParamValues(new String[] {String.valueOf(replyId), content})
-                                                .checkParamsNorm();
-       if (errorInfo != null) {
-            throw new TopicErrorException(TopicInfo.PARAM_ERROR).log(errorInfo);
-       }
+       Map<String, String> typeParamMap = new HashMap<>(SetConst.SIZE_TWO);
+            typeParamMap.put(ParamConst.ID, String.valueOf(typeParamMap));
+            typeParamMap.put(ParamConst.REPLY_CONTENT, content);
+       RequestParamCheckUtil.check(typeParamMap);
 
-       //插入回复操作
        topicService.alterReplyContent(replyId, content);
 
        return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS);

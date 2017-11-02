@@ -9,9 +9,9 @@ import java.util.regex.Pattern;
  * @author Suvan
  */
 public final class StringUtil {
-    private StringUtil() {
 
-    }
+    private StringUtil() { }
+
 
     /**
      * 空判断（true - 为空）
@@ -20,11 +20,7 @@ public final class StringUtil {
      * @return Boolean 检测结果
      */
     public static Boolean isEmpty(String str) {
-        if (str == null || str.length() == 0) {
-            return true;
-        }
-
-        return false;
+        return (str == null || str.length() == 0);
     }
 
     /**
@@ -36,12 +32,7 @@ public final class StringUtil {
      * @return Boolean 检测结果
      */
     public static Boolean isScope(String str, int min, int max) {
-        if (min <= str.length() && str.length() <= max) {
-            //符合条件
-            return true;
-        }
-
-        return false;
+        return (min <= str.length() && str.length() <= max);
     }
 
     /**

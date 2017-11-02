@@ -11,6 +11,9 @@ import org.neusoft.neubbs.utils.StringUtil;
  * @author Suvan
  */
 public final class SwitchDataSourceHandler {
+
+    private SwitchDataSourceHandler() { }
+
     /**
      * 定义数据源类型
      */
@@ -19,7 +22,6 @@ public final class SwitchDataSourceHandler {
 
     private static  ThreadLocal<String> currentThreadDataSource = new ThreadLocal<>();
 
-    private SwitchDataSourceHandler() { }
 
     /**
      * 设置当前线程数据源类型

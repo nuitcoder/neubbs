@@ -12,9 +12,7 @@ import java.lang.reflect.Method;
  */
 public final class AnnotationUtil {
 
-    private AnnotationUtil() {
-
-    }
+    private AnnotationUtil() { }
 
     /**
      * （方法级）（拦截器）是否存在指定注解
@@ -50,10 +48,7 @@ public final class AnnotationUtil {
      */
     public static boolean hasClassAnnotation(Class objClass, Class annotationClass) {
         Annotation annotation = objClass.getAnnotation(annotationClass);
-        if (annotation != null) {
-            return true;
-        }
 
-        return false;
+        return annotation != null;
     }
 }

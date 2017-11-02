@@ -3,7 +3,12 @@ package test.org.neusoft.neubbs.util;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-import org.neusoft.neubbs.utils.RequestParamsCheckUtil;
+import org.neusoft.neubbs.constant.api.ParamConst;
+import org.neusoft.neubbs.constant.api.SetConst;
+import org.neusoft.neubbs.utils.RequestParamCheckUtil;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 测试 reuqest 参数 检测工具类
@@ -14,13 +19,12 @@ public class RequestParamsCheckUtilTestCase {
      * 测试 参数集合的合法性检测（非空，长度，正则规范）
      */
     @Test
-    public void testRequestParamsMapCheckNoNull(){
-        //链式调用
-        String errorInfo = RequestParamsCheckUtil
-                            .putParamKeys(new String[]{"username", "password", "email"})
-                            .putParamValues(new String[]{"suvan","123456","liushuwei@gmail.com"})
-                            .checkParamsNorm();
+    public void testRequestParamsMapCheckNoNull() throws Exception{
+        RequestParamCheckUtil.check(ParamConst.PASSWORD, "1234");
 
-        System.out.println("输出错误信息：" + errorInfo);
+        Map<String, String> typeParamMap = new HashMap<>(SetConst.SIZE_TWO);
+            typeParamMap.put(ParamConst.USERNAME, "sadfasf");
+            typeParamMap.put(ParamConst.EMAIL, "asdfasf");
+        RequestParamCheckUtil.check(typeParamMap);
     }
 }

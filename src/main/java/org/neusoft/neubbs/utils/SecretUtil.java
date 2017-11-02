@@ -20,17 +20,15 @@ import java.util.Base64;
  * @author Suvan
  */
 public final class SecretUtil {
+
+    private SecretUtil() { }
+
     private static final int MDT_STRING_LENGTH = 32;
     private static final String AES_SEED = "密钥种子";
 
     private static final int TWO = 2;
     private static final int SIXTEEN = 16;
     private static final int ZEROXFF = 0xFF;
-
-
-    private SecretUtil() {
-
-    }
 
     /**
      * 加密 MD5（消息摘要算法）

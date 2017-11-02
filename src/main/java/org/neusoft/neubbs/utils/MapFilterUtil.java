@@ -1,6 +1,8 @@
 package org.neusoft.neubbs.utils;
 
 
+import org.neusoft.neubbs.constant.api.ParamConst;
+
 import java.util.Map;
 
 /**
@@ -9,15 +11,6 @@ import java.util.Map;
  * @author Suvan
  */
 public final class MapFilterUtil {
-   private static final String ID = "id";
-   private static final String NAME = "name";
-   private static final String USERNAME = "username";
-   private static final String PASSWORD = "password";
-   private static final String IMAGE = "image";
-   private static final String RANK = "rank";
-   private static final String STATE = "state";
-   private static final String CREATETIME = "createtime";
-
 
    private MapFilterUtil() { }
 
@@ -39,12 +32,17 @@ public final class MapFilterUtil {
     *
     * @param userInfoMap 用户信息Map
     */
-   public static void filterUserInfo(Map userInfoMap) {
+   public static void filterUserInfo(Map<String, Object> userInfoMap) {
 
       //name -> username
-      userInfoMap.put(USERNAME, userInfoMap.get(NAME));
+      userInfoMap.put(ParamConst.USERNAME, userInfoMap.get(ParamConst.NAME));
 
       //删除 id,name,password,image,rank,state,createtime
-      removeKeys(userInfoMap, new String[]{ID, NAME, PASSWORD, IMAGE, RANK, STATE, CREATETIME});
+      removeKeys(userInfoMap,
+              new String[] {
+                  ParamConst.ID, ParamConst.NAME,
+                  ParamConst.PASSWORD, ParamConst.IMAGE, ParamConst.RANK,
+                  ParamConst.STATE, ParamConst.CREATETIME
+               });
    }
 }

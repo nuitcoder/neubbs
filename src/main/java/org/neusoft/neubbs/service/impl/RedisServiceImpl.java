@@ -16,8 +16,15 @@ import java.util.concurrent.TimeUnit;
 @Service("redisServiceImpl")
 public class RedisServiceImpl implements IRedisService {
 
-    @Autowired
     private RedisTemplate redisTemplate;
+
+    /**
+     * Constructor
+     */
+    @Autowired
+    public RedisServiceImpl(RedisTemplate redisTemplate) {
+
+    }
 
     @Override
     public void save(String key, String value) {

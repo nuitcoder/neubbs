@@ -5,22 +5,15 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-import org.neusoft.neubbs.constant.api.AccountInfo;
 import org.neusoft.neubbs.controller.annotation.ApiException;
 import org.neusoft.neubbs.controller.annotation.LoginAuthorization;
 import org.neusoft.neubbs.controller.api.AccountController;
 import org.neusoft.neubbs.controller.exception.FileUploadException;
-import org.neusoft.neubbs.controller.exception.ParamsErrorException;
-import org.neusoft.neubbs.controller.handler.ApiExceptionHandler;
 import org.neusoft.neubbs.controller.interceptor.ApiInterceptor;
 import org.neusoft.neubbs.utils.AnnotationUtil;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
-import java.util.Map;
 
 /**
  * 测试 AnnotationUtil 工具类

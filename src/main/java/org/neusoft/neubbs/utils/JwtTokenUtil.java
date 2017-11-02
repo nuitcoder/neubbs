@@ -5,6 +5,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import org.neusoft.neubbs.constant.api.ParamConst;
 import org.neusoft.neubbs.constant.secret.SecretInfo;
 import org.neusoft.neubbs.entity.UserDO;
 
@@ -20,6 +21,8 @@ import java.util.Map;
  */
 public final class JwtTokenUtil {
 
+    private JwtTokenUtil() { }
+
     private static final String JWT = "JWT";
     private static final String HS256 = "HS256";
 
@@ -31,22 +34,6 @@ public final class JwtTokenUtil {
     private static final String SET_SUBJECT =  "www.neubbs.com";
     private static final String SET_AUDIENCE = "count@neubbs.com";
 
-    private JwtTokenUtil() {
-
-    }
-
-    /**
-     * Claim参数（保存用户信息）
-     */
-    private static final  String CLAIM_NAME = "name";
-    private static final String CLAIM_ID = "id";
-    private static final String CLAIM_RANK = "rank";
-    private static final String CLAIM_STATE = "state";
-
-    /**
-     * 过期时间
-     */
-    private static final long EXPIRE_TIME_ONE_DAY = 86400000L;
 
     /**
      * JWT 创建 token（传入 UserDO 对象）
@@ -56,7 +43,7 @@ public final class JwtTokenUtil {
      * @throws Exception 所有异常
      */
     public static String createToken(UserDO user) throws Exception {
-        Map<String, Object> headerMap = new HashMap<String, Object>();
+        Map<String, Object> headerMap = new HashMap<>();
             headerMap.put(HEADER_ALG, HS256);
             headerMap.put(HEADER_TYP, JWT);
 
@@ -73,10 +60,10 @@ public final class JwtTokenUtil {
                                             .withAudience(SET_AUDIENCE)
                                             .withIssuedAt(new Date(iat))
                                           //.withExpiresAt(new Date(ext))   //永久有效，不需要过期时间
-                                                .withClaim(CLAIM_ID, user.getId())
-                                                .withClaim(CLAIM_NAME, user.getName())
-                                                .withClaim(CLAIM_RANK, user.getRank())
-                                                .withClaim(CLAIM_STATE, user.getState())
+                                                .withClaim(ParamConst.ID, user.getId())
+                                                .withClaim(ParamConst.NAME, user.getName())
+                                                .withClaim(ParamConst.RANK, user.getRank())
+                                                .withClaim(ParamConst.STATE, user.getState())
                                                     .sign(Algorithm.HMAC256(SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY));
 
         return token;
@@ -107,10 +94,10 @@ public final class JwtTokenUtil {
         }
 
         //获取 Playload 的 username
-        Claim idClaim = decodedJWT.getClaim(CLAIM_ID);
-        Claim nameClaim = decodedJWT.getClaim(CLAIM_NAME);
-        Claim rankClaim = decodedJWT.getClaim(CLAIM_RANK);
-        Claim stateClaim = decodedJWT.getClaim(CLAIM_STATE);
+        Claim idClaim = decodedJWT.getClaim(ParamConst.ID);
+        Claim nameClaim = decodedJWT.getClaim(ParamConst.NAME);
+        Claim rankClaim = decodedJWT.getClaim(ParamConst.RANK);
+        Claim stateClaim = decodedJWT.getClaim(ParamConst.STATE);
 
         UserDO user = new UserDO();
             user.setId(idClaim.asInt());

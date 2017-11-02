@@ -1,7 +1,9 @@
 package org.neusoft.neubbs.controller.interceptor;
 
-import org.neusoft.neubbs.constant.api.AccountInfo;
-import org.neusoft.neubbs.constant.log.LogWarnInfo;
+import org.neusoft.neubbs.constant.api.ApiMessage;
+import org.neusoft.neubbs.constant.log.LogWarn;
+import org.neusoft.neubbs.constant.api.ParamConst;
+import org.neusoft.neubbs.constant.api.SetConst;
 import org.neusoft.neubbs.constant.secret.SecretInfo;
 import org.neusoft.neubbs.controller.annotation.AccountActivation;
 import org.neusoft.neubbs.controller.annotation.AdminRank;
@@ -95,7 +97,7 @@ public class ApiInterceptor implements HandlerInterceptor {
          *      4.判断（能获取用户信息，表示已经登录）
          */
         if (AnnotationUtil.hasMethodAnnotation(handler, LoginAuthorization.class)) {
-            String authentication =  CookieUtil.getCookieValue(request, AccountInfo.AUTHENTICATION);
+            String authentication =  CookieUtil.getCookieValue(request, ParamConst.AUTHENTICATION);
             if (authentication != null) {
                 UserDO user = JwtTokenUtil.verifyToken(authentication, SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY);
                 if (user != null) {
@@ -103,10 +105,10 @@ public class ApiInterceptor implements HandlerInterceptor {
                     return true;
                 }
 
-                throw new AccountErrorException(AccountInfo.TOKEN_EXPIRED).log(LogWarnInfo.INTERCEPTRO_01);
+                throw new AccountErrorException(ApiMessage.TOKEN_EXPIRED).log(LogWarn.INTERCEPTRO_01);
             } else {
                 //无登录，无权访问 api
-                throw new AccountErrorException(AccountInfo.NO_PERMISSION).log(LogWarnInfo.INTERCEPTRO_02);
+                throw new AccountErrorException(ApiMessage.NO_PERMISSION).log(LogWarn.INTERCEPTRO_02);
             }
         }
 
@@ -125,20 +127,20 @@ public class ApiInterceptor implements HandlerInterceptor {
     private boolean doAccountActivation(HttpServletRequest request, Object handler) throws Exception {
 
         if (AnnotationUtil.hasMethodAnnotation(handler, AccountActivation.class)) {
-            String authentication = CookieUtil.getCookieValue(request, AccountInfo.AUTHENTICATION);
+            String authentication = CookieUtil.getCookieValue(request, ParamConst.AUTHENTICATION);
             if (authentication != null) {
                 UserDO user = JwtTokenUtil.verifyToken(authentication, SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY);
                 if (user == null) {
                     //JWT Token 过期，解密失败
-                    throw new AccountErrorException(AccountInfo.TOKEN_EXPIRED)
-                                .log(LogWarnInfo.ACCOUNT_05);
+                    throw new AccountErrorException(ApiMessage.TOKEN_EXPIRED)
+                                .log(LogWarn.ACCOUNT_05);
                 }
                 if (user.getState() == 1) {
                     //通过验证
                     return true;
                 }
 
-                throw new AccountErrorException(AccountInfo.NO_ACTIVATE).log(user.getName() + LogWarnInfo.ACCOUNT_03);
+                throw new AccountErrorException(ApiMessage.NO_ACTIVATE).log(user.getName() + LogWarn.ACCOUNT_03);
             }
         }
 
@@ -155,18 +157,18 @@ public class ApiInterceptor implements HandlerInterceptor {
      */
     private boolean doAdminRank(HttpServletRequest request, Object handler) throws Exception {
         if (AnnotationUtil.hasMethodAnnotation(handler, AdminRank.class)) {
-            String authentication = CookieUtil.getCookieValue(request, AccountInfo.AUTHENTICATION);
+            String authentication = CookieUtil.getCookieValue(request, ParamConst.AUTHENTICATION);
             if (authentication != null) {
                 UserDO user = JwtTokenUtil.verifyToken(authentication, SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY);
                 if (user == null) {
-                    throw new AccountErrorException(AccountInfo.TOKEN_EXPIRED).log(LogWarnInfo.ACCOUNT_05);
+                    throw new AccountErrorException(ApiMessage.TOKEN_EXPIRED).log(LogWarn.ACCOUNT_05);
                 }
-                if (AccountInfo.RANK_ADMIN.equals(user.getRank())) {
+                if (SetConst.RANK_ADMIN.equals(user.getRank())) {
                     //通过验证
                     return true;
                 }
 
-                throw new AccountErrorException(AccountInfo.NO_PERMISSION).log(LogWarnInfo.INTERCEPTRO_03);
+                throw new AccountErrorException(ApiMessage.NO_PERMISSION).log(LogWarn.INTERCEPTRO_03);
             }
         }
 

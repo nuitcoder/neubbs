@@ -53,7 +53,7 @@ public class RedisServiceTestCase {
      * 测试插入 key-value（无限期） 将 count 对象信息以 JSON 格式保存
      */
     @Test
-    public void testSaveObjectForUser(){
+    public void testSaveObjectForUser() throws Exception{
         UserDO user = userService.getUserInfoByName("oneuser");
         Map<String, Object> userInfoMap = JsonUtil.toMapByObject(user);
 

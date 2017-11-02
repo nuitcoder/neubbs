@@ -1,9 +1,10 @@
 package org.neusoft.neubbs.controller.api;
 
 import org.neusoft.neubbs.constant.ajax.AjaxRequestStatus;
-import org.neusoft.neubbs.constant.api.AccountInfo;
-import org.neusoft.neubbs.constant.api.FileInfo;
-import org.neusoft.neubbs.constant.log.LogWarnInfo;
+import org.neusoft.neubbs.constant.api.ApiMessage;
+import org.neusoft.neubbs.constant.log.LogWarn;
+import org.neusoft.neubbs.constant.api.ParamConst;
+import org.neusoft.neubbs.constant.api.SetConst;
 import org.neusoft.neubbs.constant.secret.SecretInfo;
 import org.neusoft.neubbs.controller.annotation.AccountActivation;
 import org.neusoft.neubbs.controller.annotation.LoginAuthorization;
@@ -72,24 +73,24 @@ public class FileController {
                                            HttpServletRequest request) throws Exception {
         if (multipartFile.isEmpty()) {
             // 抛出文件空异常
-            throw new FileUploadException(FileInfo.NO_CHOICE_PICTURE).log(LogWarnInfo.FILE_01);
+            throw new FileUploadException(ApiMessage.NO_CHOICE_PICTURE).log(LogWarn.FILE_01);
         }
         String fileType = multipartFile.getContentType();
         if (!PatternUtil.matchUserImage(fileType)) {
             //抛出文件类型不匹配异常
-            throw new FileUploadException(FileInfo.PICTURE_FORMAT_WRONG).log(fileType + LogWarnInfo.FILE_02);
+            throw new FileUploadException(ApiMessage.PICTURE_FORMAT_WRONG).log(fileType + LogWarn.FILE_02);
         }
-        if (multipartFile.getSize() >= FileInfo.SIZE_ONE_MB) {
-            //文件压缩处理
+//        if (multipartFile.getSize() >= SetConst.SIZE_ONE_MB) {
+//            //文件压缩处理
+//
+//        }
 
-        }
+        String serverPath = request.getServletContext().getRealPath(SetConst.UPLOAD_USER_IMAGE_PATH);
 
-        String serverPath = request.getServletContext().getRealPath(FileInfo.UPLOAD_USER_IMAGE_PATH);
-
-        String authentication = CookieUtil.getCookieValue(request, AccountInfo.AUTHENTICATION);
+        String authentication = CookieUtil.getCookieValue(request, ParamConst.AUTHENTICATION);
         UserDO cookieUser = JwtTokenUtil.verifyToken(authentication, SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY);
         if (cookieUser == null) {
-            throw new AccountErrorException(AccountInfo.TOKEN_EXPIRED).log(LogWarnInfo.ACCOUNT_05);
+            throw new AccountErrorException(ApiMessage.TOKEN_EXPIRED).log(LogWarn.ACCOUNT_05);
         }
 
         String fileName = cookieUser.getId()
@@ -99,13 +100,13 @@ public class FileController {
         File imageFile = new File(serverPath, fileName);
         if (!imageFile.getParentFile().exists()) {
            //服务器检测不到目录，抛出异常
-            throw new FileUploadException(FileInfo.NO_PARENT_DIRECTORY).log(LogWarnInfo.FILE_03);
+            throw new FileUploadException(ApiMessage.NO_PARENT_DIRECTORY).log(LogWarn.FILE_03);
         }
 
         multipartFile.transferTo(imageFile);
 
         userService.uploadUserImage(cookieUser.getName(), fileName);
 
-        return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, FileInfo.UPLOAD_SUCCESS);
+        return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, ApiMessage.UPLOAD_SUCCESS);
     }
 }

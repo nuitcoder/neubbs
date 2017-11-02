@@ -22,24 +22,27 @@ public interface IUserService {
      *
      * @param id 用户id
      * @return UserDO 用户对象
+     * @throws Exception 所有异常
      */
-    UserDO getUserInfoById(int id);
+    UserDO getUserInfoById(int id) throws Exception;
 
     /**
      * name 获取用户信息
      *
      * @param username 用户名
      * @return UserDO 用户对象
+     * @throws Exception 所有异常
      */
-    UserDO getUserInfoByName(String username);
+    UserDO getUserInfoByName(String username) throws Exception;
 
     /**
      * email 获取用户信息
      *
      * @param email 用户邮箱
      * @return UserDO 用户对象
+     * @throws Exception 所有异常
      */
-    UserDO getUserInfoByEmail(String email);
+    UserDO getUserInfoByEmail(String email) throws Exception;
 
     /**
      * 修改用户密码
@@ -75,4 +78,21 @@ public interface IUserService {
      * @throws Exception 所有异常
      */
     void uploadUserImage(String username, String image) throws Exception;
+
+
+    /**
+     * 判断用户名是否被占用
+     *
+     * @throws Exception 所有异常
+     */
+    void isOccupyByUsername(String username) throws Exception;
+
+    /**
+     * 判断邮箱是否被占用
+     *
+     * @throws Exception 所有异常
+     */
+    void isOccupyByEmail(String email) throws Exception;
+
+
 }
