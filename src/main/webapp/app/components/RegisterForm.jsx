@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import { Form, Field, reduxForm } from 'redux-form'
 import { Button } from 'react-bootstrap'
 import { injectIntl } from 'react-intl'
@@ -26,9 +27,14 @@ const RegisterForm = (props) => {
   )
 }
 
+RegisterForm.propTypes = {
+  handleSubmit: PropTypes.func.isRequired,
+  intl: PropTypes.object.isRequired,
+}
+
 export default injectIntl(reduxForm({
   form: 'register',
   validate: validate.register,
-  asyncValidate: validate.registerAsync,
+  asyncValidate: validate.uniqueAsync,
   asyncBlurFields: ['username', 'email'],
 })(RegisterForm))

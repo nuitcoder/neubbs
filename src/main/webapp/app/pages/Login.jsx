@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 import { Alert } from 'react-bootstrap'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
@@ -52,6 +53,14 @@ class Login extends Component {
       </FormWrapper>
     )
   }
+}
+
+Login.propTypes = {
+  account: PropTypes.object.isRequired,
+  actions: PropTypes.shape({
+    login: PropTypes.func.isRequired,
+  }).isRequired,
+  intl: PropTypes.object.isRequired,
 }
 
 const mapStateToProps = (state) => {

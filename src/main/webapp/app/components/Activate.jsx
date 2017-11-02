@@ -1,12 +1,15 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { Alert, Grid, Button, Modal, FormControl } from 'react-bootstrap'
+import { Alert, Grid, Button, Modal } from 'react-bootstrap'
+import { Form, Field, reduxForm } from 'redux-form'
 import styled from 'styled-components'
 import { Link } from 'react-router'
-import { FormattedMessage } from 'react-intl'
+import { FormattedMessage, injectIntl } from 'react-intl'
 import LinkToInbox from 'link-to-inbox'
 
 import api from '../api'
+import validate from '../utils/validate'
+import FieldInput from './FieldInput'
 
 const StyledAlert = styled(Alert)`
   margin-bottom: 0;
@@ -35,11 +38,21 @@ const StyledLink = styled(Link)`
   }
 `
 
+const StyledForm = styled(Form)`
+  display: inline-block;
+`
+
+const StyledFieldInput = styled(FieldInput)`
+  display: inline-block;
+  width: 200px;
+  height: 31px;
+`
+
 const ActivateTips = styled.div`
   margin-top: 20px;
 `
 
-const ActivateLabel = styled.p`
+const ActivateLabel = styled.div`
   color: #777;
   margin-bottom: 0;
 `
@@ -49,12 +62,6 @@ const ActivateEmail = styled.span`
   font-size: 18px;
   display: inline-block;
   margin: 3px 0;
-`
-
-const ActivateEmailInput = styled(FormControl)`
-  display: inline-block;
-  width: 200px;
-  height: 31px;
 `
 
 const ActivateLink = styled.a`
@@ -78,6 +85,7 @@ class Activate extends Component {
 
     this.state = {
       email: '',
+      currentEmail: '',
       timer: 0,
       count: 0,
       showAlert: false,
@@ -99,19 +107,24 @@ class Activate extends Component {
 
   componentWillReceiveProps(nextProps) {
     const { activate, profile } = nextProps
-    const oldEmail = this.state.email
+
+    if (this.state.email === '') {
+      this.setState({
+        email: profile.email,
+        currentEmail: profile.email,
+      }, () => {
+        const { email, count } = this.state
+
+        // send email when the first time to get email and timer is 0
+        if (email && count === 0) {
+          this.sendActivateEmail()
+        }
+      })
+    }
 
     this.setState({
-      email: profile.email,
       showAlert: !activate,
       showModal: !activate,
-    }, () => {
-      const { email, count } = this.state
-
-      // send email when the first time to get email and timer is 0
-      if (!oldEmail && email && count === 0) {
-        this.sendActivateEmail()
-      }
     })
   }
 
@@ -139,27 +152,28 @@ class Activate extends Component {
     this.setState({ email })
   }
 
-  updateEmail(target) {
+  updateEmail(event) {
+    event.preventDefault()
+
     const { username } = this.props.profile
     const { email } = this.state
 
-    if (target.charCode === 13) {
-      if (email !== this.props.profile.email) {
-        api.account.updateEmail(username, email)
-          .then((res) => {
-            if (res.data.success) {
-              this.setState({
-                showEmailInput: false,
-              }, () => {
-                this.sendActivateEmail()
-              })
-            }
-          })
-      } else {
-        this.setState({
-          showEmailInput: false,
+    if (email !== this.state.currentEmail) {
+      api.account.updateEmail(username, email)
+        .then((res) => {
+          if (res.data.success) {
+            this.setState({
+              currentEmail: email,
+              showEmailInput: false,
+            }, () => {
+              this.sendActivateEmail()
+            })
+          }
         })
-      }
+    } else {
+      this.setState({
+        showEmailInput: false,
+      })
     }
   }
 
@@ -193,23 +207,30 @@ class Activate extends Component {
   }
 
   renderModal() {
-    const { email } = this.state
-    const inbox = LinkToInbox.getHref(email)
+    const inbox = LinkToInbox.getHref(this.state.email)
 
     const renderEmailText = () => {
       if (this.state.showEmailInput) {
         return (
-          <ActivateEmailInput
-            value={email}
-            onKeyPress={this.updateEmail}
-            onChange={e => this.changeEmail(e)}
-          />
+          <StyledForm onSubmit={(e) => this.updateEmail(e)}>
+            <Field
+              inline
+              component={StyledFieldInput}
+              name="email"
+              type="text"
+              input={{
+                value: this.state.email,
+                onChange: (e) => this.changeEmail(e),
+              }}
+              autoFocus
+            />
+          </StyledForm>
         )
       }
 
       return (
         <span>
-          <ActivateEmail>{email}</ActivateEmail>
+          <ActivateEmail>{this.state.currentEmail}</ActivateEmail>
           <ActivateLink onClick={this.showEmailInput}>
             <FormattedMessage id="activate.modal.change_email" />
           </ActivateLink>
@@ -271,7 +292,7 @@ class Activate extends Component {
   }
 
   render() {
-    const { email } = this.state
+    const { email } = this.props.profile
     return (
       <div>
         {this.state.showAlert &&
@@ -301,5 +322,10 @@ Activate.propTypes = {
   activate: PropTypes.bool.isRequired,
 }
 
-export default Activate
+export default injectIntl(reduxForm({
+  form: 'avtivate',
+  validate: validate.activate,
+  asyncValidate: validate.uniqueAsync,
+  asyncBlurFields: ['email'],
+})(Activate))
 

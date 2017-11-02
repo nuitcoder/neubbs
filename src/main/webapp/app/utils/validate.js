@@ -3,6 +3,31 @@ import _ from 'lodash'
 
 import api from '../api'
 
+const login = (values, props) => {
+  const { intl: { formatMessage } } = props
+
+  const rules = {
+    username: 'required|between:3,15|alpha_num',
+    password: 'required|between:6,16',
+  }
+  const messages = {
+    'required.username': formatMessage({ id: 'validate.username.required' }),
+    'between.username': formatMessage({ id: 'validate.username.between' }),
+    'alpha_num.username': formatMessage({ id: 'validate.username.alpha_num' }),
+    'required.password': formatMessage({ id: 'validate.password.required' }),
+    'between.password': formatMessage({ id: 'validate.password.between' }),
+  }
+  const validation = new Validator(values, rules, messages)
+
+  const errors = {}
+  if (validation.fails()) {
+    errors.username = validation.errors.first('username')
+    errors.password = validation.errors.first('password')
+  }
+
+  return errors
+}
+
 const register = (values, props) => {
   const { intl: { formatMessage } } = props
 
@@ -35,7 +60,28 @@ const register = (values, props) => {
   return errors
 }
 
-const registerAsync = (values, dispatch, props) => {
+const activate = (values, props) => {
+  const { intl: { formatMessage } } = props
+
+  console.log(values)
+  const rules = {
+    email: 'required|email',
+  }
+  const messages = {
+    'required.email': formatMessage({ id: 'validate.email.required' }),
+    'email.email': formatMessage({ id: 'validate.email.email' }),
+  }
+  const validation = new Validator(values, rules, messages)
+
+  const errors = {}
+  if (validation.fails()) {
+    errors.email = validation.errors.first('email')
+  }
+
+  return errors
+}
+
+const uniqueAsync = (values, dispatch, props) => {
   const { username, email } = values
   const { intl: { formatMessage } } = props
 
@@ -76,34 +122,9 @@ const registerAsync = (values, dispatch, props) => {
   })
 }
 
-const login = (values, props) => {
-  const { intl: { formatMessage } } = props
-
-  const rules = {
-    username: 'required|between:3,15|alpha_num',
-    password: 'required|between:6,16',
-  }
-  const messages = {
-    'required.username': formatMessage({ id: 'validate.username.required' }),
-    'between.username': formatMessage({ id: 'validate.username.between' }),
-    'alpha_num.username': formatMessage({ id: 'validate.username.alpha_num' }),
-    'required.password': formatMessage({ id: 'validate.password.required' }),
-    'between.password': formatMessage({ id: 'validate.password.between' }),
-  }
-  const validation = new Validator(values, rules, messages)
-
-  const errors = {}
-  if (validation.fails()) {
-    errors.username = validation.errors.first('username')
-    errors.password = validation.errors.first('password')
-  }
-
-  return errors
-}
-
-
 export default {
   login,
   register,
-  registerAsync,
+  activate,
+  uniqueAsync,
 }

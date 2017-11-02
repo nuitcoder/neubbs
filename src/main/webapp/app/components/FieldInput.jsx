@@ -12,6 +12,7 @@ const InputError = styled.span`
 
 const FieldInput = (props) => {
   const { input, type, placeholder, autoFocus, meta } = props
+  const { className, inline } = props
   const { touched, error } = meta
 
   let validationState = null
@@ -19,11 +20,22 @@ const FieldInput = (props) => {
     validationState = error ? 'error' : 'success'
   }
 
+  const inlineStyle = {
+    display: 'inline-block',
+    marginBottom: '0',
+  }
+  const formGroupStyle = inline ? inlineStyle : {}
+
   return (
-    <FormGroup controlId={input.name} validationState={validationState}>
+    <FormGroup
+      style={formGroupStyle}
+      controlId={input.name}
+      validationState={validationState}
+    >
       <FormControl
         id={input.name}
         type={type}
+        className={className}
         placeholder={placeholder}
         value={input.value}
         onChange={input.onChange}
