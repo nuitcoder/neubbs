@@ -57,7 +57,7 @@ public class TopicController {
      * @throws Exception 所有异常
      */
     @LoginAuthorization @AccountActivation
-    @RequestMapping(value = "/topic", method = RequestMethod.POST)
+    @RequestMapping(value = "/topic", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
     public ResponseJsonDTO saveTopic(@RequestBody Map<String, Object> requestBodyParamsMap) throws Exception {
         Integer userId = (Integer) requestBodyParamsMap.get(ParamConst.USER_ID);
@@ -90,7 +90,7 @@ public class TopicController {
      * @throws Exception 所有异常
      */
     @LoginAuthorization @AccountActivation
-    @RequestMapping(value = "/topic/reply", method = RequestMethod.POST)
+    @RequestMapping(value = "/topic/reply", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
     public ResponseJsonDTO saveReply(@RequestBody Map<String, Object> requetBodyParamsMap) throws Exception {
         Integer userId = (Integer) requetBodyParamsMap.get(ParamConst.USER_ID);
@@ -120,7 +120,7 @@ public class TopicController {
      * @throws Exception 所有异常
      */
     @LoginAuthorization @AccountActivation @AdminRank
-    @RequestMapping(value = "/topic-remove", method = RequestMethod.POST)
+    @RequestMapping(value = "/topic-remove", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
     public ResponseJsonDTO removeTopic(@RequestBody Map<String, Object> requestBodyParamsMap) throws Exception {
         Integer topicId = (Integer) requestBodyParamsMap.get(ParamConst.TOPIC_ID);
@@ -145,7 +145,7 @@ public class TopicController {
      * @throws Exception 所有异常
      */
     @LoginAuthorization @AccountActivation
-    @RequestMapping(value = "/topic/reply-remove", method = RequestMethod.POST)
+    @RequestMapping(value = "/topic/reply-remove", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
     public ResponseJsonDTO removeReply(@RequestBody Map<String, Object> requestBodyParamsMap) throws Exception {
         int replyId = (Integer) requestBodyParamsMap.get(ParamConst.REPLY_ID);
@@ -170,7 +170,7 @@ public class TopicController {
      * @throws Exception 所有异常
      */
     @LoginAuthorization @AccountActivation
-    @RequestMapping(value = "/topic/content-update", method = RequestMethod.POST)
+    @RequestMapping(value = "/topic/content-update", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
     public ResponseJsonDTO updateTopicContent(@RequestBody Map<String, Object> requestBodyParamsMap) throws Exception {
         Integer topicId = (Integer) requestBodyParamsMap.get(ParamConst.TOPIC_ID);
@@ -203,7 +203,7 @@ public class TopicController {
      * @throws Exception 所有异常
      */
    @LoginAuthorization @AccountActivation
-   @RequestMapping(value = "/topic/reply/content-update", method = RequestMethod.POST)
+   @RequestMapping(value = "/topic/reply/content-update", method = RequestMethod.POST, consumes = "application/json")
    @ResponseBody
    public ResponseJsonDTO updateReplyContent(@RequestBody Map<String, Object> requestBodyParamsMap) throws Exception {
        Integer replyId = (Integer) requestBodyParamsMap.get(ParamConst.REPLY_ID);
