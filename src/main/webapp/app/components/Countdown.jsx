@@ -8,9 +8,9 @@ class Countdown extends Component {
     const count = props.autoStart ? props.duration : 0
     this.state = {
       count,
-      timer: 0,
     }
 
+    this.timer = 0
     this.startTimer = this.startTimer.bind(this)
     this.countdown = this.countdown.bind(this)
   }
@@ -33,12 +33,9 @@ class Countdown extends Component {
   startTimer() {
     const { delay } = this.props
 
-    if (this.state.timer > 0) {
-      clearInterval(this.state.timer)
+    if (this.timer === 0) {
+      this.timer = setInterval(this.countdown, delay * 1000)
     }
-
-    const timer = setInterval(this.countdown, delay * 1000)
-    this.setState({ timer })
   }
 
   countdown() {
@@ -46,8 +43,8 @@ class Countdown extends Component {
     const count = this.state.count - delay
 
     if (count <= 0) {
-      clearInterval(this.state.timer)
-      this.setState({ timer: 0 })
+      clearInterval(this.timer)
+      this.timer = 0
     }
     this.setState({ count })
   }

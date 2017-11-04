@@ -49,6 +49,7 @@ class Activate extends Component {
     this.hideActivateModal = this.hideActivateModal.bind(this)
 
     this.handleSubmitEmail = this.handleSubmitEmail.bind(this)
+    this.handleSendEmail = this.handleSendEmail.bind(this)
   }
 
   componentWillReceiveProps(nextProps) {
@@ -77,13 +78,16 @@ class Activate extends Component {
     })
   }
 
-  handleSubmitEmail(values, afterSubmit) {
+  handleSubmitEmail(values) {
     const { username } = this.props.profile
     const { email } = values
     if (email !== this.props.profile.email) {
       this.props.actions.updateEmail({ username, email })
-      afterSubmit()
     }
+  }
+
+  handleSendEmail(email) {
+    this.props.actions.sendActivateEmail({ email })
   }
 
   render() {
@@ -120,6 +124,7 @@ class Activate extends Component {
               <EmailForm
                 email={email}
                 onSubmit={this.handleSubmitEmail}
+                sendEmail={this.handleSendEmail}
               />}
           </Modal.Body>
           <Modal.Footer>
@@ -143,6 +148,7 @@ Activate.propTypes = {
   }).isRequired,
   actions: PropTypes.shape({
     updateEmail: PropTypes.func.isRequired,
+    sendActivateEmail: PropTypes.func.isRequired,
   }).isRequired,
 }
 

@@ -67,6 +67,14 @@ class EmailForm extends Component {
     this.sendActivateEmail()
   }
 
+  componentWillReceiveProps(nextProps) {
+    const { email } = nextProps
+    if (this.props.email !== email) {
+      this.sendActivateEmail()
+      this.setState({ email })
+    }
+  }
+
   showInput() {
     this.setState({
       showInput: true,
@@ -95,9 +103,7 @@ class EmailForm extends Component {
   handleSubmitEmail(event) {
     event.preventDefault()
     const { email } = this.state
-    this.props.onSubmit({ email }, () => {
-      this.sendActivateEmail()
-    })
+    this.props.onSubmit({ email })
 
     this.setState({
       showInput: false,
@@ -106,7 +112,7 @@ class EmailForm extends Component {
 
   sendActivateEmail() {
     const { email } = this.state
-    console.log('send email: ' + email)
+    this.props.sendEmail(email)
     this.startCountdown()
   }
 
@@ -180,6 +186,7 @@ EmailForm.propTypes = {
   // from redux-form
   change: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,
+  sendEmail: PropTypes.func.isRequired,
 }
 
 export default injectIntl(reduxForm({

@@ -164,7 +164,7 @@ export function* sendActivateEmailSaga(action) {
   const { data } = yield call(api.account.sendActivateEmail, email)
   try {
     if (data.success) {
-      yield put({ type: types.SEND_EMAIL_SUCCESS })
+      yield put({ type: types.SEND_ACTIVATE_EMAIL_SUCCESS })
     } else {
       yield put({ type: types.REQUEST_ERROR, error: data.message })
     }
