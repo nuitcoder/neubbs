@@ -56,6 +56,15 @@ export default function (state = initialState, action) {
         },
       }
     }
+    case types.UPDATE_EMAIL_SUCCESS: {
+      return {
+        ...state,
+        profile: {
+          ...state.profile,
+          email: payload.email,
+        },
+      }
+    }
     case types.REQUEST_ERROR: {
       return {
         ...state,

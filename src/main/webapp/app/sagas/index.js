@@ -9,7 +9,9 @@ function* rootSagas() {
     takeLatest(types.LOGOUT_REQUEST, account.logoutSaga),
     takeLatest(types.REGISTER_REQUEST, account.registerSaga),
     takeLatest(types.GET_PROFILE_REQUEST, account.profileSaga),
+    takeLatest(types.UPDATE_EMAIL_REQUEST, account.updateEmailSaga),
     takeLatest(types.ACTIVATE_REQUEST, account.activateSaga),
+    takeLatest(types.SEND_ACTIVATE_EMAIL_REQUEST, account.sendActivateEmailSaga),
   ]
 }
 

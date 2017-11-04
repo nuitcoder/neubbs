@@ -63,7 +63,6 @@ const register = (values, props) => {
 const activate = (values, props) => {
   const { intl: { formatMessage } } = props
 
-  console.log(values)
   const rules = {
     email: 'required|email',
   }
@@ -94,6 +93,10 @@ const uniqueAsync = (values, dispatch, props) => {
     }
 
     const uniqueEmail = () => {
+      // skip validate when activate some email
+      if (props.form === 'activate-email' && email === props.email) {
+        return Promise.resolve(false)
+      }
       if (email !== '') {
         return api.account.uniqueByEmail(email)
       }

@@ -125,7 +125,50 @@ export function* activateSaga(action) {
       },
     })
   } catch (err) {
-    yield put({ type: types.REQUEST_ERROR, error: err.messgae })
+    yield put({ type: types.REQUEST_ERROR, error: err.message })
   }
 }
 
+/**
+ * update account email
+ *
+ * @param action
+ * @returns {undefined}
+ */
+export function* updateEmailSaga(action) {
+  const { username, email } = action.payload
+
+  yield put({ type: types.REQUEST_SENDING })
+  const { data } = yield call(api.account.updateEmail, username, email)
+  try {
+    if (data.success) {
+      yield put({ type: types.UPDATE_EMAIL_SUCCESS, payload: { email } })
+    } else {
+      yield put({ type: types.REQUEST_ERROR, error: data.message })
+    }
+  } catch (err) {
+    yield put({ type: types.REQUEST_ERROR, error: err.message })
+  }
+}
+
+/**
+ * send activate email
+ *
+ * @param action
+ * @returns {undefined}
+ */
+export function* sendActivateEmailSaga(action) {
+  const { email } = action.payload
+
+  yield put({ type: types.REQUEST_SENDING })
+  const { data } = yield call(api.account.sendActivateEmail, email)
+  try {
+    if (data.success) {
+      yield put({ type: types.SEND_EMAIL_SUCCESS })
+    } else {
+      yield put({ type: types.REQUEST_ERROR, error: data.message })
+    }
+  } catch (err) {
+    yield put({ type: types.REQUEST_ERROR, error: err.message })
+  }
+}

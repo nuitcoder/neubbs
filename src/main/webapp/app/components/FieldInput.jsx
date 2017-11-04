@@ -40,6 +40,7 @@ const FieldInput = (props) => {
         value={input.value}
         onChange={input.onChange}
         onBlur={input.onBlur}
+        onFocus={input.onFocus}
         autoFocus={autoFocus}
       />
       {validationState === 'error' && <InputError>{error}</InputError>}

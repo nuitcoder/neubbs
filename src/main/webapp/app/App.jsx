@@ -59,7 +59,7 @@ class App extends Component {
       <div className="app">
         <Header router={router} isLogin={isLogin} />
         {isLogin &&
-          <Activate activate={account.activate} profile={account.profile} />}
+          <Activate {...account} actions={this.props.actions} />}
         <StyledGrid id="main">
           {children}
         </StyledGrid>

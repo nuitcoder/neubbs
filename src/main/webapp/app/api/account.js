@@ -98,10 +98,23 @@ const account = {
     })
   },
 
+  /**
+   * update account email
+   *
+   * @param {string} username
+   * @param {string} email
+   * @returns {promise}
+   */
   updateEmail(username, email) {
     return axios.post(UPDATE_EMAIL_URL, { username, email })
   },
 
+  /**
+   * send activate email
+   *
+   * @param {string} email
+   * @returns {promise}
+   */
   sendActivateEmail(email) {
     return axios.post(SEND_ACTIVATE_EMAIL_URL, { email })
   },
