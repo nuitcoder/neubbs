@@ -85,6 +85,10 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public void activationUser(String email) throws Exception {
+        if (userDAO.getUserByEmail(email) == null) {
+            throw new AccountErrorException(ApiMessage.NO_USER).log(email + LogWarn.ACCOUNT_01);
+        }
+
         int effectRow = userDAO.updateUserStateForActivationByEmail(email);
         if (effectRow == 0) {
             throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.SERVICE_02);
@@ -102,7 +106,7 @@ public class UserServiceImpl implements IUserService {
     @Override
     public void isOccupyByUsername(String username) throws Exception {
         if (userDAO.getUserByName(username) != null) {
-            throw new AccountErrorException(ApiMessage.USERNAME_REGISTERED).log(username + LogWarn.ACCOUNT_02);
+            throw new AccountErrorException(ApiMessage.USERNAME_REGISTERED).log(username + LogWarn.ACCOUNT_14);
         }
     }
 

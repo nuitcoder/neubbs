@@ -27,10 +27,9 @@ public final class SetConst {
 
     /**
      * 过期时间（时间戳，ms）
+     *      - 1天
      */
     public static final long EXPIRE_TIME_MS_ONE_DAY = 86400000L;
-    public static final long EXPIRE_TIME_MS_SERVEN_DAY = 604800000L;
-    public static final int EXPIRE_TIME_S_ONE_DAY = 1080000;
     public static final int EXPIRETIME_S_ZERO  = 0;
 
     /**
@@ -49,20 +48,6 @@ public final class SetConst {
     public static final int SIZE_TWO = 2;
     public static final int SIZE_THREE = 3;
     public static final int SIZE_FOUR = 4;
-
-    /**
-     * 数字
-     */
-    public static final int ZERO = 0;
-    public static final int ONE = 1;
-    public static final int TWO = 2;
-    public static final int THREE = 3;
-    public static final int NINE = 9;
-    public static final int TEN = 10;
-    public static final int TWENTY_SIX = 26;
-    public static final int SIXTY_FIVE = 65;
-    public static final int NINETH_SEVEN = 97;
-    public static final int TEN_THOUSAND = 10000;
 
     /**
      * 用户头像

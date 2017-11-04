@@ -83,6 +83,7 @@ public interface IUserService {
     /**
      * 判断用户名是否被占用
      *
+     * @param username 用户名
      * @throws Exception 所有异常
      */
     void isOccupyByUsername(String username) throws Exception;
@@ -90,6 +91,7 @@ public interface IUserService {
     /**
      * 判断邮箱是否被占用
      *
+     * @param email 用户邮箱
      * @throws Exception 所有异常
      */
     void isOccupyByEmail(String email) throws Exception;

@@ -50,10 +50,4 @@ public final class ApiMessage {
      */
     public static final String NO_TOPIC = "no topic";
     public static final String NO_REPLY = "no reply";
-    public static final String SAVE_TOPIC_SUCCESS = "save the topic success";
-    public static final String SAVE_REPLY_SUCCESS = "save the reply success";
-    public static final String REMOVE_TOPIC_SUCCESS = "remove the topic success";
-    public static final String REMOVE_REPLY_SUCCESS = "remove the reply success";
-    public static final String ALTER_TOPIC_CONTENT_SUCCESS = "alter topic content success";
-    public static final String ALTER_REPLY_CONTENT_SUCCESS = "alter reply content success";
 }

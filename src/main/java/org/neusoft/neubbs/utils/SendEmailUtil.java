@@ -26,7 +26,6 @@ public final class SendEmailUtil {
      */
     private static final String FROM_USERNAME = "suvan@liushuwei.cn";
     private static final String FROM_AUTHORIZATIONCODE = "23h235i2vhKwUgbg";
-    private static final String FROM_PERSONNAME = "Neubbs 管理员";
 
     /**
      * 邮件格式
@@ -49,11 +48,12 @@ public final class SendEmailUtil {
     /**
      * 发送邮件
      *
+     * @param name 发件人昵称
      * @param email 要发送的的邮箱
      * @param subject 发送主题
      * @param content 发送内容
      */
-   public static void  sendEmail(String email, String subject, String content) {
+   public static void  sendEmail(String name, String email, String subject, String content) {
         //构造邮件请求
         JavaMailSenderImpl sender = new JavaMailSenderImpl();
             sender.setUsername(FROM_USERNAME);
@@ -82,7 +82,7 @@ public final class SendEmailUtil {
         MimeMessage message = new MimeMessage(mailSession);
             try {
                 //设置发件人 + 昵称
-                message.setFrom(new InternetAddress(FROM_USERNAME, FROM_PERSONNAME));
+                message.setFrom(new InternetAddress(FROM_USERNAME, name));
 
                 //设置主题 + 内容
                 message.setSubject(subject, FROM_SUBJECT_ENCODING);

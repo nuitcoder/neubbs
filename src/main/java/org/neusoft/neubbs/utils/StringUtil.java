@@ -1,8 +1,5 @@
 package org.neusoft.neubbs.utils;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 /**
  * 字符串 工具类
  *
@@ -17,9 +14,9 @@ public final class StringUtil {
      * 空判断（true - 为空）
      *
      * @param str 输入字符串
-     * @return Boolean 检测结果
+     * @return boolean 检测结果
      */
-    public static Boolean isEmpty(String str) {
+    public static boolean isEmpty(String str) {
         return (str == null || str.length() == 0);
     }
 
@@ -29,41 +26,20 @@ public final class StringUtil {
      * @param str 输入字符串
      * @param min 最小值
      * @param max 最大值
-     * @return Boolean 检测结果
+     * @return boolean 检测结果
      */
-    public static Boolean isScope(String str, int min, int max) {
+    public static boolean isScope(String str, int min, int max) {
         return (min <= str.length() && str.length() <= max);
-    }
-
-    /**
-     * 正则判断（字符串是否满足，指定正则表达式）
-     *
-     * @param str 输入字符串
-     * @param regexp 正则表达式
-     * @return Boolean 检测结果
-     */
-    public static Boolean isPattern(String str, String regexp) {
-        Pattern pattern = Pattern.compile(regexp);
-        Matcher matcher = pattern.matcher(str);
-
-        return matcher.matches();
     }
 
     /**
      * 是否过期（判断此时是否过期，true-过期）
      *
      * @param expireTime 过期指定时间（时间戳）
-     * @return Boolean 检测结果
+     * @return boolean 检测结果
      */
-    public static Boolean isExpire(String expireTime) {
-        long now = System.currentTimeMillis();
-
-        if (Long.parseLong(expireTime) > now) {
-            return false;
-        }
-
-        //过期
-        return true;
+    public static boolean isExpire(String expireTime) {
+        return Long.parseLong(expireTime) <= System.currentTimeMillis();
     }
 
     /**

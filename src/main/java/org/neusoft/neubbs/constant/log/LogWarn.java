@@ -14,19 +14,18 @@ public final class LogWarn {
     public static final String ACCOUNT_02 = " 数据库已经存该用户 ";
 
     public static final String ACCOUNT_03 = "账户未激活，无权调用 api";
-    public static final String ACCOUNT_04 = " 激活口令已经过期";
-    public static final String ACCOUNT_05 = "授权口令已经过期";
-    public static final String ACCOUNT_06 = " 邮箱未注册，无法发送邮件";
+    public static final String ACCOUNT_05 = " 授权口令已经过期";
     public static final String ACCOUNT_07 = " 用户已经激活，无法修改邮箱";
-    public static final String ACCOUNT_08 = " 邮箱已被占用";
+    public static final String ACCOUNT_08 = "  邮箱已被占用";
 
     public static final String ACCOUNT_09 = " 用户密码不正确";
     public static final String ACCOUNT_10 = "未生成验证码，无法验证";
     public static final String ACCOUNT_11 = " 验证码不正确";
 
     public static final String ACCOUNT_12 = "无权修改其余用户";
+    public static final String ACCOUNT_13 = "找不到 username 或 email 参数（二选一），无法获取账户信息";
+    public static final String ACCOUNT_14 = " 用户名已被占用";
 
-    public static final String ACCOUNT_13 = "找不到 username 或 email 参数（选其一即可），无法获取账户信息";
 
 
     /*****************************Topic api**********************************/
