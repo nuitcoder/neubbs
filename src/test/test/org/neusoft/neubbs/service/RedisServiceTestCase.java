@@ -1,16 +1,14 @@
 package test.org.neusoft.neubbs.service;
 
+import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.service.IRedisService;
 import org.neusoft.neubbs.service.IUserService;
-import org.neusoft.neubbs.utils.JsonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import java.util.Map;
 
 /**
  * IRedisService 测试用例
@@ -26,81 +24,97 @@ public class RedisServiceTestCase {
     IUserService userService;
 
     /**
-     * 测试 插入 key-value（无限期）
+     * 保存 key-value（无限期）
      */
-    @Test
-    public void testSaveByKeyValue(){
-        redisService.save("testsave","测试");
+    @Ignore
+    public void testSave() {
+        String key = "test";
+        String value = "save";
+
+        redisService.save(key, value);
+        Assert.assertNotNull(redisService.getValue(key));
     }
 
     /**
-     * 测试插入 key-value（指定时间，ms）
+     * 保存 key-value（指定过期时间）
      */
-    @Test
-    public void testSaveByKeyValueTime(){
-        redisService.save("study", "value", 2);
-        System.out.println(redisService.getValue("study"));
+    @Ignore
+    public void testSaveByKeyValueTime() {
+        String key = "testExpire";
+        String value = "saveExpire";
+        long expireTime = 2000;
+
+        redisService.save(key, value, expireTime);
+        Assert.assertNotNull(redisService.getValue(key));
+        System.out.println(redisService.getExpireTime(key) + " ms after key-value expire;");
 
         try{
-            System.out.println("休眠2秒钟*****");
             Thread.sleep(2000);
-        }catch (Exception e){}
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
-        System.out.println("再次查询：" + redisService.getValue("study"));
+        Assert.assertEquals(redisService.getExpireTime(key), -2L);
+    }
+
+
+    /**
+     * 删除 key-value
+     */
+    @Ignore
+    public void testRemoveByKey() {
+        String key = "testRemove";
+        String value = "remove";
+
+        redisService.save(key, value);
+        redisService.remove(key);
+        Assert.assertNull(redisService.getValue(key));
     }
 
     /**
-     * 测试插入 key-value（无限期） 将 count 对象信息以 JSON 格式保存
+     * 查询 value
      */
     @Test
-    public void testSaveObjectForUser() throws Exception{
-        UserDO user = userService.getUserInfoByName("oneuser");
-        Map<String, Object> userInfoMap = JsonUtil.toMapByObject(user);
-
-
-            String userJSON = JsonUtil.toJSONStringByObject(userInfoMap);
-            System.out.println("JSON 格式 user对象 ：" + userJSON);
+    public void testGetValue() {
+        String key = "test";
+        String value = redisService.getValue(key);
+        System.out.println("test: " + value);
     }
 
     /**
-     * 测试根据 key ，删除 key-value
+     * 查询过期时间
      */
     @Test
-    public void testRemoveByKey(){
-        redisService.remove("oneuser_1507535956862");
-    }
+    public void testGetExpreTime() {
+        Assert.assertEquals(redisService.getExpireTime("notest"), -2);
 
-    /**
-     * 测试 根据 key，获取 value
-     */
-    @Test
-    public void testGetValueByKey(){
-        System.out.println(redisService.getValue("oneuser_1507535956862"));
-    }
-
-    /**
-     *测试获取 key-value 剩余过期时间（ms）
-     */
-    @Test
-    public void testGetExpreTimeByKey(){
-        long hourMillis = 60 * 60 * 1000;
-        redisService.save("study", "good" , hourMillis);
-        System.out.println("***********过期时间：" + redisService.getExpireTime("study"));
+        String key = "testExpire";
+        String value = "expire";
+        long expiretime = 1000;
+        redisService.save(key, value, expiretime);
+        System.out.println(redisService.getExpireTime(key) + "s after expired");
 
         try{
-            System.out.println("休眠2s");
-            Thread.sleep(2000);
-        }catch (Exception e){}
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
-        //-2是不存在key，-1是永久，获取的是此时此刻剩余过期秒数
-        System.out.println(redisService.getExpireTime("study"));
+        Assert.assertEquals(redisService.getExpireTime(key), -2);
     }
 
     /**
-     * 测试更新 key-value（key 相同，value 直接覆盖）（无期限）
+     * 更新 key-value
      */
-    @Test
-    public void testUpdateByKeyValue(){
-        redisService.update("test","new");
+    @Ignore
+    public void testUpdate() {
+        String key = "testUpdate";
+        String value = "old-value";
+        redisService.save(key, value);
+
+        String newValue = "new-value";
+        redisService.update(key, newValue);
+
+        Assert.assertEquals(redisService.getValue(key), newValue);
     }
 }

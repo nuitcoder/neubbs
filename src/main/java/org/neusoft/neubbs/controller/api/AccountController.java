@@ -14,6 +14,7 @@ import org.neusoft.neubbs.controller.exception.ParamsErrorException;
 import org.neusoft.neubbs.controller.exception.TokenExpireException;
 import org.neusoft.neubbs.dto.ResponseJsonDTO;
 import org.neusoft.neubbs.entity.UserDO;
+import org.neusoft.neubbs.service.IRedisService;
 import org.neusoft.neubbs.service.IUserService;
 import org.neusoft.neubbs.utils.CookieUtil;
 import org.neusoft.neubbs.utils.JsonUtil;
@@ -68,15 +69,18 @@ public final class AccountController {
     private final IUserService userService;
     private final ThreadPoolTaskExecutor taskExecutor;
     private final Producer captchaProducer;
+    private final IRedisService redisService;
 
     /**
      * Constructor（自动注入）
      */
     @Autowired
-    private AccountController(IUserService userService, ThreadPoolTaskExecutor taskExecutor, Producer captchaProducer) {
+    private AccountController(IUserService userService, ThreadPoolTaskExecutor taskExecutor,
+                              Producer captchaProducer, IRedisService redisService) {
         this.userService = userService;
         this.taskExecutor = taskExecutor;
         this.captchaProducer = captchaProducer;
+        this.redisService = redisService;
     }
 
     /**
@@ -430,11 +434,17 @@ public final class AccountController {
      *          - 邮箱是否被占用
      *          - 用户是否激活（已激活的无法发送邮件）
      *
+     *      C.邮件定时器检查
+     *          - 检查是否有能发送过期
+     *          - 不能发送，返回倒计时
+     *
      *      C.发送邮件
      *          - 构建 token（用户邮箱 + 过期时间戳，使用 Base64 加密）
      *          - 构建邮件内容（生成 Html 格式）
      *          - 发送邮件（Spring 线程池，taskExecutor 另调用线程执行发送邮件任务，采用 lambda 写法）
-     *          - 返回成功状态 + 发送成功信息
+     *
+     *       D.邮箱时限
+     *          - 邮箱保存至 redis（key-value， 60 * 1000 ms 过期）
      *
      * @param requestBodyParamsMap request-body内JSON数据
      * @return ResponseJsonDTO 响应JSON传输对象
@@ -452,7 +462,15 @@ public final class AccountController {
             throw new AccountErrorException(ApiMessage.ACCOUNT_ACTIVATED).log(email + LogWarn.ACCOUNT_07);
         }
 
-        //发送哟件
+       //邮箱定时器检查
+        long emailkeyExpireTime = redisService.getExpireTime(email);
+        if (emailkeyExpireTime != SetConst.REDIS_EXPIRED) {
+            return new ResponseJsonDTO(AjaxRequestStatus.FAIL, ApiMessage.WATI_TIMER,
+                                            "timer", emailkeyExpireTime / SetConst.THOUSAND);
+        }
+
+
+        //发送邮件
         long expireTime = System.currentTimeMillis() + SetConst.EXPIRE_TIME_MS_ONE_DAY;
         String token = SecretUtil.encryptBase64(email + "-" + expireTime);
         String emailContent = StringUtil
@@ -461,6 +479,9 @@ public final class AccountController {
         taskExecutor.execute(
                 () -> SendEmailUtil.sendEmail("Neubbs", email, " Neubbs 账户激活", emailContent)
         );
+
+        //邮箱时限
+        redisService.save(email, "activate", SetConst.EXPIRE_TIME_MS_SIXTY_SECOND);
 
         return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, ApiMessage.MAIL_SEND_SUCCESS);
     }

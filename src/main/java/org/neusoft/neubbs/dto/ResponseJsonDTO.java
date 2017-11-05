@@ -12,7 +12,7 @@ import java.util.Map;
  * @author Suvan
  */
 public class ResponseJsonDTO {
-    private boolean success;
+    private Boolean success;
     private String message;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -23,21 +23,29 @@ public class ResponseJsonDTO {
      *      1.仅返回成功状态（message = null）
      *      2.返回成功状态 + 提示信息
      *      3.返回成功状态（message = null） + 响应数据
-     *      4.返回成功状态（message =null） + 响应数据（适用单条 key-value 情况）
+     *      4.返回成功状态（message = null） + 响应数据（适用单条 key-value 情况）
+     *      5.返回成功状态（message = null） + 提示信息 + 响应数据（单条 key-value）
      */
-    public ResponseJsonDTO(Boolean success) {
+    public ResponseJsonDTO(boolean success) {
         this.success = success;
     }
-    public ResponseJsonDTO(Boolean success, String message) {
+    public ResponseJsonDTO(boolean success, String message) {
         this.success = success;
         this.message = message;
     }
-    public ResponseJsonDTO(Boolean success, Map<String, Object> map) {
+    public ResponseJsonDTO(boolean success, Map<String, Object> map) {
         this.success = success;
         this.model = map;
     }
-    public ResponseJsonDTO(Boolean success, String key, Object obj) {
+    public ResponseJsonDTO(boolean success, String key, Object obj) {
         this.success = success;
+
+        this.model = new HashMap<>();
+        this.model.put(key, obj);
+    }
+    public ResponseJsonDTO(boolean success, String message, String key, Object obj) {
+        this.success = success;
+        this.message = message;
 
         this.model = new HashMap<>();
         this.model.put(key, obj);

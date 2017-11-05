@@ -13,14 +13,12 @@
 		<property name="testOnReturn" value="${redis.pool.testOnReturn}" />
 	</bean>
 
-	<!-- 配置 Jedis 连接  -->
+	<!-- 【云】配置 Jedis 连接  -->
 	<bean id="jedisConnectionFactory"  class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory" >
 		<property name="poolConfig" ref="jedisPoolConfig" />
-
-		<property name="port" value="${redis.port}" />
 		<property name="hostName" value="${redis.host}" />
+		<property name="port" value="${redis.port}" />
 		<property name="timeout" value="${redis.timeout}" />
-		<!--<property name="password" value="${redis.password" />-->
 	</bean >
 
 	<!-- RedisTemplate对象（Spring data 提供，对 Jedis 对象扩展） -->

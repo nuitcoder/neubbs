@@ -31,6 +31,7 @@ public final class ApiMessage {
     public static final String NO_GENERATE_CAPTCHA = "no generate captcha";
 
     public static final String MAIL_SEND_SUCCESS = "mail send success";
+    public static final String WATI_TIMER = "wait for timer";
 
     /**
      * Count api 警告信息

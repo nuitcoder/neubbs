@@ -2,8 +2,7 @@ package org.neusoft.neubbs.service.impl;
 
 import org.neusoft.neubbs.service.IRedisService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.TimeUnit;
@@ -16,20 +15,19 @@ import java.util.concurrent.TimeUnit;
 @Service("redisServiceImpl")
 public class RedisServiceImpl implements IRedisService {
 
-    private RedisTemplate redisTemplate;
+    private StringRedisTemplate redisTemplate;
 
     /**
      * Constructor
      */
     @Autowired
-    public RedisServiceImpl(RedisTemplate redisTemplate) {
-
+    public RedisServiceImpl(StringRedisTemplate redisTemplate) {
+        this.redisTemplate = redisTemplate;
     }
 
     @Override
     public void save(String key, String value) {
-        ValueOperations<String, String> vo = redisTemplate.opsForValue();
-        vo.set(key, value);
+        redisTemplate.opsForValue().set(key, value);
     }
 
     @Override
@@ -44,13 +42,11 @@ public class RedisServiceImpl implements IRedisService {
 
     @Override
     public String getValue(String key) {
-       ValueOperations<String, String> vo = redisTemplate.opsForValue();
-
-       return vo.get(key);
+       return redisTemplate.opsForValue().get(key);
     }
 
     @Override
-    public Long getExpireTime(String key) {
+    public long getExpireTime(String key) {
         return redisTemplate.getExpire(key, TimeUnit.MILLISECONDS);
     }
 
