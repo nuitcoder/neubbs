@@ -370,7 +370,6 @@ public final class AccountController {
      *
      *      B.权限安全
      *          - 获取登录登录认证信息（Cookie[authentication]）
-     *          - 判断用户是否激活（已激活的用户，无法修改邮箱）
      *
      *      C.数据库验证
      *          - 数据库验证用户是否激活（已激活，重储存 Cookie）
@@ -405,9 +404,6 @@ public final class AccountController {
         UserDO cookieUser = JwtTokenUtil.verifyToken(authentication, SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY);
         if (cookieUser == null || !username.equals(cookieUser.getName())) {
             throw new AccountErrorException(ApiMessage.NO_PERMISSION).log(LogWarn.ACCOUNT_12);
-        }
-        if (cookieUser.getState() == SetConst.ACCOUNT_STATE_TRUE) {
-            throw new AccountErrorException(ApiMessage.ACCOUNT_ACTIVATED).log(LogWarn.ACCOUNT_07);
         }
 
         //数据库验证
@@ -452,8 +448,7 @@ public final class AccountController {
         RequestParamCheckUtil.check(ParamConst.EMAIL, email);
 
         //数据库判断
-        userService.isOccupyByEmail(email);
-        if (userService.getUserInfoByEmail(email).getState() == SetConst.ACCOUNT_STATE_FALSE) {
+        if (userService.getUserInfoByEmail(email).getState() == SetConst.ACCOUNT_STATE_TRUE) {
             throw new AccountErrorException(ApiMessage.ACCOUNT_ACTIVATED).log(email + LogWarn.ACCOUNT_07);
         }
 

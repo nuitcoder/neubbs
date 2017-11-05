@@ -15,7 +15,7 @@ public final class LogWarn {
 
     public static final String ACCOUNT_03 = "账户未激活，无权调用 api";
     public static final String ACCOUNT_05 = " 授权口令已经过期";
-    public static final String ACCOUNT_07 = " 用户已经激活，无法修改邮箱";
+    public static final String ACCOUNT_07 = " 用户已经激活，无需再次激活";
     public static final String ACCOUNT_08 = "  邮箱已被占用";
 
     public static final String ACCOUNT_09 = " 用户密码不正确";
