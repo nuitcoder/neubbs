@@ -188,6 +188,8 @@ export function* validateAccountSaga(action) {
   try {
     if (data.success) {
       yield put({ type: types.VALIDATE_ACCOUNT_SUCCESS })
+
+      browserHistory.push(`${routes.ROOT}?ref=validate_success`)
     } else {
       yield put({ type: types.REQUEST_ERROR, error: data.message })
     }

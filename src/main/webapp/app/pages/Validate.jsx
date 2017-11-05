@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import { Component } from 'react'
 import PropTypes from 'prop-types'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
@@ -9,9 +9,9 @@ class Validate extends Component {
   constructor(props) {
     super(props)
 
-    const { code } = props.location.query
+    const { token } = props.location.query
     this.state = {
-      token: code,
+      token,
     }
   }
 
@@ -21,15 +21,16 @@ class Validate extends Component {
   }
 
   render() {
-    return (
-      <span>ValidatePage</span>
-    )
+    return null
   }
 }
 
 Validate.propTypes = {
   location: PropTypes.shape({
     query: PropTypes.object.isRequired,
+  }).isRequired,
+  actions: PropTypes.shape({
+    validateAccount: PropTypes.func.isRequired,
   }).isRequired,
 }
 

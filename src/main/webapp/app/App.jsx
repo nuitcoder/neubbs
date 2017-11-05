@@ -1,9 +1,10 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import styled, { injectGlobal } from 'styled-components'
-import { Grid } from 'react-bootstrap'
+import { Grid, Alert } from 'react-bootstrap'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
+import { FormattedMessage } from 'react-intl'
 
 import Header from './components/Header'
 import Activate from './components/Activate'
@@ -19,6 +20,14 @@ injectGlobal`
     font-size: 14px;
     font-family: Helvetica, Arial, "PingFang SC", Roboto, "Microsoft Yahei", sans-serif;
   }
+`
+
+const StyledAlert = styled(Alert)`
+  margin-bottom: 0;
+`
+
+const StyledGridP = styled(Grid)`
+  text-align: center;
 `
 
 const StyledGrid = styled(Grid)`
@@ -53,14 +62,28 @@ class App extends Component {
   }
 
   renderActivate() {
-    const notValidate = this.props.location.pathname !== routes.ACCOUNT_VALIDATE
+    const isValidatePage = this.props.location.pathname === routes.ACCOUNT_VALIDATE
 
-    if (this.state.isLogin && notValidate) {
+    if (this.state.isLogin && !isValidatePage) {
       return (
         <Activate
           {...this.props.account}
           actions={this.props.actions}
         />
+      )
+    }
+    return null
+  }
+
+  renderValidateSuccess() {
+    const { ref } = this.props.location.query
+    if (ref === 'validate_success') {
+      return (
+        <StyledAlert bsStyle="success">
+          <StyledGridP componentClass="p">
+            <FormattedMessage id="validate.alert.success" />
+          </StyledGridP>
+        </StyledAlert>
       )
     }
     return null
@@ -73,7 +96,7 @@ class App extends Component {
     return (
       <div className="app">
         <Header router={router} isLogin={isLogin} />
-        {this.renderActivate()}
+        {this.renderValidateSuccess() || this.renderActivate()}
         <StyledGrid id="main">
           {children}
         </StyledGrid>
@@ -87,6 +110,7 @@ App.propTypes = {
   router: PropTypes.object.isRequired,
   location: PropTypes.shape({
     pathname: PropTypes.string.isRequired,
+    query: PropTypes.object.isRequired,
   }).isRequired,
   actions: PropTypes.shape({
     profile: PropTypes.func.isRequired,

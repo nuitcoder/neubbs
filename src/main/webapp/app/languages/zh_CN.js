@@ -40,6 +40,9 @@ export default {
   'activate.modal.countdown': '激活邮箱已发送（{count}s）',
   'activate.modal.go_inbox': '前往邮箱查看',
 
+  // Validate
+  'validate.alert.success': '账号激活成功',
+
   // Message
   'username or password is incorrect': '用户名或密码错误',
 }

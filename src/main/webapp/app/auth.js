@@ -28,6 +28,15 @@ const auth = {
   },
 
   /**
+   * get account username
+   *
+   * @returns {string} username
+   */
+  getUsername() {
+    return localStorage.getItem('username') || ''
+  },
+
+  /**
    * login account and set auth
    *
    * @param {object} data login data(usernaem, password)
