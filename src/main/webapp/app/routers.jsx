@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import React from 'react'
 import { Provider } from 'react-redux'
 import { IntlProvider, addLocaleData } from 'react-intl'
@@ -12,6 +13,7 @@ import RegisterPage from './pages/Register'
 import ValidatePage from './pages/Validate'
 
 import auth from './auth'
+import * as routes from './constants/routes'
 import configureStore from './store/configureStore'
 import { setLocale } from './utils/intl'
 
@@ -31,12 +33,12 @@ const Routers = () => (
   <Provider store={store}>
     <IntlProvider locale={language} messages={setLocale(language)}>
       <Router history={history}>
-        <Route path="/" component={App}>
+        <Route path={routes.ROOT} component={App}>
           <IndexRoute component={HomePage} />
 
-          <Route path="/account/login" component={LoginPage} onEnter={requireNotLogged} />
-          <Route path="/account/register" component={RegisterPage} onEnter={requireNotLogged} />
-          <Route path="/account/validate" component={ValidatePage} />
+          <Route path={routes.ACCOUNT_LOGIN} component={LoginPage} onEnter={requireNotLogged} />
+          <Route path={routes.ACCOUNT_REGISTER} component={RegisterPage} onEnter={requireNotLogged} />
+          <Route path={routes.ACCOUNT_VALIDATE} component={ValidatePage} />
 
         </Route>
       </Router>

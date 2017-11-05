@@ -7,6 +7,7 @@ import {
   ACTIVATE_STATE_URL,
   UPDATE_EMAIL_URL,
   SEND_ACTIVATE_EMAIL_URL,
+  VALIDATE_ACCOUNT_URL,
 } from '../constants/api'
 
 const account = {
@@ -117,6 +118,20 @@ const account = {
    */
   sendActivateEmail(email) {
     return axios.post(SEND_ACTIVATE_EMAIL_URL, { email })
+  },
+
+  /**
+   * validate account
+   *
+   * @param token
+   * @returns {promise}
+   */
+  validate(token) {
+    return axios.get(VALIDATE_ACCOUNT_URL, {
+      params: {
+        token,
+      },
+    })
   },
 }
 

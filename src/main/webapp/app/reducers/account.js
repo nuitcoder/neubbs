@@ -65,6 +65,12 @@ export default function (state = initialState, action) {
         },
       }
     }
+    case types.VALIDATE_ACCOUNT_SUCCESS: {
+      return {
+        ...state,
+        activate: true,
+      }
+    }
     case types.REQUEST_ERROR: {
       return {
         ...state,

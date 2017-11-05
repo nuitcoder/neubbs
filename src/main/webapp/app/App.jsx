@@ -9,6 +9,7 @@ import Header from './components/Header'
 import Activate from './components/Activate'
 import auth from './auth'
 import actions from './actions'
+import * as routes from './constants/routes'
 
 // eslint-disable-next-line no-unused-expressions
 injectGlobal`
@@ -51,15 +52,28 @@ class App extends Component {
     this.setState({ isLogin })
   }
 
+  renderActivate() {
+    const notValidate = this.props.location.pathname !== routes.ACCOUNT_VALIDATE
+
+    if (this.state.isLogin && notValidate) {
+      return (
+        <Activate
+          {...this.props.account}
+          actions={this.props.actions}
+        />
+      )
+    }
+    return null
+  }
+
   render() {
     const { isLogin } = this.state
-    const { children, router, account } = this.props
+    const { children, router } = this.props
 
     return (
       <div className="app">
         <Header router={router} isLogin={isLogin} />
-        {isLogin &&
-          <Activate {...account} actions={this.props.actions} />}
+        {this.renderActivate()}
         <StyledGrid id="main">
           {children}
         </StyledGrid>
@@ -71,6 +85,9 @@ class App extends Component {
 App.propTypes = {
   children: PropTypes.element.isRequired,
   router: PropTypes.object.isRequired,
+  location: PropTypes.shape({
+    pathname: PropTypes.string.isRequired,
+  }).isRequired,
   actions: PropTypes.shape({
     profile: PropTypes.func.isRequired,
   }).isRequired,

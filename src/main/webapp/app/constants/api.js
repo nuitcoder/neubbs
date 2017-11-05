@@ -8,3 +8,5 @@ export const ACTIVATE_STATE_URL = `${ACCOUNT_URL}/state`
 
 export const UPDATE_EMAIL_URL = `${ACCOUNT_URL}/update-email`
 export const SEND_ACTIVATE_EMAIL_URL = `${ACCOUNT_URL}/activate`
+
+export const VALIDATE_ACCOUNT_URL = `${ACCOUNT_URL}/validate`

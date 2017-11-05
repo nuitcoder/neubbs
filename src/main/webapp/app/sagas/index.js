@@ -12,6 +12,7 @@ function* rootSagas() {
     takeLatest(types.UPDATE_EMAIL_REQUEST, account.updateEmailSaga),
     takeLatest(types.ACTIVATE_REQUEST, account.activateSaga),
     takeLatest(types.SEND_ACTIVATE_EMAIL_REQUEST, account.sendActivateEmailSaga),
+    takeLatest(types.VALIDATE_ACCOUNT_REQUEST, account.validateAccountSaga),
   ]
 }
 

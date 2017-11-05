@@ -4,6 +4,7 @@ import { browserHistory } from 'react-router'
 import api from '../api'
 import auth from '../auth'
 import * as types from '../constants/actionTypes'
+import * as routes from '../constants/routes'
 
 /**
  * login -> fetch profile
@@ -21,7 +22,7 @@ export function* loginSaga(action) {
       yield put({ type: types.LOGIN_SUCCESS, payload: { username } })
       yield put({ type: types.GET_PROFILE_REQUEST, payload: { username } })
 
-      browserHistory.push('/')
+      browserHistory.push(routes.ROOT)
     } else {
       yield put({ type: types.REQUEST_ERROR, error: data.message })
     }
@@ -42,7 +43,7 @@ export function* logoutSaga() {
   try {
     if (data.success) {
       yield put({ type: types.LOGOUT_SUCCESS })
-      browserHistory.push('/account/login')
+      browserHistory.push(routes.ACCOUNT_LOGIN)
     } else {
       yield put({ type: types.REQUEST_ERROR, error: data.message })
     }
@@ -73,7 +74,7 @@ export function* registerSaga(action) {
       })
       yield put({ type: types.GET_PROFILE_REQUEST, payload: { username } })
 
-      browserHistory.push('/')
+      browserHistory.push(routes.ROOT)
     } else {
       yield put({ type: types.REQUEST_ERROR, error: data.message })
     }
@@ -165,6 +166,28 @@ export function* sendActivateEmailSaga(action) {
   try {
     if (data.success) {
       yield put({ type: types.SEND_ACTIVATE_EMAIL_SUCCESS })
+    } else {
+      yield put({ type: types.REQUEST_ERROR, error: data.message })
+    }
+  } catch (err) {
+    yield put({ type: types.REQUEST_ERROR, error: err.message })
+  }
+}
+
+/**
+ * validate account
+ *
+ * @param action
+ * @returns {undefined}
+ */
+export function* validateAccountSaga(action) {
+  const { token } = action.payload
+
+  yield put({ type: types.REQUEST_SENDING })
+  const { data } = yield call(api.account.validate, token)
+  try {
+    if (data.success) {
+      yield put({ type: types.VALIDATE_ACCOUNT_SUCCESS })
     } else {
       yield put({ type: types.REQUEST_ERROR, error: data.message })
     }
