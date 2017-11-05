@@ -10,11 +10,6 @@ public final class SetConst {
     private SetConst() { }
 
     /**
-     * 激活邮件地址
-     */
-    public static final String MAIL_ACCOUNT_ACTIVATION_URL = "http://localhost:8080/api/account/validate?token=";
-
-    /**
      * 图片验证码（储存在 Session）
      */
     public static final String SESSION_CAPTCHA = "captcha";
@@ -59,7 +54,7 @@ public final class SetConst {
     /**
      * 用户头像
      */
-    public static final String UPLOAD_USER_IMAGE_PATH = "/WEB-INF/file/user/image/";
+//    public static final String UPLOAD_USER_IMAGE_PATH = "/WEB-INF/file/user/image/";
     public static final long SIZE_ONE_MB = 1048576;
 
     /**

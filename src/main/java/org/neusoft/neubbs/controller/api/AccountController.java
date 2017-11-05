@@ -14,6 +14,7 @@ import org.neusoft.neubbs.controller.exception.ParamsErrorException;
 import org.neusoft.neubbs.controller.exception.TokenExpireException;
 import org.neusoft.neubbs.dto.ResponseJsonDTO;
 import org.neusoft.neubbs.entity.UserDO;
+import org.neusoft.neubbs.entity.properties.NeubbsConfigDO;
 import org.neusoft.neubbs.service.IRedisService;
 import org.neusoft.neubbs.service.IUserService;
 import org.neusoft.neubbs.utils.CookieUtil;
@@ -70,17 +71,20 @@ public final class AccountController {
     private final ThreadPoolTaskExecutor taskExecutor;
     private final Producer captchaProducer;
     private final IRedisService redisService;
+    private final NeubbsConfigDO neubbsConfig;
 
     /**
      * Constructor（自动注入）
      */
     @Autowired
     private AccountController(IUserService userService, ThreadPoolTaskExecutor taskExecutor,
-                              Producer captchaProducer, IRedisService redisService) {
+                              Producer captchaProducer, IRedisService redisService,
+                              NeubbsConfigDO neubbsConfig) {
         this.userService = userService;
         this.taskExecutor = taskExecutor;
         this.captchaProducer = captchaProducer;
         this.redisService = redisService;
+        this.neubbsConfig = neubbsConfig;
     }
 
     /**
@@ -474,7 +478,7 @@ public final class AccountController {
         long expireTime = System.currentTimeMillis() + SetConst.EXPIRE_TIME_MS_ONE_DAY;
         String token = SecretUtil.encryptBase64(email + "-" + expireTime);
         String emailContent = StringUtil
-                                .createEmailActivationHtmlString(SetConst.MAIL_ACCOUNT_ACTIVATION_URL + token);
+                                .createEmailActivationHtmlString(neubbsConfig.getAccountApiVaslidateUrl() + token);
 
         taskExecutor.execute(
                 () -> SendEmailUtil.sendEmail("Neubbs", email, " Neubbs 账户激活", emailContent)

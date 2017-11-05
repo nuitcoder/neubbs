@@ -22,7 +22,7 @@
 	</bean >
 
 	<!-- RedisTemplate对象（Spring data 提供，对 Jedis 对象扩展） -->
-	<bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate" >
+	<bean id="redisTemplate" class="org.springframework.data.redis.core.StringRedisTemplate" >
 		<property name="connectionFactory" ref="jedisConnectionFactory" />
 	</bean >
 </beans>

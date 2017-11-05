@@ -2,9 +2,8 @@ package org.neusoft.neubbs.controller.api;
 
 import org.neusoft.neubbs.constant.ajax.AjaxRequestStatus;
 import org.neusoft.neubbs.constant.api.ApiMessage;
-import org.neusoft.neubbs.constant.log.LogWarn;
 import org.neusoft.neubbs.constant.api.ParamConst;
-import org.neusoft.neubbs.constant.api.SetConst;
+import org.neusoft.neubbs.constant.log.LogWarn;
 import org.neusoft.neubbs.constant.secret.SecretInfo;
 import org.neusoft.neubbs.controller.annotation.AccountActivation;
 import org.neusoft.neubbs.controller.annotation.LoginAuthorization;
@@ -12,6 +11,7 @@ import org.neusoft.neubbs.controller.exception.AccountErrorException;
 import org.neusoft.neubbs.controller.exception.FileUploadException;
 import org.neusoft.neubbs.dto.ResponseJsonDTO;
 import org.neusoft.neubbs.entity.UserDO;
+import org.neusoft.neubbs.entity.properties.NeubbsConfigDO;
 import org.neusoft.neubbs.service.IUserService;
 import org.neusoft.neubbs.utils.CookieUtil;
 import org.neusoft.neubbs.utils.JwtTokenUtil;
@@ -39,13 +39,15 @@ import java.io.File;
 public class FileController {
 
     private final IUserService userService;
+    private final NeubbsConfigDO neubbsConfig;
 
     /**
      * Constructor
      */
     @Autowired
-    public FileController(IUserService userService) {
+    public FileController(IUserService userService, NeubbsConfigDO neubbsConfig) {
         this.userService = userService;
+        this.neubbsConfig = neubbsConfig;
     }
 
     /**
@@ -85,7 +87,7 @@ public class FileController {
 //
 //        }
 
-        String serverPath = request.getServletContext().getRealPath(SetConst.UPLOAD_USER_IMAGE_PATH);
+        String serverPath = request.getServletContext().getRealPath(neubbsConfig.getUserImageUploadPath());
 
         String authentication = CookieUtil.getCookieValue(request, ParamConst.AUTHENTICATION);
         UserDO cookieUser = JwtTokenUtil.verifyToken(authentication, SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY);
