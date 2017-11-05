@@ -115,11 +115,8 @@ public final class AccountController {
         boolean emailType;
         if (username != null) {
             emailType = PatternUtil.matchEmail(username);
-            if (emailType) {
-                RequestParamCheckUtil.check(ParamConst.EMAIL, username);
-            } else {
-                RequestParamCheckUtil.check(ParamConst.USERNAME, username);
-            }
+            String checkType = emailType ? ParamConst.EMAIL : ParamConst.USERNAME;
+            RequestParamCheckUtil.check(checkType, username);
         } else {
             emailType = true;
             RequestParamCheckUtil.check(ParamConst.EMAIL, email);
@@ -227,7 +224,10 @@ public final class AccountController {
         CookieUtil.saveCookie(response, ParamConst.AUTHENTICATION, authentication);
 
         ServletContext application = request.getServletContext();
-        int onlineLoginUser = (Integer) application.getAttribute(ParamConst.COUNT_LOGIN_USER);
+        Integer onlineLoginUser = (Integer) application.getAttribute(ParamConst.COUNT_LOGIN_USER);
+        if (onlineLoginUser == null) {
+            onlineLoginUser = 0;
+        }
         application.setAttribute(ParamConst.COUNT_LOGIN_USER, ++onlineLoginUser);
 
         Map<String, Object> loginJsonMap = new HashMap<>(SetConst.LENGTH_TWO);
