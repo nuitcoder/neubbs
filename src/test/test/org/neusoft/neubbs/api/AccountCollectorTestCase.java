@@ -46,7 +46,7 @@ public class AccountCollectorTestCase {
         SwitchDataSourceHandler.setDataSourceType(SwitchDataSourceHandler.LOCALHOST_DATA_SOURCE_MYSQL);
     }
 
-    class Param {
+    static class Param {
         String key;
         Object value;
 

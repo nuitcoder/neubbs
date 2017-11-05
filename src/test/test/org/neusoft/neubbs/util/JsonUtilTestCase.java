@@ -6,7 +6,6 @@ import org.junit.runners.JUnit4;
 import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.utils.JsonUtil;
 
-import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -39,8 +38,8 @@ public class JsonUtilTestCase {
         String json = JsonUtil.toJSONStringByObject(user);
         Map<String, Object> map = JsonUtil.toMapByJSONString(json);
 
-        for(String key: map.keySet()){
-            System.out.println(key + " : " + map.get(key));
+        for(Map.Entry<String, Object> entry : map.entrySet()) {
+            System.out.println(entry.getKey() + "：" + entry.getValue());
         }
     }
 
@@ -48,17 +47,15 @@ public class JsonUtilTestCase {
      * 将 Object 对象转为 Map<String, Object>
      */
     @Test
-    public void testGetMapByObject(){
+    public void testGetMapByObject() {
         UserDO user = new UserDO();
             user.setId(1);
             user.setName("testoneuser");
 
         Map<String, Object> map = JsonUtil.toMapByObject(user);
 
-        Iterator iterator = map.keySet().iterator();
-        while (iterator.hasNext()) {
-            String key = (String) iterator.next();
-            System.out.println(key + "：" + map.get(key));
+        for(Map.Entry<String, Object> entry : map.entrySet()) {
+            System.out.println(entry.getKey() + "：" + entry.getValue());
         }
      }
 }

@@ -3,9 +3,9 @@ package org.neusoft.neubbs.controller.api;
 import com.google.code.kaptcha.Producer;
 import org.neusoft.neubbs.constant.ajax.AjaxRequestStatus;
 import org.neusoft.neubbs.constant.api.ApiMessage;
-import org.neusoft.neubbs.constant.log.LogWarn;
 import org.neusoft.neubbs.constant.api.ParamConst;
 import org.neusoft.neubbs.constant.api.SetConst;
+import org.neusoft.neubbs.constant.log.LogWarn;
 import org.neusoft.neubbs.constant.secret.SecretInfo;
 import org.neusoft.neubbs.controller.annotation.AccountActivation;
 import org.neusoft.neubbs.controller.annotation.LoginAuthorization;
@@ -443,7 +443,7 @@ public final class AccountController {
      *          - 不能发送，返回倒计时
      *
      *      C.发送邮件
-     *          - 构建 token（用户邮箱 + 过期时间戳，使用 Base64 加密）
+     *          - 构建 token（用户邮箱 + 过期时间戳(当天24点)，使用 Base64 加密）
      *          - 构建邮件内容（生成 Html 格式）
      *          - 发送邮件（Spring 线程池，taskExecutor 另调用线程执行发送邮件任务，采用 lambda 写法）
      *
@@ -473,10 +473,8 @@ public final class AccountController {
                                             "timer", emailkeyExpireTime / SetConst.THOUSAND);
         }
 
-
         //发送邮件
-        long expireTime = System.currentTimeMillis() + SetConst.EXPIRE_TIME_MS_ONE_DAY;
-        String token = SecretUtil.encryptBase64(email + "-" + expireTime);
+        String token = SecretUtil.encryptBase64(email + "-" + StringUtil.getTwentyFourClockTime());
         String emailContent = StringUtil
                                 .createEmailActivationHtmlString(neubbsConfig.getAccountApiVaslidateUrl() + token);
 
@@ -500,6 +498,7 @@ public final class AccountController {
      *
      *      B.token 解析
      *          - 解密 token（Base64 解密，获取用户邮箱 + 过期时间）
+     *          - 参数检查
      *          - 判断 token 是否过期
      *
      *      C.激活用户
@@ -520,8 +519,15 @@ public final class AccountController {
         //解析 token
         String plainText = SecretUtil.decryptBase64(token);
         String[] array = plainText.split("-");
+        if (array.length != SetConst.LENGTH_TWO) {
+            throw new TokenExpireException(ApiMessage.IVALID_TOKEN).log(token + LogWarn.ACCOUNT_15);
+        }
+
         String email = array[0];
         String expireTime = array[1];
+        if (!PatternUtil.matchEmail(email)) {
+            throw new TokenExpireException(ApiMessage.IVALID_TOKEN).log(token + LogWarn.ACCOUNT_15);
+        }
 
         if (StringUtil.isExpire(expireTime)) {
             throw new TokenExpireException(ApiMessage.LINK_INVALID).log(token + LogWarn.ACCOUNT_05);

@@ -11,7 +11,7 @@ import javax.servlet.ServletContextListener;
  *
  * @author Suvan
  */
-public class ApiContextListener implements ServletContextListener{
+public class ApiContextListener implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
         ServletContext context = servletContextEvent.getServletContext();

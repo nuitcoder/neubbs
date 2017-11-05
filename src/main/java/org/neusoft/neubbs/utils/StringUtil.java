@@ -1,5 +1,12 @@
 package org.neusoft.neubbs.utils;
 
+import org.neusoft.neubbs.constant.api.ApiMessage;
+import org.neusoft.neubbs.constant.api.SetConst;
+import org.neusoft.neubbs.constant.log.LogWarn;
+import org.neusoft.neubbs.controller.exception.TokenExpireException;
+
+import java.util.Calendar;
+
 /**
  * 字符串 工具类
  *
@@ -37,9 +44,17 @@ public final class StringUtil {
      *
      * @param expireTime 过期指定时间（时间戳）
      * @return boolean 检测结果
+     * @throws Exception 所有异常
      */
-    public static boolean isExpire(String expireTime) {
-        return Long.parseLong(expireTime) <= System.currentTimeMillis();
+    public static boolean isExpire(String expireTime) throws Exception {
+        long time;
+        try {
+            time = Long.parseLong(expireTime);
+        } catch (NumberFormatException nfe) {
+            throw new TokenExpireException(ApiMessage.IVALID_TOKEN).log(LogWarn.ACCOUNT_15);
+        }
+
+        return time <= System.currentTimeMillis();
     }
 
     /**
@@ -57,5 +72,20 @@ public final class StringUtil {
 
         return sb.toString();
     }
+
+    /**
+     * 获取当天 24 点 时间戳
+     * @return String 24点时间戳
+     */
+    public static String getTwentyFourClockTime() {
+        Calendar calendar = Calendar.getInstance();
+            calendar.set(Calendar.HOUR_OF_DAY, SetConst.TWENTY_FOUR);
+            calendar.set(Calendar.SECOND, 0);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.MILLISECOND, 0);
+
+        return String.valueOf(calendar.getTimeInMillis());
+    }
+
 
 }

@@ -25,6 +25,7 @@ public final class LogWarn {
     public static final String ACCOUNT_12 = "无权修改其余用户";
     public static final String ACCOUNT_13 = "找不到 username 或 email 参数（二选一），无法获取账户信息";
     public static final String ACCOUNT_14 = " 用户名已被占用";
+    public static final String ACCOUNT_15 = " 口令无效";
 
 
 

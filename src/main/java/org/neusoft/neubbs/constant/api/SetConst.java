@@ -38,6 +38,7 @@ public final class SetConst {
      * 数字
      */
     public static final int THOUSAND = 1000;
+    public static final int TWENTY_FOUR = 24;
 
     /**
      * 长度
@@ -54,7 +55,6 @@ public final class SetConst {
     /**
      * 用户头像
      */
-//    public static final String UPLOAD_USER_IMAGE_PATH = "/WEB-INF/file/user/image/";
     public static final long SIZE_ONE_MB = 1048576;
 
     /**
