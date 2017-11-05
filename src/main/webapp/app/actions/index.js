@@ -1,7 +1,7 @@
 import * as account from './account'
-import * as count from './count'
+import * as countdown from './countdown'
 
 export default {
   ...account,
-  ...count,
+  ...countdown,
 }
