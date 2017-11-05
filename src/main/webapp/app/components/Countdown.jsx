@@ -1,12 +1,21 @@
 import { Component } from 'react'
 import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+
+import actions from '../actions'
 
 class Countdown extends Component {
   constructor(props) {
     super(props)
 
-    const count = props.autoStart ? props.duration : 0
+    const { duration } = props
+    const now = Date.now()
+    const start = props.countdown[props.type] || 0
+    const count = start ? duration - Math.floor((now - start) / 1000) : 0
+
     this.state = {
+      start,
       count,
     }
 
@@ -15,19 +24,30 @@ class Countdown extends Component {
     this.countdown = this.countdown.bind(this)
   }
 
-  componentDidMount() {
-    if (this.props.autoStart) {
+  componentWillMount() {
+    if (this.state.start !== 0) {
       this.startTimer()
+    } else if (this.props.onMount) {
+      this.props.onMount()
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    if (this.props.id !== nextProps.id) {
+    if (this.props.start !== nextProps.start) {
       this.setState({
-        count: this.props.duration,
+        start: nextProps.start,
+        count: nextProps.duration,
+      })
+      this.props.actions.setCountdown({
+        type: nextProps.type,
+        start: nextProps.start,
       })
       this.startTimer()
     }
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.timer)
   }
 
   startTimer() {
@@ -39,11 +59,17 @@ class Countdown extends Component {
   }
 
   countdown() {
-    const { delay } = this.props
-    const count = this.state.count - delay
+    const { duration } = this.props
+    const { start } = this.state
+    const now = Date.now()
+    const count = duration - Math.floor((now - start) / 1000)
 
     if (count <= 0) {
       clearInterval(this.timer)
+      this.props.actions.setCountdown({
+        type: this.props.type,
+        start: 0,
+      })
       this.timer = 0
     }
     this.setState({ count })
@@ -56,10 +82,15 @@ class Countdown extends Component {
 }
 
 Countdown.propTypes = {
-  id: PropTypes.number.isRequired,
+  start: PropTypes.number.isRequired,
+  type: PropTypes.string.isRequired,
+  countdown: PropTypes.object.isRequired,
   delay: PropTypes.number,
-  autoStart: PropTypes.bool,
   duration: PropTypes.number.isRequired,
+  onMount: PropTypes.func.isRequired,
+  actions: PropTypes.shape({
+    setCountdown: PropTypes.func.isRequired,
+  }).isRequired,
   render: PropTypes.func.isRequired,
 }
 
@@ -68,4 +99,20 @@ Countdown.defaultProps = {
   autoStart: false,
 }
 
-export default Countdown
+const mapStateToProps = (state) => {
+  return {
+    countdown: state.countdown,
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    actions: bindActionCreators(actions, dispatch),
+  }
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(Countdown)
+

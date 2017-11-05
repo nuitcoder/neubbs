@@ -53,7 +53,7 @@ class EmailForm extends Component {
     this.state = {
       email: props.email,
       showInput: false,
-      countdownId: 0,
+      countdownStart: 0,
     }
 
     this.showInput = this.showInput.bind(this)
@@ -61,10 +61,6 @@ class EmailForm extends Component {
     this.putCursorAtEnd = this.putCursorAtEnd.bind(this)
     this.handleSubmitEmail = this.handleSubmitEmail.bind(this)
     this.sendActivateEmail = this.sendActivateEmail.bind(this)
-  }
-
-  componentDidMount() {
-    this.sendActivateEmail()
   }
 
   componentWillReceiveProps(nextProps) {
@@ -118,7 +114,7 @@ class EmailForm extends Component {
 
   startCountdown() {
     this.setState({
-      countdownId: Date.now(),
+      countdownStart: Date.now(),
     })
   }
 
@@ -169,9 +165,10 @@ class EmailForm extends Component {
           <Label>
             <FormattedMessage id="activate.modal.unrevd" />
             <Countdown
-              autoStart
+              type="activate"
               duration={60}
-              id={this.state.countdownId}
+              start={this.state.countdownStart}
+              onMount={this.sendActivateEmail}
               render={(count) => this.renderCountdown(count)}
             />
           </Label>

@@ -22,3 +22,6 @@ export const UPDATE_EMAIL_SUCCESS = '@@account/UPDATE_EMAIL_SUCCESS'
 
 export const SEND_ACTIVATE_EMAIL_REQUEST = '@@account/SEND_ACTIVATE_EMAIL_REQUEST'
 export const SEND_ACTIVATE_EMAIL_SUCCESS = '@@account.SEND_ACTIVATE_EMAIL_SUCCESS'
+
+// countdown
+export const SET_COUNTDOWN = '@@countdown/SET_COUNTDOWN'
