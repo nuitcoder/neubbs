@@ -223,12 +223,9 @@ public final class AccountController {
         String authentication = JwtTokenUtil.createToken(user);
         CookieUtil.saveCookie(response, ParamConst.AUTHENTICATION, authentication);
 
-        ServletContext application = request.getServletContext();
-        Integer onlineLoginUser = (Integer) application.getAttribute(ParamConst.COUNT_LOGIN_USER);
-        if (onlineLoginUser == null) {
-            onlineLoginUser = 0;
-        }
-        application.setAttribute(ParamConst.COUNT_LOGIN_USER, ++onlineLoginUser);
+        ServletContext context = request.getServletContext();
+        int onlineLoginUser = (int) context.getAttribute(ParamConst.COUNT_LOGIN_USER);
+        context.setAttribute(ParamConst.COUNT_LOGIN_USER, ++onlineLoginUser);
 
         Map<String, Object> loginJsonMap = new HashMap<>(SetConst.LENGTH_TWO);
             loginJsonMap.put(ParamConst.AUTHENTICATION, authentication);
@@ -255,9 +252,9 @@ public final class AccountController {
     public ResponseJsonDTO logout(HttpServletRequest request, HttpServletResponse response) throws Exception {
         CookieUtil.removeCookie(request, response, ParamConst.AUTHENTICATION);
 
-        ServletContext application = request.getServletContext();
-        int onlineLoginUser = (Integer) application.getAttribute(ParamConst.COUNT_LOGIN_USER);
-        application.setAttribute(ParamConst.COUNT_LOGIN_USER, --onlineLoginUser);
+        ServletContext context = request.getServletContext();
+        int onlineLoginUser = (int) context.getAttribute(ParamConst.COUNT_LOGIN_USER);
+        context.setAttribute(ParamConst.COUNT_LOGIN_USER, --onlineLoginUser);
 
         return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS);
     }

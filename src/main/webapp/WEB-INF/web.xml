@@ -22,7 +22,10 @@
         <listener-class>org.springframework.web.util.IntrospectorCleanupListener</listener-class> <!-- 防止Spring内存溢出监听器 -->
     </listener>
     <listener>
-        <listener-class>org.neusoft.neubbs.controller.listener.ApiSessionListener</listener-class><!-- 统计在线人数 -->
+        <listener-class>org.neusoft.neubbs.controller.listener.ApiContextListener</listener-class><!-- Servlet Context 监听器 -->
+    </listener>
+    <listener>
+        <listener-class>org.neusoft.neubbs.controller.listener.ApiSessionListener</listener-class><!-- Session 监听器 -->
     </listener>
 
     <servlet>

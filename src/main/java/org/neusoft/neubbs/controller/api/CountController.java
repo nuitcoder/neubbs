@@ -2,7 +2,6 @@ package org.neusoft.neubbs.controller.api;
 
 import org.neusoft.neubbs.constant.ajax.AjaxRequestStatus;
 import org.neusoft.neubbs.constant.api.ParamConst;
-import org.neusoft.neubbs.controller.annotation.LoginAuthorization;
 import org.neusoft.neubbs.dto.ResponseJsonDTO;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,12 +27,10 @@ public class CountController {
      * @return ResponseJsonDTO 响应JSON传输对象
      * @throws Exception 所有异常
      */
-    @LoginAuthorization
     @RequestMapping(value = "/visit")
     @ResponseBody
     public ResponseJsonDTO onlineVisitUser(HttpServletRequest request) throws Exception {
-        Integer onlineVisitUser = (Integer) request.getServletContext().getAttribute(ParamConst.COUNT_VISIT_USER);
-
+        int onlineVisitUser = (int) request.getServletContext().getAttribute(ParamConst.COUNT_VISIT_USER);
         return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, ParamConst.COUNT_VISIT_USER, onlineVisitUser);
     }
 
@@ -44,12 +41,10 @@ public class CountController {
      * @return ResponseJsonDTO 响应JSON传输对象
      * @throws Exception 所有异常
      */
-    @LoginAuthorization
     @RequestMapping(value = "/login")
     @ResponseBody
     public ResponseJsonDTO onlineLoginUser(HttpServletRequest request) throws Exception {
-        Integer onlineLoginUser = (Integer) request.getServletContext().getAttribute(ParamConst.COUNT_LOGIN_USER);
-
+        int onlineLoginUser = (int) request.getServletContext().getAttribute(ParamConst.COUNT_LOGIN_USER);
         return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, ParamConst.COUNT_LOGIN_USER, onlineLoginUser);
     }
 }

@@ -13,44 +13,21 @@ import javax.servlet.http.HttpSessionListener;
  */
 public class ApiSessionListener implements HttpSessionListener {
 
-    /**
-     * Session 创建时调用
-     * @param httpSessionEvent httpSession事件
-     */
     @Override
     public void sessionCreated(HttpSessionEvent httpSessionEvent) {
-        //获取全局上下文
-        ServletContext application = httpSessionEvent.getSession().getServletContext();
+        ServletContext context = httpSessionEvent.getSession().getServletContext();
 
-        Integer onlineUser = (Integer) application.getAttribute(ParamConst.COUNT_VISIT_USER);
-
-        if (onlineUser == null) {
-            onlineUser = 0;
-        }
-
-        //在线访问用户 +1
-        onlineUser++;
-
-        application.setAttribute(ParamConst.COUNT_VISIT_USER, onlineUser);
+        //在线访问人数 +1
+        int onlineVisitUser = (int) context.getAttribute(ParamConst.COUNT_VISIT_USER);
+        context.setAttribute(ParamConst.COUNT_VISIT_USER, ++onlineVisitUser);
     }
 
-    /**
-     * Session 销毁时调用
-     * @param httpSessionEvent httpSession事件
-     */
     @Override
     public void sessionDestroyed(HttpSessionEvent httpSessionEvent) {
-        ServletContext application = httpSessionEvent.getSession().getServletContext();
+        ServletContext context = httpSessionEvent.getSession().getServletContext();
 
-        Integer onlineUser = (Integer) application.getAttribute(ParamConst.COUNT_VISIT_USER);
-
-        if (onlineUser == null) {
-            onlineUser = 0;
-        } else {
-            //在线访问人数-1
-            onlineUser--;
-        }
-
-        application.setAttribute(ParamConst.COUNT_VISIT_USER, onlineUser);
+        //在线访问人数 -1
+        int onlineVisitUser = (int) context.getAttribute(ParamConst.COUNT_VISIT_USER);
+        context.setAttribute(ParamConst.COUNT_VISIT_USER, --onlineVisitUser);
     }
 }
