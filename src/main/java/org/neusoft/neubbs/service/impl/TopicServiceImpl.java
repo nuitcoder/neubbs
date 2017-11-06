@@ -52,8 +52,6 @@ public class TopicServiceImpl implements ITopicService {
 
     @Override
     public Map<String, Object> getTopic(int topicId) throws Exception {
-        SwitchDataSourceHandler.setDataSourceType(SwitchDataSourceHandler.LOCALHOST_DATA_SOURCE_MYSQL);
-
         TopicDO topic = topicDAO.getTopicById(topicId);
         if (topic == null) {
             throw new TopicErrorException(ApiMessage.NO_TOPIC).log(LogWarn.TOPIC_10);
@@ -100,7 +98,6 @@ public class TopicServiceImpl implements ITopicService {
 
     @Override
     public Map<String, Object> getReply(int replyId) throws Exception {
-        SwitchDataSourceHandler.setDataSourceType(SwitchDataSourceHandler.LOCALHOST_DATA_SOURCE_MYSQL);
         TopicReplyDO reply = topicReplyDAO.getTopicReplyById(replyId);
         Map<String, Object> replyMap = JsonUtil.toMapByObject(reply);
             MapFilterUtil.filterTopicReply(replyMap);
@@ -116,7 +113,6 @@ public class TopicServiceImpl implements ITopicService {
 
     @Override
     public List<Map<String, Object>> listTopics(int page, int limit) throws Exception {
-        SwitchDataSourceHandler.setDataSourceType(SwitchDataSourceHandler.LOCALHOST_DATA_SOURCE_MYSQL);
         //计算开始行数
         int topicCount = topicDAO.countTopic();
         if (limit > topicCount || (page * limit) > topicCount) {
