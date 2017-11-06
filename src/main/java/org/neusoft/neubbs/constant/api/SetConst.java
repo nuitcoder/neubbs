@@ -30,6 +30,13 @@ public final class SetConst {
     public static final long REDIS_EXPIRED = -2L;
 
     /**
+     * 天
+     */
+    public static final long ONE_DAY_MS = 86400000L;
+    public static final String TODAY = "今天";
+    public static final String DAY_AGE = " 天前";
+
+    /**
      * 临时密码长度
      */
     public static final int FORGET_PASSWORD_RANDOM_LENGTH = 6;

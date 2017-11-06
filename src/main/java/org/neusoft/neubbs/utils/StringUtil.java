@@ -75,6 +75,7 @@ public final class StringUtil {
 
     /**
      * 获取当天 24 点 时间戳
+     *
      * @return String 24点时间戳
      */
     public static String getTwentyFourClockTime() {
@@ -87,5 +88,15 @@ public final class StringUtil {
         return String.valueOf(calendar.getTimeInMillis());
     }
 
-
+    /**
+     * 获取相隔时间（格式：xxx 天）
+     *
+     * @param startTime 开始时间戳
+     * @param endTime 结束时间戳
+     * @return String 相隔天数（今天 or xxx 天前）
+     */
+    public static String getSeparateDay(long startTime, long endTime) {
+        int separateDay = (int) ((startTime - endTime) / SetConst.ONE_DAY_MS);
+        return separateDay == 0 ? SetConst.TODAY : separateDay + SetConst.DAY_AGE;
+    }
 }

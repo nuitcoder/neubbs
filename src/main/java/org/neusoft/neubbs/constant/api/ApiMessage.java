@@ -53,4 +53,6 @@ public final class ApiMessage {
      */
     public static final String NO_TOPIC = "no topic";
     public static final String NO_REPLY = "no reply";
+
+    public static final String FAIL_GET_TOPIC_LSIT = "failed to get topic list";
 }

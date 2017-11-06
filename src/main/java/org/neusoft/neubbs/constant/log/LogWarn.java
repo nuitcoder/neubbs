@@ -52,15 +52,17 @@ public final class LogWarn {
 
 
     /******************************Topic Service*********************************/
-    public static final String TOPIC_01 = "主题保存失败";
-    public static final String TOPIC_02 = "主题内容保存失败";
-    public static final String TOPIC_03 = "主题回复保存失败";
-    public static final String TOPIC_04 = "主题删除失败";
-    public static final String TOPIC_05 = "主题内容删除失败";
-    public static final String TOPIC_06 = "主题回复删除失败";
-    public static final String TOPIC_07 = "主题修改失败";
-    public static final String TOPIC_08 = "主题内容修改失败";
-    public static final String TOPIC_09 = "主题回复修改失败";
-    public static final String TOPIC_10 = "不存在主题";
+    public static final String TOPIC_01 = "话题保存失败";
+    public static final String TOPIC_02 = "话题内容保存失败";
+    public static final String TOPIC_03 = "话题回复保存失败";
+    public static final String TOPIC_04 = "话题删除失败";
+    public static final String TOPIC_05 = "话题内容删除失败";
+    public static final String TOPIC_06 = "话题回复删除失败";
+    public static final String TOPIC_07 = "话题题修改失败";
+    public static final String TOPIC_08 = "话题内容修改失败";
+    public static final String TOPIC_09 = "话题回复修改失败";
+    public static final String TOPIC_10 = "不存在话题";
     public static final String TOPIC_11 = "不存在回复";
+
+    public static final String TOPIC_12 = "page 与 limit 参数有误， 获取范围超过话题数量，";
 }

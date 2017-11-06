@@ -1,13 +1,10 @@
 package test.org.neusoft.neubbs.dao;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.FixMethodOrder;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.MethodSorters;
 import org.neusoft.neubbs.controller.handler.SwitchDataSourceHandler;
 import org.neusoft.neubbs.dao.ITopicReplyDAO;
 import org.neusoft.neubbs.entity.TopicReplyDO;
@@ -99,7 +96,7 @@ public class TopicReplyDAOTestCase {
     }
 
     /**
-     * id 获取指定回复
+     * replyId 获取指定回复
      */
     @Test
     public void testGetTopicReplyById(){
@@ -112,7 +109,7 @@ public class TopicReplyDAOTestCase {
      * 指定话题 id，获取话题回复列表
      */
     @Test
-    public void testlistTopicReplyByTopicId(){
+    public void testListTopicReplyByTopicId(){
         List<TopicReplyDO> listTopicReply = topicReplyDAO.listTopicReplyByTopicId(1);
 
         System.out.println("*************************** 查询 topicid = 1 的话题回复 ****************************");

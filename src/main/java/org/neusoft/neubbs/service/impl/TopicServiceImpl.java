@@ -5,6 +5,7 @@ import org.neusoft.neubbs.constant.log.LogWarn;
 import org.neusoft.neubbs.controller.exception.AccountErrorException;
 import org.neusoft.neubbs.controller.exception.DatabaseOperationFailException;
 import org.neusoft.neubbs.controller.exception.TopicErrorException;
+import org.neusoft.neubbs.controller.handler.SwitchDataSourceHandler;
 import org.neusoft.neubbs.dao.ITopicContentDAO;
 import org.neusoft.neubbs.dao.ITopicDAO;
 import org.neusoft.neubbs.dao.ITopicReplyDAO;
@@ -14,10 +15,15 @@ import org.neusoft.neubbs.entity.TopicDO;
 import org.neusoft.neubbs.entity.TopicReplyDO;
 import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.service.ITopicService;
+import org.neusoft.neubbs.utils.JsonUtil;
+import org.neusoft.neubbs.utils.MapFilterUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * ITopicService 接口实现类
@@ -44,9 +50,109 @@ public class TopicServiceImpl implements ITopicService {
         this.topicReplyDAO = topicReplyDAO;
     }
 
+    @Override
+    public Map<String, Object> getTopic(int topicId) throws Exception {
+        SwitchDataSourceHandler.setDataSourceType(SwitchDataSourceHandler.LOCALHOST_DATA_SOURCE_MYSQL);
+
+        TopicDO topic = topicDAO.getTopicById(topicId);
+        if (topic == null) {
+            throw new TopicErrorException(ApiMessage.NO_TOPIC).log(LogWarn.TOPIC_10);
+        }
+
+        Map<String, Object> topicMap = JsonUtil.toMapByObject(topic);
+            MapFilterUtil.filterTopicInfo(topicMap);
+
+        TopicContentDO topicContent = topicContentDAO.getTopicContentById(topicId);
+        Map<String, Object> topicContentMap = JsonUtil.toMapByObject(topicContent);
+            MapFilterUtil.filterTopicContentInfo(topicContentMap);
+
+        UserDO authorUser = userDAO.getUserById(topic.getUserid());
+        Map<String, Object> authorUserMap = JsonUtil.toMapByObject(authorUser);
+            MapFilterUtil.filterTopicUserInfo(authorUserMap);
+
+        UserDO lastReplyUser = userDAO.getUserById(topic.getLastreplyuserid());
+        Map<String, Object> lastReplyUserMap = JsonUtil.toMapByObject(lastReplyUser);
+            MapFilterUtil.filterTopicUserInfo(lastReplyUserMap);
+
+        //回复列表
+        List<Map<String, Object>> listReplyMap = new ArrayList<>();
+        List<TopicReplyDO> listReplyDO = topicReplyDAO.listTopicReplyByTopicId(topicId);
+        for (TopicReplyDO reply : listReplyDO) {
+            Map<String, Object> replyMap = JsonUtil.toMapByObject(reply);
+                MapFilterUtil.filterTopicReply(replyMap);
+
+            UserDO replyUser = userDAO.getUserById(reply.getUserid());
+            Map<String, Object> replyUserMap = JsonUtil.toMapByObject(replyUser);
+                MapFilterUtil.filterTopicUserInfo(replyUserMap);
+
+            replyMap.put("user", replyUserMap);
+            listReplyMap.add(replyUserMap);
+        }
+
+        //最后结果储存至一个 map
+        topicMap.putAll(topicContentMap);
+        topicMap.put("user", authorUserMap);
+        topicMap.put("lastreplyuser", lastReplyUserMap);
+        topicMap.put("replys", listReplyMap);
+
+        return topicMap;
+    }
 
     @Override
-    public int saveTopic(int userId, String category, String title, String content) throws Exception {
+    public Map<String, Object> getReply(int replyId) throws Exception {
+        SwitchDataSourceHandler.setDataSourceType(SwitchDataSourceHandler.LOCALHOST_DATA_SOURCE_MYSQL);
+        TopicReplyDO reply = topicReplyDAO.getTopicReplyById(replyId);
+        Map<String, Object> replyMap = JsonUtil.toMapByObject(reply);
+            MapFilterUtil.filterTopicReply(replyMap);
+
+        UserDO replyUser = userDAO.getUserById(reply.getUserid());
+        Map<String, Object> replyUserMap = JsonUtil.toMapByObject(replyUser);
+            MapFilterUtil.filterTopicUserInfo(replyUserMap);
+
+        replyMap.put("user", replyUserMap);
+
+        return replyMap;
+    }
+
+    @Override
+    public List<Map<String, Object>> listTopics(int page, int limit) throws Exception {
+        SwitchDataSourceHandler.setDataSourceType(SwitchDataSourceHandler.LOCALHOST_DATA_SOURCE_MYSQL);
+        //计算开始行数
+        int topicCount = topicDAO.countTopic();
+        if (limit > topicCount || (page * limit) > topicCount) {
+            throw new TopicErrorException(ApiMessage.FAIL_GET_TOPIC_LSIT).log(LogWarn.TOPIC_12);
+        }
+
+        List<Map<String, Object>> resultTopics = new ArrayList<>();
+        List<TopicDO> listTopic = topicDAO.listTopicByStartRowByCount((page - 1) * limit, limit);
+        for (TopicDO topic : listTopic) {
+            Map<String, Object> topicMap = JsonUtil.toMapByObject(topic);
+                MapFilterUtil.filterTopicInfo(topicMap);
+
+            TopicContentDO topicContent = topicContentDAO.getTopicContentById(topic.getId());
+            Map<String, Object> topicContentMap = JsonUtil.toMapByObject(topicContent);
+                MapFilterUtil.filterTopicContentInfo(topicContentMap);
+
+            UserDO authorUser = userDAO.getUserById(topic.getUserid());
+            Map<String, Object> authorUserMap = JsonUtil.toMapByObject(authorUser);
+                MapFilterUtil.filterTopicUserInfo(authorUserMap);
+
+            UserDO lastReplyUser = userDAO.getUserById(topic.getLastreplyuserid());
+            Map<String, Object> lastReplyUserMap = JsonUtil.toMapByObject(lastReplyUser);
+                MapFilterUtil.filterTopicUserInfo(lastReplyUserMap);
+
+            topicMap.putAll(topicContentMap);
+            topicMap.put("user", authorUserMap);
+            topicMap.put("lastreplyuser", lastReplyUserMap);
+
+            resultTopics.add(topicMap);
+        }
+
+        return resultTopics;
+    }
+
+    @Override
+    public int saveTopic(int userId, String category, String title, String topicContent) throws Exception {
         //判断用户是否存在
         UserDO user = userDAO.getUserById(userId);
         if (user == null) {
@@ -65,21 +171,20 @@ public class TopicServiceImpl implements ITopicService {
         }
 
         //保存 forum_topic_content 表
-        TopicContentDO topicContent = new TopicContentDO();
-            topicContent.setTopicid(topic.getId());
-            topicContent.setContent(content);
+        TopicContentDO topicContentDO = new TopicContentDO();
+            topicContentDO.setTopicid(topic.getId());
+            topicContentDO.setContent(topicContent);
 
-        int topicContentEffectRow = topicContentDAO.saveTopicContent(topicContent);
+        int topicContentEffectRow = topicContentDAO.saveTopicContent(topicContentDO);
         if (topicContentEffectRow == 0) {
-            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION)
-                        .log(LogWarn.TOPIC_02);
+            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.TOPIC_02);
         }
 
         return topic.getId();
     }
 
     @Override
-    public int saveReply(int userId, int topicId, String content) throws Exception {
+    public int saveReply(int userId, int topicId, String replyContent) throws Exception {
         //验证用户 id 和 话题 id
         if (userDAO.getUserById(userId) == null) {
             throw new AccountErrorException(ApiMessage.NO_USER).log(LogWarn.ACCOUNT_01);
@@ -92,7 +197,7 @@ public class TopicServiceImpl implements ITopicService {
         TopicReplyDO topicReply = new TopicReplyDO();
             topicReply.setUserid(userId);
             topicReply.setTopicid(topicId);
-            topicReply.setContent(content);
+            topicReply.setContent(replyContent);
 
         int topicReplyEffectRow = topicReplyDAO.saveTopicReply(topicReply);
         if (topicReplyEffectRow == 0) {
@@ -117,64 +222,70 @@ public class TopicServiceImpl implements ITopicService {
             throw new TopicErrorException(ApiMessage.NO_TOPIC).log(LogWarn.TOPIC_10);
         }
 
-        //删除 forum_topic，forum_topic_content 和 forum_topic_reply 相应数据（需先删除外键关联）
+        //删除 forum_topic_content 和 forum_topic_reply，forum_topic 相应数据（需先删除外键关联）
         int removeTopicContentEffectRow = topicContentDAO.removeTopicContentById(topicId);
         if (removeTopicContentEffectRow == 0) {
             throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.TOPIC_05);
         }
 
+        //删除指定话题的回复
+        topicReplyDAO.removeListTopicReplyByTopicId(topicId);
+
         int removeTopicEffectRow = topicDAO.removeTopicById(topicId);
         if (removeTopicEffectRow == 0) {
             throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.TOPIC_04);
         }
-
-        //删除指定主题所有回复
-        int removeTopicReplyEffectRow = topicReplyDAO.removeListTopicReplyByTopicId(topicId);
     }
 
     @Override
     public void removeReply(int replyId) throws Exception {
+        //判断是否存在
        TopicReplyDO topicReply = topicReplyDAO.getTopicReplyById(replyId);
         if (topicReply == null) {
             throw new TopicErrorException(ApiMessage.NO_TOPIC).log(LogWarn.TOPIC_11);
         }
 
-       int updateTopicEffectRow = topicDAO.updateCommentCutOneById(topicReply.getTopicid());
-       if (updateTopicEffectRow == 0) {
-           throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.TOPIC_07);
-       }
-
+        //删除回复
        int removeTopicReplyEffectRow = topicReplyDAO.removeTopicReplyById(replyId);
        if (removeTopicReplyEffectRow == 0) {
            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.TOPIC_05);
        }
+
+        //评论数 -1
+       int updateTopicEffectRow = topicDAO.updateCommentCutOneById(topicReply.getTopicid());
+       if (updateTopicEffectRow == 0) {
+           throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.TOPIC_07);
+       }
     }
 
     @Override
-    public void alterTopicContent(int topicId, String category, String title, String content) throws Exception {
+    public void alterTopicContent(int topicId, String newCategory, String newTitle, String newTopicContent)
+                                        throws Exception {
         if (topicDAO.getTopicById(topicId) == null) {
             throw new TopicErrorException(ApiMessage.NO_TOPIC).log(LogWarn.TOPIC_10);
         }
 
-        int updateTopicCategoryEffectRow = topicDAO.updateCategoryById(topicId, category);
-        int updateTopicTitleEffectRow = topicDAO.updateTitleById(topicId, title);
+        // 修改话题分类，标题
+        int updateTopicCategoryEffectRow = topicDAO.updateCategoryById(topicId, newCategory);
+        int updateTopicTitleEffectRow = topicDAO.updateTitleById(topicId, newTitle);
         if (updateTopicCategoryEffectRow == 0 || updateTopicTitleEffectRow == 0) {
             throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.TOPIC_07);
         }
 
-        int updateTopicContentEffectRow = topicContentDAO.updateContentByTopicId(topicId, content);
+        //修改话题内容
+        int updateTopicContentEffectRow = topicContentDAO.updateContentByTopicId(topicId, newTopicContent);
         if (updateTopicContentEffectRow == 0) {
             throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.TOPIC_08);
         }
     }
 
     @Override
-    public void alterReplyContent(int replyId, String content) throws Exception {
+    public void alterReplyContent(int replyId, String newReplyContent) throws Exception {
         if (topicReplyDAO.getTopicReplyById(replyId) == null) {
             throw new TopicErrorException(ApiMessage.NO_REPLY).log(LogWarn.TOPIC_11);
         }
 
-        int updateTopicReplyEffectRow = topicReplyDAO.updateContentByIdByContent(replyId, content);
+        int updateTopicReplyEffectRow = topicReplyDAO.updateContentByIdByContent(replyId, newReplyContent);
         if (updateTopicReplyEffectRow == 0) {
             throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.TOPIC_09);
         }

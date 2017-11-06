@@ -22,6 +22,8 @@ public final class ParamConst {
     public static final String RANK = "rank";
     public static final String STATE = "state";
     public static final String CREATETIME = "createtime";
+    public static final String LAST_REPLY_USER_ID= "lastreplyuserid";
+    public static final String LAST_REPLY_TIME = "lastreplytime";
 
     public static final String CAPTCHA = "captcha";
 
@@ -37,6 +39,8 @@ public final class ParamConst {
     public static final String TOPIC_CONTENT = "topicContent";
 
     public static final String CONTENT = "content";
+
+    public static final String NUMBER = "number";
 
     /**
      * Reply

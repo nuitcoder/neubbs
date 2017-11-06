@@ -84,6 +84,7 @@ public final class RequestParamCheckUtil {
         typePatternMap.put(ParamConst.EMAIL, new Pattern("matchEmail", " （类型）参数不符合规范（xxx@xx.xxx）"));
         typePatternMap.put(ParamConst.CATEGORY,
                 new Pattern("matchTopicCategory", " （类型）参数不规范（仅包含中英文，不能有数字 or 特殊字符）"));
+        typePatternMap.put(ParamConst.NUMBER, new Pattern("isPureNumber", " （类型）参数不符合规范，必须未数字！"));
     }
 
 
@@ -98,7 +99,7 @@ public final class RequestParamCheckUtil {
         //空检查
         checkNull(type, param);
 
-        //返回检查
+        //范围检查
         checkScope(type, param);
 
         //格式检查
@@ -132,7 +133,7 @@ public final class RequestParamCheckUtil {
      * @throws Exception 所有异常
      */
     private static void checkNull(String type, String param) throws Exception {
-        if (StringUtil.isEmpty(param) || NULL.equals(type)) {
+        if (StringUtil.isEmpty(param) | NULL.equals(param)) {
             throw new ParamsErrorException(ApiMessage.PARAM_ERROR).log(type + " （类型）参数不能为空；");
         }
     }

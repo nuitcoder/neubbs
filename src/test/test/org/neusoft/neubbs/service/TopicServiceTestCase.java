@@ -1,13 +1,18 @@
 package test.org.neusoft.neubbs.service;
 
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.neusoft.neubbs.controller.handler.SwitchDataSourceHandler;
 import org.neusoft.neubbs.service.ITopicService;
-import org.neusoft.neubbs.utils.RandomUtil;
+import org.neusoft.neubbs.utils.JsonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * 测试 ITopicService 接口
@@ -19,78 +24,74 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class TopicServiceTestCase {
 
     @Autowired
-    ITopicService topicService;
+    private ITopicService topicService;
 
-    /**
-     *  保存话题
-     */
-    @Test
-    public void test_11_SaveTopic() throws Exception {
-            topicService.saveTopic(2, "java", "第一个标题哟","话题内容");
+    @BeforeClass
+    public static void init() {
+        SwitchDataSourceHandler.setDataSourceType(SwitchDataSourceHandler.LOCALHOST_DATA_SOURCE_MYSQL);
     }
 
     /**
-     * 保存话题回复
-     */
-    @Test
-    public void test_12_SaveTopicReply() throws Exception {
-            topicService.saveReply(1,5,"第一条回复内容哟");
-    }
-
-    /**
-     * 保存 10 条话题内容 和 100 条回复，用于测试
+     * 保存 100 条话题与 1000条回复
      */
     @Ignore
-    public void test_13_SaveTopicAndReyply() throws Exception {
-        //保存10条话
-        for(int i = 0; i < 10; i++){
-            topicService.saveTopic(RandomUtil.getRandomNumberByScope(1, 10),"类别" + i, "标题" + i, "内容" + 1);
-            System.out.println("成功生成" + (i+1) + "条话题！");
+    public void testSaveTopicAndReply() throws Exception{
+        //插入 100 条话题（用户 id[1 ~ 6]）
+        for (int i = 1; i <= 100; i++) {
+            int userId= 1 + (int)(Math.random() * 6);
+            String category = "分类 " + i;
+            String title = "标题 " + i;
+            String topicContent = "内容 " + i;
+
+            int topicId = topicService.saveTopic(userId, category, title, topicContent);
+            System.out.println("success insert topicId = " + topicId + " topic!");
         }
-        System.out.println("10条话题生成成功！");
 
-        //保存100条回复
-        for(int i = 0; i < 100; i++){
-            topicService.saveReply(RandomUtil.getRandomNumberByScope(1, 10),
-                                   RandomUtil.getRandomNumberByScope(1, 10),
-                                   "回复内容" + i);
-            System.out.println("成功生成" + (i+1) + "条回复！");
+        //插入 1000 条回复（用户 id[1 ~ 6]，话题 id[1 ~ 100]）
+        for(int i = 1; i <= 1000; i++) {
+            int userId = 1 + (int)(Math.random() * 6);
+            int topicId = 1 + (int)(Math.random() * 100);
+            String replyContent = "回复" + i;
+
+            int replyId = topicService.saveReply(userId, topicId, replyContent);
+            System.out.print("success insert replyId = " + replyId + " reply!");
         }
-        System.out.println("100条回复生成成功！");
     }
 
     /**
-     * 删除话题
+     * topicId 查询话题详情（基本信息 + 内容 + 回复列表）
      */
     @Test
-    public void test_21_RemoveTopic() throws Exception {
-            topicService.removeTopic(4);
+    public void testGetTopic() throws Exception {
+        int topicId = 1;
+
+        Map<String, Object> topicMap = topicService.getTopic(topicId);
+        System.out.println(JsonUtil.toJSONStringByObject(topicMap));
     }
 
     /**
-     * 删除话题回复
+     * replyId 查询回复信息
      */
     @Test
-    public void test_22_RemoveReply() throws Exception {
-            topicService.removeReply(5);
-    }
+    public void testGetReply() throws Exception {
+        int replyId = 1;
 
-
-
-    /**
-     * 修改话题内容
-     */
-    @Test
-    public void test_41_AlterTopicContent() throws Exception {
-//            topicService.alterTopicContent(2, "修改后的topic Content！");
+        Map<String, Object> replyMap = topicService.getReply(replyId);
+        System.out.println(JsonUtil.toJSONStringByObject(replyMap));
     }
 
     /**
-     * 修改回复内容
+     * 查询话题列表（指定页数与显示数量）
      */
     @Test
-    public void test_42_AlterTopicReplyContent() throws Exception {
-//            topicService.alterReplyContent(6, "修改后的 topic Reply Content!");
-    }
+    public void testListTopics() throws Exception{
+        int page = 10;
+        int count = 10;
+        List<Map<String, Object>> topics = topicService.listTopics(page, count);
 
+        for(Map map: topics) {
+            System.out.println("*************************** topic ****************************");
+            System.out.println(JsonUtil.toJSONStringByObject(map));
+        }
+    }
 }

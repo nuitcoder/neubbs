@@ -32,11 +32,8 @@ public final class PatternUtil {
         Pattern pattern = Pattern.compile(EXIST_NU_PURE_NUMBER);
         Matcher matcher = pattern.matcher(str);
 
-        if (matcher.find()) {
-            //存在非数字字符
-            return false;
-        }
-        return true;
+        //match.find() = true, 表示存在非数字字符
+        return !matcher.find();
     }
 
     /**

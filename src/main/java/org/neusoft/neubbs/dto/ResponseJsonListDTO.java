@@ -2,7 +2,6 @@ package org.neusoft.neubbs.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -21,12 +20,9 @@ public class ResponseJsonListDTO {
     /**
      * Constructor
      */
-    public ResponseJsonListDTO(Boolean success, String message, Map<String, Object> map) {
+    public ResponseJsonListDTO(Boolean success, List<Map<String, Object>> listModel) {
         this.success = success;
-        this.message = message;
-
-        this.model = new ArrayList<>();
-        this.model.add(map);
+        this.model = listModel;
     }
 
     /**
