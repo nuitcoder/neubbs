@@ -229,7 +229,8 @@ public final class AccountController {
 
         //通过验证后处理
         String authentication = JwtTokenUtil.createToken(user);
-        CookieUtil.saveCookie(response, ParamConst.AUTHENTICATION, authentication);
+        CookieUtil.saveCookie(response, ParamConst.AUTHENTICATION, authentication,
+                                    neubbsConfig.getCookieAutoLoginMaxAgeDay());
 
         ServletContext context = request.getServletContext();
         int onlineLoginUser = (int) context.getAttribute(ParamConst.COUNT_LOGIN_USER);
@@ -416,7 +417,8 @@ public final class AccountController {
 
         //数据库验证
         if (userService.getUserInfoByName(username).getState() == SetConst.ACCOUNT_STATE_TRUE) {
-              CookieUtil.saveCookie(response, ParamConst.AUTHENTICATION, JwtTokenUtil.createToken(cookieUser));
+              CookieUtil.saveCookie(response, ParamConst.AUTHENTICATION, JwtTokenUtil.createToken(cookieUser),
+                                            neubbsConfig.getCookieAutoLoginMaxAgeDay());
               throw new AccountErrorException(ApiMessage.ACCOUNT_ACTIVATED).log(LogWarn.ACCOUNT_07);
         }
         userService.isOccupyByEmail(email);

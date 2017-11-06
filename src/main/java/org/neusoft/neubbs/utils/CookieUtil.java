@@ -21,11 +21,11 @@ public final class CookieUtil {
      * @param response http响应
      * @param cookieName Cookie名字
      * @param cookieValue Cookie值
+     * @param maxAge 设置 Cookie 过期时间
      */
-    public static void saveCookie(HttpServletResponse response, String cookieName, String cookieValue) {
+    public static void saveCookie(HttpServletResponse response, String cookieName, String cookieValue, int maxAge) {
         Cookie cookie = new Cookie(cookieName, cookieValue);
-        //不设置过期时间
-        //cookie.setMaxAge(EXPIRE_TIME_S_ONE_DAY)
+            cookie.setMaxAge(maxAge);
             cookie.setPath("/");
             cookie.setHttpOnly(true);
 

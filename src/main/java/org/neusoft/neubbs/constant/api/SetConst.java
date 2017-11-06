@@ -39,6 +39,7 @@ public final class SetConst {
      */
     public static final int THOUSAND = 1000;
     public static final int TWENTY_FOUR = 24;
+    public static final int SIXTY = 60;
 
     /**
      * 长度
