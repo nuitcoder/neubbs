@@ -6,7 +6,6 @@ import org.neusoft.neubbs.constant.api.SetConst;
 import org.neusoft.neubbs.controller.annotation.AccountActivation;
 import org.neusoft.neubbs.controller.annotation.AdminRank;
 import org.neusoft.neubbs.controller.annotation.LoginAuthorization;
-import org.neusoft.neubbs.controller.handler.SwitchDataSourceHandler;
 import org.neusoft.neubbs.dto.ResponseJsonDTO;
 import org.neusoft.neubbs.dto.ResponseJsonListDTO;
 import org.neusoft.neubbs.service.ITopicService;
@@ -22,115 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-+ 获取话题基本信息（首页，分类话题页）
-```
-requestUrl = "http://localhost:8080/api/topics"
-method = "GET"
-authentication:
 
-request-params {
-page: ,         //页数，int
-limit: ,        //每页显示数量，int
-category, "";   //话题类别，默认所有 topic 进行获取（用于首页显示）
-}
-response {
-success: true,
-message: ""
-model {   //列表
--{
-"topicid": ,         //话题id，int
-"title:", "",        //标题
-"category", "",      //分类
-"content": "",       //回复内容
-"comment": ,         //评论数
-"agree":  ,          //点赞数,int
-"read": ,            //阅读数,int
-"createtime", ""，   //发表时间
-"lastreplytime", "",//最后回复时间
-- user{
-username: "",   //发表用户名
-image: ""       //发表用户头像地址
-}
-- lastreplyuser{
-username: "",   //最后回复用户名
-image: "",      //最后回复人头像地址
-}
-},
--{
-....
-}
-}
-}
-
-```
-
-+ 获取话题内容（详情页）
-```
-requestUrl = "http://localhost:8080/api/topic"
-method = "GET"
-authentication:
-
-request-params {
-"topicid": ,           //话题id, int
-}
-response {
-success: true,
-message: ""
-model {
-"topicid": ,         //话题id，int
-"title:", "",        //标题
-"content": "",       //回复内容
-"agree":  ,          //点赞数,int
-"agree": ,           //阅读数
-"createtime", ""，   //发表时间（转换为 xx 天前格式）
-- user {
-username: "",  //发表人用户名
-image: ""      //发表人头像
-}
-- replys{  //回复信息列表
--{
-"replyid": ,         //回复id
-"content": "",       //回复内容
-"agree":  ,          //点赞数,int
-"oppose": ,          //反对数，int
-"createtime", ""    //发表时间（转换为 xx 天前格式）
-- user{
-"username": "",      //发表回复用户名
-"imaeg": "",        //回复头像地址
-}
-},
--{
-...
-}
-}
-}
-}
-```
-
-
-+ 获取回复内容(单条回复内容)
-```
-requestUrl = "http://localhost:8080/api/reply"
-method = "GET"
-authentication:
-
-request-params {
-"replyid": ,           //回复id, int
-}
-response {
-success: true,
-message: ""
-model {
-"replyid": ,         //回复id
-"username": "",      //发表人
-"imaeg": "",     //回复人头像地址
-"content": "",       //回复内容
-"agree":  ,          //点赞数,int
-"oppose": ,          //反对数，int
-"createtime", ""    //发表时间（转换为 xx 天前格式）
-}
-}
-```
 /**
  * Topic api
  *      获取话题信息
@@ -180,7 +71,7 @@ public class TopicController {
     }
 
     /**
-     * 获取话题列表（分页，指定数量）
+     * 获取回复信息
      *
      * @param replyId 回复id
      * @return ResponseJsonDTO 响应JSON传输对象
@@ -198,7 +89,7 @@ public class TopicController {
     }
 
     /**
-     * 获取话题列表（）
+     * 获取话题列表（分页，指定数量）
      *
      * @param page 页数
      * @param count 每页显示话题数量
