@@ -16,6 +16,7 @@ import org.neusoft.neubbs.utils.JwtTokenUtil;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.interceptor.Interceptor;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -27,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
  *
  *  @author Suvan
  */
+@Interceptor
 public class ApiInterceptor implements HandlerInterceptor {
 
     /**
