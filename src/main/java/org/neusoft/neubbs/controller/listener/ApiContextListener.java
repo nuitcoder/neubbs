@@ -5,12 +5,14 @@ import org.neusoft.neubbs.constant.api.ParamConst;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import javax.servlet.annotation.WebListener;
 
 /**
  * Api 上下文（全局）监听器
  *
  * @author Suvan
  */
+@WebListener
 public class ApiContextListener implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
