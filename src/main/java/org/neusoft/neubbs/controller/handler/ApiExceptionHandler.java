@@ -2,12 +2,7 @@ package org.neusoft.neubbs.controller.handler;
 
 import org.apache.log4j.Logger;
 import org.neusoft.neubbs.controller.annotation.ApiException;
-import org.neusoft.neubbs.controller.exception.AccountErrorException;
-import org.neusoft.neubbs.controller.exception.DatabaseOperationFailException;
-import org.neusoft.neubbs.controller.exception.FileUploadErrorException;
-import org.neusoft.neubbs.controller.exception.ParamsErrorException;
-import org.neusoft.neubbs.controller.exception.TokenErrorException;
-import org.neusoft.neubbs.controller.exception.TopicErrorException;
+import org.neusoft.neubbs.controller.exception.IPrintLog;
 import org.neusoft.neubbs.utils.AnnotationUtil;
 import org.neusoft.neubbs.utils.ResponsePrintWriterUtil;
 import org.springframework.web.servlet.HandlerExceptionResolver;
@@ -23,7 +18,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class ApiExceptionHandler implements HandlerExceptionResolver {
 
-    private static final Logger LOGGER = Logger.getLogger(ApiExceptionHandler.class);
+    private Logger logger = Logger.getLogger(ApiExceptionHandler.class);
 
     /**
      * 解析异常
@@ -37,27 +32,20 @@ public class ApiExceptionHandler implements HandlerExceptionResolver {
     @Override
     public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response,
                                          Object o, Exception e) {
-        //api 页面输出错误信息（只输出 Api 指定异常）
+        //异常存在 @ApiException 注解
         if (AnnotationUtil.hasClassAnnotation(e.getClass(), ApiException.class)) {
+            //页面输出报错信息
             ResponsePrintWriterUtil.outFailJSONMessage(response, e.getMessage());
         }
 
-        //匹配自定义异常，打印日志
-        if (e instanceof ParamsErrorException) {
-            LOGGER.warn(((ParamsErrorException) e).getLogMessage());
-        } else if (e instanceof AccountErrorException) {
-            LOGGER.warn(((AccountErrorException) e).getLogMessage());
-        } else if (e instanceof TokenErrorException) {
-            LOGGER.warn(((TokenErrorException) e).getLogMessage());
-        } else if (e instanceof FileUploadErrorException) {
-            LOGGER.warn(((FileUploadErrorException) e).getLogMessage());
-        } else if (e instanceof TopicErrorException) {
-            LOGGER.warn(((TopicErrorException) e).getLogMessage());
-        } else if (e instanceof DatabaseOperationFailException) {
-            LOGGER.warn(((DatabaseOperationFailException) e).getLogMessage());
+        //打印日志信息（已实现 IPrintLog 接口，存在日志信息）
+        if (e instanceof IPrintLog) {
+            String logMessage = ((IPrintLog) e).getLogMessage();
+            if (logMessage != null) {
+                logger.warn(logMessage);
+            }
         }
 
-        //未处理异常，页面报错
         return null;
     }
 }

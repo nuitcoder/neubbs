@@ -5,7 +5,7 @@ package org.neusoft.neubbs.controller.exception;
  *
  * @author Suvan
  */
-public class DatabaseOperationFailException extends Exception implements IExceptionLog {
+public class DatabaseOperationFailException extends Exception implements IPrintLog {
 
     private String logMessage;
 
@@ -16,16 +16,14 @@ public class DatabaseOperationFailException extends Exception implements IExcept
         super(message);
     }
 
-    /**
-     * Getter
-     */
-    public String getLogMessage() {
-        return logMessage;
-    }
-
     @Override
     public DatabaseOperationFailException log(String logMessage) {
         this.logMessage = logMessage;
         return this;
+    }
+
+    @Override
+    public String getLogMessage() {
+        return logMessage;
     }
 }

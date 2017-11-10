@@ -8,7 +8,7 @@ import org.neusoft.neubbs.controller.annotation.ApiException;
  * @author Suvan
  */
 @ApiException
-public class ParamsErrorException extends Exception implements IExceptionLog {
+public class ParamsErrorException extends Exception implements IPrintLog {
 
     /**
      * 日志信息
@@ -22,16 +22,14 @@ public class ParamsErrorException extends Exception implements IExceptionLog {
         super(message);
     }
 
-    /**
-     * Getter
-     */
-    public String getLogMessage() {
-        return logMessage;
-    }
-
     @Override
     public ParamsErrorException log(String logMessage) {
         this.logMessage = logMessage;
         return this;
+    }
+
+    @Override
+    public String getLogMessage() {
+        return logMessage;
     }
 }
