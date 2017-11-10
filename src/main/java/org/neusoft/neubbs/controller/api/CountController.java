@@ -25,11 +25,10 @@ public class CountController {
      *
      * @param request http请求
      * @return ResponseJsonDTO 响应JSON传输对象
-     * @throws Exception 所有异常
      */
     @RequestMapping(value = "/visit")
     @ResponseBody
-    public ResponseJsonDTO onlineVisitUser(HttpServletRequest request) throws Exception {
+    public ResponseJsonDTO onlineVisitUser(HttpServletRequest request) {
         int onlineVisitUser = (int) request.getServletContext().getAttribute(ParamConst.COUNT_VISIT_USER);
         return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, ParamConst.COUNT_VISIT_USER, onlineVisitUser);
     }
@@ -39,7 +38,6 @@ public class CountController {
      *
      * @param request http请求
      * @return ResponseJsonDTO 响应JSON传输对象
-     * @throws Exception 所有异常
      */
     @RequestMapping(value = "/login")
     @ResponseBody

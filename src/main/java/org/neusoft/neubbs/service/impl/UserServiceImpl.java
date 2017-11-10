@@ -30,7 +30,7 @@ public class UserServiceImpl implements IUserService {
 
 
     @Override
-    public void registerUser(UserDO user) throws Exception {
+    public void registerUser(UserDO user) throws DatabaseOperationFailException {
         int effectRow = userDAO.saveUser(user);
         if (effectRow == 0) {
             //处理异常
@@ -39,7 +39,7 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public UserDO getUserInfoById(int id) throws Exception {
+    public UserDO getUserInfoById(int id) throws AccountErrorException {
         UserDO user = userDAO.getUserById(id);
         if (user == null) {
             throw new AccountErrorException(ApiMessage.NO_USER).log(id + LogWarn.ACCOUNT_01);
@@ -49,7 +49,7 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-   public UserDO getUserInfoByName(String username) throws Exception {
+   public UserDO getUserInfoByName(String username) throws AccountErrorException {
         UserDO user = userDAO.getUserByName(username);
         if (user == null) {
             throw new AccountErrorException(ApiMessage.NO_USER).log(username + LogWarn.ACCOUNT_01);
@@ -58,7 +58,7 @@ public class UserServiceImpl implements IUserService {
    }
 
     @Override
-    public UserDO getUserInfoByEmail(String email) throws Exception {
+    public UserDO getUserInfoByEmail(String email) throws AccountErrorException {
         UserDO user = userDAO.getUserByEmail(email);
         if (user == null) {
             throw new AccountErrorException(ApiMessage.NO_USER).log(email + LogWarn.ACCOUNT_01);
@@ -68,7 +68,7 @@ public class UserServiceImpl implements IUserService {
     }
 
    @Override
-   public void alterUserPassword(String username, String password) throws Exception {
+   public void alterUserPassword(String username, String password) throws DatabaseOperationFailException {
        int effectRow = userDAO.updateUserPasswordByName(username, password);
        if (effectRow == 0) {
             throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.SERVICE_02);
@@ -76,7 +76,7 @@ public class UserServiceImpl implements IUserService {
    }
 
    @Override
-   public void alterUserEmail(String username, String email) throws Exception {
+   public void alterUserEmail(String username, String email) throws DatabaseOperationFailException {
        int effectRow = userDAO.updateUserEmailByName(username, email);
        if (effectRow == 0) {
             throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.SERVICE_02);
@@ -84,7 +84,7 @@ public class UserServiceImpl implements IUserService {
    }
 
     @Override
-    public void activationUser(String email) throws Exception {
+    public void activationUser(String email) throws AccountErrorException, DatabaseOperationFailException {
         if (userDAO.getUserByEmail(email) == null) {
             throw new AccountErrorException(ApiMessage.NO_USER).log(email + LogWarn.ACCOUNT_01);
         }
@@ -96,7 +96,7 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public void uploadUserImage(String username, String image) throws Exception {
+    public void uploadUserImage(String username, String image) throws DatabaseOperationFailException {
         int effectRow = userDAO.updateUserImageByName(username, image);
         if (effectRow == 0) {
             throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.SERVICE_02);
@@ -104,14 +104,14 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public void isOccupyByUsername(String username) throws Exception {
+    public void isOccupyByUsername(String username) throws AccountErrorException {
         if (userDAO.getUserByName(username) != null) {
             throw new AccountErrorException(ApiMessage.USERNAME_REGISTERED).log(username + LogWarn.ACCOUNT_14);
         }
     }
 
     @Override
-    public void isOccupyByEmail(String email) throws Exception {
+    public void isOccupyByEmail(String email) throws AccountErrorException {
         if (userDAO.getUserByEmail(email) != null) {
             throw new AccountErrorException(ApiMessage.EMAIL_REGISTERED).log(email + LogWarn.ACCOUNT_08);
         }

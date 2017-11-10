@@ -10,8 +10,9 @@ import org.neusoft.neubbs.constant.secret.SecretInfo;
 import org.neusoft.neubbs.controller.annotation.AccountActivation;
 import org.neusoft.neubbs.controller.annotation.LoginAuthorization;
 import org.neusoft.neubbs.controller.exception.AccountErrorException;
+import org.neusoft.neubbs.controller.exception.DatabaseOperationFailException;
 import org.neusoft.neubbs.controller.exception.ParamsErrorException;
-import org.neusoft.neubbs.controller.exception.TokenExpireException;
+import org.neusoft.neubbs.controller.exception.TokenErrorException;
 import org.neusoft.neubbs.dto.ResponseJsonDTO;
 import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.entity.properties.NeubbsConfigDO;
@@ -42,6 +43,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -108,13 +110,16 @@ public final class AccountController {
      * @param email 邮箱
      * @param request http请求
      * @return ResponseJsonDTO 响应JSON传输对象
-     * @throws Exception 所有异常
+     * @throws ParamsErrorException 参数错误异常
+     * @throws AccountErrorException 账户错误异常
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
     @ResponseBody
     public ResponseJsonDTO getUserInformation(@RequestParam(value = "username", required = false) String username,
                                               @RequestParam(value = "email", required = false) String email,
-                                                    HttpServletRequest request) throws Exception {
+                                              HttpServletRequest request)
+            throws ParamsErrorException, AccountErrorException {
+
         //参数处理
         if (username == null && email == null) {
             throw new ParamsErrorException(ApiMessage.PARAM_ERROR).log(LogWarn.ACCOUNT_13);
@@ -158,12 +163,14 @@ public final class AccountController {
      *
      * @param username 用户名
      * @return ResponseJsonDTO request-body内JSON数据
-     * @throws Exception 所有异常
+     * @throws ParamsErrorException 参数错误异常
+     * @throws AccountErrorException 账户错误异常
      */
     @RequestMapping(value = "/state", method = RequestMethod.GET)
     @ResponseBody
     public ResponseJsonDTO getUserActivateState(@RequestParam(value = "username", required = false) String username)
-                                                    throws Exception {
+            throws ParamsErrorException, AccountErrorException {
+
         RequestParamCheckUtil.check(ParamConst.USERNAME, username);
 
         UserDO user = userService.getUserInfoByName(username);
@@ -195,12 +202,15 @@ public final class AccountController {
      * @param request http请求
      * @param response http响应
      * @return ResponseJsonDTO 响应JSON传输对象
-     * @throws Exception 所有异常
+     * @throws ParamsErrorException 参数错误异常
+     * @throws AccountErrorException 账户错误异常
+     * @throws TokenErrorException 口令错误异常
      */
     @RequestMapping(value = "/login", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
     public ResponseJsonDTO login(@RequestBody Map<String, Object> requestBodyParamsMap,
-                                        HttpServletRequest request, HttpServletResponse response) throws Exception {
+                                 HttpServletRequest request, HttpServletResponse response)
+            throws ParamsErrorException, AccountErrorException, TokenErrorException {
         //参数处理
         String username = (String) requestBodyParamsMap.get(ParamConst.USERNAME);
         String password = (String) requestBodyParamsMap.get(ParamConst.PASSWORD);
@@ -253,12 +263,11 @@ public final class AccountController {
      * @param request http请求
      * @param response http响应
      * @return ResponseJsonDTO 响应JSON传输对象
-     * @throws Exception 所有异常
      */
     @LoginAuthorization
     @RequestMapping(value = "/logout", method = RequestMethod.GET)
     @ResponseBody
-    public ResponseJsonDTO logout(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public ResponseJsonDTO logout(HttpServletRequest request, HttpServletResponse response) {
         CookieUtil.removeCookie(request, response, ParamConst.AUTHENTICATION);
 
         ServletContext context = request.getServletContext();
@@ -287,11 +296,15 @@ public final class AccountController {
      *
      * @param requestBodyParamsMap request-body内JSON数据
      * @return ResponseJsonDTO 响应JSON传输对象
-     * @throws Exception 所有异常
+     * @throws ParamsErrorException 参数错误异常
+     * @throws AccountErrorException 账户错误异常
+     * @throws DatabaseOperationFailException 数据库操作失败异常
      */
     @RequestMapping(value = "/register", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
-    public ResponseJsonDTO register(@RequestBody Map<String, Object> requestBodyParamsMap) throws Exception {
+    public ResponseJsonDTO register(@RequestBody Map<String, Object> requestBodyParamsMap)
+            throws ParamsErrorException, AccountErrorException, DatabaseOperationFailException {
+
         //参数处理
         String username = (String) requestBodyParamsMap.get(ParamConst.USERNAME);
         String password = (String) requestBodyParamsMap.get(ParamConst.PASSWORD);
@@ -341,13 +354,17 @@ public final class AccountController {
      * @param requestBodyParamsMap request-body内JSON数据
      * @param request http请求
      * @return ResponseJsonDTO 响应JSON传输对象
-     * @throws Exception 所有异常
+     * @throws ParamsErrorException 参数错误异常
+     * @throws AccountErrorException 账户错误异常
+     * @throws DatabaseOperationFailException 数据库操作失败异常
      */
     @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/update-password", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
     public ResponseJsonDTO updatePassword(@RequestBody Map<String, Object> requestBodyParamsMap,
-                                            HttpServletRequest request) throws Exception {
+                                          HttpServletRequest request)
+            throws ParamsErrorException, AccountErrorException, DatabaseOperationFailException {
+
         //参数处理
         String username = (String) requestBodyParamsMap.get(ParamConst.USERNAME);
         String newPassword = (String) requestBodyParamsMap.get(ParamConst.PASSWORD);
@@ -392,13 +409,18 @@ public final class AccountController {
      * @param request http请求
      * @param response http响应
      * @return ResponseJsonDTO 响应JSON传输对象
-     * @throws Exception 所有异常
+     * @throws ParamsErrorException 参数错误异常
+     * @throws AccountErrorException 账户错误异常
+     * @throws TokenErrorException 口令错误异常
+     * @throws DatabaseOperationFailException 数据库操作失败异常
      */
     @LoginAuthorization
     @RequestMapping(value = "/update-email", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
     public ResponseJsonDTO updateEmail(@RequestBody Map<String, Object> requestBodyParamsMap,
-                                           HttpServletRequest request, HttpServletResponse response) throws Exception {
+                                       HttpServletRequest request, HttpServletResponse response)
+            throws ParamsErrorException, AccountErrorException, TokenErrorException, DatabaseOperationFailException {
+
         //参数处理
         String username = (String) requestBodyParamsMap.get(ParamConst.USERNAME);
         String email = (String) requestBodyParamsMap.get(ParamConst.EMAIL);
@@ -454,11 +476,14 @@ public final class AccountController {
      *
      * @param requestBodyParamsMap request-body内JSON数据
      * @return ResponseJsonDTO 响应JSON传输对象
-     * @throws Exception 所有异常
+     * @throws ParamsErrorException 参数错误异常
+     * @throws AccountErrorException 账户错误异常
      */
     @RequestMapping(value = "/activate", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
-    public ResponseJsonDTO sendActivateEmail(@RequestBody Map<String, Object> requestBodyParamsMap) throws Exception {
+    public ResponseJsonDTO sendActivateEmail(@RequestBody Map<String, Object> requestBodyParamsMap)
+            throws ParamsErrorException, AccountErrorException {
+
         //参数处理
         String email = (String) requestBodyParamsMap.get(ParamConst.EMAIL);
         RequestParamCheckUtil.check(ParamConst.EMAIL, email);
@@ -509,12 +534,16 @@ public final class AccountController {
      *
      * @param token 传入的 token
      * @return ResponseJsonDTO request-body内JSON数据
-     * @throws Exception 所有异常
+     * @throws ParamsErrorException 参数错误异常
+     * @throws TokenErrorException 口令错误异常
+     * @throws AccountErrorException 账户错误异常
+     * @throws DatabaseOperationFailException 数据库操作失败异常
      */
     @RequestMapping(value = "/validate", method = RequestMethod.GET)
     @ResponseBody
     public ResponseJsonDTO validateEmailToken(@RequestParam(value = "token", required = false) String token)
-                                                throws Exception {
+            throws ParamsErrorException, TokenErrorException, AccountErrorException, DatabaseOperationFailException {
+
         //参数处理
         RequestParamCheckUtil.check(ParamConst.TOKEN, token);
 
@@ -522,17 +551,17 @@ public final class AccountController {
         String plainText = SecretUtil.decryptBase64(token);
         String[] array = plainText.split("-");
         if (array.length != SetConst.LENGTH_TWO) {
-            throw new TokenExpireException(ApiMessage.IVALID_TOKEN).log(token + LogWarn.ACCOUNT_15);
+            throw new TokenErrorException(ApiMessage.IVALID_TOKEN).log(token + LogWarn.ACCOUNT_15);
         }
 
         String email = array[0];
         String expireTime = array[1];
         if (!PatternUtil.matchEmail(email)) {
-            throw new TokenExpireException(ApiMessage.IVALID_TOKEN).log(token + LogWarn.ACCOUNT_15);
+            throw new TokenErrorException(ApiMessage.IVALID_TOKEN).log(token + LogWarn.ACCOUNT_15);
         }
 
         if (StringUtil.isExpire(expireTime)) {
-            throw new TokenExpireException(ApiMessage.LINK_INVALID).log(token + LogWarn.ACCOUNT_05);
+            throw new TokenErrorException(ApiMessage.LINK_INVALID).log(token + LogWarn.ACCOUNT_05);
         }
 
         //激活用户
@@ -553,10 +582,12 @@ public final class AccountController {
      *
      * @param request http请求
      * @param response http响应
-     * @throws Exception 所有异常
+     * @throws AccountErrorException 账户错误异常
      */
     @RequestMapping(value = "/captcha", method = RequestMethod.GET)
-    public void getCaptchaPicture(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public void getCaptchaPicture(HttpServletRequest request, HttpServletResponse response)
+            throws AccountErrorException {
+
         response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
         response.addHeader("Cache-Control", "post-check=0, pre-check=0");
         response.setHeader("Pragma", "no-cache");
@@ -567,13 +598,14 @@ public final class AccountController {
         request.getSession().setAttribute(SetConst.SESSION_CAPTCHA, capText);
 
         BufferedImage bi = captchaProducer.createImage(capText);
-        ServletOutputStream out = response.getOutputStream();
-        ImageIO.write(bi, "jpg", out);
 
         try {
+            ServletOutputStream out = response.getOutputStream();
+            ImageIO.write(bi, "jpg", out);
             out.flush();
-        } finally {
             out.close();
+        } catch (IOException e) {
+            throw new AccountErrorException(ApiMessage.GENERATE_CAPTCHA_FAIL).log(LogWarn.ACCOUNT_17);
         }
     }
 
@@ -592,12 +624,15 @@ public final class AccountController {
      * @param captcha 用户输入验证码
      * @param request http请求
      * @return ResponseJsonDTO 响应JSON字符串
-     * @throws Exception 所有异常
+     * @throws ParamsErrorException 参数错误异常
+     * @throws AccountErrorException 账户错误异常
      */
     @RequestMapping(value = "/check-captcha", method = RequestMethod.GET)
     @ResponseBody
     public ResponseJsonDTO checkCaptcha(@RequestParam(value = "captcha", required = false)String captcha,
-                                            HttpServletRequest request) throws Exception {
+                                        HttpServletRequest request)
+            throws ParamsErrorException, AccountErrorException {
+
         //参数处理
         RequestParamCheckUtil.check(ParamConst.CAPTCHA, captcha);
 
@@ -632,12 +667,15 @@ public final class AccountController {
      *
      * @param requestBodyParamsMap request-body内JSON数据
      * @return ResponseJsonDTO 响应JSON传输对象
-     * @throws Exception 所有异常
+     * @throws ParamsErrorException 参数错误异常
+     * @throws AccountErrorException 账户错误异常
+     * @throws DatabaseOperationFailException 数据库操作失败异常
      */
     @RequestMapping(value = "/forget-password", method = RequestMethod.POST)
     @ResponseBody
     public ResponseJsonDTO sendTemporaryPasswordEmail(@RequestBody Map<String, Object> requestBodyParamsMap)
-                                                            throws Exception {
+            throws ParamsErrorException, AccountErrorException, DatabaseOperationFailException {
+
         //参数处理
         String email = (String) requestBodyParamsMap.get(ParamConst.EMAIL);
         RequestParamCheckUtil.check(ParamConst.EMAIL, email);

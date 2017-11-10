@@ -35,6 +35,8 @@ public final class ApiMessage {
 
     public static final String IVALID_TOKEN = "invalid token";
 
+    public static final String GENERATE_CAPTCHA_FAIL = "generate captcha fail";
+
     /**
      * Count api 警告信息
      */
@@ -46,6 +48,7 @@ public final class ApiMessage {
     public static final String PICTURE_FORMAT_WRONG = "user upload picture type is wrong,"
             + " only *.jpg or *.png or *.jpeg";
     public static final String NO_PARENT_DIRECTORY = "there is no parent directory";
+    public static final String UPLOAD_FAIL = "upload fail";
     public static final String UPLOAD_SUCCESS = "upload success";
 
     /**
@@ -55,4 +58,5 @@ public final class ApiMessage {
     public static final String NO_REPLY = "no reply";
 
     public static final String FAIL_GET_TOPIC_LSIT = "failed to get topic list";
+
 }

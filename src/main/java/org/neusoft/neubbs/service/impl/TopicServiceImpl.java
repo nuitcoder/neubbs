@@ -50,7 +50,7 @@ public class TopicServiceImpl implements ITopicService {
     }
 
     @Override
-    public Map<String, Object> getTopic(int topicId) throws Exception {
+    public Map<String, Object> getTopic(int topicId) throws TopicErrorException {
         TopicDO topic = topicDAO.getTopicById(topicId);
         if (topic == null) {
             throw new TopicErrorException(ApiMessage.NO_TOPIC).log(LogWarn.TOPIC_10);
@@ -96,7 +96,7 @@ public class TopicServiceImpl implements ITopicService {
     }
 
     @Override
-    public Map<String, Object> getReply(int replyId) throws Exception {
+    public Map<String, Object> getReply(int replyId) {
         TopicReplyDO reply = topicReplyDAO.getTopicReplyById(replyId);
         Map<String, Object> replyMap = JsonUtil.toMapByObject(reply);
             MapFilterUtil.filterTopicReply(replyMap);
@@ -111,7 +111,7 @@ public class TopicServiceImpl implements ITopicService {
     }
 
     @Override
-    public List<Map<String, Object>> listTopics(int page, int limit) throws Exception {
+    public List<Map<String, Object>> listTopics(int page, int limit) throws TopicErrorException {
         //计算开始行数
         int topicCount = topicDAO.countTopic();
         if (limit > topicCount || (page * limit) > topicCount) {
@@ -147,7 +147,8 @@ public class TopicServiceImpl implements ITopicService {
     }
 
     @Override
-    public int saveTopic(int userId, String category, String title, String topicContent) throws Exception {
+    public int saveTopic(int userId, String category, String title, String topicContent)
+            throws AccountErrorException, DatabaseOperationFailException {
         //判断用户是否存在
         UserDO user = userDAO.getUserById(userId);
         if (user == null) {
@@ -179,7 +180,8 @@ public class TopicServiceImpl implements ITopicService {
     }
 
     @Override
-    public int saveReply(int userId, int topicId, String replyContent) throws Exception {
+    public int saveReply(int userId, int topicId, String replyContent)
+            throws AccountErrorException, TopicErrorException, DatabaseOperationFailException {
         //验证用户 id 和 话题 id
         if (userDAO.getUserById(userId) == null) {
             throw new AccountErrorException(ApiMessage.NO_USER).log(LogWarn.ACCOUNT_01);
@@ -211,7 +213,7 @@ public class TopicServiceImpl implements ITopicService {
     }
 
     @Override
-    public void removeTopic(int topicId) throws Exception {
+    public void removeTopic(int topicId) throws TopicErrorException, DatabaseOperationFailException {
         //验证话题 id
         if (topicDAO.getTopicById(topicId) == null) {
             throw new TopicErrorException(ApiMessage.NO_TOPIC).log(LogWarn.TOPIC_10);
@@ -233,7 +235,7 @@ public class TopicServiceImpl implements ITopicService {
     }
 
     @Override
-    public void removeReply(int replyId) throws Exception {
+    public void removeReply(int replyId) throws TopicErrorException, DatabaseOperationFailException {
         //判断是否存在
        TopicReplyDO topicReply = topicReplyDAO.getTopicReplyById(replyId);
         if (topicReply == null) {
@@ -255,7 +257,7 @@ public class TopicServiceImpl implements ITopicService {
 
     @Override
     public void alterTopicContent(int topicId, String newCategory, String newTitle, String newTopicContent)
-                                        throws Exception {
+            throws TopicErrorException, DatabaseOperationFailException {
         if (topicDAO.getTopicById(topicId) == null) {
             throw new TopicErrorException(ApiMessage.NO_TOPIC).log(LogWarn.TOPIC_10);
         }
@@ -275,7 +277,8 @@ public class TopicServiceImpl implements ITopicService {
     }
 
     @Override
-    public void alterReplyContent(int replyId, String newReplyContent) throws Exception {
+    public void alterReplyContent(int replyId, String newReplyContent)
+            throws TopicErrorException, DatabaseOperationFailException {
         if (topicReplyDAO.getTopicReplyById(replyId) == null) {
             throw new TopicErrorException(ApiMessage.NO_REPLY).log(LogWarn.TOPIC_11);
         }

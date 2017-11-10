@@ -3,7 +3,7 @@ package org.neusoft.neubbs.utils;
 import org.neusoft.neubbs.constant.api.ApiMessage;
 import org.neusoft.neubbs.constant.api.SetConst;
 import org.neusoft.neubbs.constant.log.LogWarn;
-import org.neusoft.neubbs.controller.exception.TokenExpireException;
+import org.neusoft.neubbs.controller.exception.TokenErrorException;
 
 import java.util.Calendar;
 
@@ -44,14 +44,14 @@ public final class StringUtil {
      *
      * @param expireTime 过期指定时间（时间戳）
      * @return boolean 检测结果
-     * @throws Exception 所有异常
+     * @throws TokenErrorException 口令错误异常
      */
-    public static boolean isExpire(String expireTime) throws Exception {
+    public static boolean isExpire(String expireTime) throws TokenErrorException {
         long time;
         try {
             time = Long.parseLong(expireTime);
         } catch (NumberFormatException nfe) {
-            throw new TokenExpireException(ApiMessage.IVALID_TOKEN).log(LogWarn.ACCOUNT_15);
+            throw new TokenErrorException(ApiMessage.IVALID_TOKEN).log(LogWarn.ACCOUNT_15);
         }
 
         return time <= System.currentTimeMillis();

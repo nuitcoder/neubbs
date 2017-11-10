@@ -5,8 +5,12 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import org.neusoft.neubbs.constant.api.ApiMessage;
 import org.neusoft.neubbs.constant.api.ParamConst;
+import org.neusoft.neubbs.constant.api.SetConst;
+import org.neusoft.neubbs.constant.log.LogWarn;
 import org.neusoft.neubbs.constant.secret.SecretInfo;
+import org.neusoft.neubbs.controller.exception.TokenErrorException;
 import org.neusoft.neubbs.entity.UserDO;
 
 import java.io.UnsupportedEncodingException;
@@ -40,10 +44,10 @@ public final class JwtTokenUtil {
      *
      * @param user 用户对象
      * @return String 加密后密文
-     * @throws Exception 所有异常
+     * @throws TokenErrorException token错误异常
      */
-    public static String createToken(UserDO user) throws Exception {
-        Map<String, Object> headerMap = new HashMap<>();
+    public static String createToken(UserDO user) throws TokenErrorException {
+        Map<String, Object> headerMap = new HashMap<>(SetConst.SIZE_TWO);
             headerMap.put(HEADER_ALG, HS256);
             headerMap.put(HEADER_TYP, JWT);
 
@@ -53,20 +57,23 @@ public final class JwtTokenUtil {
         //long ext = iat + 1;//测试过期token是否无效
 
         //设置Playload,且使用HS256加密,生成token
-        String token  = com.auth0.jwt.JWT.create()
-                                            .withHeader(headerMap)
-                                            .withIssuer(SET_ISSUER)
-                                            .withSubject(SET_SUBJECT)
-                                            .withAudience(SET_AUDIENCE)
-                                            .withIssuedAt(new Date(iat))
-                                          //.withExpiresAt(new Date(ext))   //永久有效，不需要过期时间
-                                                .withClaim(ParamConst.ID, user.getId())
-                                                .withClaim(ParamConst.NAME, user.getName())
-                                                .withClaim(ParamConst.RANK, user.getRank())
-                                                .withClaim(ParamConst.STATE, user.getState())
-                                                    .sign(Algorithm.HMAC256(SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY));
+        try {
+             return com.auth0.jwt.JWT.create()
+                        .withHeader(headerMap)
+                        .withIssuer(SET_ISSUER)
+                        .withSubject(SET_SUBJECT)
+                        .withAudience(SET_AUDIENCE)
+                        .withIssuedAt(new Date(iat))
+                        //.withExpiresAt(new Date(ext))   //永久有效，不需要过期时间
+                            .withClaim(ParamConst.ID, user.getId())
+                            .withClaim(ParamConst.NAME, user.getName())
+                            .withClaim(ParamConst.RANK, user.getRank())
+                            .withClaim(ParamConst.STATE, user.getState())
+                                .sign(Algorithm.HMAC256(SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY));
 
-        return token;
+        } catch (UnsupportedEncodingException e) {
+            throw new TokenErrorException(ApiMessage.IVALID_TOKEN).log(LogWarn.ACCOUNT_16);
+        }
     }
 
     /**
@@ -75,11 +82,10 @@ public final class JwtTokenUtil {
      * @param token 密文
      * @param secretKey 解密密钥
      * @return UserDO 用户对象
-     * @throws Exception
      */
     public static UserDO verifyToken(String token, String secretKey) {
-        JWTVerifier verifier = null;
-        DecodedJWT decodedJWT = null;
+        JWTVerifier verifier;
+        DecodedJWT decodedJWT;
         try {
             //解密HS256算法
              verifier = com.auth0.jwt.JWT.require(Algorithm.HMAC256(secretKey)).build();
@@ -87,13 +93,12 @@ public final class JwtTokenUtil {
             //解码Base5
             decodedJWT = verifier.verify(token);
 
-        } catch (UnsupportedEncodingException ue) {
-            return null;
-        } catch (TokenExpiredException tee) {      //token过期
+        } catch (UnsupportedEncodingException | TokenExpiredException e) {
+            //token 过期和编码错误
             return null;
         }
 
-        //获取 Playload 的 username
+        //获取 Claim 所储存的用户数据
         Claim idClaim = decodedJWT.getClaim(ParamConst.ID);
         Claim nameClaim = decodedJWT.getClaim(ParamConst.NAME);
         Claim rankClaim = decodedJWT.getClaim(ParamConst.RANK);

@@ -5,6 +5,7 @@ import org.neusoft.neubbs.constant.api.ApiMessage;
 import org.neusoft.neubbs.constant.api.ParamConst;
 import org.neusoft.neubbs.controller.exception.ParamsErrorException;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
@@ -93,9 +94,9 @@ public final class RequestParamCheckUtil {
      *
      * @param type 参数类型
      * @param param 参数值
-     * @throws Exception 所有异常
+     * @throws ParamsErrorException 参数错误异常
      */
-    public static void check(String type, String param) throws Exception {
+    public static void check(String type, String param) throws ParamsErrorException {
         //空检查
         checkNull(type, param);
 
@@ -110,9 +111,9 @@ public final class RequestParamCheckUtil {
      * 检查器
      *
      * @param typeParamMap 类型-参数，键值对
-     * @throws Exception 所有异常
+     * @throws ParamsErrorException 参数错误异常
      */
-    public static void check(Map<String, String> typeParamMap) throws Exception {
+    public static void check(Map<String, String> typeParamMap) throws ParamsErrorException {
         //统一空检查
         for (Map.Entry<String, String> entry : typeParamMap.entrySet()) {
             checkNull(entry.getKey(), entry.getValue());
@@ -130,9 +131,9 @@ public final class RequestParamCheckUtil {
      *
      * @param type 参数类型
      * @param param 参数值
-     * @throws Exception 所有异常
+     * @throws ParamsErrorException 参数错误异常
      */
-    private static void checkNull(String type, String param) throws Exception {
+    private static void checkNull(String type, String param) throws ParamsErrorException {
         if (StringUtil.isEmpty(param) | NULL.equals(param)) {
             throw new ParamsErrorException(ApiMessage.PARAM_ERROR).log(type + " （类型）参数不能为空；");
         }
@@ -143,9 +144,9 @@ public final class RequestParamCheckUtil {
      *
      * @param type 参数类型
      * @param param 参数值
-     * @throws Exception 所有异常
+     * @throws ParamsErrorException 参数错误异常
      */
-    private static void checkScope(String type, String param) throws Exception {
+    private static void checkScope(String type, String param) throws ParamsErrorException {
         Scope scope = typeScopeMap.get(type);
         if (scope == null) {
             return;
@@ -164,21 +165,26 @@ public final class RequestParamCheckUtil {
      *
      * @param type 参数类型
      * @param param 参数值
-     * @throws Exception 所有异常
+     * @throws ParamsErrorException 参数错误异常
      */
-    private static void checkPattern(String type, String param) throws Exception {
+    private static void checkPattern(String type, String param) throws ParamsErrorException {
         Pattern pattern = typePatternMap.get(type);
         if (pattern == null) {
             return;
         }
 
-        //反射执行类中方法
-        Class clazz = Class.forName("org.neusoft.neubbs.utils.PatternUtil");
-        Method method = clazz.getDeclaredMethod(pattern.methodName, String.class);
+        try {
+            //反射执行类中方法（Class<?>-通配泛型，可代表任何类型，Class<T>在实例化的时候，T要替换成具体类）
+            Class<?> clazz = Class.forName("org.neusoft.neubbs.utils.PatternUtil");
 
-        //静态方法不需要借助实例运行，所以为 null
-        if (!((boolean) method.invoke(null, param))) {
-            throw new ParamsErrorException(ApiMessage.PARAM_ERROR).log(type + pattern.logMessage);
+            Method method = clazz.getDeclaredMethod(pattern.methodName, String.class);
+            //静态方法不需要借助实例运行，所以为 null
+            if (!((boolean) method.invoke(null, param))) {
+                throw new ParamsErrorException(ApiMessage.PARAM_ERROR).log(type + pattern.logMessage);
+            }
+        } catch (NoSuchMethodException | ClassNotFoundException
+                | IllegalAccessException |  InvocationTargetException e) {
+            e.printStackTrace();
         }
     }
 }

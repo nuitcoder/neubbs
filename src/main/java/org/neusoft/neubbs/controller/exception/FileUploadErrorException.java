@@ -8,14 +8,14 @@ import org.neusoft.neubbs.controller.annotation.ApiException;
  * @author Suvan
  */
 @ApiException
-public class FileUploadException extends Exception implements IExceptionLog {
+public class FileUploadErrorException extends Exception implements IExceptionLog {
 
     private String logMessage;
 
     /**
      * Constructor
      */
-    public FileUploadException(String message) {
+    public FileUploadErrorException(String message) {
         super(message);
     }
 
@@ -27,7 +27,7 @@ public class FileUploadException extends Exception implements IExceptionLog {
     }
 
     @Override
-    public FileUploadException log(String logMessage) {
+    public FileUploadErrorException log(String logMessage) {
         this.logMessage = logMessage;
         return this;
     }

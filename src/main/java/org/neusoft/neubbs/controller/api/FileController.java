@@ -8,7 +8,8 @@ import org.neusoft.neubbs.constant.secret.SecretInfo;
 import org.neusoft.neubbs.controller.annotation.AccountActivation;
 import org.neusoft.neubbs.controller.annotation.LoginAuthorization;
 import org.neusoft.neubbs.controller.exception.AccountErrorException;
-import org.neusoft.neubbs.controller.exception.FileUploadException;
+import org.neusoft.neubbs.controller.exception.DatabaseOperationFailException;
+import org.neusoft.neubbs.controller.exception.FileUploadErrorException;
 import org.neusoft.neubbs.dto.ResponseJsonDTO;
 import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.entity.properties.NeubbsConfigDO;
@@ -26,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
+import java.io.IOException;
 
 
 /**
@@ -66,21 +68,25 @@ public class FileController {
      * @param multipartFile 用户上传的文件对象
      * @param request http请求
      * @return ResponseJsonDTO 响应JSON传输对象
-     * @throws Exception 所有异常
+     * @throws FileUploadErrorException 文件上传错误异常
+     * @throws AccountErrorException 账户错误异常
+     * @throws DatabaseOperationFailException 数据库操作异常
      */
     @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/image", method = RequestMethod.POST)
     @ResponseBody
     public ResponseJsonDTO uploadUserImage(@RequestParam("image")MultipartFile multipartFile,
-                                           HttpServletRequest request) throws Exception {
+                                           HttpServletRequest request)
+            throws FileUploadErrorException, AccountErrorException, DatabaseOperationFailException {
+
         if (multipartFile.isEmpty()) {
             // 抛出文件空异常
-            throw new FileUploadException(ApiMessage.NO_CHOICE_PICTURE).log(LogWarn.FILE_01);
+            throw new FileUploadErrorException(ApiMessage.NO_CHOICE_PICTURE).log(LogWarn.FILE_01);
         }
         String fileType = multipartFile.getContentType();
         if (!PatternUtil.matchUserImage(fileType)) {
             //抛出文件类型不匹配异常
-            throw new FileUploadException(ApiMessage.PICTURE_FORMAT_WRONG).log(fileType + LogWarn.FILE_02);
+            throw new FileUploadErrorException(ApiMessage.PICTURE_FORMAT_WRONG).log(fileType + LogWarn.FILE_02);
         }
 //        if (multipartFile.getSize() >= SetConst.SIZE_ONE_MB) {
 //            //文件压缩处理
@@ -102,10 +108,14 @@ public class FileController {
         File imageFile = new File(serverPath, fileName);
         if (!imageFile.getParentFile().exists()) {
            //服务器检测不到目录，抛出异常
-            throw new FileUploadException(ApiMessage.NO_PARENT_DIRECTORY).log(LogWarn.FILE_03);
+            throw new FileUploadErrorException(ApiMessage.NO_PARENT_DIRECTORY).log(LogWarn.FILE_03);
         }
 
-        multipartFile.transferTo(imageFile);
+        try {
+            multipartFile.transferTo(imageFile);
+        } catch (IOException e) {
+            throw new FileUploadErrorException(ApiMessage.UPLOAD_FAIL).log(LogWarn.FILE_04);
+        }
 
         userService.uploadUserImage(cookieUser.getName(), fileName);
 

@@ -1,9 +1,9 @@
 package org.neusoft.neubbs.controller.interceptor;
 
 import org.neusoft.neubbs.constant.api.ApiMessage;
-import org.neusoft.neubbs.constant.log.LogWarn;
 import org.neusoft.neubbs.constant.api.ParamConst;
 import org.neusoft.neubbs.constant.api.SetConst;
+import org.neusoft.neubbs.constant.log.LogWarn;
 import org.neusoft.neubbs.constant.secret.SecretInfo;
 import org.neusoft.neubbs.controller.annotation.AccountActivation;
 import org.neusoft.neubbs.controller.annotation.AdminRank;
@@ -16,7 +16,6 @@ import org.neusoft.neubbs.utils.JwtTokenUtil;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.interceptor.Interceptor;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -28,7 +27,6 @@ import javax.servlet.http.HttpServletResponse;
  *
  *  @author Suvan
  */
-@Interceptor
 public class ApiInterceptor implements HandlerInterceptor {
 
     /**
@@ -41,8 +39,8 @@ public class ApiInterceptor implements HandlerInterceptor {
      * @throws Exception 所有异常
      */
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
-                                Object handler) throws Exception {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
+            throws Exception {
         //登录验证，账户激活，管理员级别
         if (!doLoginAuthorization(request, handler)
                 || !doAccountActivation(request, handler)
@@ -65,7 +63,8 @@ public class ApiInterceptor implements HandlerInterceptor {
      */
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response,
-                                Object obj, ModelAndView modelAndView) throws Exception { }
+                           Object obj, ModelAndView modelAndView)
+            throws Exception { }
 
     /**
      * 请求完成成立（MVC 控制器 DispatcherServlet 完全处理完请求后调用，可用于清理资源）
@@ -78,7 +77,8 @@ public class ApiInterceptor implements HandlerInterceptor {
      */
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response,
-                                    Object obj, Exception exception) throws Exception { }
+                                Object obj, Exception exception)
+            throws Exception { }
 
 
     /**
@@ -87,9 +87,9 @@ public class ApiInterceptor implements HandlerInterceptor {
      * @param request http请求
      * @param handler 方法对象
      * @return boolean 验证结果
-     * @throws Exception 所有异常
+     * @throws AccountErrorException 账户错误异常
      */
-    private boolean doLoginAuthorization(HttpServletRequest request, Object handler) throws Exception {
+    private boolean doLoginAuthorization(HttpServletRequest request, Object handler) throws AccountErrorException {
 
         /*
          * 验证流程：
@@ -124,9 +124,9 @@ public class ApiInterceptor implements HandlerInterceptor {
      * @param request http请求
      * @param handler 方法对象
      * @return boolean 验证结果
-     * @throws Exception 所有异常
+     * @throws AccountErrorException 账户错误异常
      */
-    private boolean doAccountActivation(HttpServletRequest request, Object handler) throws Exception {
+    private boolean doAccountActivation(HttpServletRequest request, Object handler) throws AccountErrorException {
 
         if (AnnotationUtil.hasMethodAnnotation(handler, AccountActivation.class)) {
             String authentication = CookieUtil.getCookieValue(request, ParamConst.AUTHENTICATION);
@@ -134,9 +134,9 @@ public class ApiInterceptor implements HandlerInterceptor {
                 UserDO user = JwtTokenUtil.verifyToken(authentication, SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY);
                 if (user == null) {
                     //JWT Token 过期，解密失败
-                    throw new AccountErrorException(ApiMessage.TOKEN_EXPIRED)
-                                .log(LogWarn.ACCOUNT_05);
+                    throw new AccountErrorException(ApiMessage.TOKEN_EXPIRED).log(LogWarn.ACCOUNT_05);
                 }
+
                 if (user.getState() == 1) {
                     //通过验证
                     return true;
@@ -155,9 +155,9 @@ public class ApiInterceptor implements HandlerInterceptor {
      * @param request http请求
      * @param handler 方法对象
      * @return boolean 验证结果
-     * @throws Exception 所有异常
+     * @throws AccountErrorException 账户错误异常
      */
-    private boolean doAdminRank(HttpServletRequest request, Object handler) throws Exception {
+    private boolean doAdminRank(HttpServletRequest request, Object handler) throws AccountErrorException {
         if (AnnotationUtil.hasMethodAnnotation(handler, AdminRank.class)) {
             String authentication = CookieUtil.getCookieValue(request, ParamConst.AUTHENTICATION);
             if (authentication != null) {

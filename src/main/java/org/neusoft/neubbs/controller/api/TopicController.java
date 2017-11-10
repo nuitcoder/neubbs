@@ -6,6 +6,10 @@ import org.neusoft.neubbs.constant.api.SetConst;
 import org.neusoft.neubbs.controller.annotation.AccountActivation;
 import org.neusoft.neubbs.controller.annotation.AdminRank;
 import org.neusoft.neubbs.controller.annotation.LoginAuthorization;
+import org.neusoft.neubbs.controller.exception.AccountErrorException;
+import org.neusoft.neubbs.controller.exception.DatabaseOperationFailException;
+import org.neusoft.neubbs.controller.exception.ParamsErrorException;
+import org.neusoft.neubbs.controller.exception.TopicErrorException;
 import org.neusoft.neubbs.dto.ResponseJsonDTO;
 import org.neusoft.neubbs.dto.ResponseJsonListDTO;
 import org.neusoft.neubbs.service.ITopicService;
@@ -56,14 +60,15 @@ public class TopicController {
      *
      * @param topicId 话题id
      * @return ResponseJsonDTO 响应JSON传输对象
-     * @throws Exception 所有异常
+     * @throws ParamsErrorException 参数错误异常
+     * @throws TopicErrorException 话题错误异常
      */
     @RequestMapping(value = "/topic", method = RequestMethod.GET)
     @ResponseBody
     public ResponseJsonDTO getTopic(@RequestParam(value = "topicid", required = false) Integer topicId)
-                                        throws Exception {
+            throws ParamsErrorException, TopicErrorException {
+
         RequestParamCheckUtil.check(ParamConst.ID, String.valueOf(topicId));
-        System.out.println("*(***" + String.valueOf(topicId));
 
         Map<String, Object> topicInfoMap =  topicService.getTopic(topicId);
 
@@ -75,12 +80,13 @@ public class TopicController {
      *
      * @param replyId 回复id
      * @return ResponseJsonDTO 响应JSON传输对象
-     * @throws Exception 所有异常
+     * @throws ParamsErrorException 参数错误异常
      */
     @RequestMapping(value = "/topic/reply", method = RequestMethod.GET)
     @ResponseBody
     public ResponseJsonDTO getReply(@RequestParam(value = "replyid", required = false) Integer replyId)
-                                        throws Exception {
+            throws ParamsErrorException {
+
         RequestParamCheckUtil.check(ParamConst.ID, String.valueOf(replyId));
 
         Map<String, Object> replyInfoMap = topicService.getReply(replyId);
@@ -94,13 +100,15 @@ public class TopicController {
      * @param page 页数
      * @param count 每页显示话题数量
      * @return ResponseJsonListDTO 响应JSON传输列表对象昂
-     * @throws Exception 所有异常
+     * @throws ParamsErrorException 参数错误异常
+     * @throws TopicErrorException 话题错误异常
      */
     @RequestMapping(value = "/topics", method = RequestMethod.GET)
     @ResponseBody
     public ResponseJsonListDTO listTopics(@RequestParam(value = "page", required = false) Integer page,
-                                         @RequestParam(value = "count", required = false) Integer count)
-                                                throws Exception {
+                                          @RequestParam(value = "count", required = false) Integer count)
+            throws ParamsErrorException, TopicErrorException {
+
         Map<String, String> paramsMap = new HashMap<>(SetConst.SIZE_FOUR);
             paramsMap.put(ParamConst.NUMBER, String.valueOf(page));
             paramsMap.put(ParamConst.NUMBER, String.valueOf(count));
@@ -121,12 +129,16 @@ public class TopicController {
      *
      * @param requestBodyParamsMap reuest-body内JSON数据
      * @return ResponseJsonDTO 响应JSON传输数据
-     * @throws Exception 所有异常
+     * @throws ParamsErrorException 参数错误异常
+     * @throws AccountErrorException 账户错误异常
+     * @throws DatabaseOperationFailException 数据库操作失败失败异常
      */
     @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/topic", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
-    public ResponseJsonDTO saveTopic(@RequestBody Map<String, Object> requestBodyParamsMap) throws Exception {
+    public ResponseJsonDTO saveTopic(@RequestBody Map<String, Object> requestBodyParamsMap)
+            throws ParamsErrorException, AccountErrorException, DatabaseOperationFailException {
+
         Integer userId = (Integer) requestBodyParamsMap.get(ParamConst.USER_ID);
         String category = (String) requestBodyParamsMap.get(ParamConst.CATEGORY);
         String title = (String) requestBodyParamsMap.get(ParamConst.TITLE);
@@ -154,12 +166,17 @@ public class TopicController {
      *
      * @param requetBodyParamsMap request-body内JSON数据
      * @return ResponseJsonDTO 响应JSON传输对象
-     * @throws Exception 所有异常
+     * @throws ParamsErrorException 参数错误异常
+     * @throws TopicErrorException 话题错误异常
+     * @throws DatabaseOperationFailException 数据库操作失败异常
+     * @throws AccountErrorException 账户错误异常
      */
     @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/topic/reply", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
-    public ResponseJsonDTO saveReply(@RequestBody Map<String, Object> requetBodyParamsMap) throws Exception {
+    public ResponseJsonDTO saveReply(@RequestBody Map<String, Object> requetBodyParamsMap)
+            throws ParamsErrorException, TopicErrorException, DatabaseOperationFailException, AccountErrorException {
+
         Integer userId = (Integer) requetBodyParamsMap.get(ParamConst.USER_ID);
         Integer topicId = (Integer) requetBodyParamsMap.get(ParamConst.TOPIC_ID);
         String replyContent = (String) requetBodyParamsMap.get(ParamConst.CONTENT);
@@ -185,12 +202,16 @@ public class TopicController {
      *
      * @param requestBodyParamsMap request-body内JSON数据
      * @return ResponseJsonDTO 响应Json传输对象
-     * @throws Exception 所有异常
+     * @throws ParamsErrorException 参数错误异常
+     * @throws DatabaseOperationFailException 数据库操作异常
+     * @throws TopicErrorException 话题错误异常
      */
     @LoginAuthorization @AccountActivation @AdminRank
     @RequestMapping(value = "/topic-remove", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
-    public ResponseJsonDTO removeTopic(@RequestBody Map<String, Object> requestBodyParamsMap) throws Exception {
+    public ResponseJsonDTO removeTopic(@RequestBody Map<String, Object> requestBodyParamsMap)
+            throws ParamsErrorException, DatabaseOperationFailException, TopicErrorException {
+
         Integer topicId = (Integer) requestBodyParamsMap.get(ParamConst.TOPIC_ID);
 
         RequestParamCheckUtil.check(ParamConst.ID, String.valueOf(topicId));
@@ -206,16 +227,20 @@ public class TopicController {
      * 业务流程
      *      - 参数处理
      *      - 数据库操作
-     *      = 返回成功状态
+     *      - 返回成功状态
      *
      * @param requestBodyParamsMap request-body内JSON数据
      * @return ResponseJsonDTO 响应JSON传输对象
-     * @throws Exception 所有异常
+     * @throws ParamsErrorException 参数错误异常
+     * @throws DatabaseOperationFailException 数据库操作失败异常
+     * @throws TopicErrorException 话题错误异常
      */
     @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/topic/reply-remove", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
-    public ResponseJsonDTO removeReply(@RequestBody Map<String, Object> requestBodyParamsMap) throws Exception {
+    public ResponseJsonDTO removeReply(@RequestBody Map<String, Object> requestBodyParamsMap)
+            throws ParamsErrorException, DatabaseOperationFailException, TopicErrorException {
+
         int replyId = (Integer) requestBodyParamsMap.get(ParamConst.REPLY_ID);
 
         RequestParamCheckUtil.check(ParamConst.ID, String.valueOf(replyId));
@@ -235,12 +260,16 @@ public class TopicController {
      *
      * @param requestBodyParamsMap request-body内JSON数据
      * @return ResponseJsonDTO 响应JSON传输对象
-     * @throws Exception 所有异常
+     * @throws ParamsErrorException 参数错误异常
+     * @throws DatabaseOperationFailException 数据库操作失败异常
+     * @throws TopicErrorException 话题错误异常
      */
     @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/topic/content-update", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
-    public ResponseJsonDTO updateTopicContent(@RequestBody Map<String, Object> requestBodyParamsMap) throws Exception {
+    public ResponseJsonDTO updateTopicContent(@RequestBody Map<String, Object> requestBodyParamsMap)
+            throws ParamsErrorException, DatabaseOperationFailException, TopicErrorException {
+
         Integer topicId = (Integer) requestBodyParamsMap.get(ParamConst.TOPIC_ID);
         String newCategory = (String) requestBodyParamsMap.get(ParamConst.CATEGORY);
         String newTitle = (String) requestBodyParamsMap.get(ParamConst.TITLE);
@@ -268,12 +297,16 @@ public class TopicController {
      *
      * @param requestBodyParamsMap request-body内JSON数据
      * @return ResponseJsonDTO 响应JSON传输对象
-     * @throws Exception 所有异常
+     * @throws ParamsErrorException 参数错误异常
+     * @throws  DatabaseOperationFailException 数据库操作失败异常
+     * @throws TopicErrorException 话题错误异常
      */
    @LoginAuthorization @AccountActivation
    @RequestMapping(value = "/topic/reply/content-update", method = RequestMethod.POST, consumes = "application/json")
    @ResponseBody
-   public ResponseJsonDTO updateReplyContent(@RequestBody Map<String, Object> requestBodyParamsMap) throws Exception {
+   public ResponseJsonDTO updateReplyContent(@RequestBody Map<String, Object> requestBodyParamsMap)
+           throws ParamsErrorException, DatabaseOperationFailException, TopicErrorException {
+
        Integer replyId = (Integer) requestBodyParamsMap.get(ParamConst.REPLY_ID);
        String newReplyCntent = (String) requestBodyParamsMap.get(ParamConst.CONTENT);
 

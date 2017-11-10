@@ -26,6 +26,8 @@ public final class LogWarn {
     public static final String ACCOUNT_13 = "找不到 username 或 email 参数（二选一），无法获取账户信息";
     public static final String ACCOUNT_14 = " 用户名已被占用";
     public static final String ACCOUNT_15 = " 口令无效";
+    public static final String ACCOUNT_16 = " 创建 jwt 加密 token 失败！";
+    public static final String ACCOUNT_17 = " IO异常，生成 captcha 图片验证码失败";
 
 
 
@@ -37,7 +39,8 @@ public final class LogWarn {
     /*****************************File api**********************************/
     public static final String FILE_01 = "用户没有选择上传文件 ";
     public static final String FILE_02 = " 文件类型不符合头像类型（jpg | png | jpeg）";
-    public static final  String FILE_03 = "服务器不存在指定上传文件目录";
+    public static final String FILE_03 = "服务器不存在指定上传文件目录";
+    public static final String FILE_04 = "IO异常，文件复制到服务器指定目录失败";
 
 
     /*****************************Api Interceptor**********************************/

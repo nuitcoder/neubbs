@@ -8,14 +8,14 @@ import org.neusoft.neubbs.controller.annotation.ApiException;
  * @author Suvan
  */
 @ApiException
-public class TokenExpireException extends Exception implements IExceptionLog {
+public class TokenErrorException extends Exception implements IExceptionLog {
 
     private String logMessage;
 
     /**
      * Constructor
      */
-    public TokenExpireException(String message) {
+    public TokenErrorException(String message) {
         super(message);
     }
 
@@ -27,7 +27,7 @@ public class TokenExpireException extends Exception implements IExceptionLog {
     }
 
     @Override
-    public TokenExpireException log(String logMessage) {
+    public TokenErrorException log(String logMessage) {
         this.logMessage = logMessage;
         return this;
     }

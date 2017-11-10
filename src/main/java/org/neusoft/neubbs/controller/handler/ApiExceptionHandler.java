@@ -4,9 +4,9 @@ import org.apache.log4j.Logger;
 import org.neusoft.neubbs.controller.annotation.ApiException;
 import org.neusoft.neubbs.controller.exception.AccountErrorException;
 import org.neusoft.neubbs.controller.exception.DatabaseOperationFailException;
-import org.neusoft.neubbs.controller.exception.FileUploadException;
+import org.neusoft.neubbs.controller.exception.FileUploadErrorException;
 import org.neusoft.neubbs.controller.exception.ParamsErrorException;
-import org.neusoft.neubbs.controller.exception.TokenExpireException;
+import org.neusoft.neubbs.controller.exception.TokenErrorException;
 import org.neusoft.neubbs.controller.exception.TopicErrorException;
 import org.neusoft.neubbs.utils.AnnotationUtil;
 import org.neusoft.neubbs.utils.ResponsePrintWriterUtil;
@@ -36,7 +36,7 @@ public class ApiExceptionHandler implements HandlerExceptionResolver {
      */
     @Override
     public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response,
-                                            Object o, Exception e) {
+                                         Object o, Exception e) {
         //api 页面输出错误信息（只输出 Api 指定异常）
         if (AnnotationUtil.hasClassAnnotation(e.getClass(), ApiException.class)) {
             ResponsePrintWriterUtil.outFailJSONMessage(response, e.getMessage());
@@ -47,10 +47,10 @@ public class ApiExceptionHandler implements HandlerExceptionResolver {
             LOGGER.warn(((ParamsErrorException) e).getLogMessage());
         } else if (e instanceof AccountErrorException) {
             LOGGER.warn(((AccountErrorException) e).getLogMessage());
-        } else if (e instanceof TokenExpireException) {
-            LOGGER.warn(((TokenExpireException) e).getLogMessage());
-        } else if (e instanceof FileUploadException) {
-            LOGGER.warn(((FileUploadException) e).getLogMessage());
+        } else if (e instanceof TokenErrorException) {
+            LOGGER.warn(((TokenErrorException) e).getLogMessage());
+        } else if (e instanceof FileUploadErrorException) {
+            LOGGER.warn(((FileUploadErrorException) e).getLogMessage());
         } else if (e instanceof TopicErrorException) {
             LOGGER.warn(((TopicErrorException) e).getLogMessage());
         } else if (e instanceof DatabaseOperationFailException) {
