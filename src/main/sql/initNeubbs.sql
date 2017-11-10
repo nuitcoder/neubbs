@@ -40,7 +40,7 @@ CREATE TABLE `forum_user` (
    PRIMARY KEY (`fu_id`),
    UNIQUE KEY `fu_name` (`fu_name`),
    UNIQUE KEY `fu_email` (`fu_email`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_bin;
 
 
 
@@ -57,7 +57,7 @@ CREATE TABLE `forum_topic` (
   PRIMARY KEY (`ft_id`),
   CONSTRAINT `FT_FU_ID` FOREIGN KEY (`fu_id`) REFERENCES `forum_user` (`fu_id`),
   CONSTRAINT `FT_L_FU_ID` FOREIGN KEY (`ft_lastreplyuserid`) REFERENCES `forum_user` (`fu_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_bin;
 
 
 
@@ -70,7 +70,7 @@ CREATE TABLE `forum_topic_content` (
   `ftc_agree` VARCHAR(10) DEFAULT '0' comment '话题点攒数',
   PRIMARY KEY (`ftc_id`),
   CONSTRAINT `FTC_FT_ID` FOREIGN KEY (`ft_id`) REFERENCES `forum_topic` (`ft_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_bin;
 
 
 
@@ -86,5 +86,5 @@ CREATE TABLE `forum_topic_reply` (
   PRIMARY KEY (`ftr_id`),
   CONSTRAINT `FTR_FU_ID` FOREIGN KEY (`fu_id`) REFERENCES `forum_user` (`fu_id`),
   CONSTRAINT `FTR_FT_ID` FOREIGN KEY (`ft_id`) REFERENCES `forum_topic` (`ft_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_bin;
 

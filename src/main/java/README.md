@@ -5,7 +5,7 @@
 2. 类中不要包含 main() 函数，请在 test 目录下，编写 TestCase，并注释说明测试目的
 3. IDEA 中，按住 Ctrl + (鼠标左键点击类 or 方法)，可直接跳到引用类中
 4. 提交前请用 CheckStyle 检查代码规范
-5. 自定义异常请用 @ApiException 声明类
+5. 自定义异常请用 @ApiException 声明（项目自定义异常），如果需打印日志，请实现 IPrintLog 接口
 6. 已实现接口,请参考：[后端 API 交互协议](https://github.com/nuitcoder/neubbs/wiki/%E5%90%8E%E7%AB%AF-API-%E4%BA%A4%E4%BA%92%E5%8D%8F%E8%AE%AE)
 
 
