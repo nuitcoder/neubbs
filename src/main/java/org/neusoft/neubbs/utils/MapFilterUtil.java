@@ -4,7 +4,7 @@ package org.neusoft.neubbs.utils;
 import org.neusoft.neubbs.constant.api.ParamConst;
 
 import java.util.Calendar;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -35,7 +35,7 @@ public final class MapFilterUtil {
     * @param keys 要保留的 key
     */
    public static void keepKesy(Map<String, Object> map, String[] keys) {
-      Map<String, Object> tmpMap = new HashMap<>();
+      Map<String, Object> tmpMap = new LinkedHashMap<>();
 
       for (String key: keys) {
          tmpMap.put(key, map.get(key));

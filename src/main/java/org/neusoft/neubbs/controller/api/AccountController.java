@@ -44,7 +44,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 
@@ -149,7 +149,7 @@ public final class AccountController {
         }
 
         Map<String, Object> userInfoMap = JsonUtil.toMapByObject(user);
-            MapFilterUtil.filterUserInfo(userInfoMap);
+        MapFilterUtil.filterUserInfo(userInfoMap);
         return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, userInfoMap);
     }
 
@@ -218,9 +218,9 @@ public final class AccountController {
         boolean emailType = PatternUtil.matchEmail(username);
         String usernameType = emailType ? ParamConst.EMAIL : ParamConst.USERNAME;
 
-        Map<String, String> paramsMap = new HashMap<>(SetConst.SIZE_TWO);
-            paramsMap.put(usernameType, username);
-            paramsMap.put(ParamConst.PASSWORD, password);
+        Map<String, String> paramsMap = new LinkedHashMap<>(SetConst.SIZE_TWO);
+        paramsMap.put(usernameType, username);
+        paramsMap.put(ParamConst.PASSWORD, password);
         RequestParamCheckUtil.check(paramsMap);
 
         //数据库验证
@@ -240,15 +240,15 @@ public final class AccountController {
         //通过验证后处理
         String authentication = JwtTokenUtil.createToken(user);
         CookieUtil.saveCookie(response, ParamConst.AUTHENTICATION, authentication,
-                                    neubbsConfig.getCookieAutoLoginMaxAgeDay());
+                neubbsConfig.getCookieAutoLoginMaxAgeDay());
 
         ServletContext context = request.getServletContext();
         int onlineLoginUser = (int) context.getAttribute(ParamConst.COUNT_LOGIN_USER);
         context.setAttribute(ParamConst.COUNT_LOGIN_USER, ++onlineLoginUser);
 
-        Map<String, Object> loginJsonMap = new HashMap<>(SetConst.LENGTH_TWO);
-            loginJsonMap.put(ParamConst.AUTHENTICATION, authentication);
-            loginJsonMap.put(ParamConst.STATE, user.getState() == SetConst.ACCOUNT_STATE_TRUE);
+        Map<String, Object> loginJsonMap = new LinkedHashMap<>(SetConst.LENGTH_TWO);
+        loginJsonMap.put(ParamConst.AUTHENTICATION, authentication);
+        loginJsonMap.put(ParamConst.STATE, user.getState() == SetConst.ACCOUNT_STATE_TRUE);
         return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, loginJsonMap);
     }
 
@@ -310,10 +310,10 @@ public final class AccountController {
         String password = (String) requestBodyParamsMap.get(ParamConst.PASSWORD);
         String email = (String) requestBodyParamsMap.get(ParamConst.EMAIL);
 
-        Map<String, String> paramsMap = new HashMap<>(SetConst.SIZE_THREE);
-            paramsMap.put(ParamConst.USERNAME, username);
-            paramsMap.put(ParamConst.PASSWORD, password);
-            paramsMap.put(ParamConst.EMAIL, email);
+        Map<String, String> paramsMap = new LinkedHashMap<>(SetConst.SIZE_THREE);
+        paramsMap.put(ParamConst.USERNAME, username);
+        paramsMap.put(ParamConst.PASSWORD, password);
+        paramsMap.put(ParamConst.EMAIL, email);
         RequestParamCheckUtil.check(paramsMap);
 
         //数据库处理
@@ -321,9 +321,9 @@ public final class AccountController {
         userService.isOccupyByEmail(email);
 
         UserDO user = new UserDO();
-            user.setName(username);
-            user.setEmail(email);
-            user.setPassword(SecretUtil.encryptUserPassword(password));
+        user.setName(username);
+        user.setEmail(email);
+        user.setPassword(SecretUtil.encryptUserPassword(password));
 
         userService.registerUser(user);
 
@@ -331,7 +331,7 @@ public final class AccountController {
 
         //返回成功状态
         Map<String, Object> userInfoMap = JsonUtil.toMapByObject(dbUser);
-            MapFilterUtil.filterUserInfo(userInfoMap);
+        MapFilterUtil.filterUserInfo(userInfoMap);
         return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, userInfoMap);
     }
 
@@ -369,9 +369,9 @@ public final class AccountController {
         String username = (String) requestBodyParamsMap.get(ParamConst.USERNAME);
         String newPassword = (String) requestBodyParamsMap.get(ParamConst.PASSWORD);
 
-        Map<String, String> paramsMap = new HashMap<>(SetConst.SIZE_TWO);
-            paramsMap.put(ParamConst.USERNAME, username);
-            paramsMap.put(ParamConst.PASSWORD, newPassword);
+        Map<String, String> paramsMap = new LinkedHashMap<>(SetConst.SIZE_TWO);
+        paramsMap.put(ParamConst.USERNAME, username);
+        paramsMap.put(ParamConst.PASSWORD, newPassword);
         RequestParamCheckUtil.check(paramsMap);
 
         //权限安全
@@ -425,9 +425,9 @@ public final class AccountController {
         String username = (String) requestBodyParamsMap.get(ParamConst.USERNAME);
         String email = (String) requestBodyParamsMap.get(ParamConst.EMAIL);
 
-        Map<String, String> paramsMap = new HashMap<>(SetConst.SIZE_TWO);
-            paramsMap.put(ParamConst.USERNAME, username);
-            paramsMap.put(ParamConst.EMAIL, email);
+        Map<String, String> paramsMap = new LinkedHashMap<>(SetConst.SIZE_TWO);
+        paramsMap.put(ParamConst.USERNAME, username);
+        paramsMap.put(ParamConst.EMAIL, email);
         RequestParamCheckUtil.check(paramsMap);
 
         //权限安全
@@ -439,9 +439,9 @@ public final class AccountController {
 
         //数据库验证
         if (userService.getUserInfoByName(username).getState() == SetConst.ACCOUNT_STATE_TRUE) {
-              CookieUtil.saveCookie(response, ParamConst.AUTHENTICATION, JwtTokenUtil.createToken(cookieUser),
-                                            neubbsConfig.getCookieAutoLoginMaxAgeDay());
-              throw new AccountErrorException(ApiMessage.ACCOUNT_ACTIVATED).log(LogWarn.ACCOUNT_07);
+            CookieUtil.saveCookie(response, ParamConst.AUTHENTICATION, JwtTokenUtil.createToken(cookieUser),
+                    neubbsConfig.getCookieAutoLoginMaxAgeDay());
+            throw new AccountErrorException(ApiMessage.ACCOUNT_ACTIVATED).log(LogWarn.ACCOUNT_07);
         }
         userService.isOccupyByEmail(email);
 
@@ -493,17 +493,17 @@ public final class AccountController {
             throw new AccountErrorException(ApiMessage.ACCOUNT_ACTIVATED).log(email + LogWarn.ACCOUNT_07);
         }
 
-       //邮箱定时器检查
+        //邮箱定时器检查
         long emailkeyExpireTime = redisService.getExpireTime(email);
         if (emailkeyExpireTime != SetConst.REDIS_EXPIRED) {
             return new ResponseJsonDTO(AjaxRequestStatus.FAIL, ApiMessage.WATI_TIMER,
-                                            "timer", emailkeyExpireTime / SetConst.THOUSAND);
+                    "timer", emailkeyExpireTime / SetConst.THOUSAND);
         }
 
         //发送邮件
         String token = SecretUtil.encryptBase64(email + "-" + StringUtil.getTwentyFourClockTime());
         String emailContent = StringUtil
-                                .createEmailActivationHtmlString(neubbsConfig.getAccountApiVaslidateUrl() + token);
+                .createEmailActivationHtmlString(neubbsConfig.getAccountApiVaslidateUrl() + token);
 
         taskExecutor.execute(
                 () -> SendEmailUtil.sendEmail("Neubbs", email, " Neubbs 账户激活", emailContent)
@@ -515,7 +515,7 @@ public final class AccountController {
         return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, ApiMessage.MAIL_SEND_SUCCESS);
     }
 
-    
+
     /**
      * 激活账户（ 验证 token ）
      *

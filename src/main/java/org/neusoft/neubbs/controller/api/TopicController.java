@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -109,7 +109,7 @@ public class TopicController {
                                           @RequestParam(value = "count", required = false) Integer count)
             throws ParamsErrorException, TopicErrorException {
 
-        Map<String, String> paramsMap = new HashMap<>(SetConst.SIZE_FOUR);
+        Map<String, String> paramsMap = new LinkedHashMap<>(SetConst.SIZE_FOUR);
             paramsMap.put(ParamConst.NUMBER, String.valueOf(page));
             paramsMap.put(ParamConst.NUMBER, String.valueOf(count));
         RequestParamCheckUtil.check(paramsMap);
@@ -144,7 +144,7 @@ public class TopicController {
         String title = (String) requestBodyParamsMap.get(ParamConst.TITLE);
         String topicContent = (String) requestBodyParamsMap.get(ParamConst.CONTENT);
 
-        Map<String, String> paramsMap = new HashMap<>(SetConst.SIZE_FOUR);
+        Map<String, String> paramsMap = new LinkedHashMap<>(SetConst.SIZE_FOUR);
             paramsMap.put(ParamConst.ID, String.valueOf(userId));
             paramsMap.put(ParamConst.CATEGORY, category);
             paramsMap.put(ParamConst.TITLE, title);
@@ -181,7 +181,7 @@ public class TopicController {
         Integer topicId = (Integer) requetBodyParamsMap.get(ParamConst.TOPIC_ID);
         String replyContent = (String) requetBodyParamsMap.get(ParamConst.CONTENT);
 
-        Map<String, String> paramsMap = new HashMap<>(SetConst.SIZE_THREE);
+        Map<String, String> paramsMap = new LinkedHashMap<>(SetConst.SIZE_THREE);
             paramsMap.put(ParamConst.ID, String.valueOf(userId));
             paramsMap.put(ParamConst.ID, String.valueOf(topicId));
             paramsMap.put(ParamConst.REPLY_CONTENT, replyContent);
@@ -275,7 +275,7 @@ public class TopicController {
         String newTitle = (String) requestBodyParamsMap.get(ParamConst.TITLE);
         String newTopicContent = (String) requestBodyParamsMap.get(ParamConst.CONTENT);
 
-        Map<String, String> paramsMap = new HashMap<>(SetConst.SIZE_FOUR);
+        Map<String, String> paramsMap = new LinkedHashMap<>(SetConst.SIZE_FOUR);
             paramsMap.put(ParamConst.ID, String.valueOf(topicId));
             paramsMap.put(ParamConst.CATEGORY, newCategory);
             paramsMap.put(ParamConst.TITLE, newTitle);
@@ -310,7 +310,7 @@ public class TopicController {
        Integer replyId = (Integer) requestBodyParamsMap.get(ParamConst.REPLY_ID);
        String newReplyCntent = (String) requestBodyParamsMap.get(ParamConst.CONTENT);
 
-       Map<String, String> paramsMap = new HashMap<>(SetConst.SIZE_TWO);
+       Map<String, String> paramsMap = new LinkedHashMap<>(SetConst.SIZE_TWO);
             paramsMap.put(ParamConst.ID, String.valueOf(replyId));
             paramsMap.put(ParamConst.REPLY_CONTENT, newReplyCntent);
        RequestParamCheckUtil.check(paramsMap);

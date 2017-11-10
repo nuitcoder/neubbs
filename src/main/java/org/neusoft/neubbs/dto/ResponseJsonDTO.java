@@ -2,7 +2,7 @@ package org.neusoft.neubbs.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -40,14 +40,14 @@ public class ResponseJsonDTO {
     public ResponseJsonDTO(boolean success, String key, Object obj) {
         this.success = success;
 
-        this.model = new HashMap<>();
+        this.model = new LinkedHashMap<>();
         this.model.put(key, obj);
     }
     public ResponseJsonDTO(boolean success, String message, String key, Object obj) {
         this.success = success;
         this.message = message;
 
-        this.model = new HashMap<>();
+        this.model = new LinkedHashMap<>();
         this.model.put(key, obj);
     }
 

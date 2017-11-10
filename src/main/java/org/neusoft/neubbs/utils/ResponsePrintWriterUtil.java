@@ -5,7 +5,7 @@ import org.neusoft.neubbs.constant.api.SetConst;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -27,7 +27,7 @@ public final class ResponsePrintWriterUtil {
     public static void outFailJSONMessage(HttpServletResponse response, String failMessage) {
 
         //构造 Map ,并指定初始大小
-        Map<String, Object> map = new HashMap<>(SetConst.LENGTH_TWO);
+        Map<String, Object> map = new LinkedHashMap<>(SetConst.LENGTH_TWO);
             map.put("success", false);
             map.put("message", failMessage);
 
