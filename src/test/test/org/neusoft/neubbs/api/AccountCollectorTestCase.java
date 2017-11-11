@@ -18,8 +18,10 @@ import org.neusoft.neubbs.controller.exception.ParamsErrorException;
 import org.neusoft.neubbs.controller.exception.TokenErrorException;
 import org.neusoft.neubbs.controller.handler.SwitchDataSourceHandler;
 import org.neusoft.neubbs.entity.UserDO;
+import org.neusoft.neubbs.service.IUserService;
 import org.neusoft.neubbs.utils.JsonUtil;
 import org.neusoft.neubbs.utils.JwtTokenUtil;
+import org.neusoft.neubbs.utils.SecretUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
@@ -64,6 +66,9 @@ public class AccountCollectorTestCase {
 
     @Autowired
     private AccountController accountController;
+
+    @Autowired
+    private IUserService userService;
 
     static class Param {
         String key;
@@ -189,6 +194,7 @@ public class AccountCollectorTestCase {
 
     /**
      * 【/api/account】 test get user information throws exception
+     *      - 使用 assertThat(对象 or 值， Hamcrest 匹配器)
      */
     @Test
     public void testGetUserInfoThrowsException () throws Exception {
@@ -354,10 +360,10 @@ public class AccountCollectorTestCase {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
 
         UserDO user = new UserDO();
-        user.setId(5);
-        user.setName("suvan");
-        user.setRank("admin");
-        user.setState(1);
+            user.setId(5);
+            user.setName("suvan");
+            user.setRank("admin");
+            user.setState(1);
         String authentication = JwtTokenUtil.createToken(user);
 
         mockMvc.perform(
@@ -456,6 +462,122 @@ public class AccountCollectorTestCase {
                                 CoreMatchers.instanceOf(AccountErrorException.class),
                                 CoreMatchers.instanceOf(DatabaseOperationFailException.class))
                 );
+            }
+        }
+
+        printSuccessPassTestMehtodMessage();
+    }
+
+    /**
+     * 【/api/account/update-password】 test user update password success
+     *      - @LoginAuthorization @AccountActivation
+     */
+    @Test
+    @Transactional
+    public void testUserUpdatePasswordSuccess() throws Exception {
+        String inputUsername = "suvan";
+        String inputNewPassword = "liushuwei";
+
+        String requestBody = "{\"username\":\"" + inputUsername + "\",\"password\":\"" + inputNewPassword + "\"}";
+
+        String authentication = JwtTokenUtil.createToken(userService.getUserInfoByName(inputUsername));
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.post("/api/account/update-password")
+                    .cookie(new Cookie(ParamConst.AUTHENTICATION, authentication))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(requestBody)
+        ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.message").doesNotExist());
+
+        UserDO user = userService.getUserInfoByName(inputUsername);
+        Assert.assertEquals(user.getName(), inputUsername);
+        Assert.assertEquals(user.getPassword(), SecretUtil.encryptUserPassword(inputNewPassword));
+
+        printSuccessPassTestMehtodMessage();
+    }
+
+    /**
+     * 【/api/account/update-password】 test user update password throw exception
+     */
+    @Test
+    @Transactional
+    public void testUserUpdatePasswordThrowException() throws Exception {
+        //test no pass @LoginAuthorization
+        try {
+            mockMvc.perform(
+                    MockMvcRequestBuilders.post("/api/account/update-password")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{}")
+            ).andExpect(MockMvcResultMatchers.jsonPath("$.success.").value(false))
+             .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists());
+
+        } catch (NestedServletException ne) {
+            Throwable throwable = ne.getRootCause();
+            Assert.assertThat(throwable, (CoreMatchers.instanceOf(AccountErrorException.class)));
+            Assert.assertEquals(throwable.getMessage(), ApiMessage.NO_PERMISSION);
+        }
+
+        //test no pass @AccountActivation
+        UserDO noActivationUser = new UserDO();
+            noActivationUser.setName("noActivationUser");
+            noActivationUser.setState(0);
+
+        try {
+            mockMvc.perform(
+                    MockMvcRequestBuilders.post("/api/account/update-password")
+                        .cookie(new Cookie(ParamConst.AUTHENTICATION, JwtTokenUtil.createToken(noActivationUser)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{}")
+            ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
+             .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists());
+
+        } catch (NestedServletException ne) {
+            Throwable throwable = ne.getRootCause();
+            Assert.assertTrue(throwable instanceof AccountErrorException);
+            Assert.assertEquals(throwable.getMessage(), ApiMessage.NO_ACTIVATE);
+        }
+
+        //test api exception
+        String [][] params = {
+                {null, null}, {null, "123456"}, {"suvan", null},
+                {"s", "123456"}, {"suvan*--0", "123456"},
+                {"suvan", "123"},
+                {"cookieNoSame", "123456"},
+                {"noExist", "123456"}
+        };
+
+        String authentication = JwtTokenUtil.createToken(userService.getUserInfoByName("suvan"));
+        Cookie cookie = new Cookie(ParamConst.AUTHENTICATION, authentication);
+
+        for (String[] param: params) {
+            String username = param[0];
+            String newPassword = param[1];
+            String requestBody = "{\"username\":\"" + username + "\",\"password\":\"" + newPassword + "\"}";
+
+           if ("noExist".equals(username)) {
+               //test database no exist user
+                UserDO noExistUser = new UserDO();
+                    noExistUser.setName("noExist");
+                    noExistUser.setState(1);
+
+               cookie.setValue(JwtTokenUtil.createToken(noExistUser));
+           }
+
+            try {
+                mockMvc.perform(
+                        MockMvcRequestBuilders.post("/api/account/update-password")
+                            .cookie(cookie)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(requestBody)
+                ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
+                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists());
+            } catch (NestedServletException ne) {
+               Assert.assertThat(ne.getRootCause(),
+                                 CoreMatchers.anyOf(CoreMatchers.instanceOf(ParamsErrorException.class),
+                                         CoreMatchers.instanceOf(AccountErrorException.class),
+                                         CoreMatchers.instanceOf(DatabaseOperationFailException.class))
+               );
             }
         }
 

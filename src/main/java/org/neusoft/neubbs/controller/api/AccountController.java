@@ -370,8 +370,8 @@ public final class AccountController {
         String newPassword = (String) requestBodyParamsMap.get(ParamConst.PASSWORD);
 
         Map<String, String> paramsMap = new LinkedHashMap<>(SetConst.SIZE_TWO);
-        paramsMap.put(ParamConst.USERNAME, username);
-        paramsMap.put(ParamConst.PASSWORD, newPassword);
+            paramsMap.put(ParamConst.USERNAME, username);
+            paramsMap.put(ParamConst.PASSWORD, newPassword);
         RequestParamCheckUtil.check(paramsMap);
 
         //权限安全
