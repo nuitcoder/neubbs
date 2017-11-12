@@ -397,11 +397,8 @@ public final class AccountController {
      *      B.权限安全
      *          - 获取登录登录认证信息（Cookie[authentication]）
      *
-     *      C.数据库验证
-     *          - 数据库验证用户是否激活（已激活，重储存 Cookie）
-     *          - 邮箱是否被占用
-     *
-     *      D.更改邮箱
+     *      C.更改邮箱
+     *          - 判断邮箱是否被占用
      *          - 数据库更改邮箱
      *          - 返回成功状态
      *
@@ -411,7 +408,6 @@ public final class AccountController {
      * @return ResponseJsonDTO 响应JSON传输对象
      * @throws ParamsErrorException 参数错误异常
      * @throws AccountErrorException 账户错误异常
-     * @throws TokenErrorException 口令错误异常
      * @throws DatabaseOperationFailException 数据库操作失败异常
      */
     @LoginAuthorization
@@ -419,15 +415,15 @@ public final class AccountController {
     @ResponseBody
     public ResponseJsonDTO updateEmail(@RequestBody Map<String, Object> requestBodyParamsMap,
                                        HttpServletRequest request, HttpServletResponse response)
-            throws ParamsErrorException, AccountErrorException, TokenErrorException, DatabaseOperationFailException {
+            throws ParamsErrorException, AccountErrorException, DatabaseOperationFailException {
 
         //参数处理
         String username = (String) requestBodyParamsMap.get(ParamConst.USERNAME);
-        String email = (String) requestBodyParamsMap.get(ParamConst.EMAIL);
+        String newEmail = (String) requestBodyParamsMap.get(ParamConst.EMAIL);
 
         Map<String, String> paramsMap = new LinkedHashMap<>(SetConst.SIZE_TWO);
-        paramsMap.put(ParamConst.USERNAME, username);
-        paramsMap.put(ParamConst.EMAIL, email);
+            paramsMap.put(ParamConst.USERNAME, username);
+            paramsMap.put(ParamConst.EMAIL, newEmail);
         RequestParamCheckUtil.check(paramsMap);
 
         //权限安全
@@ -437,17 +433,9 @@ public final class AccountController {
             throw new AccountErrorException(ApiMessage.NO_PERMISSION).log(LogWarn.ACCOUNT_12);
         }
 
-        //数据库验证
-        if (userService.getUserInfoByName(username).getState() == SetConst.ACCOUNT_STATE_TRUE) {
-            CookieUtil.saveCookie(response, ParamConst.AUTHENTICATION, JwtTokenUtil.createToken(cookieUser),
-                    neubbsConfig.getCookieAutoLoginMaxAgeDay());
-            throw new AccountErrorException(ApiMessage.ACCOUNT_ACTIVATED).log(LogWarn.ACCOUNT_07);
-        }
-        userService.isOccupyByEmail(email);
-
-
         //更改邮箱
-        userService.alterUserEmail(username, email);
+        userService.isOccupyByEmail(newEmail);
+        userService.alterUserEmail(username, newEmail);
         return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS);
     }
 

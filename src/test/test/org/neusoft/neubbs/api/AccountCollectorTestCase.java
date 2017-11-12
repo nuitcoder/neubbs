@@ -74,7 +74,7 @@ public class AccountCollectorTestCase {
         String key;
         Object value;
 
-        Param (String key, Object value) {
+        Param(String key, Object value) {
             this.key = key;
             this.value = value;
         }
@@ -83,11 +83,11 @@ public class AccountCollectorTestCase {
     /**
      * 打印成功通过 Test 函数消息
      */
-    public void printSuccessPassTestMehtodMessage () {
+    public void printSuccessPassTestMehtodMessage() {
         //当前正在执行函数（调用此函数的函数）
         String currentDoingMethod = Thread.currentThread().getStackTrace()[2].getMethodName();
 
-        System.out.println("*************************** 【"+ currentDoingMethod + "()】 "
+        System.out.println("*************************** 【" + currentDoingMethod + "()】 "
                 + "pass all the tests ****************************");
     }
 
@@ -121,7 +121,7 @@ public class AccountCollectorTestCase {
         alist.add(new Param("username", "liushuwei0925@gmail.com"));
         alist.add(new Param("email", "liushuwei0925@gmail.com"));
 
-        for (Param param: alist) {
+        for (Param param : alist) {
             mockMvc.perform(
                     MockMvcRequestBuilders.get("/api/account")
                             .param(param.key, (String) param.value)
@@ -170,7 +170,7 @@ public class AccountCollectorTestCase {
      * 【/api/account】 test same time input two param get user information throw exception
      */
     @Test
-    public void testSameTimeInputTwoParamGetUserInformation() throws Exception{
+    public void testSameTimeInputTwoParamGetUserInformation() throws Exception {
 //        StackTraceElement[] stacks = Thread.currentThread().getStackTrace();
 //        for (StackTraceElement stack: stacks) {
 //            System.out.println(stack.getMethodName() + "***" + stack.getClassName());
@@ -194,10 +194,10 @@ public class AccountCollectorTestCase {
 
     /**
      * 【/api/account】 test get user information throws exception
-     *      - 使用 assertThat(对象 or 值， Hamcrest 匹配器)
+     * - 使用 assertThat(对象 or 值， Hamcrest 匹配器)
      */
     @Test
-    public void testGetUserInfoThrowsException () throws Exception {
+    public void testGetUserInfoThrowsException() throws Exception {
         ArrayList<Param> alist = new ArrayList<>();
         alist.add(new Param("username", null));
         alist.add(new Param("username", "a"));
@@ -208,10 +208,10 @@ public class AccountCollectorTestCase {
         alist.add(new Param("email", "asdfasfsfaasf@"));
         alist.add(new Param("email", "suvan@liushuwei.cn"));
 
-        for (Param param: alist) {
+        for (Param param : alist) {
             System.out.println("params: " + param.key + " = " + param.value);
 
-            try{
+            try {
                 mockMvc.perform(
                         MockMvcRequestBuilders.get("/api/account")
                                 .param(param.key, (String) param.value)
@@ -229,13 +229,13 @@ public class AccountCollectorTestCase {
     }
 
     /**
-     *【/api/account/state】test get user activate state success
+     * 【/api/account/state】test get user activate state success
      */
     @Test
-    public void testGetUserActivateStateSuccess() throws Exception{
+    public void testGetUserActivateStateSuccess() throws Exception {
         mockMvc.perform(
                 MockMvcRequestBuilders.get("/api/account/state")
-                        .param("username","suvan")
+                        .param("username", "suvan")
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true));
 
         printSuccessPassTestMehtodMessage();
@@ -249,7 +249,7 @@ public class AccountCollectorTestCase {
         String key = "username";
         String[] values = {null, "a", "12**+-3123", "hello"};
 
-        for (String value: values) {
+        for (String value : values) {
             System.out.println("params: " + key + " = " + value);
 
             try {
@@ -298,7 +298,7 @@ public class AccountCollectorTestCase {
 
         //结果比较
         Map<String, Object> resultMap = JsonUtil.toMapByJSONString(result.getResponse().getContentAsString());
-        Map<String, Object> model = (Map<String, Object>)resultMap.get("model");
+        Map<String, Object> model = (Map<String, Object>) resultMap.get("model");
 
         Assert.assertTrue(model.size() == 2);
         String tokenAuthentication = (String) model.get(ParamConst.AUTHENTICATION);
@@ -313,11 +313,11 @@ public class AccountCollectorTestCase {
      * 【/api/account/login】 test login throw Exception
      */
     @Test
-    public void testLoginThrowException() throws Exception{
+    public void testLoginThrowException() throws Exception {
         this.webApplicationContext.getServletContext().setAttribute(ParamConst.COUNT_LOGIN_USER, 0);
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
 
-        String[][] params = {{null,null}
+        String[][] params = {{null, null}
                 , {null, "123456"}, {"s", "123456"}, {"suvan*-=", "123456"}, {"hello", "123456"}
                 , {"test@gmail.com", "123456"}, {"liushuwei0925@gmail.com", "asdfasf"}
                 , {"suvan", null}, {"suvan", "123"}, {"suvan", "asdfasfa"}};
@@ -325,7 +325,7 @@ public class AccountCollectorTestCase {
         for (int i = 0, len = params.length; i < len; i++) {
             String username = params[i][0];
             String password = params[i][1];
-            String requestBody = "{\"username\":\"" + username +"\","
+            String requestBody = "{\"username\":\"" + username + "\","
                     + "\"password\":\"" + password + "\"}";
 
             System.out.println("requestbody: " + requestBody);
@@ -355,15 +355,15 @@ public class AccountCollectorTestCase {
      * 【/api/account/logout】 test logout success
      */
     @Test
-    public void testLogoutSuccess() throws Exception{
+    public void testLogoutSuccess() throws Exception {
         this.webApplicationContext.getServletContext().setAttribute(ParamConst.COUNT_LOGIN_USER, 0);
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
 
         UserDO user = new UserDO();
-            user.setId(5);
-            user.setName("suvan");
-            user.setRank("admin");
-            user.setState(1);
+        user.setId(5);
+        user.setName("suvan");
+        user.setRank("admin");
+        user.setState(1);
         String authentication = JwtTokenUtil.createToken(user);
 
         mockMvc.perform(
@@ -377,7 +377,7 @@ public class AccountCollectorTestCase {
 
     /**
      * 【/api/account/logout】 test logout throw Exception
-     *      - test @LogintAuthorization （pass ApiInterceptor）
+     * - test @LogintAuthorization （pass ApiInterceptor）
      */
     @Test
     public void testLogoutThrowException() throws Exception {
@@ -395,11 +395,11 @@ public class AccountCollectorTestCase {
 
     /**
      * 【/api/account/register】test register user success
-     *      - @Transactional 执行完回滚
+     * - @Transactional 执行完回滚
      */
     @Test
     @Transactional
-    public void testRegisterUserSuccess() throws Exception{
+    public void testRegisterUserSuccess() throws Exception {
         String username = "apiTestUser";
         String password = "apiTestPassword";
         String email = "apiTestEmail@neubs.com";
@@ -422,13 +422,13 @@ public class AccountCollectorTestCase {
 
     /**
      * 【/api/account/register】test register user throw exception
-     *      - @Transactional
+     * - @Transactional
      */
     @Test
     @Transactional
     public void testRegisterUserThrowException() throws Exception {
         String[][] params = {
-                {null,null,null},
+                {null, null, null},
                 {null, "123456", "only@neubbs.com"}, {"only", null, "only@neubbs.com"}, {"only", "123456", null},
                 {null, null, "onlu@neubbs.com"}, {null, "123456", null}, {"only", null, null},
                 {"o", "123456", "only@neubbs.com"}, {"onlyw$*=", "123456", "only@neubbs.com"},
@@ -437,7 +437,7 @@ public class AccountCollectorTestCase {
                 {"suvan", "123456", "only@neubbs.com"}, {"only", "123456", "liushuwei0925@gmail.com"}
         };
 
-        for(String[] arr: params) {
+        for (String[] arr : params) {
             String username = arr[0];
             String password = arr[1];
             String email = arr[2];
@@ -470,7 +470,7 @@ public class AccountCollectorTestCase {
 
     /**
      * 【/api/account/update-password】 test user update password success
-     *      - @LoginAuthorization @AccountActivation
+     * - @LoginAuthorization @AccountActivation
      */
     @Test
     @Transactional
@@ -484,11 +484,11 @@ public class AccountCollectorTestCase {
 
         mockMvc.perform(
                 MockMvcRequestBuilders.post("/api/account/update-password")
-                    .cookie(new Cookie(ParamConst.AUTHENTICATION, authentication))
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(requestBody)
+                        .cookie(new Cookie(ParamConst.AUTHENTICATION, authentication))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody)
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
-         .andExpect(MockMvcResultMatchers.jsonPath("$.message").doesNotExist());
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").doesNotExist());
 
         UserDO user = userService.getUserInfoByName(inputUsername);
         Assert.assertEquals(user.getName(), inputUsername);
@@ -507,10 +507,10 @@ public class AccountCollectorTestCase {
         try {
             mockMvc.perform(
                     MockMvcRequestBuilders.post("/api/account/update-password")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{}")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("{}")
             ).andExpect(MockMvcResultMatchers.jsonPath("$.success.").value(false))
-             .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists());
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists());
 
         } catch (NestedServletException ne) {
             Throwable throwable = ne.getRootCause();
@@ -520,17 +520,17 @@ public class AccountCollectorTestCase {
 
         //test no pass @AccountActivation
         UserDO noActivationUser = new UserDO();
-            noActivationUser.setName("noActivationUser");
-            noActivationUser.setState(0);
+        noActivationUser.setName("noActivationUser");
+        noActivationUser.setState(0);
 
         try {
             mockMvc.perform(
                     MockMvcRequestBuilders.post("/api/account/update-password")
-                        .cookie(new Cookie(ParamConst.AUTHENTICATION, JwtTokenUtil.createToken(noActivationUser)))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{}")
+                            .cookie(new Cookie(ParamConst.AUTHENTICATION, JwtTokenUtil.createToken(noActivationUser)))
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("{}")
             ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
-             .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists());
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists());
 
         } catch (NestedServletException ne) {
             Throwable throwable = ne.getRootCause();
@@ -539,7 +539,7 @@ public class AccountCollectorTestCase {
         }
 
         //test api exception
-        String [][] params = {
+        String[][] params = {
                 {null, null}, {null, "123456"}, {"suvan", null},
                 {"s", "123456"}, {"suvan*--0", "123456"},
                 {"suvan", "123"},
@@ -550,37 +550,124 @@ public class AccountCollectorTestCase {
         String authentication = JwtTokenUtil.createToken(userService.getUserInfoByName("suvan"));
         Cookie cookie = new Cookie(ParamConst.AUTHENTICATION, authentication);
 
-        for (String[] param: params) {
+        for (String[] param : params) {
             String username = param[0];
             String newPassword = param[1];
             String requestBody = "{\"username\":\"" + username + "\",\"password\":\"" + newPassword + "\"}";
 
-           if ("noExist".equals(username)) {
-               //test database no exist user
+            if ("noExist".equals(username)) {
+                //test database no exist user
                 UserDO noExistUser = new UserDO();
-                    noExistUser.setName("noExist");
-                    noExistUser.setState(1);
+                noExistUser.setName("noExist");
+                noExistUser.setState(1);
 
-               cookie.setValue(JwtTokenUtil.createToken(noExistUser));
-           }
+                cookie.setValue(JwtTokenUtil.createToken(noExistUser));
+            }
 
             try {
                 mockMvc.perform(
                         MockMvcRequestBuilders.post("/api/account/update-password")
-                            .cookie(cookie)
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(requestBody)
+                                .cookie(cookie)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(requestBody)
                 ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
-                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists());
+                        .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists());
             } catch (NestedServletException ne) {
-               Assert.assertThat(ne.getRootCause(),
-                                 CoreMatchers.anyOf(CoreMatchers.instanceOf(ParamsErrorException.class),
-                                         CoreMatchers.instanceOf(AccountErrorException.class),
-                                         CoreMatchers.instanceOf(DatabaseOperationFailException.class))
-               );
+                Assert.assertThat(ne.getRootCause(),
+                        CoreMatchers.anyOf(CoreMatchers.instanceOf(ParamsErrorException.class),
+                                CoreMatchers.instanceOf(AccountErrorException.class),
+                                CoreMatchers.instanceOf(DatabaseOperationFailException.class))
+                );
             }
         }
 
         printSuccessPassTestMehtodMessage();
+    }
+
+    /**
+     * 【/api/account/update-email】test user update email success
+     * - @LoginAuthorization
+     */
+    @Test
+    @Transactional
+    public void testUserUpdateEmailSuccess() throws Exception {
+        String inputUsername = "suvan";
+        String inputEmail = "newEmail@email.com";
+
+        String reqeustBody = "{\"username\":\"" + inputUsername + "\",\"email\":\"" + inputEmail + "\"}";
+
+        String authentication = JwtTokenUtil.createToken(userService.getUserInfoByName(inputUsername));
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.post("/api/account/update-email")
+                        .cookie(new Cookie(ParamConst.AUTHENTICATION, authentication))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(reqeustBody)
+        ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").doesNotExist());
+
+        UserDO user = userService.getUserInfoByName(inputUsername);
+        Assert.assertNotNull(user);
+        Assert.assertEquals(user.getEmail(), inputEmail);
+    }
+
+    /**
+     * 【/api/account/update-email】test user update email throw exception
+     */
+    @Test
+    @Transactional
+    public void testUserUpdateEmailThrowException() throws Exception {
+        //test no pass @LoginAuthorization
+        try {
+            mockMvc.perform(
+                    MockMvcRequestBuilders.post("/api/account/update-email")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("{}")
+            ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
+             .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists());
+        } catch (NestedServletException ne) {
+            Assert.assertTrue(ne.getRootCause() instanceof AccountErrorException);
+            Assert.assertEquals(ne.getRootCause().getMessage(), ApiMessage.NO_PERMISSION);
+        }
+
+        String[][] params = {
+                {null, null}, {null, "test@test.com"}, {"test", null},
+                {"t", "test@test.com"}, {"test*~", "test@test.com"},
+                {"test", "test@"},
+                {"ahonn", "test@test.com"},
+                {"suvan", "liushuwei0925@gmail.com"},
+                {"noExist", "test@test.com"}
+        };
+
+        String authentication = JwtTokenUtil.createToken(userService.getUserInfoByName("suvan"));
+        Cookie userCookie = new Cookie(ParamConst.AUTHENTICATION, authentication);
+
+        for (String[] param: params) {
+            String username = param[0];
+            String newEmail = param[1];
+            String requestBody = "{\"username\":\"" + username + "\",\"email\":\"" + newEmail + "\"}";
+
+            if ("noExist".equals(username)) {
+                UserDO noExistUser = new UserDO();
+                    noExistUser.setName("noExist");
+                userCookie.setValue(JwtTokenUtil.createToken(noExistUser));
+            }
+
+            try {
+                mockMvc.perform(
+                        MockMvcRequestBuilders.post("/api/account/update-email")
+                            .cookie(userCookie)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(requestBody)
+                ).andExpect(MockMvcResultMatchers.jsonPath("success").value(false))
+                 .andExpect(MockMvcResultMatchers.jsonPath("message").exists());
+            } catch (NestedServletException ne) {
+                Assert.assertThat(ne.getRootCause(),
+                        CoreMatchers.anyOf(CoreMatchers.instanceOf(ParamsErrorException.class),
+                            CoreMatchers.instanceOf(AccountErrorException.class),
+                            CoreMatchers.instanceOf(DatabaseOperationFailException.class))
+                );
+            }
+        }
     }
 }
