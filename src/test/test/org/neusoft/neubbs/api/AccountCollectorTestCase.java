@@ -10,6 +10,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.neusoft.neubbs.constant.api.ApiMessage;
 import org.neusoft.neubbs.constant.api.ParamConst;
+import org.neusoft.neubbs.constant.api.SetConst;
 import org.neusoft.neubbs.constant.secret.SecretInfo;
 import org.neusoft.neubbs.controller.api.AccountController;
 import org.neusoft.neubbs.controller.exception.AccountErrorException;
@@ -18,12 +19,14 @@ import org.neusoft.neubbs.controller.exception.ParamsErrorException;
 import org.neusoft.neubbs.controller.exception.TokenErrorException;
 import org.neusoft.neubbs.controller.handler.SwitchDataSourceHandler;
 import org.neusoft.neubbs.entity.UserDO;
+import org.neusoft.neubbs.service.IRedisService;
 import org.neusoft.neubbs.service.IUserService;
 import org.neusoft.neubbs.utils.JsonUtil;
 import org.neusoft.neubbs.utils.JwtTokenUtil;
 import org.neusoft.neubbs.utils.SecretUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.ContextHierarchy;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -69,6 +72,7 @@ public class AccountCollectorTestCase {
 
     @Autowired
     private IUserService userService;
+
 
     static class Param {
         String key;
@@ -609,6 +613,8 @@ public class AccountCollectorTestCase {
         UserDO user = userService.getUserInfoByName(inputUsername);
         Assert.assertNotNull(user);
         Assert.assertEquals(user.getEmail(), inputEmail);
+
+        printSuccessPassTestMehtodMessage();
     }
 
     /**
@@ -669,5 +675,97 @@ public class AccountCollectorTestCase {
                 );
             }
         }
+
+        printSuccessPassTestMehtodMessage();
+    }
+
+    /**
+     * 【/api/account/activate】 test send email to activate user success
+     *      - 主线程结束，守护线程也会放弃执行 taskEecutor.execute() 激活的都是守护线程
+     */
+    @Test
+    @Transactional
+    public void testSendEmailToActivateUserSuccess() throws Exception {
+        String email = "13202405189@163.com";
+        String requestBody = "{\"email\":\"" + email + "\"}";
+
+        //register new user, after rollback
+        UserDO testUser = new UserDO();
+            testUser.setName("activateUser");
+            testUser.setPassword(SecretUtil.encryptUserPassword("123456"));
+            testUser.setEmail(email);
+        userService.registerUser(testUser);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.post("/api/account/activate")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(requestBody)
+        ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(ApiMessage.MAIL_SEND_SUCCESS));
+
+       /*
+        * need to blocking main thread, otherwise no do taskExecutor send eamil
+        * taskExecutor active thread count > 0, try blocking main thread 20s
+        */
+        ThreadPoolTaskExecutor taskExecutor = (ThreadPoolTaskExecutor) webApplicationContext.getBean("taskExecutor");
+        int time = 1;
+        while (taskExecutor.getActiveCount() != 0 && time < 20) {
+            Thread.sleep(1000);
+            System.out.println("already wait " + (time++) + "s");
+        }
+        System.out.println("send eamil success !");
+
+        printSuccessPassTestMehtodMessage();
+    }
+
+    /**
+     * 【/api/account/activate】test send eamil to activate user throw exception
+     */
+    @Test
+    @Transactional
+    public void testSendEmailToActivateUserThrowException() throws Exception{
+       String [] emailParams = {null, "test@","liushuwei0925@gmail.com"};
+
+        for (String email: emailParams) {
+            String requestBody = "{\"email\":\"" + email + "\"}";
+
+            try {
+                mockMvc.perform(
+                        MockMvcRequestBuilders.post("/api/account/activate")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(requestBody)
+                ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
+                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists());
+
+            } catch (NestedServletException ne) {
+                Assert.assertThat(ne.getRootCause(),
+                                 CoreMatchers.anyOf(CoreMatchers.instanceOf(ParamsErrorException.class),
+                                                    CoreMatchers.instanceOf(AccountErrorException.class))
+                );
+            }
+       }
+
+       //test send email timer limit
+        String email = "alreadySend@neubbs.com";
+
+        UserDO alreadySendUser = new UserDO();
+            alreadySendUser.setName(email.substring(0, email.indexOf("@")));
+            alreadySendUser.setPassword(SecretUtil.encryptUserPassword("123456"));
+            alreadySendUser.setEmail(email);
+        userService.registerUser(alreadySendUser);
+
+        IRedisService redisService = (IRedisService) webApplicationContext.getBean("redisServiceImpl");
+        redisService.save(email, "activate", SetConst.EXPIRE_TIME_MS_SIXTY_SECOND);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.post("/api/account/activate")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content("{\"email\":\"" + email + "\"}")
+        ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(ApiMessage.WATI_TIMER))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model.timer").exists());
+        System.out.println("send email timer limit effective!");
+
+        printSuccessPassTestMehtodMessage();
     }
 }

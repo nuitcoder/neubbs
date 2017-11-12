@@ -36,7 +36,7 @@
 	</bean>
 
 	<!-- Spring 线程池 -->
-	<bean id="taskExecutro" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+	<bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
 		<property name="corePoolSize" value="2" />
 		<property name="keepAliveSeconds" value="200" />
 		<property name="maxPoolSize" value="10" />
