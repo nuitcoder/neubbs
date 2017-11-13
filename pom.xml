@@ -115,14 +115,10 @@
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
-      <artifactId>spring-aop</artifactId>
-      <version>${spring.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
       <artifactId>spring-context-support</artifactId>
       <version>${spring.version}</version>
     </dependency>
+
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-test</artifactId> <!-- Spring测试框架 -->
@@ -154,6 +150,27 @@
       <groupId>redis.clients</groupId>
       <artifactId>jedis</artifactId>   <!-- Jedis库（log 连接 Redis） -->
       <version>2.6.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework</groupId>   <!-- Spring AOP + AspectJ -->
+      <artifactId>spring-aop</artifactId>
+      <version>${spring.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.aspectj</groupId>
+      <artifactId>aspectjrt</artifactId>
+      <version>1.8.11</version>
+    </dependency>
+    <dependency>
+      <groupId>org.aspectj</groupId>
+      <artifactId>aspectjweaver</artifactId>
+      <version>1.8.11</version>
+    </dependency>
+    <dependency>
+      <groupId>cglib</groupId> <!-- 实现 AOP 代理类，产生不面向接口的代理 -->
+      <artifactId>cglib</artifactId>
+      <version>3.2.5</version>
     </dependency>
 
 
