@@ -18,7 +18,7 @@ injectGlobal`
     color: #333;
     background-color: #e5e5e5;
     font-size: 14px;
-    font-family: Helvetica, Arial, "PingFang SC", Roboto, "Microsoft Yahei", sans-serif;
+    font-family: Helvetica, Arial, "PingFang SC", Roboto, "Microsoft Yahei", "sans-serif";
   }
 `
 
