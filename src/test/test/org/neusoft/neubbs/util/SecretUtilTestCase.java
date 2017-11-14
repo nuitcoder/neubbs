@@ -24,7 +24,7 @@ public class SecretUtilTestCase {
      * 测试 Base64 邮箱加密与解密
      */
     @Test
-    public void testEmailBase64(){
+    public void testEmailBase64() throws Exception {
         String plaintext = "liushuwei0925@gmail.com-" + System.currentTimeMillis();
 
         String token = SecretUtil.encryptBase64(plaintext);

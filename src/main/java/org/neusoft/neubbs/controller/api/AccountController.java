@@ -489,7 +489,7 @@ public final class AccountController {
         }
 
         //发送邮件
-        String token = SecretUtil.encryptBase64(email + "-" + StringUtil.getTwentyFourClockTime());
+        String token = SecretUtil.encryptBase64(email + "-" + StringUtil.getTodayTwentyFourClockTimestamp());
         String emailContent = StringUtil
                 .createEmailActivationHtmlString(neubbsConfig.getAccountApiVaslidateUrl() + token);
 
@@ -543,11 +543,10 @@ public final class AccountController {
         }
 
         String email = array[0];
-        String expireTime = array[1];
         if (!PatternUtil.matchEmail(email)) {
             throw new TokenErrorException(ApiMessage.IVALID_TOKEN).log(token + LogWarn.ACCOUNT_15);
         }
-
+        String expireTime = array[1];
         if (StringUtil.isExpire(expireTime)) {
             throw new TokenErrorException(ApiMessage.LINK_INVALID).log(token + LogWarn.ACCOUNT_05);
         }
@@ -555,7 +554,7 @@ public final class AccountController {
         //激活用户
         userService.activationUser(email);
 
-        return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, ApiMessage.ACTIVATION_SUCCESSFUL);
+        return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, ApiMessage.ACTIVATE_SUCCESS);
     }
 
     /**

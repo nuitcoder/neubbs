@@ -24,6 +24,7 @@ import org.neusoft.neubbs.service.IUserService;
 import org.neusoft.neubbs.utils.JsonUtil;
 import org.neusoft.neubbs.utils.JwtTokenUtil;
 import org.neusoft.neubbs.utils.SecretUtil;
+import org.neusoft.neubbs.utils.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -765,6 +766,73 @@ public class AccountCollectorTestCase {
          .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(ApiMessage.WATI_TIMER))
          .andExpect(MockMvcResultMatchers.jsonPath("$.model.timer").exists());
         System.out.println("send email timer limit effective!");
+
+        printSuccessPassTestMehtodMessage();
+    }
+
+    /**
+     * 【/api/account/validate】 test validate token activate user success
+     */
+    @Test
+    @Transactional
+    public void testValidateTokenActivateUserSuccess() throws Exception {
+       //register new user
+        UserDO user = new UserDO();
+            user.setName("testValidate");
+            user.setPassword(SecretUtil.encryptUserPassword("123456"));
+            user.setEmail("testValidate@neubbs.com");
+        userService.registerUser(user);
+
+        //build token
+        String token = SecretUtil.encryptBase64(user.getEmail() + "-" + StringUtil.getTodayTwentyFourClockTimestamp());
+
+        //validate token and activate user
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/api/account/validate")
+                    .param("token", token)
+        ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(ApiMessage.ACTIVATE_SUCCESS));
+
+        Assert.assertTrue(userService.getUserInfoByEmail(user.getEmail()).getState() == 1);
+
+        printSuccessPassTestMehtodMessage();
+    }
+
+    /**
+     * 【/api/account/validate】test validate token activate user throw exception
+     */
+    @Test
+    @Transactional
+    public void testValidateTokenActivateUserThrowException() throws Exception {
+        String [] parmas = {
+                 null,
+                "1234", "awsfasdf", "asdfasdf-qweqwe", "13412-ASDFAF-qqqq",
+                "aasdfasf-" + StringUtil.getTodayTwentyFourClockTimestamp(),
+                "test@neubs.com-" + System.currentTimeMillis(),
+                "test@nuebbs.com-" + StringUtil.getTodayTwentyFourClockTimestamp(),
+                "liushuwei0925@gmail.com-" + StringUtil.getTodayTwentyFourClockTimestamp(),
+        };
+
+        for (String param: parmas) {
+            String token = param != null ? SecretUtil.encryptBase64(param) : null;
+
+            try {
+               mockMvc.perform(
+                       MockMvcRequestBuilders.get("/api/account/validate")
+                            .param("token", token)
+               ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists());
+
+            } catch (NestedServletException ne) {
+                Assert.assertThat(ne.getRootCause(),
+                        CoreMatchers.anyOf(CoreMatchers.instanceOf(ParamsErrorException.class),
+                                CoreMatchers.instanceOf(TokenErrorException.class),
+                                CoreMatchers.instanceOf(AccountErrorException.class),
+                                CoreMatchers.instanceOf(DatabaseOperationFailException.class))
+                );
+            }
+
+        }
 
         printSuccessPassTestMehtodMessage();
     }

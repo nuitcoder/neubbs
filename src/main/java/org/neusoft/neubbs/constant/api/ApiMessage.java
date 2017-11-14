@@ -20,7 +20,7 @@ public final class ApiMessage {
     public static final String EMAIL_REGISTERED = "the email has bean registered";
     public static final String NO_ACTIVATE   = "the account has not been activated";
     public static final String ACCOUNT_ACTIVATED = "the account has bean activated";
-    public static final String ACTIVATION_SUCCESSFUL =  "activate success";
+    public static final String ACTIVATE_SUCCESS =  "activate success";
 
     public static final String USERNAME_OR_PASSWORD_INCORRECT = "username or password is incorrect";
     public static final String CAPTCHA_INCORRECT = "input captcha incorrect";

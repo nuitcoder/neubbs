@@ -1,5 +1,10 @@
 package org.neusoft.neubbs.utils;
 
+import com.sun.javafx.fxml.expression.Expression;
+import org.neusoft.neubbs.constant.api.ApiMessage;
+import org.neusoft.neubbs.constant.log.LogWarn;
+import org.neusoft.neubbs.controller.exception.TokenErrorException;
+
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
@@ -55,7 +60,7 @@ public final class SecretUtil {
     }
 
     /**
-     * 加密用户面膜（二重 MD5 加密）
+     * 加密用户密码（二重 MD5 加密）
      *
      * @param password 用户密码
      * @return String 密文
@@ -63,27 +68,22 @@ public final class SecretUtil {
     public static String encryptUserPassword(String password) {
         //一次 密码 MD5 加密
         String ciphertext = encryptMD5(password);
-        String salt = password;
 
-        //加密后的密文 + 原密码
-        StringBuffer sb = new StringBuffer();
-            sb.append(ciphertext);
-            sb.append(salt);
-
-        //二次 MD5 加密
-        return encryptMD5(sb.toString());
+        //二次 MD5 加密（初次加密密文 + salt（原密码））
+        return encryptMD5(ciphertext + password);
     }
 
     /**
-     * 加密 Base64 （用于邮箱激活，生成 token）
+     * 加密 Base64
+     *      - 用于邮件 token（用户邮箱-当天 24 点的时间戳）
      *
-     * @param email 用户邮箱
+     * @param plainText 明文
      * @return String 密文
      */
-    public static String encryptBase64(String email) {
-        String token = null;
+    public static String encryptBase64(String plainText) {
+        String token;
         try {
-            token = Base64.getUrlEncoder().encodeToString(email.getBytes("utf-8"));
+            token = Base64.getUrlEncoder().encodeToString(plainText.getBytes("utf-8"));
         } catch (UnsupportedEncodingException ue) {
             return null;
         }
@@ -96,9 +96,14 @@ public final class SecretUtil {
      *
      * @param token Base64密文
      * @return String 明文
+     * @throws TokenErrorException 口令错误异常
      */
-    public static String decryptBase64(String token) {
-        return new String(Base64.getDecoder().decode(token));
+    public static String decryptBase64(String token) throws TokenErrorException{
+        try {
+            return new String(Base64.getDecoder().decode(token));
+        } catch (Exception e) {
+            throw new TokenErrorException(ApiMessage.IVALID_TOKEN).log(token + LogWarn.ACCOUNT_15);
+        }
     }
 
     /**
@@ -119,9 +124,8 @@ public final class SecretUtil {
             SecureRandom random = new SecureRandom();
             random.setSeed(AES_SEED.getBytes());
             keyGenerator.init(random);
-            SecretKey secretKey = keyGenerator.generateKey();
 
-            return secretKey;
+            return keyGenerator.generateKey();
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
@@ -157,15 +161,8 @@ public final class SecretUtil {
 
             cipherText = parseTo16String(cipherByte);
 
-        } catch (NoSuchPaddingException e) {
-            e.printStackTrace();
-        } catch (BadPaddingException e) {
-            e.printStackTrace();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (IllegalBlockSizeException e) {
-            e.printStackTrace();
-        } catch (InvalidKeyException e) {
+        } catch (NoSuchPaddingException | BadPaddingException | IllegalBlockSizeException
+                | InvalidKeyException | NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
 
@@ -196,15 +193,8 @@ public final class SecretUtil {
            byte[] plainByte = cipher.doFinal(parseHexStr2Byte(cipherText));
            plainText = new String(plainByte);
 
-       } catch (NoSuchPaddingException e) {
-           e.printStackTrace();
-       } catch (NoSuchAlgorithmException e) {
-           e.printStackTrace();
-       } catch (BadPaddingException e) {
-           e.printStackTrace();
-       } catch (IllegalBlockSizeException e) {
-           e.printStackTrace();
-       } catch (InvalidKeyException e) {
+       } catch (NoSuchPaddingException | NoSuchAlgorithmException | IllegalBlockSizeException
+               | InvalidKeyException | BadPaddingException e) {
            e.printStackTrace();
        }
 

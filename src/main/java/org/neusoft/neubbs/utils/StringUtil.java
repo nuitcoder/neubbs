@@ -78,7 +78,7 @@ public final class StringUtil {
      *
      * @return String 24点时间戳
      */
-    public static String getTwentyFourClockTime() {
+    public static String getTodayTwentyFourClockTimestamp() {
         Calendar calendar = Calendar.getInstance();
             calendar.set(Calendar.HOUR_OF_DAY, SetConst.TWENTY_FOUR);
             calendar.set(Calendar.SECOND, 0);

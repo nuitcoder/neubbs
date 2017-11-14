@@ -85,8 +85,11 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public void activationUser(String email) throws AccountErrorException, DatabaseOperationFailException {
-        if (userDAO.getUserByEmail(email) == null) {
+        UserDO user = userDAO.getUserByEmail(email);
+        if (user == null) {
             throw new AccountErrorException(ApiMessage.NO_USER).log(email + LogWarn.ACCOUNT_01);
+        } else if (user.getState() == 1) {
+            throw new AccountErrorException(ApiMessage.ACCOUNT_ACTIVATED).log(email + LogWarn.ACCOUNT_07);
         }
 
         int effectRow = userDAO.updateUserStateForActivationByEmail(email);
