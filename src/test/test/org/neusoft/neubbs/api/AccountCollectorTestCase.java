@@ -1,5 +1,6 @@
 package test.org.neusoft.neubbs.api;
 
+import com.google.code.kaptcha.Producer;
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Before;
@@ -27,6 +28,7 @@ import org.neusoft.neubbs.utils.SecretUtil;
 import org.neusoft.neubbs.utils.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.ContextHierarchy;
@@ -34,6 +36,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -43,6 +46,7 @@ import org.springframework.web.util.NestedServletException;
 
 import javax.servlet.http.Cookie;
 import javax.transaction.Transactional;
+import javax.ws.rs.HttpMethod;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -835,5 +839,89 @@ public class AccountCollectorTestCase {
         }
 
         printSuccessPassTestMehtodMessage();
+    }
+
+    /**
+     * 【/api/account/captcha】 test generate picture captcha success
+     */
+    @Test
+    public void testGerneatePictureCaptchaSuccess() throws Exception {
+        MvcResult result = mockMvc.perform(
+                MockMvcRequestBuilders.get("/api/account/captcha")
+                    .accept(MediaType.IMAGE_JPEG_VALUE)
+        ).andExpect(MockMvcResultMatchers.status().isOk())
+         .andExpect(MockMvcResultMatchers.content().contentType("image/jpeg"))
+         .andReturn();
+
+        Assert.assertNotNull(result.getRequest().getSession().getAttribute(SetConst.SESSION_CAPTCHA));
+
+        printSuccessPassTestMehtodMessage();
+    }
+
+    /**
+     * 【/api/account/check-captcha】 test check user input captcha match success
+     */
+    @Test
+    public void testCheckUserInputCaptchaMatchSuccess() throws Exception {
+        Producer captchaProducer = (Producer) this.webApplicationContext.getBean("captchaProducer");
+        String captcha = captchaProducer.createText();
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/api/account/check-captcha")
+                    .sessionAttr(SetConst.SESSION_CAPTCHA, captcha)
+                    .param("captcha", captcha)
+        ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.message").doesNotExist());
+
+        printSuccessPassTestMehtodMessage();
+    }
+
+    /**
+     * 【/api/account/check-captcha】 test check user input captcha match throw exception
+     */
+    @Test
+    public void testCheckUserInputCaptchaMatchThrowException() throws Exception {
+       String[] params = {
+               null, "123", "abs", "ABC", "12asdfABN", "*0-=123", "55555"};
+
+       for (String param: params) {
+           try {
+               mockMvc.perform(
+                       MockMvcRequestBuilders.get("/api/account/check-captcha")
+                            .param("captcha", param)
+               ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists());
+
+           } catch (NestedServletException ne) {
+               Assert.assertThat(ne.getRootCause(),
+                                 CoreMatchers.anyOf(CoreMatchers.instanceOf(ParamsErrorException.class),
+                                                    CoreMatchers.instanceOf(AccountErrorException.class))
+               );
+           }
+       }
+
+       //test no match session captcha（lamdba 写法）
+       Producer captchaProducer = (Producer) webApplicationContext.getBean("captchaProducer");
+       RequestBuilder request = servletContext -> {
+           MockHttpServletRequest mockRequest = new MockHttpServletRequest();
+
+           mockRequest.setMethod(HttpMethod.GET);
+           mockRequest.setRequestURI("/api/account/check-captcha");
+           mockRequest.getSession().setAttribute(SetConst.SESSION_CAPTCHA, captchaProducer.createText());
+           mockRequest.setParameter("captcha", "ksA23");
+
+           return mockRequest;
+       };
+
+       try {
+           mockMvc.perform(request)
+                        .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
+                        .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(ApiMessage.CAPTCHA_INCORRECT));
+       } catch (NestedServletException ne) {
+           Assert.assertSame(ne.getRootCause().getClass(), AccountErrorException.class);
+           Assert.assertEquals(ne.getRootCause().getMessage(), ApiMessage.CAPTCHA_INCORRECT);
+       }
+
+       printSuccessPassTestMehtodMessage();
     }
 }
