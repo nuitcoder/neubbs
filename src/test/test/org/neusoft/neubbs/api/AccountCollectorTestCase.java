@@ -924,4 +924,60 @@ public class AccountCollectorTestCase {
 
        printSuccessPassTestMehtodMessage();
     }
+
+    /**
+     * 【/api/account/forget-password】 test user forget password update new temp password success
+     */
+    @Test
+    @Transactional
+    public void testUserForgetPasswordUpdateNewTempPasswordSuccess() throws Exception {
+        String email = "liushuwei0925@gmail.com";
+        String requestBody = "{\"email\":\"" + email + "\"}";
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.post("/api/account/forget-password")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(requestBody)
+        ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.message").doesNotExist());
+
+        ThreadPoolTaskExecutor taskExecutor = (ThreadPoolTaskExecutor) webApplicationContext.getBean("taskExecutor");
+        int time = 1;
+        while (taskExecutor.getActiveCount() != 0 || time == 20) {
+            Thread.sleep(1000);
+            System.out.println("already wait " + (time++) + "s");
+        }
+
+        printSuccessPassTestMehtodMessage();
+    }
+
+    /**
+     * 【/api/account/forget-password】 test user forget password update new temp password throw exception
+     */
+    @Test
+    @Transactional
+    public void testUserForgetPasswordUpdateNewTempPasswordThrowException() throws Exception {
+        String[] parmas = {null, "test@", "test@neubbs.com"};
+
+        for (String param: parmas) {
+            String requestBody = "{\"email\":\"" + param + "\"}";
+
+            try {
+                mockMvc.perform(
+                        MockMvcRequestBuilders.post("/api/account/forget-password")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(requestBody)
+                ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
+                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists());
+            } catch (NestedServletException ne) {
+                Assert.assertThat(ne.getRootCause(),
+                                    CoreMatchers.anyOf(CoreMatchers.instanceOf(ParamsErrorException.class),
+                                                       CoreMatchers.instanceOf(AccountErrorException.class),
+                                                       CoreMatchers.instanceOf(DatabaseOperationFailException.class))
+                );
+            }
+        }
+
+        printSuccessPassTestMehtodMessage();
+    }
 }
