@@ -109,10 +109,8 @@ public class TopicController {
                                           @RequestParam(value = "count", required = false) Integer count)
             throws ParamsErrorException, TopicErrorException {
 
-        Map<String, String> paramsMap = new LinkedHashMap<>(SetConst.SIZE_FOUR);
-            paramsMap.put(ParamConst.NUMBER, String.valueOf(page));
-            paramsMap.put(ParamConst.NUMBER, String.valueOf(count));
-        RequestParamCheckUtil.check(paramsMap);
+        RequestParamCheckUtil.check(ParamConst.NUMBER, String.valueOf(page));
+        RequestParamCheckUtil.check(ParamConst.NUMBER, String.valueOf(count));
 
         List<Map<String, Object>> topics = topicService.listTopics(page, count);
 
