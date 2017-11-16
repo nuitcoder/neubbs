@@ -42,7 +42,7 @@ public class TopicServiceImpl implements ITopicService {
      */
     @Autowired
     public TopicServiceImpl(IUserDAO userDAO, ITopicDAO topicDAO,
-                                ITopicContentDAO topicContentDAO, ITopicReplyDAO topicReplyDAO) {
+                                 ITopicContentDAO topicContentDAO, ITopicReplyDAO topicReplyDAO) {
         this.userDAO = userDAO;
         this.topicDAO = topicDAO;
         this.topicContentDAO = topicContentDAO;
@@ -50,37 +50,58 @@ public class TopicServiceImpl implements ITopicService {
     }
 
     @Override
-    public Map<String, Object> getTopic(int topicId) throws TopicErrorException {
+    public TopicDO getTopicDOByTopicId(int topicId) throws TopicErrorException {
         TopicDO topic = topicDAO.getTopicById(topicId);
         if (topic == null) {
             throw new TopicErrorException(ApiMessage.NO_TOPIC).log(LogWarn.TOPIC_10);
         }
+        return topic;
+    }
 
-        Map<String, Object> topicMap = JsonUtil.toMapByObject(topic);
-            MapFilterUtil.filterTopicInfo(topicMap);
-
+    @Override
+    public TopicContentDO getTopicContentDOByTopicId(int topicId) throws TopicErrorException {
         TopicContentDO topicContent = topicContentDAO.getTopicContentById(topicId);
-        Map<String, Object> topicContentMap = JsonUtil.toMapByObject(topicContent);
-            MapFilterUtil.filterTopicContentInfo(topicContentMap);
+        if (topicContent == null) {
+            throw new TopicErrorException(ApiMessage.NO_TOPIC).log(LogWarn.TOPIC_10);
+        }
+        return topicContent;
+    }
 
-        UserDO authorUser = userDAO.getUserById(topic.getUserid());
-        Map<String, Object> authorUserMap = JsonUtil.toMapByObject(authorUser);
-            MapFilterUtil.filterTopicUserInfo(authorUserMap);
+    @Override
+    public TopicReplyDO getTopicReplyDOByReplyId(int replyId) throws TopicErrorException {
+        TopicReplyDO topicReplyDO = topicReplyDAO.getTopicReplyById(replyId);
+        if (topicReplyDO == null) {
+            throw new TopicErrorException(ApiMessage.NO_REPLY).log(LogWarn.TOPIC_11);
+        }
+        return topicReplyDO;
+    }
 
-        UserDO lastReplyUser = userDAO.getUserById(topic.getLastreplyuserid());
-        Map<String, Object> lastReplyUserMap = JsonUtil.toMapByObject(lastReplyUser);
-            MapFilterUtil.filterTopicUserInfo(lastReplyUserMap);
+    @Override
+    public Map<String, Object> getTopic(int topicId) throws TopicErrorException {
+
+        //获取数据
+        TopicDO topic = this.getTopicDOByTopicId(topicId);
+        Map<String, Object> topicMap = JsonUtil.toMapByObject(topic);
+
+        Map<String, Object> topicContentMap = JsonUtil.toMapByObject(this.getTopicContentDOByTopicId(topicId));
+        Map<String, Object> authorUserMap = JsonUtil.toMapByObject(userDAO.getUserById(topic.getUserid()));
+        Map<String, Object> lastReplyUserMap = JsonUtil.toMapByObject(userDAO.getUserById(topic.getLastreplyuserid()));
+
+        //过滤信息
+        MapFilterUtil.filterTopicInfo(topicMap);
+        MapFilterUtil.filterTopicContentInfo(topicContentMap);
+        MapFilterUtil.filterTopicUserInfo(authorUserMap);
+        MapFilterUtil.filterTopicUserInfo(lastReplyUserMap);
 
         //回复列表
         List<Map<String, Object>> listReplyMap = new ArrayList<>();
         List<TopicReplyDO> listReplyDO = topicReplyDAO.listTopicReplyByTopicId(topicId);
         for (TopicReplyDO reply : listReplyDO) {
             Map<String, Object> replyMap = JsonUtil.toMapByObject(reply);
-                MapFilterUtil.filterTopicReply(replyMap);
+            Map<String, Object> replyUserMap = JsonUtil.toMapByObject(userDAO.getUserById(reply.getUserid()));
 
-            UserDO replyUser = userDAO.getUserById(reply.getUserid());
-            Map<String, Object> replyUserMap = JsonUtil.toMapByObject(replyUser);
-                MapFilterUtil.filterTopicUserInfo(replyUserMap);
+            MapFilterUtil.filterTopicReply(replyMap);
+            MapFilterUtil.filterTopicUserInfo(replyUserMap);
 
             replyMap.put("user", replyUserMap);
             listReplyMap.add(replyUserMap);
@@ -99,11 +120,11 @@ public class TopicServiceImpl implements ITopicService {
     public Map<String, Object> getReply(int replyId) {
         TopicReplyDO reply = topicReplyDAO.getTopicReplyById(replyId);
         Map<String, Object> replyMap = JsonUtil.toMapByObject(reply);
-            MapFilterUtil.filterTopicReply(replyMap);
 
-        UserDO replyUser = userDAO.getUserById(reply.getUserid());
-        Map<String, Object> replyUserMap = JsonUtil.toMapByObject(replyUser);
-            MapFilterUtil.filterTopicUserInfo(replyUserMap);
+        Map<String, Object> replyUserMap = JsonUtil.toMapByObject(userDAO.getUserById(reply.getUserid()));
+
+        MapFilterUtil.filterTopicReply(replyMap);
+        MapFilterUtil.filterTopicUserInfo(replyUserMap);
 
         replyMap.put("user", replyUserMap);
 
@@ -122,19 +143,16 @@ public class TopicServiceImpl implements ITopicService {
         List<TopicDO> listTopic = topicDAO.listTopicByStartRowByCount((page - 1) * limit, limit);
         for (TopicDO topic : listTopic) {
             Map<String, Object> topicMap = JsonUtil.toMapByObject(topic);
-                MapFilterUtil.filterTopicInfo(topicMap);
+            Map<String, Object> topicContentMap =
+                    JsonUtil.toMapByObject(this.getTopicContentDOByTopicId(topic.getId()));
+            Map<String, Object> authorUserMap = JsonUtil.toMapByObject(userDAO.getUserById(topic.getUserid()));
+            Map<String, Object> lastReplyUserMap =
+                    JsonUtil.toMapByObject(userDAO.getUserById(topic.getLastreplyuserid()));
 
-            TopicContentDO topicContent = topicContentDAO.getTopicContentById(topic.getId());
-            Map<String, Object> topicContentMap = JsonUtil.toMapByObject(topicContent);
-                MapFilterUtil.filterTopicContentInfo(topicContentMap);
-
-            UserDO authorUser = userDAO.getUserById(topic.getUserid());
-            Map<String, Object> authorUserMap = JsonUtil.toMapByObject(authorUser);
-                MapFilterUtil.filterTopicUserInfo(authorUserMap);
-
-            UserDO lastReplyUser = userDAO.getUserById(topic.getLastreplyuserid());
-            Map<String, Object> lastReplyUserMap = JsonUtil.toMapByObject(lastReplyUser);
-                MapFilterUtil.filterTopicUserInfo(lastReplyUserMap);
+            MapFilterUtil.filterTopicInfo(topicMap);
+            MapFilterUtil.filterTopicContentInfo(topicContentMap);
+            MapFilterUtil.filterTopicUserInfo(authorUserMap);
+            MapFilterUtil.filterTopicUserInfo(lastReplyUserMap);
 
             topicMap.putAll(topicContentMap);
             topicMap.put("user", authorUserMap);

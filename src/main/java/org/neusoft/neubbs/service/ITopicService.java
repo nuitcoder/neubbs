@@ -3,6 +3,9 @@ package org.neusoft.neubbs.service;
 import org.neusoft.neubbs.controller.exception.AccountErrorException;
 import org.neusoft.neubbs.controller.exception.DatabaseOperationFailException;
 import org.neusoft.neubbs.controller.exception.TopicErrorException;
+import org.neusoft.neubbs.entity.TopicContentDO;
+import org.neusoft.neubbs.entity.TopicDO;
+import org.neusoft.neubbs.entity.TopicReplyDO;
 
 import java.util.List;
 import java.util.Map;
@@ -13,6 +16,32 @@ import java.util.Map;
  * @author Suvan
  */
 public interface ITopicService {
+
+    /**
+     * 获取 TopicDO（查询 forum_topic 表）
+     * @param topicId 话题id
+     * @return TopicDO 话题对象
+     * @throws TopicErrorException 话题错误异常
+     */
+    TopicDO getTopicDOByTopicId(int topicId) throws TopicErrorException;
+
+    /**
+     * 获取 TopicContentDO（查询 forum_topic_content 表）
+     *
+     * @param topicId 话题id
+     * @return TopicContentDO 话题内容对象
+     * @throws TopicErrorException 话题错误异常
+     */
+    TopicContentDO getTopicContentDOByTopicId(int topicId) throws TopicErrorException;
+
+    /**
+     * 获取 TopicReplyDO（查询 forum_topic_reply 表）
+     *
+     * @param replyId 回复id
+     * @return TopicReplyDO 话题回复对象
+     * @throws TopicErrorException 话题错误异常
+     */
+    TopicReplyDO getTopicReplyDOByReplyId(int replyId) throws TopicErrorException;
 
     /**
      * 获取话题信息（基本信息 + 内容 + 回复）
