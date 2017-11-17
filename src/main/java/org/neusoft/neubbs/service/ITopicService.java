@@ -50,7 +50,7 @@ public interface ITopicService {
      * @return Map 话题内容信息
      * @throws TopicErrorException 话题错误异常
      */
-    Map<String, Object> getTopic(int topicId) throws TopicErrorException;
+    Map<String, Object> getTopic(int topicId) throws TopicErrorException, AccountErrorException;
 
     /**
      * 获取回复信息（单条回复）
@@ -58,7 +58,7 @@ public interface ITopicService {
      * @param replyId 回复id
      * @return Map 回复信息
      */
-    Map<String, Object> getReply(int replyId);
+    Map<String, Object> getReply(int replyId) throws AccountErrorException;
 
     /**
      * 获取话题列表（包含话题数据与基本用户数据）
@@ -68,7 +68,7 @@ public interface ITopicService {
      * @return List 列表
      * @throws TopicErrorException 话题错误异常
      */
-    List<Map<String, Object>> listTopics(int page, int limit) throws TopicErrorException;
+    List<Map<String, Object>> listTopics(int page, int limit) throws TopicErrorException, AccountErrorException;
 
     /**
      * 保存话题

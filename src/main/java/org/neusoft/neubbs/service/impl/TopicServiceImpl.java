@@ -8,12 +8,11 @@ import org.neusoft.neubbs.controller.exception.TopicErrorException;
 import org.neusoft.neubbs.dao.ITopicContentDAO;
 import org.neusoft.neubbs.dao.ITopicDAO;
 import org.neusoft.neubbs.dao.ITopicReplyDAO;
-import org.neusoft.neubbs.dao.IUserDAO;
 import org.neusoft.neubbs.entity.TopicContentDO;
 import org.neusoft.neubbs.entity.TopicDO;
 import org.neusoft.neubbs.entity.TopicReplyDO;
-import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.service.ITopicService;
+import org.neusoft.neubbs.service.IUserService;
 import org.neusoft.neubbs.utils.JsonUtil;
 import org.neusoft.neubbs.utils.MapFilterUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +31,8 @@ import java.util.Map;
 @Service("topicServiceImpl")
 public class TopicServiceImpl implements ITopicService {
 
-    private final IUserDAO userDAO;
+    private final IUserService userService;
+
     private final ITopicDAO topicDAO;
     private final ITopicContentDAO topicContentDAO;
     private final ITopicReplyDAO topicReplyDAO;
@@ -41,9 +41,9 @@ public class TopicServiceImpl implements ITopicService {
      * Constructor
      */
     @Autowired
-    public TopicServiceImpl(IUserDAO userDAO, ITopicDAO topicDAO,
+    public TopicServiceImpl(IUserService userService, ITopicDAO topicDAO,
                                  ITopicContentDAO topicContentDAO, ITopicReplyDAO topicReplyDAO) {
-        this.userDAO = userDAO;
+        this.userService = userService;
         this.topicDAO = topicDAO;
         this.topicContentDAO = topicContentDAO;
         this.topicReplyDAO = topicReplyDAO;
@@ -77,15 +77,16 @@ public class TopicServiceImpl implements ITopicService {
     }
 
     @Override
-    public Map<String, Object> getTopic(int topicId) throws TopicErrorException {
+    public Map<String, Object> getTopic(int topicId) throws TopicErrorException, AccountErrorException {
 
         //获取数据
         TopicDO topic = this.getTopicDOByTopicId(topicId);
         Map<String, Object> topicMap = JsonUtil.toMapByObject(topic);
 
         Map<String, Object> topicContentMap = JsonUtil.toMapByObject(this.getTopicContentDOByTopicId(topicId));
-        Map<String, Object> authorUserMap = JsonUtil.toMapByObject(userDAO.getUserById(topic.getUserid()));
-        Map<String, Object> lastReplyUserMap = JsonUtil.toMapByObject(userDAO.getUserById(topic.getLastreplyuserid()));
+        Map<String, Object> authorUserMap = JsonUtil.toMapByObject(userService.getUserInfoById(topic.getUserid()));
+        Map<String, Object> lastReplyUserMap = JsonUtil
+                .toMapByObject(userService.getUserInfoById(topic.getLastreplyuserid()));
 
         //过滤信息
         MapFilterUtil.filterTopicInfo(topicMap);
@@ -98,7 +99,7 @@ public class TopicServiceImpl implements ITopicService {
         List<TopicReplyDO> listReplyDO = topicReplyDAO.listTopicReplyByTopicId(topicId);
         for (TopicReplyDO reply : listReplyDO) {
             Map<String, Object> replyMap = JsonUtil.toMapByObject(reply);
-            Map<String, Object> replyUserMap = JsonUtil.toMapByObject(userDAO.getUserById(reply.getUserid()));
+            Map<String, Object> replyUserMap = JsonUtil.toMapByObject(userService.getUserInfoById(reply.getUserid()));
 
             MapFilterUtil.filterTopicReply(replyMap);
             MapFilterUtil.filterTopicUserInfo(replyUserMap);
@@ -117,11 +118,11 @@ public class TopicServiceImpl implements ITopicService {
     }
 
     @Override
-    public Map<String, Object> getReply(int replyId) {
+    public Map<String, Object> getReply(int replyId) throws AccountErrorException {
         TopicReplyDO reply = topicReplyDAO.getTopicReplyById(replyId);
         Map<String, Object> replyMap = JsonUtil.toMapByObject(reply);
 
-        Map<String, Object> replyUserMap = JsonUtil.toMapByObject(userDAO.getUserById(reply.getUserid()));
+        Map<String, Object> replyUserMap = JsonUtil.toMapByObject(userService.getUserInfoById(reply.getUserid()));
 
         MapFilterUtil.filterTopicReply(replyMap);
         MapFilterUtil.filterTopicUserInfo(replyUserMap);
@@ -132,7 +133,7 @@ public class TopicServiceImpl implements ITopicService {
     }
 
     @Override
-    public List<Map<String, Object>> listTopics(int page, int limit) throws TopicErrorException {
+    public List<Map<String, Object>> listTopics(int page, int limit) throws TopicErrorException, AccountErrorException {
         //计算开始行数
         int topicCount = topicDAO.countTopic();
         if (limit > topicCount || (page * limit) > topicCount) {
@@ -145,9 +146,9 @@ public class TopicServiceImpl implements ITopicService {
             Map<String, Object> topicMap = JsonUtil.toMapByObject(topic);
             Map<String, Object> topicContentMap =
                     JsonUtil.toMapByObject(this.getTopicContentDOByTopicId(topic.getId()));
-            Map<String, Object> authorUserMap = JsonUtil.toMapByObject(userDAO.getUserById(topic.getUserid()));
+            Map<String, Object> authorUserMap = JsonUtil.toMapByObject(userService.getUserInfoById(topic.getUserid()));
             Map<String, Object> lastReplyUserMap =
-                    JsonUtil.toMapByObject(userDAO.getUserById(topic.getLastreplyuserid()));
+                    JsonUtil.toMapByObject(userService.getUserInfoById(topic.getLastreplyuserid()));
 
             MapFilterUtil.filterTopicInfo(topicMap);
             MapFilterUtil.filterTopicContentInfo(topicContentMap);
@@ -168,10 +169,7 @@ public class TopicServiceImpl implements ITopicService {
     public int saveTopic(int userId, String category, String title, String topicContent)
             throws AccountErrorException, DatabaseOperationFailException {
         //判断用户是否存在
-        UserDO user = userDAO.getUserById(userId);
-        if (user == null) {
-            throw new AccountErrorException(ApiMessage.NO_USER).log(LogWarn.ACCOUNT_01);
-        }
+        userService.getUserInfoById(userId);
 
         //保存 forum_topic 表
         TopicDO topic = new TopicDO();
@@ -201,12 +199,8 @@ public class TopicServiceImpl implements ITopicService {
     public int saveReply(int userId, int topicId, String replyContent)
             throws AccountErrorException, TopicErrorException, DatabaseOperationFailException {
         //验证用户 id 和 话题 id
-        if (userDAO.getUserById(userId) == null) {
-            throw new AccountErrorException(ApiMessage.NO_USER).log(LogWarn.ACCOUNT_01);
-        }
-        if (topicDAO.getTopicById(topicId) == null) {
-            throw new TopicErrorException(ApiMessage.NO_TOPIC).log(LogWarn.TOPIC_10);
-        }
+        userService.getUserInfoById(userId);
+        this.getTopicDOByTopicId(topicId);
 
         //保存回复
         TopicReplyDO topicReply = new TopicReplyDO();
@@ -233,9 +227,7 @@ public class TopicServiceImpl implements ITopicService {
     @Override
     public void removeTopic(int topicId) throws TopicErrorException, DatabaseOperationFailException {
         //验证话题 id
-        if (topicDAO.getTopicById(topicId) == null) {
-            throw new TopicErrorException(ApiMessage.NO_TOPIC).log(LogWarn.TOPIC_10);
-        }
+        this.getTopicDOByTopicId(topicId);
 
         //删除 forum_topic_content 和 forum_topic_reply，forum_topic 相应数据（需先删除外键关联）
         int removeTopicContentEffectRow = topicContentDAO.removeTopicContentById(topicId);
@@ -255,10 +247,7 @@ public class TopicServiceImpl implements ITopicService {
     @Override
     public void removeReply(int replyId) throws TopicErrorException, DatabaseOperationFailException {
         //判断是否存在
-       TopicReplyDO topicReply = topicReplyDAO.getTopicReplyById(replyId);
-        if (topicReply == null) {
-            throw new TopicErrorException(ApiMessage.NO_TOPIC).log(LogWarn.TOPIC_11);
-        }
+       TopicReplyDO topicReply = getTopicReplyDOByReplyId(replyId);
 
         //删除回复
        int removeTopicReplyEffectRow = topicReplyDAO.removeTopicReplyById(replyId);
@@ -276,9 +265,9 @@ public class TopicServiceImpl implements ITopicService {
     @Override
     public void alterTopicContent(int topicId, String newCategory, String newTitle, String newTopicContent)
             throws TopicErrorException, DatabaseOperationFailException {
-        if (topicDAO.getTopicById(topicId) == null) {
-            throw new TopicErrorException(ApiMessage.NO_TOPIC).log(LogWarn.TOPIC_10);
-        }
+        //判断话题是否存在
+        this.getTopicDOByTopicId(topicId);
+        this.getTopicContentDOByTopicId(topicId);
 
         // 修改话题分类，标题
         int updateTopicCategoryEffectRow = topicDAO.updateCategoryById(topicId, newCategory);
@@ -297,9 +286,8 @@ public class TopicServiceImpl implements ITopicService {
     @Override
     public void alterReplyContent(int replyId, String newReplyContent)
             throws TopicErrorException, DatabaseOperationFailException {
-        if (topicReplyDAO.getTopicReplyById(replyId) == null) {
-            throw new TopicErrorException(ApiMessage.NO_REPLY).log(LogWarn.TOPIC_11);
-        }
+        //判断回复是否存在
+        this.getTopicReplyDOByReplyId(replyId);
 
         int updateTopicReplyEffectRow = topicReplyDAO.updateContentByIdByContent(replyId, newReplyContent);
         if (updateTopicReplyEffectRow == 0) {

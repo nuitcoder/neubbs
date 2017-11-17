@@ -62,11 +62,12 @@ public class TopicController {
      * @return ResponseJsonDTO 响应JSON传输对象
      * @throws ParamsErrorException 参数错误异常
      * @throws TopicErrorException 话题错误异常
+     * @throws AccountErrorException 账户错误异常
      */
     @RequestMapping(value = "/topic", method = RequestMethod.GET)
     @ResponseBody
     public ResponseJsonDTO getTopic(@RequestParam(value = "topicid", required = false) Integer topicId)
-            throws ParamsErrorException, TopicErrorException {
+            throws ParamsErrorException, TopicErrorException, AccountErrorException {
 
         RequestParamCheckUtil.check(ParamConst.ID, String.valueOf(topicId));
 
@@ -81,11 +82,12 @@ public class TopicController {
      * @param replyId 回复id
      * @return ResponseJsonDTO 响应JSON传输对象
      * @throws ParamsErrorException 参数错误异常
+     * @throws AccountErrorException 账户错误异常
      */
     @RequestMapping(value = "/topic/reply", method = RequestMethod.GET)
     @ResponseBody
     public ResponseJsonDTO getReply(@RequestParam(value = "replyid", required = false) Integer replyId)
-            throws ParamsErrorException {
+            throws ParamsErrorException, AccountErrorException {
 
         RequestParamCheckUtil.check(ParamConst.ID, String.valueOf(replyId));
 
@@ -102,12 +104,13 @@ public class TopicController {
      * @return ResponseJsonListDTO 响应JSON传输列表对象昂
      * @throws ParamsErrorException 参数错误异常
      * @throws TopicErrorException 话题错误异常
+     * @throws AccountErrorException 账户错误异常
      */
     @RequestMapping(value = "/topics", method = RequestMethod.GET)
     @ResponseBody
     public ResponseJsonListDTO listTopics(@RequestParam(value = "page", required = false) Integer page,
                                           @RequestParam(value = "count", required = false) Integer count)
-            throws ParamsErrorException, TopicErrorException {
+            throws ParamsErrorException, TopicErrorException, AccountErrorException {
 
         RequestParamCheckUtil.check(ParamConst.NUMBER, String.valueOf(page));
         RequestParamCheckUtil.check(ParamConst.NUMBER, String.valueOf(count));
