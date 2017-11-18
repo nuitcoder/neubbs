@@ -10,7 +10,7 @@ import org.neusoft.neubbs.utils.SendEmailUtil;
  * SendEmailUtil 测试类
  */
 @RunWith(JUnit4.class)
-public class SendEmailUtilTestCase {
+public class SendEmailUtilTest {
     /**
      * 测试发送激活邮件
      */

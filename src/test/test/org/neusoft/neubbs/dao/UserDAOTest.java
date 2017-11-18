@@ -24,7 +24,7 @@ import java.util.List;
 @ContextConfiguration(locations = {"classpath:spring-context.xml"}) //注入 Spring 配置文件
 //@FixMethodOrder(MethodSorters.NAME_ASCENDING) //按方法名字（字典顺序），顺序执行
 //@Transactional // 声明使用事务,,所有 Test 默认自动回滚
-public class UserDAOTestCase {
+public class UserDAOTest {
 
     @Autowired
     IUserDAO userDAO;

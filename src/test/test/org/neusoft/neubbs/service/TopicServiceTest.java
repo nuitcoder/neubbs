@@ -21,7 +21,7 @@ import java.util.Map;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:spring-context.xml"})
-public class TopicServiceTestCase {
+public class TopicServiceTest {
 
     @Autowired
     private ITopicService topicService;

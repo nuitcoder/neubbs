@@ -14,7 +14,7 @@ import java.util.Map;
  * @author Suvan
  */
 @RunWith(JUnit4.class)
-public class MapFilterUtilTestCase {
+public class MapFilterUtilTest {
     /**
      * 测试删除多个 Key
      */

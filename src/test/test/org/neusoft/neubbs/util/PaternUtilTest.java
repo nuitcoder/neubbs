@@ -9,7 +9,7 @@ import org.neusoft.neubbs.utils.PatternUtil;
  * 正则匹配 测试类
  */
 @RunWith(JUnit4.class)
-public class PaternUtilTestCase {
+public class PaternUtilTest {
    /**
     * 测试 纯数字检测
     */

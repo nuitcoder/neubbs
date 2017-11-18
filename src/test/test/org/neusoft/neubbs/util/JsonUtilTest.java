@@ -12,7 +12,7 @@ import java.util.Map;
  * JSON 工具类 测试用例
  */
 @RunWith(JUnit4.class)
-public class JsonUtilTestCase {
+public class JsonUtilTest {
 
     /**
      * 将 Object 对象转为字符串

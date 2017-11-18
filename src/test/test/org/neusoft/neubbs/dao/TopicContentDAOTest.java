@@ -1,13 +1,10 @@
 package test.org.neusoft.neubbs.dao;
 
-import jdk.nashorn.internal.objects.NativeJava;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.FixMethodOrder;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.MethodSorters;
 import org.neusoft.neubbs.controller.handler.SwitchDataSourceHandler;
 import org.neusoft.neubbs.dao.ITopicContentDAO;
 import org.neusoft.neubbs.entity.TopicContentDO;
@@ -16,14 +13,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import javax.json.Json;
-
 /**
  * ITopicContentDAO 测试用例
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:spring-context.xml"})
-public class TopicContentDAOTestCase {
+public class TopicContentDAOTest {
 
     @Autowired
     ITopicContentDAO topicContentDAO;

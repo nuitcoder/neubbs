@@ -62,7 +62,7 @@ import java.util.Map;
         @ContextConfiguration(locations = {"classpath:spring-context.xml"}),
         @ContextConfiguration(locations = {"classpath:spring-mvc.xml"})
 })
-public class AccountCollectorTestCase {
+public class AccountCollectorTest {
 
     @Autowired
     private WebApplicationContext webApplicationContext;

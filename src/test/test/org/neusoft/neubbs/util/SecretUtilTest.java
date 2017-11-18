@@ -11,7 +11,7 @@ import javax.crypto.SecretKey;
  * SecretUtil 测试类
  */
 @RunWith(JUnit4.class)
-public class SecretUtilTestCase {
+public class SecretUtilTest {
     /**
      * 测试 MD5 加密
      */

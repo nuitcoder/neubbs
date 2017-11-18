@@ -21,7 +21,7 @@ import java.lang.reflect.Method;
  * @author Suvan
  */
 @RunWith(JUnit4.class)
-public class AnnotationUtilTesteCase {
+public class AnnotationUtilTeste {
 
     @BeforeClass
     public static void init() {

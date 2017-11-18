@@ -25,7 +25,7 @@ import java.util.List;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:spring-context.xml"})
-public class TopicDAOTestCase {
+public class TopicDAOTest {
 
     @Autowired
     ITopicDAO topicDAO;

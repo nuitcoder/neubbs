@@ -11,7 +11,7 @@ import org.neusoft.neubbs.utils.JwtTokenUtil;
  * TokenUtils类 测试用例
  */
 @RunWith(JUnit4.class)
-public class JWTTokenUtilTestCase {
+public class JWTTokenUtilTest {
 
     /**
      * 测试Token 加密与解密
