@@ -13,7 +13,6 @@ import org.neusoft.neubbs.constant.api.ApiMessage;
 import org.neusoft.neubbs.constant.api.ParamConst;
 import org.neusoft.neubbs.constant.api.SetConst;
 import org.neusoft.neubbs.constant.secret.SecretInfo;
-import org.neusoft.neubbs.controller.api.AccountController;
 import org.neusoft.neubbs.controller.exception.AccountErrorException;
 import org.neusoft.neubbs.controller.exception.DatabaseOperationFailException;
 import org.neusoft.neubbs.controller.exception.ParamsErrorException;
@@ -57,7 +56,7 @@ import java.util.Map;
  *      - 设置配置文件(需设置 applicatonContext.xml 和 mvc.xm,否则会报错)
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@WebAppConfiguration()
+@WebAppConfiguration
 @ContextHierarchy({
         @ContextConfiguration(locations = {"classpath:spring-context.xml"}),
         @ContextConfiguration(locations = {"classpath:spring-mvc.xml"})
@@ -73,11 +72,7 @@ public class AccountCollectorTest {
     public ExpectedException exception = ExpectedException.none();
 
     @Autowired
-    private AccountController accountController;
-
-    @Autowired
     private IUserService userService;
-
 
     static class Param {
         String key;
@@ -103,7 +98,7 @@ public class AccountCollectorTest {
     @BeforeClass
     public static void init() {
 //      //使用本地数据库（默认是云数据库）
-//        SwitchDataSourceHandler.setDataSourceType(SwitchDataSourceHandler.LOCALHOST_DATA_SOURCE_MYSQL);
+        SwitchDataSourceHandler.setDataSourceType(SwitchDataSourceHandler.LOCALHOST_DATA_SOURCE_MYSQL);
     }
 
     @Before
@@ -116,8 +111,6 @@ public class AccountCollectorTest {
 //            standBuild.addFilter(new ApiFilter());
 //            standBuild.addInterceptors(new ApiInterceptor());
 //        this.mockMvc = standBuild.build();
-
-        SwitchDataSourceHandler.setDataSourceType(SwitchDataSourceHandler.LOCALHOST_DATA_SOURCE_MYSQL);
     }
 
     /**
@@ -926,11 +919,11 @@ public class AccountCollectorTest {
     }
 
     /**
-     * 【/api/account/forget-password】 test user forget password update new temp password success
+     * 【/api/account/forget-password】 test user forget password send email update new temp password success
      */
     @Test
     @Transactional
-    public void testUserForgetPasswordUpdateNewTempPasswordSuccess() throws Exception {
+    public void testUserForgetPasswordSendEmailUpdateNewTempPasswordSuccess() throws Exception {
         String email = "liushuwei0925@gmail.com";
         String requestBody = "{\"email\":\"" + email + "\"}";
 
@@ -952,11 +945,11 @@ public class AccountCollectorTest {
     }
 
     /**
-     * 【/api/account/forget-password】 test user forget password update new temp password throw exception
+     * 【/api/account/forget-password】 test user forget password send email update new temp password throw exception
      */
     @Test
     @Transactional
-    public void testUserForgetPasswordUpdateNewTempPasswordThrowException() throws Exception {
+    public void testUserForgetPasswordSendEmailUpdateNewTempPasswordThrowException() throws Exception {
         String[] parmas = {null, "test@", "test@neubbs.com"};
 
         for (String param: parmas) {
