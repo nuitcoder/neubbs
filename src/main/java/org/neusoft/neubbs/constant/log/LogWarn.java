@@ -41,6 +41,7 @@ public final class LogWarn {
     public static final String FILE_02 = " 文件类型不符合头像类型（jpg | png | jpeg）";
     public static final String FILE_03 = "服务器不存在指定上传文件目录";
     public static final String FILE_04 = "IO异常，文件复制到服务器指定目录失败";
+    public static final String FILE_05 = "用户上传头像过大（超过 5MB）";
 
 
     /*****************************Api Interceptor**********************************/

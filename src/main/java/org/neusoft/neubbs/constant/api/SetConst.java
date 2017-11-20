@@ -62,8 +62,13 @@ public final class SetConst {
 
     /**
      * 用户头像
+     *      - 1 KB = 1024 byte
+     *      - 1 MB = 1024 KB
+     *      - 1 GB = 1024 MB
+     *      - 1 TB = 1024 GB
      */
     public static final long SIZE_ONE_MB = 1048576;
+    public static final long SIZE_FIVE_MB = 5242880;
 
     /**
      * 账户激活状态
