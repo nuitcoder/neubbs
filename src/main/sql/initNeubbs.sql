@@ -64,7 +64,7 @@ CREATE TABLE `forum_topic` (
 -- 论坛话题内容
 CREATE TABLE `forum_topic_content` (
   `ftc_id` INT(11) NOT NULL AUTO_INCREMENT comment '话题内容id',
-  `ft_id` INT(11) DEFAULT NULL comment '对应话题id',
+  `ft_id` INT(11) NOT NULL UNIQUE comment '对应话题id',
   `ftc_content` longtext NOT NULL comment '话题内容',
   `ftc_read` VARCHAR(10) DEFAULT '0' comment '话题阅读数',
   `ftc_agree` VARCHAR(10) DEFAULT '0' comment '话题点攒数',
