@@ -3,7 +3,6 @@ package org.neusoft.neubbs.controller.api;
 import org.neusoft.neubbs.constant.ajax.AjaxRequestStatus;
 import org.neusoft.neubbs.constant.api.ApiMessage;
 import org.neusoft.neubbs.constant.api.ParamConst;
-import org.neusoft.neubbs.constant.api.SetConst;
 import org.neusoft.neubbs.constant.log.LogWarn;
 import org.neusoft.neubbs.constant.secret.SecretInfo;
 import org.neusoft.neubbs.controller.annotation.AccountActivation;
@@ -14,10 +13,10 @@ import org.neusoft.neubbs.controller.exception.FileUploadErrorException;
 import org.neusoft.neubbs.dto.ResponseJsonDTO;
 import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.entity.properties.NeubbsConfigDO;
+import org.neusoft.neubbs.service.IFileService;
 import org.neusoft.neubbs.service.IUserService;
 import org.neusoft.neubbs.utils.CookieUtil;
 import org.neusoft.neubbs.utils.JwtTokenUtil;
-import org.neusoft.neubbs.utils.PatternUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,8 +26,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-import java.io.IOException;
 
 
 /**
@@ -42,14 +39,17 @@ import java.io.IOException;
 public class FileController {
 
     private final IUserService userService;
+    private final IFileService fileService;
     private final NeubbsConfigDO neubbsConfig;
 
     /**
      * Constructor
      */
     @Autowired
-    public FileController(IUserService userService, NeubbsConfigDO neubbsConfig) {
+    public FileController(IUserService userService, IFileService fileService,
+                          NeubbsConfigDO neubbsConfig) {
         this.userService = userService;
+        this.fileService = fileService;
         this.neubbsConfig = neubbsConfig;
     }
 
@@ -57,14 +57,12 @@ public class FileController {
      * 1.上传用户头像（新上传的会覆盖旧的）
      *
      * 业务流程
-     *     1.判断上传文件是否为空
-     *     2.判断文件类型
-     *     3.检测文件大小，判断是否进行文件压缩处理（图片大于 1 MB 时）（Multipart 解析器 默认限制最大 5MB）
-     *     4.设置文件根路径
-     *     5.设置保存文件名（获取 Cookie 内 token ，拼接，用户id-用户名-图片名.后缀）
-     *     6.构建 File 对象，判断父目录（不存在则创建，n 级）（File.separator 文件分隔符，可在文件前再次设置目录）
-     *     7.上传文件，传内容，至服务器文件
-     *     8.将文件名存入数据库指定用户
+     *      - 检查用户图片规范（不为空，后缀格式，大小不超过 5MB）
+     *      - 压缩文件
+     *      - 构建服务器端储存文件名
+     *      - 传输文件
+     *      - 更改数据库（forum_user 的 image）
+     *      - 返回成功状态
      *
      * @param multipartFile 用户上传的文件对象
      * @param request http请求
@@ -80,47 +78,20 @@ public class FileController {
                                            HttpServletRequest request)
             throws FileUploadErrorException, AccountErrorException, DatabaseOperationFailException {
 
-        if (multipartFile.isEmpty()) {
-            throw new FileUploadErrorException(ApiMessage.NO_CHOICE_PICTURE).log(LogWarn.FILE_01);
-        }
+        fileService.checkUserImageNorm(multipartFile);
 
-        //format match
-        String fileType = multipartFile.getContentType();
-        if (!PatternUtil.matchUserImage(fileType)) {
-            throw new FileUploadErrorException(ApiMessage.PICTURE_FORMAT_WRONG).log(fileType + LogWarn.FILE_02);
-        }
-
-        //no exceed 5MB
-        if (multipartFile.getSize() >  SetConst.SIZE_FIVE_MB) {
-            throw new FileUploadErrorException(ApiMessage.PICTURE_TOO_LARGE).log(LogWarn.FILE_05);
-        }
-
-//        if (multipartFile.getSize() >= SetConst.SIZE_ONE_MB) {
-//            //文件压缩处理
-//
-//        }
-
-        String serverUploadFilePath = request.getServletContext().getRealPath(neubbsConfig.getUserImageUploadPath());
+//        MultipartFile compressedFile = fileService.compressFile(multipartFile)
 
         String authentication = CookieUtil.getCookieValue(request, ParamConst.AUTHENTICATION);
         UserDO cookieUser = JwtTokenUtil.verifyToken(authentication, SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY);
         if (cookieUser == null) {
             throw new AccountErrorException(ApiMessage.TOKEN_EXPIRED).log(LogWarn.ACCOUNT_05);
         }
-        String fileName = cookieUser.getId()
-                + "_" + System.currentTimeMillis()
-                + "_" + multipartFile.getOriginalFilename();
-
-        File imageFile = new File(serverUploadFilePath, fileName);
-        if (!imageFile.getParentFile().exists()) {
-            throw new FileUploadErrorException(ApiMessage.NO_PARENT_DIRECTORY).log(LogWarn.FILE_03);
-        }
-
-        try {
-            multipartFile.transferTo(imageFile);
-        } catch (IOException e) {
-            throw new FileUploadErrorException(ApiMessage.UPLOAD_FAIL).log(LogWarn.FILE_04);
-        }
+        String fileName
+                = fileService.buildServerKeppUserImageFileName(cookieUser.getId(), multipartFile.getOriginalFilename());
+        String serverSaveUserImageFilePath
+                = request.getServletContext().getRealPath(neubbsConfig.getUserImageUploadPath());
+        fileService.transferToServer(multipartFile, serverSaveUserImageFilePath, fileName);
 
         userService.uploadUserImage(cookieUser.getName(), fileName);
 
