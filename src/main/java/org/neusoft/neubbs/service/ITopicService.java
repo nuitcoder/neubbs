@@ -49,6 +49,7 @@ public interface ITopicService {
      * @param topicId 话题 id
      * @return Map 话题内容信息
      * @throws TopicErrorException 话题错误异常
+     * @throws AccountErrorException 账户错误异常
      */
     Map<String, Object> getTopic(int topicId) throws TopicErrorException, AccountErrorException;
 
@@ -57,6 +58,7 @@ public interface ITopicService {
      *
      * @param replyId 回复id
      * @return Map 回复信息
+     * @throws AccountErrorException 账户错误异常
      */
     Map<String, Object> getReply(int replyId) throws AccountErrorException;
 
@@ -67,6 +69,7 @@ public interface ITopicService {
      * @param limit 每页显示数量
      * @return List 列表
      * @throws TopicErrorException 话题错误异常
+     * @throws AccountErrorException 账户错误异常
      */
     List<Map<String, Object>> listTopics(int page, int limit) throws TopicErrorException, AccountErrorException;
 
