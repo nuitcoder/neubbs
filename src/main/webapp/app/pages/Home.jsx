@@ -1,9 +1,11 @@
 import React, { Component } from 'react'
 
+import TopicList from '../components/TopicList'
+
 class Home extends Component {
   render() {
     return (
-      <span>HomePage</span>
+      <TopicList />
     )
   }
 }
