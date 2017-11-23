@@ -99,8 +99,8 @@ public class TopicController {
     /**
      * 获取话题列表（分页，指定数量）
      *
-     * @param page 页数
-     * @param limit 每页显示话题数量
+     * @param limit 每页显示数量
+     * @param page 跳转到指定页数
      * @return ResponseJsonListDTO 响应JSON传输列表对象昂
      * @throws ParamsErrorException 参数错误异常
      * @throws TopicErrorException 话题错误异常
@@ -108,14 +108,14 @@ public class TopicController {
      */
     @RequestMapping(value = "/topics/new", method = RequestMethod.GET)
     @ResponseBody
-    public ResponseJsonListDTO listTopics(@RequestParam(value = "page", required = false) Integer page,
-                                          @RequestParam(value = "limit", required = false) Integer limit)
+    public ResponseJsonListDTO listTopics(@RequestParam(value = "limit", required = false) Integer limit,
+                                          @RequestParam(value = "page", required = false) Integer page)
             throws ParamsErrorException, TopicErrorException, AccountErrorException {
 
-        RequestParamCheckUtil.check(ParamConst.NUMBER, String.valueOf(page));
         RequestParamCheckUtil.check(ParamConst.NUMBER, String.valueOf(limit));
+        RequestParamCheckUtil.check(ParamConst.NUMBER, String.valueOf(page));
 
-        List<Map<String, Object>> topics = topicService.listTopics(page, limit);
+        List<Map<String, Object>> topics = topicService.listTopics(limit, page);
 
         return new ResponseJsonListDTO(AjaxRequestStatus.SUCCESS, topics);
     }

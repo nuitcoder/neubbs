@@ -1,5 +1,6 @@
 package org.neusoft.neubbs.service.impl;
 
+import org.apache.log4j.Logger;
 import org.neusoft.neubbs.constant.api.ApiMessage;
 import org.neusoft.neubbs.constant.log.LogWarn;
 import org.neusoft.neubbs.controller.exception.AccountErrorException;
@@ -37,6 +38,8 @@ public class TopicServiceImpl implements ITopicService {
     private final ITopicContentDAO topicContentDAO;
     private final ITopicReplyDAO topicReplyDAO;
 
+    private Logger logger = Logger.getLogger(TopicServiceImpl.class);
+
     /**
      * Constructor
      */
@@ -53,7 +56,7 @@ public class TopicServiceImpl implements ITopicService {
     public TopicDO getTopicDOByTopicId(int topicId) throws TopicErrorException {
         TopicDO topic = topicDAO.getTopicById(topicId);
         if (topic == null) {
-            throw new TopicErrorException(ApiMessage.NO_TOPIC).log(LogWarn.TOPIC_10);
+            throw new TopicErrorException(ApiMessage.NO_TOPIC).log(topicId + LogWarn.TOPIC_10);
         }
         return topic;
     }
@@ -62,7 +65,7 @@ public class TopicServiceImpl implements ITopicService {
     public TopicContentDO getTopicContentDOByTopicId(int topicId) throws TopicErrorException {
         TopicContentDO topicContent = topicContentDAO.getTopicContentById(topicId);
         if (topicContent == null) {
-            throw new TopicErrorException(ApiMessage.NO_TOPIC).log(LogWarn.TOPIC_10);
+            throw new TopicErrorException(ApiMessage.NO_TOPIC).log(topicId + LogWarn.TOPIC_10);
         }
         return topicContent;
     }
@@ -71,7 +74,7 @@ public class TopicServiceImpl implements ITopicService {
     public TopicReplyDO getTopicReplyDOByReplyId(int replyId) throws TopicErrorException {
         TopicReplyDO topicReplyDO = topicReplyDAO.getTopicReplyById(replyId);
         if (topicReplyDO == null) {
-            throw new TopicErrorException(ApiMessage.NO_REPLY).log(LogWarn.TOPIC_11);
+            throw new TopicErrorException(ApiMessage.NO_REPLY).log(replyId + LogWarn.TOPIC_11);
         }
         return topicReplyDO;
     }
@@ -96,8 +99,8 @@ public class TopicServiceImpl implements ITopicService {
 
         //回复列表
         List<Map<String, Object>> listReplyMap = new ArrayList<>();
-        List<TopicReplyDO> listReplyDO = topicReplyDAO.listTopicReplyByTopicId(topicId);
-        for (TopicReplyDO reply : listReplyDO) {
+        List<TopicReplyDO> listReply = topicReplyDAO.listTopicReplyByTopicId(topicId);
+        for (TopicReplyDO reply : listReply) {
             Map<String, Object> replyMap = JsonUtil.toMapByObject(reply);
             Map<String, Object> replyUserMap = JsonUtil.toMapByObject(userService.getUserInfoById(reply.getUserid()));
 
@@ -133,19 +136,33 @@ public class TopicServiceImpl implements ITopicService {
     }
 
     @Override
-    public List<Map<String, Object>> listTopics(int page, int limit) throws TopicErrorException, AccountErrorException {
-        //计算开始行数
+    public List<Map<String, Object>> listTopics(int limit, int page) throws TopicErrorException, AccountErrorException {
+        //获取话题总数，判断输入 page，limit 是否超出指定范围
         int topicCount = topicDAO.countTopic();
-        if (limit > topicCount || (page * limit) > topicCount) {
-            throw new TopicErrorException(ApiMessage.FAIL_GET_TOPIC_LSIT).log(LogWarn.TOPIC_12);
+        int maxPage = topicCount % limit == 0 ? topicCount / limit : topicCount / limit + 1;
+        if (limit > topicCount || page > maxPage) {
+            throw new TopicErrorException(ApiMessage.FAIL_GET_TOPIC_LSIT)
+                    .log(LogWarn.TOPIC_12
+                            + "（话题总数 = " + topicCount
+                            + "，若 limit = " + limit
+                            + "，最多跳转至 " + maxPage  + " 页）");
         }
 
-        List<Map<String, Object>> resultTopics = new ArrayList<>();
+        //根据 page and limit，获取指定列数的话题列表
         List<TopicDO> listTopic = topicDAO.listTopicByStartRowByCount((page - 1) * limit, limit);
+
+        //遍历话题列表
+        List<Map<String, Object>> resultTopics = new ArrayList<>();
         for (TopicDO topic : listTopic) {
             Map<String, Object> topicMap = JsonUtil.toMapByObject(topic);
-            Map<String, Object> topicContentMap =
-                    JsonUtil.toMapByObject(this.getTopicContentDOByTopicId(topic.getId()));
+
+            TopicContentDO topicContent = topicContentDAO.getTopicContentById(topic.getId());
+            if (topicContent == null) {
+                //forum_topic_content 无对应 id，跳过该条记录
+                logger.warn(topic.getId() + LogWarn.TOPIC_10);
+                continue;
+            }
+            Map<String, Object> topicContentMap = JsonUtil.toMapByObject(topicContent);
             Map<String, Object> authorUserMap = JsonUtil.toMapByObject(userService.getUserInfoById(topic.getUserid()));
             Map<String, Object> lastReplyUserMap =
                     JsonUtil.toMapByObject(userService.getUserInfoById(topic.getLastreplyuserid()));
