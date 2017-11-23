@@ -12,6 +12,7 @@ import org.neusoft.neubbs.controller.exception.ParamsErrorException;
 import org.neusoft.neubbs.controller.exception.TopicErrorException;
 import org.neusoft.neubbs.dto.ResponseJsonDTO;
 import org.neusoft.neubbs.dto.ResponseJsonListDTO;
+import org.neusoft.neubbs.entity.properties.NeubbsConfigDO;
 import org.neusoft.neubbs.service.ITopicService;
 import org.neusoft.neubbs.utils.RequestParamCheckUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,13 +46,15 @@ import java.util.Map;
 public class TopicController {
 
     private final ITopicService topicService;
+    private final NeubbsConfigDO neubbsConfig;
 
     /**
      * Constructor
      */
     @Autowired
-    public TopicController(ITopicService topicService) {
+    public TopicController(ITopicService topicService, NeubbsConfigDO neubbsConfig) {
         this.topicService = topicService;
+        this.neubbsConfig = neubbsConfig;
     }
 
 
@@ -98,6 +101,7 @@ public class TopicController {
 
     /**
      * 获取话题列表（分页，指定数量）
+     *      - 未输入 limit 参数，使用 neubbs.properties 参数文件内指定的默认值
      *
      * @param limit 每页显示数量
      * @param page 跳转到指定页数
@@ -112,10 +116,12 @@ public class TopicController {
                                           @RequestParam(value = "page", required = false) Integer page)
             throws ParamsErrorException, TopicErrorException, AccountErrorException {
 
-        RequestParamCheckUtil.check(ParamConst.NUMBER, String.valueOf(limit));
+        Integer selectLimit = limit != null ? limit : neubbsConfig.getTopicsApiRequestParamLimitDefault();
+
+        RequestParamCheckUtil.check(ParamConst.NUMBER, String.valueOf(selectLimit));
         RequestParamCheckUtil.check(ParamConst.NUMBER, String.valueOf(page));
 
-        List<Map<String, Object>> topics = topicService.listTopics(limit, page);
+        List<Map<String, Object>> topics = topicService.listTopics(selectLimit, page);
 
         return new ResponseJsonListDTO(AjaxRequestStatus.SUCCESS, topics);
     }

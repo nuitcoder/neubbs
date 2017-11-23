@@ -39,6 +39,7 @@
 		<property name="cookieAutoLoginMaxAgeDay" value="${cookie.auto.login.max.age.day}" />
 		<property name="userImageUploadPath" value="${user.image.upload.path}" />
 		<property name="accountApiVaslidateUrl" value="${account.api.validate.url}" />
+		<property name="topicsApiRequestParamLimitDefault" value="${topics.api.request.param.limit.default}" />
 	</bean>
 
 	<!-- Spring 线程池 -->

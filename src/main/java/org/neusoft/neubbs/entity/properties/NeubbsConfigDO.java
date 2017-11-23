@@ -10,6 +10,9 @@ import org.neusoft.neubbs.constant.api.SetConst;
 public class NeubbsConfigDO {
 
     private Integer cookieAutoLoginMaxAgeDay;
+    private Integer topicsApiRequestParamLimitDefault;
+    private String userImageUploadPath;
+    private String accountApiVaslidateUrl;
 
     public Integer getCookieAutoLoginMaxAgeDay() {
         //day -> second
@@ -20,8 +23,13 @@ public class NeubbsConfigDO {
         this.cookieAutoLoginMaxAgeDay = cookieAutoLoginMaxAgeDay;
     }
 
-    private String userImageUploadPath;
-    private String accountApiVaslidateUrl;
+    public Integer getTopicsApiRequestParamLimitDefault() {
+        return topicsApiRequestParamLimitDefault;
+    }
+
+    public void setTopicsApiRequestParamLimitDefault(Integer topicsApiRequestParamLimitDefault) {
+        this.topicsApiRequestParamLimitDefault = topicsApiRequestParamLimitDefault;
+    }
 
     public String getUserImageUploadPath() {
         return userImageUploadPath;
@@ -38,4 +46,5 @@ public class NeubbsConfigDO {
     public void setAccountApiVaslidateUrl(String accountApiVaslidateUrl) {
         this.accountApiVaslidateUrl = accountApiVaslidateUrl;
     }
+
 }
