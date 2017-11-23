@@ -81,11 +81,12 @@ public final class RequestParamCheckUtil {
         typeScopeMap.put(ParamConst.TOPIC_CONTENT, new Scope(ONE, TEN_THOUSAND));
         typeScopeMap.put(ParamConst.REPLY_CONTENT, new Scope(ONE, ONE_HUNDRED_FIFTY));
 
+        typePatternMap.put(ParamConst.ID, new Pattern("isPureNumber", " （类型）参数不符合规范，必须为数字！"));
+        typePatternMap.put(ParamConst.NUMBER, new Pattern("isPureNumber", " （类型）参数不符合规范，必须为数字！"));
         typePatternMap.put(ParamConst.USERNAME, new Pattern("matchUsername", "（类型）参数不符合规范（A-Z a-z 0-9）"));
         typePatternMap.put(ParamConst.EMAIL, new Pattern("matchEmail", " （类型）参数不符合规范（xxx@xx.xxx）"));
         typePatternMap.put(ParamConst.CATEGORY,
                 new Pattern("matchTopicCategory", " （类型）参数不规范（仅包含中英文，不能有数字 or 特殊字符）"));
-        typePatternMap.put(ParamConst.NUMBER, new Pattern("isPureNumber", " （类型）参数不符合规范，必须未数字！"));
     }
 
 
@@ -135,7 +136,7 @@ public final class RequestParamCheckUtil {
      */
     private static void checkNull(String type, String param) throws ParamsErrorException {
         if (StringUtil.isEmpty(param) | NULL.equals(param)) {
-            throw new ParamsErrorException(ApiMessage.PARAM_ERROR).log(type + " （类型）参数不能为空；");
+            throw new ParamsErrorException(ApiMessage.PARAM_ERROR).log(param + " （" + type + " 类型）参数不能为空；");
         }
     }
 
@@ -156,7 +157,7 @@ public final class RequestParamCheckUtil {
         int max = scope.max;
         if (!StringUtil.isScope(param, min, max)) {
             throw new ParamsErrorException(ApiMessage.PARAM_ERROR)
-                    .log(type + "（类型）长度不符合范围（" + min + " <= length <=" + max + "）");
+                    .log(param + " （ " + type + " 类型）长度不符合范围（" + min + " <= length <=" + max + "）");
         }
     }
 
@@ -180,7 +181,7 @@ public final class RequestParamCheckUtil {
             Method method = clazz.getDeclaredMethod(pattern.methodName, String.class);
             //静态方法不需要借助实例运行，所以为 null
             if (!((boolean) method.invoke(null, param))) {
-                throw new ParamsErrorException(ApiMessage.PARAM_ERROR).log(type + pattern.logMessage);
+                throw new ParamsErrorException(ApiMessage.PARAM_ERROR).log(param + " （ " + type + pattern.logMessage);
             }
         } catch (NoSuchMethodException | ClassNotFoundException
                 | IllegalAccessException |  InvocationTargetException e) {
