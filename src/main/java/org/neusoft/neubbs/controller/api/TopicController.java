@@ -69,12 +69,12 @@ public class TopicController {
      */
     @RequestMapping(value = "/topic", method = RequestMethod.GET)
     @ResponseBody
-    public ResponseJsonDTO getTopic(@RequestParam(value = "topicid", required = false) Integer topicId)
+    public ResponseJsonDTO getTopic(@RequestParam(value = "topicid", required = false) String topicId)
             throws ParamsErrorException, TopicErrorException, AccountErrorException {
 
-        RequestParamCheckUtil.check(ParamConst.ID, String.valueOf(topicId));
+        RequestParamCheckUtil.check(ParamConst.ID, topicId);
 
-        Map<String, Object> topicInfoMap =  topicService.getTopic(topicId);
+        Map<String, Object> topicInfoMap =  topicService.getTopic(Integer.parseInt(topicId));
 
         return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, topicInfoMap);
     }
