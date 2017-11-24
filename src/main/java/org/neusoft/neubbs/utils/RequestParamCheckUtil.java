@@ -26,6 +26,7 @@ public final class RequestParamCheckUtil {
     private static final Integer THREE = 3;
     private static final Integer FIVE = 5;
     private static final Integer SIX = 6;
+    private static final Integer TEN = 10;
     private static final Integer ELEVEN = 11;
     private static final Integer FIFTEEN = 15;
     private static final Integer SIXTEEN = 16;
@@ -71,11 +72,14 @@ public final class RequestParamCheckUtil {
          * 静态代码块
          *      - 注册需 “范围检查” 的类型
          *      - 注册需 “格式检查” 的类型
+         *
+         * 注意：
+         *      - int 类型长度最大 10 位数 （-2147483648 to 2147483648）
          */
         typeScopeMap.put(ParamConst.USERNAME, new Scope(THREE, FIFTEEN));
         typeScopeMap.put(ParamConst.PASSWORD, new Scope(SIX, SIXTEEN));
         typeScopeMap.put(ParamConst.CAPTCHA, new Scope(FIVE, FIVE));
-        typeScopeMap.put(ParamConst.ID, new Scope(ONE, ELEVEN));
+        typeScopeMap.put(ParamConst.ID, new Scope(ONE, TEN));
         typeScopeMap.put(ParamConst.TITLE, new Scope(ONE, FIFTY));
         typeScopeMap.put(ParamConst.CATEGORY, new Scope(ONE, TWENTY));
         typeScopeMap.put(ParamConst.TOPIC_CONTENT, new Scope(ONE, TEN_THOUSAND));
