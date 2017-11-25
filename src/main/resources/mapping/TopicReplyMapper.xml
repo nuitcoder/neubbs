@@ -6,7 +6,7 @@
       <result column="fu_id" property="userid" javaType="Integer" jdbcType="INTEGER" />
       <result column="ft_id" property="topicid" javaType="Integer" jdbcType="INTEGER" />
       <result column="ftr_content" property="content" javaType="String" jdbcType="VARCHAR" />
-      <result column="ftc_agree" property="agree" javaType="String" jdbcType="VARCHAR" />
+      <result column="ftr_agree" property="agree" javaType="String" jdbcType="VARCHAR" />
       <result column="ftr_oppose" property="oppose" javaType="String" jdbcType="VARCHAR" />
       <result column="ftr_createtime" property="createtime" javaType="java.util.Date" jdbcType="TIMESTAMP" />
    </resultMap>
