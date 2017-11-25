@@ -1,24 +1,22 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
-import api from '../api'
-
 class TopicList extends Component {
-  constructor(props) {
-    super(props)
-  }
-
-  componentWillMount() {
-    api.topics.new(1, 20).then((res) => {
-      console.log(res)
-    })
-  }
-
   render() {
     return (
-      <span>TopicList</span>
+      <div>
+        {this.props.data.map(item => {
+          return (
+            <span key={item.topicid}>{item.title}</span>
+          )
+        })}
+      </div>
     )
   }
+}
+
+TopicList.propTypes = {
+  data: PropTypes.arrayOf(Object).isRequired,
 }
 
 export default TopicList

@@ -1,10 +1,12 @@
 import { takeLatest } from 'redux-saga'
 
 import * as account from './account'
+import * as topics from './topics'
 import * as types from '../constants/actionTypes'
 
 function* rootSagas() {
   yield [
+    // account
     takeLatest(types.LOGIN_REQUEST, account.loginSaga),
     takeLatest(types.LOGOUT_REQUEST, account.logoutSaga),
     takeLatest(types.REGISTER_REQUEST, account.registerSaga),
@@ -13,6 +15,9 @@ function* rootSagas() {
     takeLatest(types.ACTIVATE_REQUEST, account.activateSaga),
     takeLatest(types.SEND_ACTIVATE_EMAIL_REQUEST, account.sendActivateEmailSaga),
     takeLatest(types.VALIDATE_ACCOUNT_REQUEST, account.validateAccountSaga),
+
+    // topics
+    takeLatest(types.FETCH_NEW_TOPICS_REQUEST, topics.fetchNewTopicsSaga),
   ]
 }
 

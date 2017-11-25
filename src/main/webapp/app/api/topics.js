@@ -5,10 +5,12 @@ import {
 
 const topics = {
 
-  new(page = 0, limit = 30) {
+  new({ page, limit }) {
     return axios.get(TOPICS_NEW_URL, {
-      page,
-      count: limit,
+      params: {
+        page,
+        count: limit,
+      },
     })
   },
 }

@@ -28,3 +28,7 @@ export const VALIDATE_ACCOUNT_SUCCESS = '@@account/VALIDATE_ACCOUNT_SUCCESS'
 
 // countdown
 export const SET_COUNTDOWN = '@@countdown/SET_COUNTDOWN'
+
+// topics
+export const FETCH_NEW_TOPICS_REQUEST = '@@topics/FETCH_NEW_TOPICS_REQUEST'
+export const FETCH_NEW_TOPICS_SUCCESS = '@@topics/FETCH_NEW_TOPICS_SUCCESS'
