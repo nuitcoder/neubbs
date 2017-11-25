@@ -83,14 +83,14 @@ public final class MapFilterUtil {
    /**
     * 过滤话题信息（针对 TopicDO， forum_topic）
     *    - id -> topicid (删除 id)
-    *    - 删除 id, userid,
+    *    - 删除 id, userid, lastreplyuserid
     *
     * @param topicInfoMap 话题信息 Map
     */
    public static void filterTopicInfo(Map<String, Object> topicInfoMap) {
       topicInfoMap.put(ParamConst.TOPIC_ID, topicInfoMap.get(ParamConst.ID));
 
-      removeKeys(topicInfoMap, new String[] {ParamConst.ID, ParamConst.USER_ID});
+      removeKeys(topicInfoMap, new String[] {ParamConst.ID, ParamConst.USER_ID, ParamConst.LAST_REPLY_USER_ID});
    }
 
    /**
@@ -100,7 +100,7 @@ public final class MapFilterUtil {
     * @param topicContentInfoMap 话题内容信息Map
     */
    public static void filterTopicContentInfo(Map<String, Object> topicContentInfoMap) {
-      removeKeys(topicContentInfoMap, new String[] {ParamConst.ID, ParamConst.TOPIC_ID, ParamConst.CREATETIME});
+      removeKeys(topicContentInfoMap, new String[] {ParamConst.ID, ParamConst.TOPIC_ID});
    }
 
    /**
