@@ -108,7 +108,7 @@ public class TopicServiceImpl implements ITopicService {
             MapFilterUtil.filterTopicUserInfo(replyUserMap);
 
             replyMap.put("user", replyUserMap);
-            listReplyMap.add(replyUserMap);
+            listReplyMap.add(replyMap);
         }
 
         //最后结果储存至一个 map
