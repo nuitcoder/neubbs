@@ -43,7 +43,7 @@ public class TopicDO {
     public Date getLastreplytime() {
         return lastreplytime;
     }
-    private Date getCreatetime() {
+    public Date getCreatetime() {
         return createtime;
     }
 
