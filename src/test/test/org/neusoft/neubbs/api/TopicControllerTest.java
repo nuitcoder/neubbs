@@ -17,11 +17,14 @@ import org.springframework.test.context.ContextHierarchy;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.util.NestedServletException;
+
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 /**
  * Topic api 测试
@@ -73,12 +76,12 @@ public class TopicControllerTest {
         String topicId = "1";
         mockMvc.perform(
                 MockMvcRequestBuilders.get("/api/topic").param("topicid", topicId)
-        ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
-         .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
-            .andExpect(MockMvcResultMatchers.jsonPath("$.model.topicid").value(Integer.parseInt(topicId)))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.model.user").exists())
-            .andExpect(MockMvcResultMatchers.jsonPath("$.model.lastreplyuser").exists())
-            .andExpect(MockMvcResultMatchers.jsonPath("$.model.replys").exists());
+        ).andExpect(jsonPath("$.success").value(true))
+         .andExpect(jsonPath("$.model").exists())
+            .andExpect(jsonPath("$.model.topicid").value(Integer.parseInt(topicId)))
+            .andExpect(jsonPath("$.model.user").exists())
+            .andExpect(jsonPath("$.model.lastreplyuser").exists())
+            .andExpect(jsonPath("$.model.replys").exists());
 
         printSuccessPassTestMehtodMessage();
     }
@@ -97,14 +100,67 @@ public class TopicControllerTest {
             try {
                 mockMvc.perform(
                         MockMvcRequestBuilders.get("/api/topic").param("topicid", param)
-                ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
-                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists());
+                ).andExpect(jsonPath("$.success").value(false))
+                 .andExpect(jsonPath("$.message").exists());
 
             } catch (NestedServletException ne) {
                 Assert.assertThat(ne.getRootCause(),
                         CoreMatchers.anyOf(CoreMatchers.instanceOf(ParamsErrorException.class),
                                 CoreMatchers.instanceOf(TopicErrorException.class),
                                 CoreMatchers.instanceOf(AccountErrorException.class)));
+            }
+        }
+
+        printSuccessPassTestMehtodMessage();
+    }
+
+    /**
+     * 【/api/topic/reply】 test get topic reply information success
+     */
+    @Test
+    public void testGetTopicReplyInformationSuccess() throws Exception {
+        String replyId = "1";
+
+        ResultActions result = mockMvc.perform(
+                MockMvcRequestBuilders.get("/api/topic/reply")
+                    .param("replyid", replyId)
+        ).andExpect(MockMvcResultMatchers.status().isOk())
+         .andExpect(jsonPath("$.success").value(true))
+         .andExpect(jsonPath("$.message").doesNotExist())
+         .andExpect(jsonPath("$.model").exists());
+
+        String model = "$.model.";
+        result.andExpect(jsonPath(model + "content").exists())
+                .andExpect(jsonPath(model + "agree").exists())
+                .andExpect(jsonPath(model + "oppose").exists())
+                .andExpect(jsonPath(model + "createtime").exists())
+                .andExpect(jsonPath(model + "replyid").value(Integer.parseInt(replyId)))
+                .andExpect(jsonPath(model + "user.image").value(CoreMatchers.nullValue()))
+                .andExpect(jsonPath(model + "user.username").exists());
+
+        printSuccessPassTestMehtodMessage();
+    }
+
+    /**
+     * 【/api/topic/reply】 test get topic reply information throw exception
+     */
+    @Test
+    public void testGetTopicReplyInformationThrowException() throws Exception {
+        String[] params = {null, "*12+", "abc", "11111111111", "11123k3k"};
+
+        for (String param: params) {
+            try {
+                mockMvc.perform(
+                        MockMvcRequestBuilders.get("/api/topic/reply")
+                            .param("replyid", param)
+                ).andExpect(jsonPath("$.success").value(false))
+                 .andExpect(jsonPath("$.message").exists());
+
+            } catch (NestedServletException ne) {
+                Assert.assertThat(ne.getRootCause(),
+                        CoreMatchers.anyOf(CoreMatchers.instanceOf(ParamsErrorException.class),
+                                CoreMatchers.instanceOf(AccountErrorException.class))
+                );
             }
         }
 
