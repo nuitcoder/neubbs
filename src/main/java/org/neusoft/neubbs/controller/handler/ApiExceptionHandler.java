@@ -2,6 +2,7 @@ package org.neusoft.neubbs.controller.handler;
 
 import org.apache.log4j.Logger;
 import org.neusoft.neubbs.controller.annotation.ApiException;
+import org.neusoft.neubbs.controller.api.TopicController;
 import org.neusoft.neubbs.controller.exception.IPrintLog;
 import org.neusoft.neubbs.utils.AnnotationUtil;
 import org.neusoft.neubbs.utils.ResponsePrintWriterUtil;
@@ -18,7 +19,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class ApiExceptionHandler implements HandlerExceptionResolver {
 
-    private Logger logger = Logger.getLogger(ApiExceptionHandler.class);
+    private Logger logger = Logger.getLogger(TopicController.class);
 
     /**
      * 解析异常
@@ -42,7 +43,12 @@ public class ApiExceptionHandler implements HandlerExceptionResolver {
         if (e instanceof IPrintLog) {
             String logMessage = ((IPrintLog) e).getLogMessage();
             if (logMessage != null) {
-                logger.warn(logMessage);
+                //starck root exception element (stacktrace - 堆栈跟踪)
+                StackTraceElement sree = e.getStackTrace()[0];
+
+                logger.warn("\n\t\t【Error reason】: " + logMessage
+                        + "\n\t\t【Error position】: " + sree.getClassName() + " (" + sree.getLineNumber() + " row)"
+                );
             }
         }
 
