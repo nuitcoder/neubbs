@@ -11,23 +11,23 @@
 
 ### 代码检查
 ```
-安装
+A.安装
     File -> Settings -> Plugins -> 输入 CheckStyle-IDEA -> Install
 
-设置快捷键
+B.设置快捷键
     File -> Settings -> KeyMap -> 输入 CheckStyle
             <1>设置“Check Current File”
             <2>设置“Check Project”
     
-导入 Neubbs 代码检查.xml
+C.导入 Neubbs java CheckStyle.xml（代码检查配置文件）
     File -> Settings -> Other Settings -> CheckStyle
-    -> 右界面，上部分，点击右边 '+' 号
-    -> 弹窗界面，File，Browse 选择 “Neubbs Java 代码检查.xml”，顶部输入 Description，Next，Finsh
-    -> 右界面，Scan Scope，设置设置为 “Only Java Sources（but not tests）”
+            -> 右界面，上部分，点击右边 '+' 号
+            -> 弹窗界面，File，Browse 选择 “Neubbs Java 代码检查.xml”，顶部输入 Description，Next，Finsh
+            -> 右界面，Scan Scope，设置设置为 “Only Java Sources（but not tests）”
     
-使用
-    文件检查：编辑代码窗体 -> 右键 Check Current File
-    项目整体检查：
+D.使用
+    - 文件检查：编辑代码窗体 -> 右键 Check Current File
+    - 项目整体检查：
         <1>底部状态栏 -> Check Style 界面 -> 选择 Rules -> 点击相应按钮
         <2>“Check Project” 快捷键
 ```
@@ -35,7 +35,6 @@
 
 ## 后台代码目录结构
 ```
-
 【java源码目录】src/main/java
 └─org
     └─neusoft
@@ -48,6 +47,7 @@
             ├─controller         [控制器]
             │  ├─annotation            [自定义注解]
             │  ├─api                   [api 控制器（此处主要编写接口，提供给前端）]
+            │  ├─data                  [数据管理（例：动态切换数据源）]
             │  ├─exception             [自定义异常]
             │  ├─filter                [过滤器]
             │  ├─handler               [处理器（解析器）]
@@ -56,6 +56,7 @@
             ├─dao                [DAO接口（根据 mapping.xml，封装 SQL 语句操作）]
             ├─dto                [数据传输对象]
             ├─entity             [实体类（对应数据表，领域对象）]
+            │  ├─properties            [自定义配置文件实体类]
             ├─service            [业务包（存放业务接口 + 业务实现类）]
             │  └─impl                  [实现类]
             └─util               [开发工具包（自主开发工具类，应用用于各个模块）]
