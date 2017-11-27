@@ -11,6 +11,7 @@ import org.neusoft.neubbs.controller.exception.ParamsErrorException;
 import org.neusoft.neubbs.controller.exception.TopicErrorException;
 import org.neusoft.neubbs.controller.handler.SwitchDataSourceHandler;
 import org.neusoft.neubbs.service.ITopicService;
+import org.neusoft.neubbs.utils.JsonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.ContextHierarchy;
@@ -24,6 +25,11 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.util.NestedServletException;
 
+import java.util.ArrayList;
+import java.util.Map;
+
+import static org.hamcrest.core.AnyOf.anyOf;
+import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 /**
@@ -160,6 +166,134 @@ public class TopicControllerTest {
                 Assert.assertThat(ne.getRootCause(),
                         CoreMatchers.anyOf(CoreMatchers.instanceOf(ParamsErrorException.class),
                                 CoreMatchers.instanceOf(AccountErrorException.class))
+                );
+            }
+        }
+
+        printSuccessPassTestMehtodMessage();
+    }
+
+    /**
+     * 【/api/topics/new】test get topic list information by page and limit success
+     *      - the optional param limit, neubbs.properties hava default value
+     */
+    @Test
+    public void testGetTopicListInformationByPageAndLimitSuccess() throws Exception {
+        int[][] params = {
+                {20, 3}, {2, 20}, {43, 2}, {3}
+        };
+
+        for (int[] param: params) {
+            String limit;
+            String page;
+            ResultActions result;
+            if (param.length == 1) {
+                page = String.valueOf(param[0]);
+                System.out.print("input param[ page=" + page + " ]");
+
+                result = mockMvc.perform(MockMvcRequestBuilders.get("/api/topics/new").param("page", page));
+            } else {
+                limit = String.valueOf(param[0]);
+                page = String.valueOf(param[1]);
+                System.out.print("input param[ limit=" + limit + "; page=" + page + " ]");
+
+                result = mockMvc.perform(
+                        MockMvcRequestBuilders.get("/api/topics/new")
+                                .param("limit", limit)
+                                .param("page", page)
+                );
+            }
+
+            result.andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.message").doesNotExist())
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
+
+            //get model topic list
+            Map<String, Object> rootMap = JsonUtil.toMapByJSONString(result.andReturn().getResponse().getContentAsString());
+            ArrayList<Map<String, Object>> modelList = (ArrayList<Map<String, Object>>)rootMap.get("model");
+            Map<String, Object> firstModelMap = modelList.get(0);
+
+            //model topic map exist assign key item,$.model[0]
+            Assert.assertThat(firstModelMap.keySet(),
+                    CoreMatchers.hasItems("category","title","comment", "createtime","topicid",
+                            "read", "agree","user", "lastreplyuser")
+            );
+
+            //$.model[0].user
+            Map<String, Object> userMap = (Map<String, Object>) firstModelMap.get("user");
+            Assert.assertThat(userMap.keySet(),
+                    CoreMatchers.allOf(
+                        CoreMatchers.hasItem("image"),CoreMatchers.hasItem("username")
+                    )
+            );
+
+            //$.model[0].lastreplyuser
+            Map<String, Object> lastReplyUserMap = (Map<String, Object>) firstModelMap.get("lastreplyuser");
+            Assert.assertArrayEquals(
+                    lastReplyUserMap.keySet().toArray(), new String[]{"image", "username"}
+            );
+
+            System.out.println("\t<test result: success!>");
+        }
+
+        printSuccessPassTestMehtodMessage();
+    }
+
+    /**
+     * 【/api/topics/new】test get topic list information by page and limit throw exception
+     *      - the optional param limit, neubbs.properties hava default value
+     */
+    @Test
+    public void testGetTopicListInformationByPageAndLimitThrowException() throws Exception {
+        //page and limit, two param
+        String[][] params = {
+                {null, null}, {"1", null},
+                {"1111111111111", "213"}, {"12", "1111111111111"}, {"11111111111111", "1111111111"},
+                {"*-+", "1"}, {"1", "-=="}, {"-&&*%", "****("}, {"asdfasdf*123", "___jhjh123"},
+                {"10000","1", "23", "10000", "10000", "10000"}
+        };
+
+        for (String[] param: params) {
+            String limit = param[0];
+            String page = param[1];
+            try {
+                mockMvc.perform(
+                        MockMvcRequestBuilders.get("/api/topics/new")
+                            .param("limit", limit).param("page", page)
+                ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(CoreMatchers.is("false")))
+                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(CoreMatchers.notNullValue()))
+                 .andExpect(MockMvcResultMatchers.jsonPath("$.model").value(CoreMatchers.nullValue()));
+
+            } catch (NestedServletException ne) {
+                Assert.assertThat(ne.getRootCause(),
+                        CoreMatchers.anyOf(CoreMatchers.instanceOf(ParamsErrorException.class),
+                                CoreMatchers.instanceOf(TopicErrorException.class),
+                                CoreMatchers.instanceOf(AccountErrorException.class)
+                        )
+                );
+            }
+        }
+
+        //only page param
+        String[] pages = {
+                null, "***", "asdfasd", "*fasf", "asdfa123**(", "*123",
+                "11111111111111111",
+                "10000"
+        };
+        for (String page: pages) {
+            try {
+                mockMvc.perform(
+                        MockMvcRequestBuilders.get("/api/topics/new").param("page", page)
+                ).andExpect(jsonPath("$.success").value(false))
+                 .andExpect(jsonPath("$.message").exists())
+                 .andExpect(jsonPath("$.model").doesNotExist());
+
+            } catch (NestedServletException ne) {
+                Assert.assertThat(ne.getRootCause(),
+                        anyOf(instanceOf(ParamsErrorException.class),
+                                instanceOf(TopicErrorException.class),
+                                instanceOf(AccountErrorException.class)
+                        )
                 );
             }
         }
