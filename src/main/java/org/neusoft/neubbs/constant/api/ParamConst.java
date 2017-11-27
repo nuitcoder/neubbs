@@ -19,6 +19,7 @@ public final class ParamConst {
     public static final String PASSWORD = "password";
     public static final String EMAIL = "email";
     public static final String IMAGE = "image";
+    public static final String AVATOR = "avator";
     public static final String RANK = "rank";
     public static final String STATE = "state";
     public static final String CREATETIME = "createtime";

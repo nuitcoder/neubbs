@@ -57,6 +57,7 @@ public final class MapFilterUtil {
     */
    public static void filterUserInfo(Map<String, Object> userInfoMap) {
       userInfoMap.put(ParamConst.USERNAME, userInfoMap.get(ParamConst.NAME));
+      userInfoMap.put(ParamConst.AVATOR, userInfoMap.get(ParamConst.IMAGE));
 
       removeKeys(userInfoMap,
               new String[] {
@@ -77,7 +78,10 @@ public final class MapFilterUtil {
       keepKesy(userInfoMap, new String[] {ParamConst.NAME, ParamConst.IMAGE});
 
       userInfoMap.put(ParamConst.USERNAME, userInfoMap.get(ParamConst.NAME));
+      userInfoMap.put(ParamConst.AVATOR, userInfoMap.get(ParamConst.IMAGE));
+
       userInfoMap.remove(ParamConst.NAME);
+      userInfoMap.remove(ParamConst.IMAGE);
    }
 
    /**
