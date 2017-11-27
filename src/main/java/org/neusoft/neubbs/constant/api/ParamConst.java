@@ -37,6 +37,8 @@ public final class ParamConst {
     public static final String TOPIC_ID = "topicid";
     public static final String CATEGORY = "category";
     public static final String TITLE = "title";
+    public static final String COMMENT = "comment";
+    public static final String REPLIES = "replies";
     public static final String TOPIC_CONTENT = "topicContent";
 
     public static final String CONTENT = "content";

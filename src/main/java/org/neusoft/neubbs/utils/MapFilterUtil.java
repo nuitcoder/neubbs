@@ -70,7 +70,9 @@ public final class MapFilterUtil {
    /**
     * 过滤话题用户信息（只保留 username 和 image）
     *    - 只保留 name, image
-    *    - name -> username（删除 name）
+    *    - name -> username
+    *    - image -> avator
+    *    - 删除 name, image
     *
     * @param userInfoMap 用户信息Map
     */
@@ -86,15 +88,18 @@ public final class MapFilterUtil {
 
    /**
     * 过滤话题信息（针对 TopicDO， forum_topic）
-    *    - id -> topicid (删除 id)
-    *    - 删除 id, userid, lastreplyuserid
+    *    - id -> topicid
+    *    - comment -> replies
+    *    - 删除 id, userid, comment, lastreplyuserid
     *
     * @param topicInfoMap 话题信息 Map
     */
    public static void filterTopicInfo(Map<String, Object> topicInfoMap) {
       topicInfoMap.put(ParamConst.TOPIC_ID, topicInfoMap.get(ParamConst.ID));
+      topicInfoMap.put(ParamConst.REPLIES, topicInfoMap.get(ParamConst.COMMENT));
 
-      removeKeys(topicInfoMap, new String[] {ParamConst.ID, ParamConst.USER_ID, ParamConst.LAST_REPLY_USER_ID});
+      removeKeys(topicInfoMap, new String[] {ParamConst.ID, ParamConst.USER_ID,
+              ParamConst.COMMENT, ParamConst.LAST_REPLY_USER_ID});
    }
 
    /**
@@ -110,7 +115,7 @@ public final class MapFilterUtil {
    /**
     * 过滤话题回复（针对 TopicReplyDO, forum_topic_reply）
     *    - id -> replyId
-    *    - 删除（id，userid，topicid）
+    *    - 删除 id，userid，topicid
     *
     * @param topicReplyInfoMap 话题回复信息Map
     */
