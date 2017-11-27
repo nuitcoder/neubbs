@@ -88,14 +88,19 @@ public class TopicServiceImpl implements ITopicService {
 
         Map<String, Object> topicContentMap = JsonUtil.toMapByObject(this.getTopicContentDOByTopicId(topicId));
         Map<String, Object> authorUserMap = JsonUtil.toMapByObject(userService.getUserInfoById(topic.getUserid()));
-        Map<String, Object> lastReplyUserMap = JsonUtil
-                .toMapByObject(userService.getUserInfoById(topic.getLastreplyuserid()));
+
+        Integer lastReplyUserId = topic.getLastreplyuserid();
+        Map<String, Object> lastReplyUserMap = null;
+        if (lastReplyUserId != null) {
+            lastReplyUserMap = JsonUtil.toMapByObject(userService.getUserInfoById(lastReplyUserId));
+            MapFilterUtil.filterTopicUserInfo(lastReplyUserMap);
+        }
 
         //过滤信息
         MapFilterUtil.filterTopicInfo(topicMap);
         MapFilterUtil.filterTopicContentInfo(topicContentMap);
         MapFilterUtil.filterTopicUserInfo(authorUserMap);
-        MapFilterUtil.filterTopicUserInfo(lastReplyUserMap);
+
 
         //回复列表
         List<Map<String, Object>> listReplyMap = new ArrayList<>();
