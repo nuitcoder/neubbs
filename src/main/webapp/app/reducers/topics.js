@@ -10,7 +10,7 @@ export default (state = initialState, action) => {
     case (types.FETCH_NEW_TOPICS_SUCCESS): {
       return {
         ...state,
-        topic: payload,
+        topic: state.topic.concat(payload),
       }
     }
     default:

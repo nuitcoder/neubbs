@@ -27,7 +27,7 @@ const Right = styled.div`
   padding-top: 15px;
 `
 
-const AvatarImg = styled.img`
+const AvatorImg = styled.img`
   height: 48px;
   width: 48px;
   border-radius: 50%;
@@ -85,7 +85,7 @@ const TopicItem = (props) => {
     <Wrapper>
       <Left>
         <a href="#" title={topic.user.username}>
-          <AvatarImg src={topic.user.image} />
+          <AvatorImg src={topic.user.avator} />
         </a>
       </Left>
       <Center>
@@ -95,23 +95,24 @@ const TopicItem = (props) => {
         </Header>
         <Info>
           <Username href="#">{topic.user.username}</Username>
-          <FormattedMessage
-            id="topic.createtime.text"
-            values={{
-              time: <FormattedRelative value={topic.createtime} />,
-            }}
-          />
-          <FormattedMessage
-            id="topic.lastreply.text"
-            values={{
-              username: <Username href="#">{topic.lastreplyuser.username}</Username>,
-              time: <FormattedRelative value={topic.lastreplytime} />,
-            }}
-          />
+          {topic.replies === 0 ?
+            <FormattedMessage
+              id="topic.createtime.text"
+              values={{
+                time: <FormattedRelative value={topic.createtime} />,
+              }}
+            /> :
+            <FormattedMessage
+              id="topic.lastreply.text"
+              values={{
+                username: <Username href="#">{topic.lastreplyuser.username}</Username>,
+                time: <FormattedRelative value={topic.lastreplytime} />,
+              }}
+            />}
         </Info>
       </Center>
       <Right>
-        <Count href="#">{topic.comment}</Count>
+        <Count href="#">{topic.replies}</Count>
       </Right>
     </Wrapper>
   )

@@ -3,15 +3,40 @@ import PropTypes from 'prop-types'
 import { Row } from 'react-bootstrap'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
+import _ from 'lodash'
 
 import actions from '../actions'
 
 import TopicList from '../components/TopicList'
 
 class Home extends Component {
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      page: 0,
+      hasMore: true,
+    }
+
+    this.loadTopic = this.loadTopic.bind(this)
+  }
+
   componentWillMount() {
+    this.loadTopic()
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.topic.length > this.props.topic.length) {
+      this.setState({ hasMore: true })
+    }
+  }
+
+  loadTopic() {
+    const page = this.state.page + 1
+    this.setState({ page })
+
     this.props.actions.fetchNewTopics({
-      page: 1,
+      page,
       limit: 25,
     })
   }
@@ -20,7 +45,12 @@ class Home extends Component {
     const { topic } = this.props
     return (
       <Row>
-        <TopicList data={topic} />
+        <TopicList
+          data={topic}
+          pageStart={1}
+          hasMore={this.state.hasMore}
+          loadMore={_.debounce(this.loadTopic, 5000)}
+        />
       </Row>
     )
   }
