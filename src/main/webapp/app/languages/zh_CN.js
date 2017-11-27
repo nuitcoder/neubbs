@@ -43,6 +43,10 @@ export default {
   // Validate
   'validate.alert.success': '账号激活成功',
 
+  // Topic
+  'topic.createtime.text': ' · 发布于 {time}',
+  'topic.lastreply.text': ' · 最后由 {username} 回复于 {time}',
+
   // Message
   'username or password is incorrect': '用户名或密码错误',
 }

@@ -9,7 +9,7 @@ const topics = {
     return axios.get(TOPICS_NEW_URL, {
       params: {
         page,
-        count: limit,
+        limit,
       },
     })
   },
