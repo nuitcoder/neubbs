@@ -91,6 +91,7 @@ class Header extends Component {
   render() {
     return (
       <StyledNavbar
+        fixedTop
         expanded={this.state.navExpanded}
         onToggle={this.setNavExpanded}
       >

@@ -31,7 +31,7 @@ const StyledGridP = styled(Grid)`
 `
 
 const StyledGrid = styled(Grid)`
-  padding-top: 20px;
+  padding-top: 70px;
   padding-bottom: 20px;
 `
 
