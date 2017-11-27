@@ -72,9 +72,9 @@ public class FileController {
      * @throws DatabaseOperationFailException 数据库操作异常
      */
     @LoginAuthorization @AccountActivation
-    @RequestMapping(value = "/image", method = RequestMethod.POST)
+    @RequestMapping(value = "/avator", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseJsonDTO uploadUserImage(@RequestParam("image")MultipartFile multipartFile,
+    public ResponseJsonDTO uploadUserImage(@RequestParam("avatorImage")MultipartFile multipartFile,
                                            HttpServletRequest request)
             throws FileUploadErrorException, AccountErrorException, DatabaseOperationFailException {
 

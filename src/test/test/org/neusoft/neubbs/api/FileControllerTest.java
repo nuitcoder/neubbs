@@ -82,7 +82,7 @@ public class FileControllerTest {
     @Test
     public void testUploadUserImageSuccess() throws Exception {
         //build MultipartFile type(input name, 文件名，文件类型，内容字节)
-        String htmlInputName = "image";
+        String htmlInputName = "avatorImage";
         String fileName = "testUploadImage";
         byte [] fileBytes = new byte[1024 * 1024 * 1];
         MockMultipartFile[] files = {
@@ -97,7 +97,7 @@ public class FileControllerTest {
         //upload user image file
         for (MockMultipartFile file: files) {
             mockMvc.perform(
-                    MockMvcRequestBuilders.fileUpload("/api/file/image")
+                    MockMvcRequestBuilders.fileUpload("/api/file/avator")
                             .file(file)
                             .cookie(new Cookie(ParamConst.AUTHENTICATION, authentication))
             ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
