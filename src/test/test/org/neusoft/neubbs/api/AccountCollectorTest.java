@@ -18,9 +18,11 @@ import org.neusoft.neubbs.controller.exception.DatabaseOperationFailException;
 import org.neusoft.neubbs.controller.exception.ParamsErrorException;
 import org.neusoft.neubbs.controller.exception.TokenErrorException;
 import org.neusoft.neubbs.controller.handler.SwitchDataSourceHandler;
+import org.neusoft.neubbs.dao.IUserDAO;
 import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.service.IRedisService;
 import org.neusoft.neubbs.service.IUserService;
+import org.neusoft.neubbs.utils.FtpUtil;
 import org.neusoft.neubbs.utils.JsonUtil;
 import org.neusoft.neubbs.utils.JwtTokenUtil;
 import org.neusoft.neubbs.utils.SecretUtil;
@@ -73,6 +75,9 @@ public class AccountCollectorTest {
 
     @Autowired
     private IUserService userService;
+
+    @Autowired
+    private IUserDAO userDAO;
 
     static class Param {
         String key;
@@ -418,6 +423,10 @@ public class AccountCollectorTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").doesNotExist())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.model.username").value(username));
+
+        //remove ftp server directory
+        int userId = userDAO.getUserMaxId();
+        FtpUtil.deleteDirectory("/user/" + userId + "-" + username);
 
         printSuccessPassTestMehtodMessage();
     }

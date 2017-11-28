@@ -69,4 +69,7 @@ public final class LogWarn {
     public static final String TOPIC_11 = " 不存在回复";
 
     public static final String TOPIC_12 = "page 与 limit 参数有误， 获取范围超过话题数量，";
+
+    /******************************Ftp Service*********************************/
+    public static final String FTP_01 = "注册用户，ftp 服务器新建 个人目录，抛出 IO 异常";
 }

@@ -60,4 +60,9 @@ public final class ApiMessage {
 
     public static final String FAIL_GET_TOPIC_LSIT = "failed to get topic list";
 
+    /**
+     * Ftp Service
+     */
+    public static final String FTP_SERVICE_EXCEPTION = "ftp service exception";
+
 }

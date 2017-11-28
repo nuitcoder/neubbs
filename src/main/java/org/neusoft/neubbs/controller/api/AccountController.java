@@ -11,11 +11,13 @@ import org.neusoft.neubbs.controller.annotation.AccountActivation;
 import org.neusoft.neubbs.controller.annotation.LoginAuthorization;
 import org.neusoft.neubbs.controller.exception.AccountErrorException;
 import org.neusoft.neubbs.controller.exception.DatabaseOperationFailException;
+import org.neusoft.neubbs.controller.exception.FtpServiceErrorException;
 import org.neusoft.neubbs.controller.exception.ParamsErrorException;
 import org.neusoft.neubbs.controller.exception.TokenErrorException;
 import org.neusoft.neubbs.dto.ResponseJsonDTO;
 import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.entity.properties.NeubbsConfigDO;
+import org.neusoft.neubbs.service.IFtpService;
 import org.neusoft.neubbs.service.IRedisService;
 import org.neusoft.neubbs.service.IUserService;
 import org.neusoft.neubbs.utils.CookieUtil;
@@ -69,23 +71,27 @@ import java.util.Map;
 @RequestMapping("/api/account")
 public final class AccountController {
 
-    private final IUserService userService;
     private final ThreadPoolTaskExecutor taskExecutor;
     private final Producer captchaProducer;
+
+    private final IUserService userService;
     private final IRedisService redisService;
+    private final IFtpService ftpService;
+
     private final NeubbsConfigDO neubbsConfig;
 
     /**
      * Constructor（自动注入）
      */
     @Autowired
-    private AccountController(IUserService userService, ThreadPoolTaskExecutor taskExecutor,
-                              Producer captchaProducer, IRedisService redisService,
-                              NeubbsConfigDO neubbsConfig) {
-        this.userService = userService;
+    private AccountController(ThreadPoolTaskExecutor taskExecutor, Producer captchaProducer,
+                              IUserService userService, IRedisService redisService,
+                              IFtpService ftpService, NeubbsConfigDO neubbsConfig) {
         this.taskExecutor = taskExecutor;
         this.captchaProducer = captchaProducer;
+        this.userService = userService;
         this.redisService = redisService;
+        this.ftpService = ftpService;
         this.neubbsConfig = neubbsConfig;
     }
 
@@ -300,11 +306,13 @@ public final class AccountController {
      * @throws ParamsErrorException 参数错误异常
      * @throws AccountErrorException 账户错误异常
      * @throws DatabaseOperationFailException 数据库操作失败异常
+     * @throws FtpServiceErrorException FTP服务错误异常
      */
     @RequestMapping(value = "/register", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
     public ResponseJsonDTO register(@RequestBody Map<String, Object> requestBodyParamsMap)
-            throws ParamsErrorException, AccountErrorException, DatabaseOperationFailException {
+            throws ParamsErrorException, AccountErrorException,
+            DatabaseOperationFailException, FtpServiceErrorException {
 
         //参数处理
         String username = (String) requestBodyParamsMap.get(ParamConst.USERNAME);
@@ -328,6 +336,8 @@ public final class AccountController {
 
         userService.registerUser(user);
         userService.uploadUserImage(user.getName(), ParamConst.USER_DEFAULT_IMAGE);
+
+        ftpService.registerUserNewUserPersonDirectory(user);
 
         UserDO dbUser = userService.getUserInfoById(user.getId());
 
