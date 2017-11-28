@@ -26,14 +26,16 @@ class Home extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
+    const { page } = this.state
     if (nextProps.topic.length > this.props.topic.length) {
-      this.setState({ hasMore: true })
+      this.setState({
+        page: page + 1,
+      })
     }
   }
 
   loadTopic() {
     const page = this.state.page + 1
-    this.setState({ page })
 
     this.props.actions.fetchNewTopics({
       page,
@@ -49,7 +51,7 @@ class Home extends Component {
           data={topic}
           pageStart={1}
           hasMore={this.state.hasMore}
-          loadMore={_.debounce(this.loadTopic, 5000)}
+          loadMore={_.throttle(this.loadTopic, 1000)}
         />
       </Row>
     )

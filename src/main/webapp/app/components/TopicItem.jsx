@@ -43,7 +43,7 @@ const Info = styled.div`
   font-size: 12px;
 `
 
-const Category = styled.span`
+const Category = styled.a`
   color: #777;
   margin-right: 3px;
 `
