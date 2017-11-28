@@ -5,6 +5,7 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.neusoft.neubbs.constant.api.ParamConst;
 import org.neusoft.neubbs.controller.handler.SwitchDataSourceHandler;
 import org.neusoft.neubbs.dao.IUserDAO;
 import org.neusoft.neubbs.entity.UserDO;
@@ -91,6 +92,9 @@ public class UserDAOTest {
             //SendEmailUtil.sendEmail(emailArray[porinter++],
             //                        "Nebbbs 开发团队",
             //                        "欢迎您成为 Neubbs 项目管理员\n您的的管理员帐号：" + admin + " 密码：123456");//发送邮件
+
+            //修改用户头像,设置默认图片
+            userDAO.updateUserImageByName(admin, ParamConst.USER_DEFAULT_IMAGE);
 
             System.out.println("管理员" + admin + "添加完毕");
         }

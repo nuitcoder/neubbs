@@ -289,6 +289,7 @@ public final class AccountController {
      *          - 检测用户名是否被占用
      *          - 检测邮箱
      *          - 构建用户，注册
+     *          - 修改用户头像，设置默认值
      *          - 根据 id 重新获取用户数据
      *
      *      C.返回成功状态
@@ -326,6 +327,7 @@ public final class AccountController {
         user.setPassword(SecretUtil.encryptUserPassword(password));
 
         userService.registerUser(user);
+        userService.uploadUserImage(user.getName(), ParamConst.USER_DEFAULT_IMAGE);
 
         UserDO dbUser = userService.getUserInfoById(user.getId());
 

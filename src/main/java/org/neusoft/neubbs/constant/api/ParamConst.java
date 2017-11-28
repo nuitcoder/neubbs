@@ -31,6 +31,8 @@ public final class ParamConst {
     public static final String TOKEN = "token";
     public static final String AUTHENTICATION = "authentication";
 
+    public static final String USER_DEFAULT_IMAGE = "default-avator-min.jpeg";
+
     /**
      * Topic
      */
