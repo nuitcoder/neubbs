@@ -8,6 +8,7 @@ import _ from 'lodash'
 import actions from '../actions'
 
 import TopicList from '../components/TopicList'
+import Widgets from '../components/Widgets'
 
 class Home extends Component {
   constructor(props) {
@@ -53,6 +54,7 @@ class Home extends Component {
           hasMore={this.state.hasMore}
           loadMore={_.throttle(this.loadTopic, 1000)}
         />
+        <Widgets />
       </Row>
     )
   }

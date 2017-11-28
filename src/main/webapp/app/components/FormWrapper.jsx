@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import { Col } from 'react-bootstrap'
 
@@ -36,6 +37,11 @@ const FormWrapper = ({ title, children }) => {
       </FormContent>
     </Wrapper>
   )
+}
+
+FormWrapper.propTypes = {
+  title: PropTypes.string.isRequired,
+  children: PropTypes.element.isRequired,
 }
 
 export default FormWrapper

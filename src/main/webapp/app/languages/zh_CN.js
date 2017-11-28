@@ -47,6 +47,9 @@ export default {
   'topic.createtime.text': ' · 发布于 {time}',
   'topic.lastreply.text': ' · 最后由 {username} 回复于 {time}',
 
+  // Widget
+  'widgets.newtopic.text': '发布新话题',
+
   // Message
   'username or password is incorrect': '用户名或密码错误',
 }

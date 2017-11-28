@@ -113,11 +113,13 @@ class Header extends Component {
   }
 }
 
-Header.PropTypes = {
+Header.propTypes = {
   isLogin: PropTypes.bool.isRequired,
   router: PropTypes.object.isRequired,
-  account: PropTypes.object.isRequired,
-  actions: PropTypes.func.isRequired,
+  intl: PropTypes.object.isRequired,
+  actions: PropTypes.shape({
+    logout: PropTypes.func.isRequired,
+  }).isRequired,
 }
 
 const mapStateToProps = (state) => {
