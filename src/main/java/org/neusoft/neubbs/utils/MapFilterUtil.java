@@ -156,7 +156,7 @@ public final class MapFilterUtil {
          Integer id = (Integer) userInfoMap.get(ParamConst.ID);
          String username = (String) userInfoMap.get(ParamConst.NAME);
 
-         avatorUrl.append(id + "-" + username + "/" + image);
+         avatorUrl.append(id + "-" + username + "/avator/" + image);
       }
 
       return avatorUrl.toString();
