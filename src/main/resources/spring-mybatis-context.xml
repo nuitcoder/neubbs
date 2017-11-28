@@ -11,11 +11,16 @@
 		<property name="url" value="${cloud.url}" />
 		<property name="username" value="${cloud.username}" />
 		<property name="password" value="${cloud.password}" />
-		<property name="initialSize" value="${initialSize}"></property>
-		<property name="maxActive" value="${maxActive}"></property>
-		<property name="maxIdle" value="${maxIdle}"></property>
-		<property name="minIdle" value="${minIdle}"></property>
-		<property name="maxWait" value="${maxWait}"></property>
+		<property name="initialSize" value="${initialSize}" />
+		<property name="maxActive" value="${maxActive}" />
+		<property name="maxIdle" value="${maxIdle}" />
+		<property name="minIdle" value="${minIdle}" />
+		<property name="maxWait" value="${maxWait}" />
+		
+		<!-- 配置检查连接是否释放，若释放获取一个新的连接 -->
+		<property name="validationQuery" value="${validationQuery}" />
+		<property name="testOnBorrow" value="${testOnBorrow}" />
+		<property name="testWhileIdle" value="${testWhileIdle}" />
 	</bean>
 
 	<!--【本地】数据源 -->
