@@ -40,6 +40,7 @@
 		<property name="userImageUploadPath" value="${user.image.upload.path}" />
 		<property name="accountApiVaslidateUrl" value="${account.api.validate.url}" />
 		<property name="topicsApiRequestParamLimitDefault" value="${topics.api.request.param.limit.default}" />
+		<property name="userFtpUrl" value="${user.ftp.url}" />
 	</bean>
 
 	<!-- Spring 线程池 -->

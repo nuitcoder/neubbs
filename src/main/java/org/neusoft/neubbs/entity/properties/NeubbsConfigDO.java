@@ -13,6 +13,7 @@ public class NeubbsConfigDO {
     private Integer topicsApiRequestParamLimitDefault;
     private String userImageUploadPath;
     private String accountApiVaslidateUrl;
+    private String userFtpUrl;
 
     public Integer getCookieAutoLoginMaxAgeDay() {
         //day -> second
@@ -45,6 +46,14 @@ public class NeubbsConfigDO {
 
     public void setAccountApiVaslidateUrl(String accountApiVaslidateUrl) {
         this.accountApiVaslidateUrl = accountApiVaslidateUrl;
+    }
+
+    public String getUserFtpUrl() {
+        return userFtpUrl;
+    }
+
+    public void setUserFtpUrl(String userFtpUrl) {
+        this.userFtpUrl = userFtpUrl;
     }
 
 }

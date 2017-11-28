@@ -82,4 +82,9 @@ public final class SetConst {
     public static final String CHARACTER_ENCODING = "utf-8";
     public static final String CONTENT_TYPE = "application/json;charset=UTF-8";
 
+    /**
+     * 默认字符串
+     *      - 用于区分用户头像是否为默认值
+     */
+    public static final String DEFAULT = "default";
 }
