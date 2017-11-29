@@ -141,7 +141,7 @@ public class TopicControllerTest {
                 .andExpect(jsonPath(model + "oppose").exists())
                 .andExpect(jsonPath(model + "createtime").exists())
                 .andExpect(jsonPath(model + "replyid").value(Integer.parseInt(replyId)))
-                .andExpect(jsonPath(model + "user.image").value(CoreMatchers.nullValue()))
+                .andExpect(jsonPath(model + "user.avator").value(CoreMatchers.notNullValue()))
                 .andExpect(jsonPath(model + "user.username").exists());
 
         printSuccessPassTestMehtodMessage();
@@ -215,7 +215,7 @@ public class TopicControllerTest {
 
             //model topic map exist assign key item,$.model[0]
             Assert.assertThat(firstModelMap.keySet(),
-                    CoreMatchers.hasItems("category","title","comment", "createtime","topicid",
+                    CoreMatchers.hasItems("category","title","replies", "createtime","topicid",
                             "read", "agree","user", "lastreplyuser")
             );
 
@@ -223,14 +223,14 @@ public class TopicControllerTest {
             Map<String, Object> userMap = (Map<String, Object>) firstModelMap.get("user");
             Assert.assertThat(userMap.keySet(),
                     CoreMatchers.allOf(
-                        CoreMatchers.hasItem("image"),CoreMatchers.hasItem("username")
+                        CoreMatchers.hasItem("avator"),CoreMatchers.hasItem("username")
                     )
             );
 
             //$.model[0].lastreplyuser
             Map<String, Object> lastReplyUserMap = (Map<String, Object>) firstModelMap.get("lastreplyuser");
             Assert.assertArrayEquals(
-                    lastReplyUserMap.keySet().toArray(), new String[]{"image", "username"}
+                    lastReplyUserMap.keySet().toArray(), new String[]{"username", "avator"}
             );
 
             System.out.println("\t<test result: success!>");
