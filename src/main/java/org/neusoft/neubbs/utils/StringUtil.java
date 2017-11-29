@@ -123,11 +123,13 @@ public final class StringUtil {
         }
 
         StringBuilder avatorFtpUrl = new StringBuilder("ftp://");
-            avatorFtpUrl.append(props.getProperty("ftp.ip"));
+            avatorFtpUrl.append(props.getProperty("ftp.ip") + "/user/");
 
         String imageFileName = (String) userInfoMap.get(ParamConst.IMAGE);
         if (imageFileName.contains(SetConst.DEFAULT)) {
-            avatorFtpUrl.append(imageFileName);
+            avatorFtpUrl.append(
+                    imageFileName
+            );
         } else {
             avatorFtpUrl.append((Integer) userInfoMap.get(ParamConst.ID) + "-"
                     + (String) userInfoMap.get(ParamConst.NAME)
