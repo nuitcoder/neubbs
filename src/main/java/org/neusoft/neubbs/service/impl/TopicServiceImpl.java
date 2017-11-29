@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -168,14 +169,18 @@ public class TopicServiceImpl implements ITopicService {
                 continue;
             }
             Map<String, Object> topicContentMap = JsonUtil.toMapByObject(topicContent);
-            Map<String, Object> authorUserMap = JsonUtil.toMapByObject(userService.getUserInfoById(topic.getUserid()));
-            Map<String, Object> lastReplyUserMap =
-                    JsonUtil.toMapByObject(userService.getUserInfoById(topic.getLastreplyuserid()));
 
+            Map<String, Object> authorUserMap = JsonUtil.toMapByObject(userService.getUserInfoById(topic.getUserid()));
+
+            Map<String, Object> lastReplyUserMap = new LinkedHashMap<>();
+            if (topic.getLastreplyuserid() != null) {
+                lastReplyUserMap = JsonUtil.toMapByObject(userService.getUserInfoById(topic.getLastreplyuserid()));
+                MapFilterUtil.filterTopicUserInfo(lastReplyUserMap);
+            }
+            
             MapFilterUtil.filterTopicInfo(topicMap);
             MapFilterUtil.filterTopicContentInfo(topicContentMap);
             MapFilterUtil.filterTopicUserInfo(authorUserMap);
-            MapFilterUtil.filterTopicUserInfo(lastReplyUserMap);
 
             topicMap.putAll(topicContentMap);
             topicMap.put("user", authorUserMap);
