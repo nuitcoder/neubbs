@@ -7,6 +7,7 @@ import org.neusoft.neubbs.utils.FtpUtil;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.List;
 
 /**
  * FtpUtil 测试类
@@ -30,6 +31,17 @@ public class FtpUtilTest {
     }
 
     /**
+     * 测试获取指定 FTP 服务器目录下, 文件集合
+     */
+    @Ignore
+    public void testListDirectoryFileName() throws Exception {
+        List<String> fileNameList = FtpUtil.listDirectoryFileName("/user/6-suvan/avator");
+        for (String name: fileNameList) {
+            System.out.println("文件名：" + name);
+        }
+    }
+
+    /**
      * 测试上传文件
      */
     @Ignore
@@ -42,24 +54,19 @@ public class FtpUtilTest {
     }
 
     /**
-     * 测试删除指定文件
+     * 测试删除目录 or 文件
+     *      - 删除目录的话，第二参数为 null
      */
     @Ignore
-    public void testDeleteFile() throws Exception {
-        testUploadFileToFtpRemoteStorage();
-
-        FtpUtil.deleteFile("/testUser/user","avator.png");
+    public void testDelete() throws Exception {
+        FtpUtil.delete("test/test3", "test.jpeg");
     }
 
     /**
-     * 测试删除目录内所有文件
+     * 测试删除目录（及内部子文件夹,文件）
      */
     @Ignore
     public void tesDeleteDirectoryAllContent() throws Exception {
-        testCreateDirectory();
-        testUploadFileToFtpRemoteStorage();
-
         FtpUtil.deleteDirectory("/test");
-        FtpUtil.deleteDirectory("/testUser");
     }
 }
