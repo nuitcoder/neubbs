@@ -1,11 +1,18 @@
 package org.neusoft.neubbs.utils;
 
 import org.neusoft.neubbs.constant.api.ApiMessage;
+import org.neusoft.neubbs.constant.api.ParamConst;
 import org.neusoft.neubbs.constant.api.SetConst;
 import org.neusoft.neubbs.constant.log.LogWarn;
 import org.neusoft.neubbs.controller.exception.TokenErrorException;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PropertiesLoaderUtils;
 
+import java.io.IOException;
 import java.util.Calendar;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * 字符串 工具类
@@ -15,7 +22,6 @@ import java.util.Calendar;
 public final class StringUtil {
 
     private StringUtil() { }
-
 
     /**
      * 空判断（true - 为空）
@@ -98,5 +104,55 @@ public final class StringUtil {
     public static String getSeparateDay(long startTime, long endTime) {
         int separateDay = (int) ((startTime - endTime) / SetConst.ONE_DAY_MS);
         return separateDay == 0 ? SetConst.TODAY : separateDay + SetConst.DAY_AGE;
+    }
+
+    /**
+     * 拼接用户头像 FTP URL
+     *
+     * @param userInfoMap 用户信息键值对
+     * @return String model-user-avator完整URL
+     */
+    public static String spliceUserAvatorImageFtpUrl(Map<String, Object> userInfoMap) {
+
+        Resource resource = new ClassPathResource("/neubbs.properties");
+        Properties props = null;
+        try {
+            props = PropertiesLoaderUtils.loadProperties(resource);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        StringBuilder avatorFtpUrl = new StringBuilder("ftp://");
+            avatorFtpUrl.append(props.getProperty("ftp.ip"));
+
+        String imageFileName = (String) userInfoMap.get(ParamConst.IMAGE);
+        if (imageFileName.contains(SetConst.DEFAULT)) {
+            avatorFtpUrl.append(imageFileName);
+        } else {
+            avatorFtpUrl.append((Integer) userInfoMap.get(ParamConst.ID) + "-"
+                    + (String) userInfoMap.get(ParamConst.NAME)
+                    + "/avator/" + imageFileName
+            );
+        }
+
+        return avatorFtpUrl.toString();
+    }
+
+    /**
+     * 补全前后斜杠（\）
+     *      - 用于补全 URL 路径
+     *
+     * @param str 输入字符串
+     * @return String 补全结果
+     */
+    public static String completeBeforeAfterSprit(String str) {
+        char firstChar = str.charAt(0);
+        char lastChar = str.charAt(str.length() - 1);
+
+        StringBuilder sb = new StringBuilder(str);
+            sb.insert(0, firstChar == '/' ? "" : "/");
+            sb.append(lastChar == '/' ? "" : "/");
+
+        return sb.toString();
     }
 }

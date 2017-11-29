@@ -2,10 +2,6 @@ package org.neusoft.neubbs.utils;
 
 
 import org.neusoft.neubbs.constant.api.ParamConst;
-import org.neusoft.neubbs.constant.api.SetConst;
-import org.neusoft.neubbs.entity.properties.NeubbsConfigDO;
-import org.springframework.web.context.ContextLoader;
-import org.springframework.web.context.WebApplicationContext;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -64,7 +60,7 @@ public final class MapFilterUtil {
       userInfoMap.put(ParamConst.USERNAME, userInfoMap.get(ParamConst.NAME));
 
       //拼接用户头像完整路径
-      userInfoMap.put(ParamConst.AVATOR, getUserAvatorImageUrl(userInfoMap));
+      userInfoMap.put(ParamConst.AVATOR, StringUtil.spliceUserAvatorImageFtpUrl(userInfoMap));
 
       removeKeys(userInfoMap,
               new String[] {
@@ -89,7 +85,7 @@ public final class MapFilterUtil {
       userInfoMap.put(ParamConst.USERNAME, userInfoMap.get(ParamConst.NAME));
 
       //拼接用户头像完整路径
-      userInfoMap.put(ParamConst.AVATOR, getUserAvatorImageUrl(userInfoMap));
+      userInfoMap.put(ParamConst.AVATOR, StringUtil.spliceUserAvatorImageFtpUrl(userInfoMap));
 
       userInfoMap.remove(ParamConst.ID);
       userInfoMap.remove(ParamConst.NAME);
@@ -133,32 +129,5 @@ public final class MapFilterUtil {
       topicReplyInfoMap.put(ParamConst.REPLY_ID, topicReplyInfoMap.get(ParamConst.ID));
 
       removeKeys(topicReplyInfoMap, new String[] {ParamConst.ID, ParamConst.USER_ID, ParamConst.TOPIC_ID});
-   }
-
-   /**
-    * 获取用户 avator 图片 URL
-    *
-    * @param userInfoMap 用户信息键值对
-    * @return String 用户头像完整 ftp 地址
-    */
-   private static String getUserAvatorImageUrl(Map<String, Object> userInfoMap) {
-      String image = (String) userInfoMap.get(ParamConst.IMAGE);
-
-      //获取容器中的 bean
-      WebApplicationContext wac = ContextLoader.getCurrentWebApplicationContext();
-      NeubbsConfigDO neubbsConfig = (NeubbsConfigDO) wac.getBean("neubbsConfig");
-
-      StringBuilder avatorUrl = new StringBuilder(neubbsConfig.getUserFtpUrl());
-
-      if (image.contains(SetConst.DEFAULT)) {
-         avatorUrl.append(image);
-      } else {
-         Integer id = (Integer) userInfoMap.get(ParamConst.ID);
-         String username = (String) userInfoMap.get(ParamConst.NAME);
-
-         avatorUrl.append(id + "-" + username + "/avator/" + image);
-      }
-
-      return avatorUrl.toString();
    }
 }
