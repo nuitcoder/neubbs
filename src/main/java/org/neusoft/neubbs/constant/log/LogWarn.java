@@ -72,4 +72,5 @@ public final class LogWarn {
 
     /******************************Ftp Service*********************************/
     public static final String FTP_01 = "注册用户，ftp 服务器新建 个人目录，抛出 IO 异常";
+    public static final String FTP_02 = "上传用户头像图片，抛出 IO 异常";
 }

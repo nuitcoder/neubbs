@@ -10,10 +10,12 @@ import org.neusoft.neubbs.controller.annotation.LoginAuthorization;
 import org.neusoft.neubbs.controller.exception.AccountErrorException;
 import org.neusoft.neubbs.controller.exception.DatabaseOperationFailException;
 import org.neusoft.neubbs.controller.exception.FileUploadErrorException;
+import org.neusoft.neubbs.controller.exception.FtpServiceErrorException;
 import org.neusoft.neubbs.dto.ResponseJsonDTO;
 import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.entity.properties.NeubbsConfigDO;
 import org.neusoft.neubbs.service.IFileService;
+import org.neusoft.neubbs.service.IFtpService;
 import org.neusoft.neubbs.service.IUserService;
 import org.neusoft.neubbs.utils.CookieUtil;
 import org.neusoft.neubbs.utils.JwtTokenUtil;
@@ -40,6 +42,7 @@ public class FileController {
 
     private final IUserService userService;
     private final IFileService fileService;
+    private final IFtpService ftpService;
     private final NeubbsConfigDO neubbsConfig;
 
     /**
@@ -47,9 +50,10 @@ public class FileController {
      */
     @Autowired
     public FileController(IUserService userService, IFileService fileService,
-                          NeubbsConfigDO neubbsConfig) {
+                          IFtpService ftpService, NeubbsConfigDO neubbsConfig) {
         this.userService = userService;
         this.fileService = fileService;
+        this.ftpService = ftpService;
         this.neubbsConfig = neubbsConfig;
     }
 
@@ -59,8 +63,7 @@ public class FileController {
      * 业务流程
      *      - 检查用户图片规范（不为空，后缀格式，大小不超过 5MB）
      *      - 压缩文件
-     *      - 构建服务器端储存文件名
-     *      - 传输文件
+     *      - 传输文件(传输至 FTP 服务器)
      *      - 更改数据库（forum_user 的 image）
      *      - 返回成功状态
      *
@@ -70,30 +73,32 @@ public class FileController {
      * @throws FileUploadErrorException 文件上传错误异常
      * @throws AccountErrorException 账户错误异常
      * @throws DatabaseOperationFailException 数据库操作异常
+     * @throws FtpServiceErrorException FTP服务错误异常
      */
     @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/avator", method = RequestMethod.POST)
     @ResponseBody
     public ResponseJsonDTO uploadUserImage(@RequestParam("avatorImage")MultipartFile multipartFile,
                                            HttpServletRequest request)
-            throws FileUploadErrorException, AccountErrorException, DatabaseOperationFailException {
+            throws FileUploadErrorException, AccountErrorException,
+                DatabaseOperationFailException, FtpServiceErrorException {
 
         fileService.checkUserImageNorm(multipartFile);
 
-//        MultipartFile compressedFile = fileService.compressFile(multipartFile)
+        //compress picture, function no finish
+//      MultipartFile compressedFile = fileService.compressFile(multipartFile)
 
         String authentication = CookieUtil.getCookieValue(request, ParamConst.AUTHENTICATION);
         UserDO cookieUser = JwtTokenUtil.verifyToken(authentication, SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY);
         if (cookieUser == null) {
             throw new AccountErrorException(ApiMessage.TOKEN_EXPIRED).log(LogWarn.ACCOUNT_05);
         }
-        String fileName
-                = fileService.buildServerKeppUserImageFileName(cookieUser.getId(), multipartFile.getOriginalFilename());
-        String serverSaveUserImageFilePath
-                = request.getServletContext().getRealPath(neubbsConfig.getUserImageUploadPath());
-        fileService.transferToServer(multipartFile, serverSaveUserImageFilePath, fileName);
 
-        userService.uploadUserImage(cookieUser.getName(), fileName);
+        String serverDirectoryPath = "/user/" + cookieUser.getId() + "-" + cookieUser.getName() + "/avator/";
+        String serverFileName  = System.currentTimeMillis() + "_" + multipartFile.getOriginalFilename();
+        ftpService.uploadUserAvatorImage(serverDirectoryPath, serverFileName, multipartFile);
+
+        userService.uploadUserImage(cookieUser.getName(), serverFileName);
 
         return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, ApiMessage.UPLOAD_SUCCESS);
     }

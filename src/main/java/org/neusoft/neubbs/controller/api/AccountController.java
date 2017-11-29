@@ -337,7 +337,7 @@ public final class AccountController {
         userService.registerUser(user);
         userService.uploadUserImage(user.getName(), ParamConst.USER_DEFAULT_IMAGE);
 
-        ftpService.registerUserNewUserPersonDirectory(user);
+        ftpService.registerUserCreatePersonDirectory(user);
 
         UserDO dbUser = userService.getUserInfoById(user.getId());
 
