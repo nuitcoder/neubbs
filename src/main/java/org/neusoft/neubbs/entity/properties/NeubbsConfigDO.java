@@ -14,6 +14,9 @@ public class NeubbsConfigDO {
     private String userImageUploadPath;
     private String accountApiVaslidateUrl;
 
+    private String emailServiceSendAccountUsername;
+    private String emailServiceSendAccountAuthorizationCode;
+
     private String ftpIp;
     private Integer ftpPort;
     private String ftpUsername;
@@ -38,6 +41,14 @@ public class NeubbsConfigDO {
 
     public void setAccountApiVaslidateUrl(String accountApiVaslidateUrl) {
         this.accountApiVaslidateUrl = accountApiVaslidateUrl;
+    }
+
+    public void setEmailServiceSendAccountUsername(String emailServiceSendAccountUsername) {
+        this.emailServiceSendAccountUsername = emailServiceSendAccountUsername;
+    }
+
+    public void setEmailServiceSendAccountAuthorizationCode(String emailServiceSendAccountAuthorizationCode) {
+        this.emailServiceSendAccountAuthorizationCode = emailServiceSendAccountAuthorizationCode;
     }
 
     public void setFtpIp(String ftpIp) {
@@ -78,6 +89,14 @@ public class NeubbsConfigDO {
 
     public String getAccountApiVaslidateUrl() {
         return accountApiVaslidateUrl;
+    }
+
+    public String getEmailServiceSendAccountUsername() {
+        return emailServiceSendAccountUsername;
+    }
+
+    public String getEmailServiceSendAccountAuthorizationCode() {
+        return emailServiceSendAccountAuthorizationCode;
     }
 
     public String getFtpIp() {

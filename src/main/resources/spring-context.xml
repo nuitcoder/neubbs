@@ -40,6 +40,9 @@
 		<property name="userImageUploadPath" value="${user.image.upload.path}" />
 		<property name="accountApiVaslidateUrl" value="${account.api.validate.url}" />
 		<property name="topicsApiRequestParamLimitDefault" value="${topics.api.request.param.limit.default}" />
+		<property name="emailServiceSendAccountUsername" value="${email.service.send.account.username}" />
+		<property name="emailServiceSendAccountAuthorizationCode"
+				  value="${email.service.send.account.authorization.code}" />
 		<property name="ftpIp" value="${ftp.ip}" />
 		<property name="ftpPort" value="${ftp.port}" />
 		<property name="ftpUsername" value="${ftp.username}" />
