@@ -8,14 +8,21 @@ module.exports = {
     filename: 'bundle.js',
   },
   module: {
-    loaders: [{
-      test: /\.(js|jsx)$/,
-      exclude: /node_modules/,
-      loader: 'babel-loader',
-    }, {
-      test: /\.json$/,
-      loader: 'json-loader',
-    }],
+    loaders: [
+      {
+        test: /\.(js|jsx)$/,
+        exclude: /node_modules/,
+        loader: 'babel-loader',
+      },
+      {
+        test: /\.css$/,
+        loader: 'style!css',
+      },
+      {
+        test: /\.json$/,
+        loader: 'json-loader',
+      },
+    ],
   },
   resolve: {
     modulesDirectories: ['node_modules'],

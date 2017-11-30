@@ -27,7 +27,7 @@ const history = syncHistoryWithStore(browserHistory, store)
 
 const requireLogged = (_, replace) => {
   if (!auth.checkAuth()) {
-    replace(routes.ROOT)
+    replace(routes.ACCOUNT_LOGIN)
   }
 }
 

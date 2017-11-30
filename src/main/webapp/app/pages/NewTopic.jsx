@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
-import PropTypes from 'prop-types'
 import { Row, Col, Panel, FormGroup, FormControl } from 'react-bootstrap'
+
+import Editor from '../components/Editor'
 
 class NewTopic extends Component {
   constructor(props) {
@@ -15,6 +16,9 @@ class NewTopic extends Component {
             <form>
               <FormGroup controlId="title">
                 <FormControl type="text" placeholder="主题标题" />
+              </FormGroup>
+              <FormGroup controlId="content">
+                <Editor />
               </FormGroup>
             </form>
           </Panel>

@@ -41,7 +41,10 @@ const FormWrapper = ({ title, children }) => {
 
 FormWrapper.propTypes = {
   title: PropTypes.string.isRequired,
-  children: PropTypes.element.isRequired,
+  children: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.node),
+    PropTypes.node,
+  ]).isRequired,
 }
 
 export default FormWrapper

@@ -45,7 +45,7 @@ class Login extends Component {
 
     return (
       <FormWrapper title={titleMsg}>
-        {message !== '' &&
+        {message &&
           <Alert bsStyle="danger" onDismiss={this.handleAlertDismiss}>
             {alertMsg}
           </Alert>}
