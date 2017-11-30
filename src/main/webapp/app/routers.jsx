@@ -12,6 +12,7 @@ import LoginPage from './pages/Login'
 import RegisterPage from './pages/Register'
 import ValidatePage from './pages/Validate'
 import SettingsPage from './pages/Settings'
+import NewTopicPage from './pages/NewTopic'
 
 import auth from './auth'
 import * as routes from './constants/routes'
@@ -54,11 +55,14 @@ const Routers = () => (
         <Route path={routes.ROOT} component={App}>
           <IndexRoute component={HomePage} />
 
+          {/* Account */}
           <Route path={routes.ACCOUNT_LOGIN} component={LoginPage} onEnter={requireNotLogged} />
           <Route path={routes.ACCOUNT_REGISTER} component={RegisterPage} onEnter={requireNotLogged} />
           <Route path={routes.ACCOUNT_VALIDATE} component={ValidatePage} onEnter={requireNotValidate} />
           <Route path={routes.ACCOUNT_SETTINGS} component={SettingsPage} onEnter={requireLogged} />
 
+          {/* Topic */}
+          <Route path={routes.TOPIC_NEW} component={NewTopicPage} onEnter={requireLogged} />
         </Route>
       </Router>
     </IntlProvider>
