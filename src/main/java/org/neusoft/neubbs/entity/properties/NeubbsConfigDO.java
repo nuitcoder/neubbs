@@ -19,6 +19,8 @@ public class NeubbsConfigDO {
     private String ftpUsername;
     private String ftpPassword;
 
+    private String nginxUrl;
+
     /**
      * Setter
      */
@@ -52,6 +54,10 @@ public class NeubbsConfigDO {
 
     public void setFtpPassword(String ftpPassword) {
         this.ftpPassword = ftpPassword;
+    }
+
+    public void setNginxUrl(String nginxUrl) {
+        this.nginxUrl = nginxUrl;
     }
 
     /**
@@ -88,5 +94,9 @@ public class NeubbsConfigDO {
 
     public String getFtpPassword() {
         return ftpPassword;
+    }
+
+    public String getNginxUrl() {
+        return nginxUrl;
     }
 }

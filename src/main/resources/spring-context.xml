@@ -44,6 +44,7 @@
 		<property name="ftpPort" value="${ftp.port}" />
 		<property name="ftpUsername" value="${ftp.username}" />
 		<property name="ftpPassword" value="${ftp.password}" />
+		<property name="nginxUrl" value="${nginx.url}" />
 	</bean>
 
 	<!-- Spring 线程池 -->
