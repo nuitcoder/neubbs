@@ -170,17 +170,20 @@ public class TopicServiceImpl implements ITopicService {
             }
             Map<String, Object> topicContentMap = JsonUtil.toMapByObject(topicContent);
 
-            Map<String, Object> authorUserMap = JsonUtil.toMapByObject(userService.getUserInfoById(topic.getUserid()));
+            MapFilterUtil.filterTopicInfo(topicMap);
+            MapFilterUtil.filterTopicContentInfo(topicContentMap);
+
+            Map<String, Object> authorUserMap = new LinkedHashMap<>();
+            if (topic.getUserid() != null) {
+                authorUserMap = JsonUtil.toMapByObject(userService.getUserInfoById(topic.getUserid()));
+                MapFilterUtil.filterTopicUserInfo(authorUserMap);
+            }
 
             Map<String, Object> lastReplyUserMap = new LinkedHashMap<>();
             if (topic.getLastreplyuserid() != null) {
                 lastReplyUserMap = JsonUtil.toMapByObject(userService.getUserInfoById(topic.getLastreplyuserid()));
                 MapFilterUtil.filterTopicUserInfo(lastReplyUserMap);
             }
-            
-            MapFilterUtil.filterTopicInfo(topicMap);
-            MapFilterUtil.filterTopicContentInfo(topicContentMap);
-            MapFilterUtil.filterTopicUserInfo(authorUserMap);
 
             topicMap.putAll(topicContentMap);
             topicMap.put("user", authorUserMap);
