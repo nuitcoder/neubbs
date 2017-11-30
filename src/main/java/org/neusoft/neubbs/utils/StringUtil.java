@@ -5,6 +5,7 @@ import org.neusoft.neubbs.constant.api.ParamConst;
 import org.neusoft.neubbs.constant.api.SetConst;
 import org.neusoft.neubbs.constant.log.LogWarn;
 import org.neusoft.neubbs.controller.exception.TokenErrorException;
+import org.neusoft.neubbs.entity.properties.NeubbsConfigDO;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
@@ -22,6 +23,22 @@ import java.util.Properties;
 public final class StringUtil {
 
     private StringUtil() { }
+
+    private static NeubbsConfigDO neubbsConfig;
+
+    static {
+        neubbsConfig = new NeubbsConfigDO();
+
+        Resource resource = new ClassPathResource("/neubbs.properties");
+        try {
+            Properties props = PropertiesLoaderUtils.loadProperties(resource);
+
+            neubbsConfig.setFtpIp(props.getProperty("ftp.ip"));
+            neubbsConfig.setNginxUrl(props.getProperty("nginx.url"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     /**
      * 空判断（true - 为空）
@@ -107,40 +124,6 @@ public final class StringUtil {
     }
 
     /**
-     * 拼接用户头像 FTP URL
-     *
-     * @param userInfoMap 用户信息键值对
-     * @return String model-user-avator完整URL
-     */
-    public static String spliceUserAvatorImageFtpUrl(Map<String, Object> userInfoMap) {
-
-        Resource resource = new ClassPathResource("/neubbs.properties");
-        Properties props = null;
-        try {
-            props = PropertiesLoaderUtils.loadProperties(resource);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        StringBuilder avatorFtpUrl = new StringBuilder("ftp://");
-            avatorFtpUrl.append(props.getProperty("ftp.ip") + "/user/");
-
-        String imageFileName = (String) userInfoMap.get(ParamConst.IMAGE);
-        if (imageFileName.contains(SetConst.DEFAULT)) {
-            avatorFtpUrl.append(
-                    imageFileName
-            );
-        } else {
-            avatorFtpUrl.append((Integer) userInfoMap.get(ParamConst.ID) + "-"
-                    + (String) userInfoMap.get(ParamConst.NAME)
-                    + "/avator/" + imageFileName
-            );
-        }
-
-        return avatorFtpUrl.toString();
-    }
-
-    /**
      * 补全前后斜杠（\）
      *      - 用于补全 URL 路径
      *
@@ -152,9 +135,55 @@ public final class StringUtil {
         char lastChar = str.charAt(str.length() - 1);
 
         StringBuilder sb = new StringBuilder(str);
-            sb.insert(0, firstChar == '/' ? "" : "/");
-            sb.append(lastChar == '/' ? "" : "/");
+        sb.insert(0, firstChar == '/' ? "" : "/");
+        sb.append(lastChar == '/' ? "" : "/");
 
         return sb.toString();
+    }
+
+    /**
+     * 拼接用户头像 URL
+     *      - 可选 FTP or http
+     *
+     * @param userInfoMap 用户信息键值对
+     * @param urlType URL类型（目前：ftp[默认] 和 http）
+     * @return String 用户头像FTP-URL
+     */
+    public static String spliceUserAvatorUrl(Map<String, Object> userInfoMap, String urlType) {
+        StringBuilder avatorFtpUrl = new StringBuilder();
+        if ("http".equals(urlType)) {
+            avatorFtpUrl.append(getNginxHttpUrlPreFix());
+        } else {
+            //default
+            avatorFtpUrl.append(getFtpUrlPreFix());
+        }
+
+        String imageFileName = (String) userInfoMap.get(ParamConst.IMAGE);
+        if (isUserAvatorDefault(imageFileName)) {
+            avatorFtpUrl.append(getUserDefaultPath() + imageFileName);
+        } else {
+            avatorFtpUrl.append(
+                    getUserPersonalPath((Integer) userInfoMap.get(ParamConst.ID),
+                            (String) userInfoMap.get(ParamConst.NAME))
+            );
+            avatorFtpUrl.append("avator/" + imageFileName);
+        }
+
+        return avatorFtpUrl.toString();
+    }
+    private static String getFtpUrlPreFix() {
+        return "ftp://" + neubbsConfig.getFtpIp() + "/";
+    }
+    private static String getNginxHttpUrlPreFix() {
+        return neubbsConfig.getNginxUrl();
+    }
+    private static String getUserDefaultPath() {
+        return "user/default/";
+    }
+    private static String getUserPersonalPath(int id, String username) {
+        return "user" + "/" + id + "-" + username + "/";
+    }
+    private static boolean isUserAvatorDefault(String imageFileName) {
+        return "default-avator-min.jpeg".equals(imageFileName);
     }
 }

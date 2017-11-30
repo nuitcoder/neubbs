@@ -60,7 +60,7 @@ public final class MapFilterUtil {
       userInfoMap.put(ParamConst.USERNAME, userInfoMap.get(ParamConst.NAME));
 
       //拼接用户头像完整路径
-      userInfoMap.put(ParamConst.AVATOR, StringUtil.spliceUserAvatorImageFtpUrl(userInfoMap));
+      userInfoMap.put(ParamConst.AVATOR, StringUtil.spliceUserAvatorUrl(userInfoMap, "http"));
 
       removeKeys(userInfoMap,
               new String[] {
@@ -85,7 +85,7 @@ public final class MapFilterUtil {
       userInfoMap.put(ParamConst.USERNAME, userInfoMap.get(ParamConst.NAME));
 
       //拼接用户头像完整路径
-      userInfoMap.put(ParamConst.AVATOR, StringUtil.spliceUserAvatorImageFtpUrl(userInfoMap));
+      userInfoMap.put(ParamConst.AVATOR, StringUtil.spliceUserAvatorUrl(userInfoMap, "http"));
 
       userInfoMap.remove(ParamConst.ID);
       userInfoMap.remove(ParamConst.NAME);
