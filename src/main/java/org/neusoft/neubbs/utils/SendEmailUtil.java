@@ -1,5 +1,8 @@
 package org.neusoft.neubbs.utils;
 
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 import javax.mail.Authenticator;
@@ -9,6 +12,7 @@ import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Properties;
 
@@ -20,12 +24,6 @@ import java.util.Properties;
 public final class SendEmailUtil {
 
     private SendEmailUtil() { }
-
-    /**
-     * 发送邮件的账户
-     */
-    private static final String FROM_USERNAME = "suvan@liushuwei.cn";
-    private static final String FROM_AUTHORIZATIONCODE = "23h235i2vhKwUgbg";
 
     /**
      * 邮件格式
@@ -44,6 +42,26 @@ public final class SendEmailUtil {
     private static final String TO_JAVAX_NET_SSL_SSLSOCKETFACTORY = "javax.net.ssl.SSLSocketFactory";
     private static final String TO_MAIL_SMTP_SOCKETFACTORY_PORT = "mail.smtp.socketFactory.port";
     private static final String TO_SMTP_SSL_PROT = "465";
+
+    /**
+     * 发送邮件的账户
+     */
+    private static final String FROM_USERNAME;
+    private static final String FROM_AUTHORIZATIONCODE;
+
+    static {
+        Resource resource = new ClassPathResource("/neubbs.properties");
+        Properties props = null;
+        try {
+            //read /resources/neubbs.properties
+          props = PropertiesLoaderUtils.loadProperties(resource);
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
+
+        FROM_USERNAME = props.getProperty("email.service.send.account.username");
+        FROM_AUTHORIZATIONCODE = props.getProperty("email.service.send.account.authorization.code");
+    }
 
     /**
      * 发送邮件
