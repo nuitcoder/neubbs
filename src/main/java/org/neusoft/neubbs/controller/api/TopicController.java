@@ -113,18 +113,22 @@ public class TopicController {
     @RequestMapping(value = "/topics", method = RequestMethod.GET)
     @ResponseBody
     public ResponseJsonListDTO listTopics(@RequestParam(value = "limit", required = false) String limit,
-                                          @RequestParam(value = "page", required = false) String page)
+                                          @RequestParam(value = "page", required = false) String page,
+                                          @RequestParam(value = "category", required = false) String category)
             throws ParamsErrorException, TopicErrorException, AccountErrorException {
 
         RequestParamCheckUtil.check(ParamConst.NUMBER, page);
         if (limit != null) {
             RequestParamCheckUtil.check(ParamConst.NUMBER, limit);
         }
+        if (category != null) {
+            RequestParamCheckUtil.check(ParamConst.CATEGORY, category);
+        }
 
         Integer selectLimit = limit != null
                 ? Integer.parseInt(limit) : neubbsConfig.getTopicsApiRequestParamLimitDefault();
 
-        List<Map<String, Object>> topics = topicService.listTopics(selectLimit, Integer.parseInt(page));
+        List<Map<String, Object>> topics = topicService.listTopics(selectLimit, Integer.parseInt(page), category);
 
         return new ResponseJsonListDTO(AjaxRequestStatus.SUCCESS, topics);
     }

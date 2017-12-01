@@ -1,14 +1,10 @@
 package test.org.neusoft.neubbs.dao;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.FixMethodOrder;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.MethodSorters;
 import org.neusoft.neubbs.controller.handler.SwitchDataSourceHandler;
 import org.neusoft.neubbs.dao.ITopicDAO;
 import org.neusoft.neubbs.entity.TopicDO;
@@ -126,7 +122,6 @@ public class TopicDAOTest {
      */
     @Test
     public void testListTopicByStartByCount(){
-
         int startRow = 0;
         int count = 10;
         List<TopicDO> listTopic = topicDAO.listTopicByStartRowByCount(startRow, count);
@@ -136,6 +131,22 @@ public class TopicDAOTest {
             System.out.println(JsonUtil.toJSONStringByObject(topic));
         }
         System.out.println("*************************** 结束 ****************************");
+    }
+
+
+    /**
+     * 获取话题列表（分类获取）
+     */
+    @Test
+    public void testListTopicByStartRowByCountByCategory() {
+        int startRow = 0;
+        int count = 10;
+        String category = "分类 1";
+
+        List<TopicDO> listTopic = topicDAO.listTopicByStartRowByCountByCategory(startRow, count, category);
+        for (TopicDO topic: listTopic) {
+            System.out.println(JsonUtil.toJSONStringByObject(topic));
+        }
     }
 
     /**

@@ -176,9 +176,12 @@ public class TopicControllerTest {
     /**
      * 【/api/topics/new】test get topic list information by page and limit success
      *      - the optional param limit, neubbs.properties hava default value
+     *      - input limit,page
+     *      - input limit,page,category
      */
     @Test
     public void testGetTopicListInformationByPageAndLimitSuccess() throws Exception {
+        //only input limit and page
         int[][] params = {
                 {20, 3}, {2, 20}, {43, 2}, {3}
         };
@@ -191,14 +194,14 @@ public class TopicControllerTest {
                 page = String.valueOf(param[0]);
                 System.out.print("input param[ page=" + page + " ]");
 
-                result = mockMvc.perform(MockMvcRequestBuilders.get("/api/topics/new").param("page", page));
+                result = mockMvc.perform(MockMvcRequestBuilders.get("/api/topics").param("page", page));
             } else {
                 limit = String.valueOf(param[0]);
                 page = String.valueOf(param[1]);
                 System.out.print("input param[ limit=" + limit + "; page=" + page + " ]");
 
                 result = mockMvc.perform(
-                        MockMvcRequestBuilders.get("/api/topics/new")
+                        MockMvcRequestBuilders.get("/api/topics")
                                 .param("limit", limit)
                                 .param("page", page)
                 );
@@ -236,6 +239,19 @@ public class TopicControllerTest {
             System.out.println("\t<test result: success!>");
         }
 
+
+        //input input limit,page,category
+        String category = "分类 2";
+        System.out.println("input param[ limit=1, page=1,category=" + category + "]");
+        mockMvc.perform(
+            MockMvcRequestBuilders.get("/api/topics")
+                .param("limit", "1")
+                .param("page", "1")
+                .param("category", category)
+        ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.message").doesNotExist())
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model[0].category").value(category));
+
         printSuccessPassTestMehtodMessage();
     }
 
@@ -258,7 +274,7 @@ public class TopicControllerTest {
             String page = param[1];
             try {
                 mockMvc.perform(
-                        MockMvcRequestBuilders.get("/api/topics/new")
+                        MockMvcRequestBuilders.get("/api/topics")
                             .param("limit", limit).param("page", page)
                 ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(CoreMatchers.is("false")))
                  .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(CoreMatchers.notNullValue()))
@@ -283,7 +299,7 @@ public class TopicControllerTest {
         for (String page: pages) {
             try {
                 mockMvc.perform(
-                        MockMvcRequestBuilders.get("/api/topics/new").param("page", page)
+                        MockMvcRequestBuilders.get("/api/topics").param("page", page)
                 ).andExpect(jsonPath("$.success").value(false))
                  .andExpect(jsonPath("$.message").exists())
                  .andExpect(jsonPath("$.model").doesNotExist());

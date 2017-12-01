@@ -87,7 +87,8 @@ public class TopicServiceTest {
     public void testListTopics() throws Exception{
         int page = 10;
         int count = 10;
-        List<Map<String, Object>> topics = topicService.listTopics(page, count);
+        String category = null;
+        List<Map<String, Object>> topics = topicService.listTopics(page, count, category);
 
         for(Map map: topics) {
             System.out.println("*************************** topic ****************************");

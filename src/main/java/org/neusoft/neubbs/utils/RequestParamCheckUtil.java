@@ -90,8 +90,6 @@ public final class RequestParamCheckUtil {
         typePatternMap.put(ParamConst.NUMBER, new Pattern("isPureNumber", " （类型）参数不符合规范，必须为纯数字(0 ~ 9)！"));
         typePatternMap.put(ParamConst.USERNAME, new Pattern("matchUsername", "（类型）参数不符合规范（A-Z a-z 0-9）"));
         typePatternMap.put(ParamConst.EMAIL, new Pattern("matchEmail", " （类型）参数不符合规范（xxx@xx.xxx）"));
-        typePatternMap.put(ParamConst.CATEGORY,
-                new Pattern("matchTopicCategory", " （类型）参数不规范（仅包含中英文，不能有数字 or 特殊字符）"));
     }
 
 

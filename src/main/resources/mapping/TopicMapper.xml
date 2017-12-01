@@ -46,6 +46,11 @@
       SELECT ft_id, fu_id, ft_category, ft_title, ft_comment,ft_lastreplyuserid, ft_lastreplytime, ft_createtime
       FROM forum_topic LIMIT #{param1, jdbcType = INTEGER}, #{param2, jdbcType = INTEGER}
    </select>
+   <select id="listTopicByStartRowByCountByCategory" resultMap="TopicMap">
+      SELECT ft_id, fu_id, ft_category, ft_title, ft_comment,ft_lastreplyuserid, ft_lastreplytime, ft_createtime
+      FROM forum_topic WHERE ft_category = #{param3, jdbcType = VARCHAR}
+      LIMIT #{param1, jdbcType = INTEGER}, #{param2, jdbcType = INTEGER}
+   </select>
 
    <update id="updateCategoryById">
       UPDATE forum_topic SET ft_category = #{param2, jdbcType = VARCHAR}

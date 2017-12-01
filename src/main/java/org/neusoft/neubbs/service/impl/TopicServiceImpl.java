@@ -142,7 +142,9 @@ public class TopicServiceImpl implements ITopicService {
     }
 
     @Override
-    public List<Map<String, Object>> listTopics(int limit, int page) throws TopicErrorException, AccountErrorException {
+    public List<Map<String, Object>> listTopics(int limit, int page, String category)
+            throws TopicErrorException, AccountErrorException {
+
         //获取话题总数，判断输入 page，limit 是否超出指定范围
         int topicCount = topicDAO.countTopic();
         int maxPage = topicCount % limit == 0 ? topicCount / limit : topicCount / limit + 1;
@@ -155,7 +157,14 @@ public class TopicServiceImpl implements ITopicService {
         }
 
         //根据 page and limit，获取指定列数的话题列表
-        List<TopicDO> listTopic = topicDAO.listTopicByStartRowByCount((page - 1) * limit, limit);
+        List<TopicDO> listTopic;
+        if (category != null) {
+            //select category topic
+            listTopic = topicDAO.listTopicByStartRowByCountByCategory((page - 1) * limit, limit, category);
+        } else {
+            //default
+            listTopic = topicDAO.listTopicByStartRowByCount((page - 1) * limit, limit);
+        }
 
         //遍历话题列表
         List<Map<String, Object>> resultTopics = new ArrayList<>();
