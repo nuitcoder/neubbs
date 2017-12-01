@@ -37,6 +37,22 @@ public interface ITopicDAO {
     int countTopic();
 
     /**
+     * 统计话题总数（分类）
+     *
+     * @param category 话题类别
+     * @return int 话题总数
+     */
+    int countTopicByCategory(String category);
+
+    /**
+     * 统计话题总数（区分用户id）
+     *
+     * @param userId 用户id
+     * @return int 话题总数
+     */
+    int countTopicByUserid(int userId);
+
+    /**
      * 获取话题最大id（表中最新插入的id）
      *
      * @return int 最新话题id

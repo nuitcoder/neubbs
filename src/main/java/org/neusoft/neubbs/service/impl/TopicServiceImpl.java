@@ -144,8 +144,26 @@ public class TopicServiceImpl implements ITopicService {
     }
 
     @Override
-    public String getTopicTotalPages(int limit) {
-        int topicCount = topicDAO.countTopic();
+    public void isTopicCategoryExist(String category) throws TopicErrorException {
+        if (topicDAO.countTopicByCategory(category) == 0) {
+            throw new TopicErrorException(ApiMessage.NO_TOPIC_CATEGORY).log(category + LogWarn.TOPIC_14);
+        }
+    }
+
+    @Override
+    public String getTopicTotalPages(int limit, String category, String username)
+            throws AccountErrorException, TopicErrorException {
+
+        int topicCount;
+        if (category != null) {
+            isTopicCategoryExist(category);
+            topicCount = topicDAO.countTopicByCategory(category);
+        } else if (username != null) {
+            topicCount = topicDAO.countTopicByUserid(userService.getUserInfoByName(username).getId());
+        } else {
+            topicCount = topicDAO.countTopic();
+        }
+
         int maxPage = topicCount % limit == 0
                 ? topicCount / limit : topicCount / limit + 1;
 

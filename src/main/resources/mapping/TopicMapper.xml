@@ -30,6 +30,12 @@
    <select id="countTopic" resultType="java.lang.Integer">
       SELECT COUNT(*) FROM forum_topic;
    </select>
+   <select id="countTopicByCategory" resultType="java.lang.Integer">
+      SELECT COUNT(ft_id) FROM forum_topic WHERE ft_category = #{category, jdbcType = VARCHAR}
+   </select>
+   <select id="countTopicByUserid" resultType="java.lang.Integer">
+      SELECT COUNT(ft_id) FROM forum_topic WHERE fu_id = #{userId, jdbcType = INTEGER}
+   </select>
 
    <select id="getTopicMaxId" resultType="java.lang.Integer">
       SELECT MAX(ft_id) FROM forum_topic;

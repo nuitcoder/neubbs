@@ -64,12 +64,23 @@ public interface ITopicService {
 
 
     /**
+     * 判断话题类别
+     *
+     * @param category 话题类别
+     */
+    void isTopicCategoryExist(String category) throws TopicErrorException;
+
+    /**
      * 获取话题总页数
      *
      * @param limit 每页限制多少条
+     * @param category 分类
+     * @param username 用户名
      * @return String 总页数
+     * @throws AccountErrorException 账户错误异常
      */
-    String getTopicTotalPages(int limit);
+    String getTopicTotalPages(int limit, String category, String username)
+            throws AccountErrorException, TopicErrorException;
 
     /**
      * 获取话题列表（包含话题数据与基本用户数据）

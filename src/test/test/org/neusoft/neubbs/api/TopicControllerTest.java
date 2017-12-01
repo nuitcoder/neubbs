@@ -351,7 +351,7 @@ public class TopicControllerTest {
     public void testGetTopicTotalPagesSuccess() throws Exception {
         //default limit 25
         mockMvc.perform(
-                MockMvcRequestBuilders.get("/api/topic/pages")
+                MockMvcRequestBuilders.get("/api/topics/pages")
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
          .andExpect(MockMvcResultMatchers.jsonPath("$.message").doesNotExist())
          .andExpect(MockMvcResultMatchers.jsonPath("$.model.totalpages").exists());
@@ -359,11 +359,92 @@ public class TopicControllerTest {
         //input limit
         String limit = "5";
         mockMvc.perform(
-                MockMvcRequestBuilders.get("/api/topic/pages")
+                MockMvcRequestBuilders.get("/api/topics/pages")
                     .param("limit", limit)
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
          .andExpect(MockMvcResultMatchers.jsonPath("$.message").doesNotExist())
          .andExpect(MockMvcResultMatchers.jsonPath("$.model.totalpages").exists());
+
+        //only input category
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/api/topics/pages")
+                    .param("category", "分类 1")
+        ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.message").doesNotExist())
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model.totalpages").exists());
+
+        //input limit,category
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/api/topics/pages")
+                        .param("limit", limit)
+                        .param("category", "分类 1")
+        ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.message").doesNotExist())
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model.totalpages").exists());
+
+        //only input username
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/api/topics/pages")
+                    .param("username", "suvan")
+        ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.message").doesNotExist())
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model.totalpages").exists());
+
+        //input limit,username
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/api/topics/pages")
+                        .param("limit", limit)
+                        .param("username", "suvan")
+        ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.message").doesNotExist())
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model.totalpages").exists());
+
+        printSuccessPassTestMehtodMessage();
+    }
+
+    /**
+     * 【/api/topics/pages】test get topic total pages throw exception
+     */
+    @Test
+    public void testGetTopicTotalPagesThrowException() throws Exception {
+        String[][] parmas = {
+                {null, "分类 1", "suvan"},
+                {"15", "分类 1xxxxxxx", null}, {"15", null, "新用户"}
+        };
+
+        //the same time input category and username
+        try {
+            mockMvc.perform(
+                    MockMvcRequestBuilders.get("/api/topics/pages")
+                        .param("category", "分类 1")
+                        .param("username", "suvan")
+            ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false));
+        } catch (NestedServletException ne) {
+            Assert.assertTrue(ne.getRootCause() instanceof TopicErrorException);
+            Assert.assertEquals(ne.getRootCause().getMessage(), ApiMessage.PARAM_ERROR);
+        }
+
+        //input category, but category no exist
+        try {
+            mockMvc.perform(
+                    MockMvcRequestBuilders.get("/api/topics/pages")
+                            .param("category", "no category")
+            ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false));
+        } catch (NestedServletException ne) {
+            Assert.assertTrue(ne.getRootCause() instanceof TopicErrorException);
+            Assert.assertEquals(ne.getRootCause().getMessage(), ApiMessage.NO_TOPIC_CATEGORY);
+        }
+
+        //input username, but username no exist
+        try {
+            mockMvc.perform(
+                    MockMvcRequestBuilders.get("/api/topics/pages")
+                        .param("username", "existUser")
+            ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false));
+        } catch (NestedServletException ne) {
+            Assert.assertTrue(ne.getRootCause() instanceof AccountErrorException);
+            Assert.assertEquals(ne.getRootCause().getMessage(), ApiMessage.NO_USER);
+        }
 
         printSuccessPassTestMehtodMessage();
     }
@@ -374,7 +455,7 @@ public class TopicControllerTest {
     @Test
     public void testGetTopicCategoryListSuccess() throws Exception {
         mockMvc.perform(
-                MockMvcRequestBuilders.get("/api/topic/categorys")
+                MockMvcRequestBuilders.get("/api/topics/categorys")
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
          .andExpect(MockMvcResultMatchers.jsonPath("$.message").doesNotExist())
          .andExpect(MockMvcResultMatchers.jsonPath("$.model.categorys").exists());

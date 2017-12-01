@@ -81,8 +81,26 @@ public class TopicDAOTest {
      * 统计话题总数
      */
     @Test
-    public void testCountTopic(){
+    public void testCountTopic() {
         System.out.println("话题总数：" + topicDAO.countTopic());
+    }
+
+    /**
+     * 统计话题总数（分类）
+     */
+    @Test
+    public void testCountTopicByCategory() {
+        String category = "分类 1";
+        System.out.println(category + "（类别 ）话题总数:" + topicDAO.countTopicByCategory(category));
+    }
+
+    /**
+     * 统计话题总数（用户 id）
+     */
+    @Test
+    public void testCountTopicByUserid() {
+        int userId = 5;
+        System.out.println(userId + "（用户id）话题总数：" + topicDAO.countTopicByUserid(userId));
     }
 
     /**
@@ -103,7 +121,6 @@ public class TopicDAOTest {
         Assert.assertNotNull(topic);
         System.out.println("id 查询话题（最新插入）" + JsonUtil.toJSONStringByObject(topic));
     }
-
 
     /**
      * 获取话题分类列表

@@ -151,21 +151,33 @@ public class TopicController {
      * @param limit 每页显示条数
      * @return ResponseJsonDTO 响应JSON传输对象
      * @throws ParamsErrorException 参数错误异常
+     * @throws TopicErrorException 话题错误异常
+     * @throws AccountErrorException 账户错误异常
      */
     @RequestMapping(value = "/topics/pages", method = RequestMethod.GET)
     @ResponseBody
-    public ResponseJsonDTO getTopicTotalPages(@RequestParam(value = "limit", required = false) String limit)
-            throws ParamsErrorException {
+    public ResponseJsonDTO getTopicTotalPages(@RequestParam(value = "limit", required = false) String limit,
+                                              @RequestParam(value = "category", required = false) String category,
+                                              @RequestParam(value = "username", required = false) String username)
+            throws ParamsErrorException, TopicErrorException, AccountErrorException {
 
         if (limit != null) {
             RequestParamCheckUtil.check(ParamConst.NUMBER, limit);
+        }
+
+        if (category != null && username != null) {
+            throw new TopicErrorException(ApiMessage.PARAM_ERROR).log(LogWarn.TOPIC_13);
+        } else if (category != null) {
+            RequestParamCheckUtil.check(ParamConst.CATEGORY, category);
+        } else if (username != null) {
+            RequestParamCheckUtil.check(ParamConst.USERNAME, username);
         }
 
         int slectLimit = limit != null
                 ? Integer.parseInt(limit) : neubbsConfig.getTopicsApiRequestParamLimitDefault();
 
         return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS,
-                ParamConst.TOTAL_PAGES, topicService.getTopicTotalPages(slectLimit));
+                ParamConst.TOTAL_PAGES, topicService.getTopicTotalPages(slectLimit, category, username));
     }
 
     /**
