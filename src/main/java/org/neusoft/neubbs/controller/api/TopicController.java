@@ -5,6 +5,7 @@ import org.neusoft.neubbs.constant.api.ApiMessage;
 import org.neusoft.neubbs.constant.api.ParamConst;
 import org.neusoft.neubbs.constant.api.SetConst;
 import org.neusoft.neubbs.constant.log.LogWarn;
+import org.neusoft.neubbs.constant.secret.SecretInfo;
 import org.neusoft.neubbs.controller.annotation.AccountActivation;
 import org.neusoft.neubbs.controller.annotation.AdminRank;
 import org.neusoft.neubbs.controller.annotation.LoginAuthorization;
@@ -14,8 +15,11 @@ import org.neusoft.neubbs.controller.exception.ParamsErrorException;
 import org.neusoft.neubbs.controller.exception.TopicErrorException;
 import org.neusoft.neubbs.dto.ResponseJsonDTO;
 import org.neusoft.neubbs.dto.ResponseJsonListDTO;
+import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.entity.properties.NeubbsConfigDO;
 import org.neusoft.neubbs.service.ITopicService;
+import org.neusoft.neubbs.utils.CookieUtil;
+import org.neusoft.neubbs.utils.JwtTokenUtil;
 import org.neusoft.neubbs.utils.RequestParamCheckUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -25,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -200,6 +205,7 @@ public class TopicController {
      *      - 返回成功状态 + 新增话题 id
      *
      * @param requestBodyParamsMap reuest-body内JSON数据
+     * @param request http请求
      * @return ResponseJsonDTO 响应JSON传输数据
      * @throws ParamsErrorException 参数错误异常
      * @throws AccountErrorException 账户错误异常
@@ -208,20 +214,24 @@ public class TopicController {
     @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/topic", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
-    public ResponseJsonDTO saveTopic(@RequestBody Map<String, Object> requestBodyParamsMap)
+    public ResponseJsonDTO saveTopic(@RequestBody Map<String, Object> requestBodyParamsMap,
+                                     HttpServletRequest request)
             throws ParamsErrorException, AccountErrorException, DatabaseOperationFailException {
 
-        Integer userId = (Integer) requestBodyParamsMap.get(ParamConst.USER_ID);
         String category = (String) requestBodyParamsMap.get(ParamConst.CATEGORY);
         String title = (String) requestBodyParamsMap.get(ParamConst.TITLE);
         String topicContent = (String) requestBodyParamsMap.get(ParamConst.CONTENT);
 
         Map<String, String> paramsMap = new LinkedHashMap<>(SetConst.SIZE_FOUR);
-            paramsMap.put(ParamConst.ID, String.valueOf(userId));
             paramsMap.put(ParamConst.CATEGORY, category);
             paramsMap.put(ParamConst.TITLE, title);
             paramsMap.put(ParamConst.TOPIC_CONTENT, topicContent);
         RequestParamCheckUtil.check(paramsMap);
+
+        //cookie get userid
+        String authentication = CookieUtil.getCookieValue(request, ParamConst.AUTHENTICATION);
+        UserDO user = JwtTokenUtil.verifyToken(authentication, SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY);
+        int userId = user.getId();
 
         int topicId = topicService.saveTopic(userId, category, title, topicContent);
 
@@ -237,6 +247,7 @@ public class TopicController {
      *      - 返回状态 + 新回复 id
      *
      * @param requetBodyParamsMap request-body内JSON数据
+     * @param request http请求
      * @return ResponseJsonDTO 响应JSON传输对象
      * @throws ParamsErrorException 参数错误异常
      * @throws TopicErrorException 话题错误异常
@@ -246,18 +257,22 @@ public class TopicController {
     @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/topic/reply", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
-    public ResponseJsonDTO saveReply(@RequestBody Map<String, Object> requetBodyParamsMap)
+    public ResponseJsonDTO saveReply(@RequestBody Map<String, Object> requetBodyParamsMap,
+                                     HttpServletRequest request)
             throws ParamsErrorException, TopicErrorException, DatabaseOperationFailException, AccountErrorException {
 
-        Integer userId = (Integer) requetBodyParamsMap.get(ParamConst.USER_ID);
         Integer topicId = (Integer) requetBodyParamsMap.get(ParamConst.TOPIC_ID);
         String replyContent = (String) requetBodyParamsMap.get(ParamConst.CONTENT);
 
         Map<String, String> paramsMap = new LinkedHashMap<>(SetConst.SIZE_THREE);
-            paramsMap.put(ParamConst.ID, String.valueOf(userId));
             paramsMap.put(ParamConst.ID, String.valueOf(topicId));
             paramsMap.put(ParamConst.REPLY_CONTENT, replyContent);
         RequestParamCheckUtil.check(paramsMap);
+
+        //cookie get userid
+        String authentication = CookieUtil.getCookieValue(request, ParamConst.AUTHENTICATION);
+        UserDO user = JwtTokenUtil.verifyToken(authentication, SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY);
+        int userId = user.getId();
 
         int replyId = topicService.saveReply(userId, topicId, replyContent);
 
