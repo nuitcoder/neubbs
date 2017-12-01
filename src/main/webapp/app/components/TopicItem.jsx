@@ -95,7 +95,7 @@ const TopicItem = (props) => {
         </Header>
         <Info>
           <Username href="#">{topic.user.username}</Username>
-          {topic.replies === 0 ?
+          {topic.replies === '0' ?
             <FormattedMessage
               id="topic.createtime.text"
               values={{
