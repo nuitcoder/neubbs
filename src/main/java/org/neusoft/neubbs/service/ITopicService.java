@@ -62,6 +62,15 @@ public interface ITopicService {
      */
     Map<String, Object> getReply(int replyId) throws AccountErrorException;
 
+
+    /**
+     * 获取话题总页数
+     *
+     * @param limit 每页限制多少条
+     * @return String 总页数
+     */
+    String getTopicTotalPages(int limit);
+
     /**
      * 获取话题列表（包含话题数据与基本用户数据）
      *

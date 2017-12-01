@@ -49,6 +49,8 @@ public final class ParamConst {
 
     public static final String CATEGORYS = "categorys";
 
+    public static final String TOTAL_PAGES = "totalpages";
+
     /**
      * Reply
      */

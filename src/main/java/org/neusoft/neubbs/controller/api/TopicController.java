@@ -34,6 +34,8 @@ import java.util.Map;
  *      获取话题信息
  *      获取回复信息
  *      获取话题列表（分页，指定数量）
+ *      获取话题总页数
+ *      获取话题分类信息
  *      发布话题
  *      发布回复
  *      删除话题
@@ -140,6 +142,30 @@ public class TopicController {
                 .listTopics(selectLimit, Integer.parseInt(page), category, username);
 
         return new ResponseJsonListDTO(AjaxRequestStatus.SUCCESS, topics);
+    }
+
+
+    /**
+     * 获取话题总页数
+     *
+     * @param limit 每页显示条数
+     * @return ResponseJsonDTO 响应JSON传输对象
+     * @throws ParamsErrorException 参数错误异常
+     */
+    @RequestMapping(value = "/topic/pages", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseJsonDTO getTopicTotalPages(@RequestParam(value = "limit", required = false) String limit)
+            throws ParamsErrorException {
+
+        if (limit != null) {
+            RequestParamCheckUtil.check(ParamConst.NUMBER, limit);
+        }
+
+        int slectLimit = limit != null
+                ? Integer.parseInt(limit) : neubbsConfig.getTopicsApiRequestParamLimitDefault();
+
+        return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS,
+                ParamConst.TOTAL_PAGES, topicService.getTopicTotalPages(slectLimit));
     }
 
     /**

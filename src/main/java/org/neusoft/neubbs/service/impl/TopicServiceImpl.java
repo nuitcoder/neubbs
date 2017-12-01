@@ -144,6 +144,15 @@ public class TopicServiceImpl implements ITopicService {
     }
 
     @Override
+    public String getTopicTotalPages(int limit) {
+        int topicCount = topicDAO.countTopic();
+        int maxPage = topicCount % limit == 0
+                ? topicCount / limit : topicCount / limit + 1;
+
+        return String.valueOf(maxPage);
+    }
+
+    @Override
     public List<Map<String, Object>> listTopics(int limit, int page, String category, String username)
             throws TopicErrorException, AccountErrorException {
 

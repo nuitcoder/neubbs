@@ -345,6 +345,30 @@ public class TopicControllerTest {
     }
 
     /**
+     * 【/api/topic/pages】test get topic total pages success
+     */
+    @Test
+    public void testGetTopicTotalPagesSuccess() throws Exception {
+        //default limit 25
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/api/topic/pages")
+        ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.message").doesNotExist())
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model.totalpages").exists());
+
+        //input limit
+        String limit = "5";
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/api/topic/pages")
+                    .param("limit", limit)
+        ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.message").doesNotExist())
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model.totalpages").exists());
+
+        printSuccessPassTestMehtodMessage();
+    }
+
+    /**
      * 【/api/topic/categorys】 test get topic category list success
      */
     @Test
