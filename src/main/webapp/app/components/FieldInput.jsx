@@ -1,8 +1,9 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import { FormGroup, FormControl } from 'react-bootstrap'
 
-const InputError = styled.span`
+const InputErrorText = styled.span`
   color: #a94442;
   display: inline-block;
   margin-top: 5px;
@@ -43,9 +44,23 @@ const FieldInput = (props) => {
         onFocus={input.onFocus}
         autoFocus={autoFocus}
       />
-      {validationState === 'error' && <InputError>{error}</InputError>}
+      {validationState === 'error' && <InputErrorText>{error}</InputErrorText>}
     </FormGroup>
   )
+}
+
+FieldInput.defaultProps = {
+  inline: false,
+}
+
+FieldInput.propTypes = {
+  input: PropTypes.object.isRequired,
+  type: PropTypes.string.isRequired,
+  placeholder: PropTypes.string.isRequired,
+  autoFocus: PropTypes.bool.isRequired,
+  meta: PropTypes.object.isRequired,
+  className: PropTypes.string.isRequired,
+  inline: PropTypes.bool,
 }
 
 export default FieldInput

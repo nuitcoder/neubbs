@@ -5,11 +5,13 @@ import {
 
 const topics = {
 
-  new({ page, limit }) {
+  topic({ page, limit, category, username }) {
     return axios.get(TOPICS_URL, {
       params: {
         page,
         limit,
+        category,
+        username,
       },
     })
   },

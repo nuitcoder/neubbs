@@ -14,7 +14,7 @@ function* handleError(action, error) {
 export function* fetchNewTopicsSaga(action) {
   const { page, limit } = action.payload
 
-  const { data } = yield call(api.topics.new, { page, limit })
+  const { data } = yield call(api.topics.topic, { page, limit })
   try {
     if (data.success) {
       yield put({ type: types.FETCH_NEW_TOPICS_SUCCESS, payload: data.model })

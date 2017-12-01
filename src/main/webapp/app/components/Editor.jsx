@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import { Row, Col, Tab, Nav, NavItem } from 'react-bootstrap'
 import CodeMirror from 'react-codemirror'
@@ -15,6 +16,8 @@ const tabs = {
 
 const options = {
   mode: 'markdown',
+  lineWrapping: true,
+  viewportMargin: Infinity,
 }
 
 const StyledNavItem = styled(NavItem)`
@@ -33,9 +36,29 @@ const StyledNavItem = styled(NavItem)`
 
 const StyledCodeMirror = styled(CodeMirror)`
   & > .CodeMirror {
+    height: auto;
+    min-height: 300px;
     border: 1px solid #ddd;
     border-top: 0;
     border-radius: 0px 4px 4px 4px;
+  }
+
+  & .CodeMirror-scroll {
+    min-height: 300px;
+  }
+`
+
+const StyledMarkdown = styled(Markdown)`
+  min-height: 300px;
+  padding: 4px;
+  border: 1px solid #ddd;
+  border-top: 0;
+  border-radius: 0px 4px 4px 4px;
+  font-family: monospace;
+
+  & > p {
+    display: inline-block;
+    margin: 0;
   }
 `
 
@@ -43,20 +66,16 @@ class Editor extends Component {
   constructor(props) {
     super(props)
 
-    this.state = {
-      text: 'text',
-    }
-
-    this.changeText = this.changeText.bind(this)
+    this.handleCange = this.handleCange.bind(this)
   }
 
-  changeText(newText) {
-    this.setState({
-      text: newText,
-    })
+  handleCange(content) {
+    this.props.onChange(content)
+    console.log(content)
   }
 
   render() {
+    const { content } = this.props
     return (
       <Tab.Container id="editor" defaultActiveKey={tabs.EDIT}>
         <Row className="clearfix">
@@ -72,13 +91,13 @@ class Editor extends Component {
             <Tab.Content animation>
               <Tab.Pane eventKey={tabs.EDIT}>
                 <StyledCodeMirror
-                  value={this.state.text}
+                  value={content}
                   options={options}
-                  onChange={this.changeText}
+                  onChange={this.handleCange}
                 />
               </Tab.Pane>
               <Tab.Pane eventKey={tabs.PREVIEW}>
-                <Markdown source={this.state.text} />
+                <StyledMarkdown source={content} />
               </Tab.Pane>
             </Tab.Content>
           </Col>
@@ -86,6 +105,11 @@ class Editor extends Component {
       </Tab.Container>
     )
   }
+}
+
+Editor.propTypes = {
+  content: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
 }
 
 export default Editor
