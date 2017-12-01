@@ -28,16 +28,7 @@ $ nrm ls
 $ nrm use taobao
 ```
 
-## 安装依赖
+## 安装依赖并编译
 ```bash
-$ npm install
-```
-
-## 编译
-```bash
-$ npm run watch # 实时编译
-
-# 或者
-
-$ npm run build # 单次编译
+$ npm run build
 ```

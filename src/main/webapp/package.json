@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "./node_modules/.bin/webpack",
+    "build": "npm install && ./node_modules/.bin/webpack",
     "watch": "./node_modules/.bin/webpack --watch",
     "lint:js": "./node_modules/.bin/eslint ./app",
     "lint:css": "./node_modules/.bin/stylelint ./app/**/*.jsx"
