@@ -28,7 +28,7 @@
    </delete>
 
    <select id="countTopic" resultType="java.lang.Integer">
-      SELECT COUNT(*) FROM forum_topic;
+      SELECT COUNT(ft_id) FROM forum_topic;
    </select>
    <select id="countTopicByCategory" resultType="java.lang.Integer">
       SELECT COUNT(ft_id) FROM forum_topic WHERE ft_category = #{category, jdbcType = VARCHAR}
