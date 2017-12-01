@@ -110,7 +110,7 @@ public class TopicController {
      * @throws TopicErrorException 话题错误异常
      * @throws AccountErrorException 账户错误异常
      */
-    @RequestMapping(value = "/topics/new", method = RequestMethod.GET)
+    @RequestMapping(value = "/topics", method = RequestMethod.GET)
     @ResponseBody
     public ResponseJsonListDTO listTopics(@RequestParam(value = "limit", required = false) String limit,
                                           @RequestParam(value = "page", required = false) String page)
