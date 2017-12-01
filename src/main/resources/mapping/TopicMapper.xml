@@ -38,6 +38,9 @@
       SELECT ft_id, fu_id, ft_category, ft_title, ft_comment,ft_lastreplyuserid, ft_lastreplytime, ft_createtime
       FROM forum_topic WHERE ft_id = #{id, jdbcType = INTEGER}
    </select>
+   <select id="listTopicCategory" resultType="String">
+      SELECT DISTINCT(ft_category) FROM forum_topic;
+   </select>
    <select id="listTopicDESCByCount"  parameterType="java.lang.Integer" resultMap="TopicMap">
       SELECT ft_id, fu_id, ft_category, ft_title, ft_comment,ft_lastreplyuserid, ft_lastreplytime, ft_createtime
       FROM forum_topic ORDER BY ft_createtime DESC LIMIT #{param1, jdbcType = INTEGER};

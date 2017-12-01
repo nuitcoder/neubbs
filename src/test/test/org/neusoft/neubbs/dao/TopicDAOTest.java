@@ -104,6 +104,27 @@ public class TopicDAOTest {
         System.out.println("id 查询话题（最新插入）" + JsonUtil.toJSONStringByObject(topic));
     }
 
+
+    /**
+     * 获取话题分类列表
+     */
+    @Test
+    public void testListTopicCategory() {
+        List<String> topicCategoryList = topicDAO.listTopicCategory();
+
+        int count = 1;
+        for (String category: topicCategoryList) {
+            System.out.print(category + " \t ");
+
+            //换行
+            if ((count++) % 10 == 0) {
+                System.out.println();
+            }
+        }
+
+        System.out.println("hava " + (--count) + " different category!");
+    }
+
     /**
      * 获取话题列表（逆序-最新插入，指定数量）
      */

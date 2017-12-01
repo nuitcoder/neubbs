@@ -47,6 +47,8 @@ public final class ParamConst {
 
     public static final String NUMBER = "number";
 
+    public static final String CATEGORYS = "categorys";
+
     /**
      * Reply
      */

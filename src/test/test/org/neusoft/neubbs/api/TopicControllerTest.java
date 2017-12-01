@@ -343,4 +343,18 @@ public class TopicControllerTest {
 
         printSuccessPassTestMehtodMessage();
     }
+
+    /**
+     * 【/api/topic/categorys】 test get topic category list success
+     */
+    @Test
+    public void testGetTopicCategoryListSuccess() throws Exception {
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/api/topic/categorys")
+        ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.message").doesNotExist())
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model.categorys").exists());
+
+        printSuccessPassTestMehtodMessage();
+    }
 }

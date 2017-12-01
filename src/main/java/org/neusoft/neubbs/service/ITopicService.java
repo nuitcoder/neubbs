@@ -77,6 +77,13 @@ public interface ITopicService {
             throws TopicErrorException, AccountErrorException;
 
     /**
+     * 获取所有话题分类（去重）
+     *
+     * @return List<String> 话题分类列表
+     */
+    List<String> listTopicCategory();
+
+    /**
      * 保存话题
      *
      * @param userId 用户id

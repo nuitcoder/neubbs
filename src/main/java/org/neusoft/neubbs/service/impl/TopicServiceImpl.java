@@ -219,6 +219,11 @@ public class TopicServiceImpl implements ITopicService {
     }
 
     @Override
+    public List<String> listTopicCategory() {
+        return topicDAO.listTopicCategory();
+    }
+
+    @Override
     public int saveTopic(int userId, String category, String title, String topicContent)
             throws AccountErrorException, DatabaseOperationFailException {
         //判断用户是否存在

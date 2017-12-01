@@ -143,6 +143,17 @@ public class TopicController {
     }
 
     /**
+     * 获取话题分类信息
+     *
+     * @return ResposneJsonDTO 响应JSON传输数据
+     */
+    @RequestMapping(value = "/topic/categorys", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseJsonDTO listAllTopicCategory() {
+        return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, ParamConst.CATEGORYS, topicService.listTopicCategory());
+    }
+
+    /**
      * 发布话题
      *
      * 业务流程

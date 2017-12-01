@@ -52,6 +52,13 @@ public interface ITopicDAO {
     TopicDO getTopicById(int topicId);
 
     /**
+     * 获取话题分类列表（所有类别，不重复）
+     *
+     * @return List<String> 话题分类列表
+     */
+    List<String> listTopicCategory();
+
+    /**
      * 获取最新的话题列表（降序，指定数量）
      *
      * @param count 数量
