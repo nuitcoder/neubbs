@@ -7,6 +7,21 @@ import * as types from '../constants/actionTypes'
 import * as routes from '../constants/routes'
 
 /**
+ * handle saga error
+ *
+ * @param action
+ * @param error
+ * @returns {undefined}
+ */
+function* handleError(action, error) {
+  yield put({
+    action,
+    type: types.ACCOUNT_REQUEST_ERROR,
+    error: error.message,
+  })
+}
+
+/**
  * login -> fetch profile
  *
  * @param action
@@ -15,7 +30,6 @@ import * as routes from '../constants/routes'
 export function* loginSaga(action) {
   const { username, password } = action.payload
 
-  yield put({ type: types.REQUEST_SENDING })
   const { data } = yield call(auth.login, { username, password })
   try {
     if (data.success) {
@@ -24,10 +38,10 @@ export function* loginSaga(action) {
 
       browserHistory.push(routes.ROOT)
     } else {
-      yield put({ type: types.REQUEST_ERROR, error: data.message })
+      yield call(handleError, action, data)
     }
   } catch (err) {
-    yield put({ type: types.REQUEST_ERROR, error: err.message })
+    yield call(handleError, action, err)
   }
 }
 
@@ -36,8 +50,7 @@ export function* loginSaga(action) {
  *
  * @returns {undefined}
  */
-export function* logoutSaga() {
-  yield put({ type: types.REQUEST_SENDING })
+export function* logoutSaga(action) {
   const { data } = yield call(auth.logout)
 
   try {
@@ -45,10 +58,10 @@ export function* logoutSaga() {
       yield put({ type: types.LOGOUT_SUCCESS })
       browserHistory.push(routes.ACCOUNT_LOGIN)
     } else {
-      yield put({ type: types.REQUEST_ERROR, error: data.message })
+      yield call(handleError, action, data)
     }
   } catch (err) {
-    yield put({ type: types.REQUEST_ERROR, error: err.message })
+    yield call(handleError, action, err)
   }
 }
 
@@ -61,7 +74,6 @@ export function* logoutSaga() {
 export function* registerSaga(action) {
   const { username, email, password } = action.payload
 
-  yield put({ type: types.REQUEST_SENDING })
   const { data } = yield call(auth.resgister, { username, email, password })
   try {
     if (data.success) {
@@ -76,10 +88,10 @@ export function* registerSaga(action) {
 
       browserHistory.push(routes.ROOT)
     } else {
-      yield put({ type: types.REQUEST_ERROR, error: data.message })
+      yield call(handleError, action, data)
     }
   } catch (err) {
-    yield put({ type: types.REQUEST_ERROR, error: err.message })
+    yield call(handleError, action, err)
   }
 }
 
@@ -92,7 +104,6 @@ export function* registerSaga(action) {
 export function* profileSaga(action) {
   const { username } = action.payload
 
-  yield put({ type: types.REQUEST_SENDING })
   const { data } = yield call(api.account.profile, username)
   try {
     if (data.success && data.model) {
@@ -100,10 +111,10 @@ export function* profileSaga(action) {
       yield put({ type: types.ACTIVATE_REQUEST, payload: { username } })
     } else {
       auth.clearAuth()
-      yield put({ type: types.REQUEST_ERROR, error: data.message })
+      yield call(handleError, action, data)
     }
   } catch (err) {
-    yield put({ type: types.REQUEST_ERROR, error: err.message })
+    yield call(handleError, action, err)
   }
 }
 
@@ -116,7 +127,6 @@ export function* profileSaga(action) {
 export function* activateSaga(action) {
   const { username } = action.payload
 
-  yield put({ type: types.REQUEST_SENDING })
   const { data } = yield call(auth.activate, username)
   try {
     yield put({
@@ -126,7 +136,7 @@ export function* activateSaga(action) {
       },
     })
   } catch (err) {
-    yield put({ type: types.REQUEST_ERROR, error: err.message })
+    yield call(handleError, action, err)
   }
 }
 
@@ -139,16 +149,15 @@ export function* activateSaga(action) {
 export function* updateEmailSaga(action) {
   const { username, email } = action.payload
 
-  yield put({ type: types.REQUEST_SENDING })
   const { data } = yield call(api.account.updateEmail, username, email)
   try {
     if (data.success) {
       yield put({ type: types.UPDATE_EMAIL_SUCCESS, payload: { email } })
     } else {
-      yield put({ type: types.REQUEST_ERROR, error: data.message })
+      yield call(handleError, action, data)
     }
   } catch (err) {
-    yield put({ type: types.REQUEST_ERROR, error: err.message })
+    yield call(handleError, action, err)
   }
 }
 
@@ -161,16 +170,15 @@ export function* updateEmailSaga(action) {
 export function* sendActivateEmailSaga(action) {
   const { email } = action.payload
 
-  yield put({ type: types.REQUEST_SENDING })
   const { data } = yield call(api.account.sendActivateEmail, email)
   try {
     if (data.success) {
       yield put({ type: types.SEND_ACTIVATE_EMAIL_SUCCESS })
     } else {
-      yield put({ type: types.REQUEST_ERROR, error: data.message })
+      yield call(handleError, action, data)
     }
   } catch (err) {
-    yield put({ type: types.REQUEST_ERROR, error: err.message })
+    yield call(handleError, action, err)
   }
 }
 
@@ -183,7 +191,6 @@ export function* sendActivateEmailSaga(action) {
 export function* validateAccountSaga(action) {
   const { token } = action.payload
 
-  yield put({ type: types.REQUEST_SENDING })
   const { data } = yield call(api.account.validate, token)
   try {
     if (data.success) {
@@ -191,9 +198,9 @@ export function* validateAccountSaga(action) {
 
       browserHistory.push(`${routes.ROOT}?ref=validate_success`)
     } else {
-      yield put({ type: types.REQUEST_ERROR, error: data.message })
+      yield call(handleError, action, data)
     }
   } catch (err) {
-    yield put({ type: types.REQUEST_ERROR, error: err.message })
+    yield call(handleError, action, err)
   }
 }

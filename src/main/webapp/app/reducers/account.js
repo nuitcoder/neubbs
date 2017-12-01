@@ -9,15 +9,10 @@ const initialState = {
 export default function (state = initialState, action) {
   const { type, payload, error } = action
   switch (type) {
-    case types.REQUEST_SENDING: {
-      return {
-        ...state,
-        error: '',
-      }
-    }
     case types.LOGIN_SUCCESS: {
       return {
         ...state,
+        error: '',
         profile: {
           ...state.profile,
           ...payload,
@@ -27,6 +22,7 @@ export default function (state = initialState, action) {
     case types.LOGOUT_SUCCESS: {
       return {
         ...state,
+        error: '',
         profile: {},
         activate: true,
       }
@@ -34,6 +30,7 @@ export default function (state = initialState, action) {
     case types.REGISTER_SUCCESS: {
       return {
         ...state,
+        error: '',
         profile: {
           ...state.profile,
           ...payload,
@@ -44,12 +41,14 @@ export default function (state = initialState, action) {
       const { activate } = payload
       return {
         ...state,
+        error: '',
         activate,
       }
     }
     case types.GET_PROFILE_SUCCESS: {
       return {
         ...state,
+        error: '',
         profile: {
           ...state.profile,
           ...payload,
@@ -59,6 +58,7 @@ export default function (state = initialState, action) {
     case types.UPDATE_EMAIL_SUCCESS: {
       return {
         ...state,
+        error: '',
         profile: {
           ...state.profile,
           email: payload.email,
@@ -68,10 +68,11 @@ export default function (state = initialState, action) {
     case types.VALIDATE_ACCOUNT_SUCCESS: {
       return {
         ...state,
+        error: '',
         activate: true,
       }
     }
-    case types.REQUEST_ERROR: {
+    case types.ACCOUNT_REQUEST_ERROR: {
       return {
         ...state,
         error,

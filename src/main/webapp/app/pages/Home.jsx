@@ -33,6 +33,10 @@ class Home extends Component {
         page: page + 1,
       })
     }
+
+    if (nextProps.error) {
+      this.setState({ hasMore: false })
+    }
   }
 
   loadTopic() {
@@ -61,9 +65,8 @@ class Home extends Component {
 }
 
 const mapStateToProps = (state) => {
-  const { topic } = state.topics
   return {
-    topic,
+    ...state.topics,
   }
 }
 
@@ -74,6 +77,7 @@ const mapDispatchToProps = (dispatch) => {
 }
 
 Home.propTypes = {
+  error: PropTypes.string.isRequired,
   topic: PropTypes.arrayOf(Object).isRequired,
   actions: PropTypes.shape({
     fetchNewTopics: PropTypes.func.isRequired,

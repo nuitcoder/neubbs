@@ -2,15 +2,23 @@ import * as types from '../constants/actionTypes'
 
 const initialState = {
   topic: [],
+  error: '',
 }
 
 export default (state = initialState, action) => {
-  const { type, payload } = action
+  const { type, payload, error } = action
   switch (type) {
-    case (types.FETCH_NEW_TOPICS_SUCCESS): {
+    case types.FETCH_NEW_TOPICS_SUCCESS: {
       return {
         ...state,
+        error: '',
         topic: state.topic.concat(payload),
+      }
+    }
+    case types.TOPIC_REQUEST_ERROR: {
+      return {
+        ...state,
+        error,
       }
     }
     default:

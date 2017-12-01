@@ -1,6 +1,5 @@
 // account
-export const REQUEST_SENDING = '@@account/REQUEST_SENDING'
-export const REQUEST_ERROR = '@@account/REQUEST_ERROR'
+export const ACCOUNT_REQUEST_ERROR = '@@account/ACCOUNT_REQUEST_ERROR'
 
 export const LOGIN_REQUEST = '@@account/LOGIN_REQUEST'
 export const LOGIN_SUCCESS = '@@account/LOGIN_SUCCESS'
@@ -30,5 +29,7 @@ export const VALIDATE_ACCOUNT_SUCCESS = '@@account/VALIDATE_ACCOUNT_SUCCESS'
 export const SET_COUNTDOWN = '@@countdown/SET_COUNTDOWN'
 
 // topics
-export const FETCH_NEW_TOPICS_REQUEST = '@@topics/FETCH_NEW_TOPICS_REQUEST'
-export const FETCH_NEW_TOPICS_SUCCESS = '@@topics/FETCH_NEW_TOPICS_SUCCESS'
+export const TOPIC_REQUEST_ERROR = '@@topic/TOPIC_REQUEST_ERROR'
+
+export const FETCH_NEW_TOPICS_REQUEST = '@@topic/FETCH_NEW_TOPICS_REQUEST'
+export const FETCH_NEW_TOPICS_SUCCESS = '@@topic/FETCH_NEW_TOPICS_SUCCESS'
