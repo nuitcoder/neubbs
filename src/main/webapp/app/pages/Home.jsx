@@ -10,13 +10,17 @@ import actions from '../actions'
 import TopicList from '../components/TopicList'
 import Widgets from '../components/Widgets'
 
+const TOPIC_LIMIT = 25
+
 class Home extends Component {
   constructor(props) {
     super(props)
 
+    const page = Math.floor(props.topic.length / TOPIC_LIMIT)
+    const hasMore = props.error === ''
     this.state = {
-      page: 0,
-      hasMore: true,
+      page,
+      hasMore,
     }
 
     this.loadTopic = this.loadTopic.bind(this)
@@ -34,7 +38,7 @@ class Home extends Component {
       })
     }
 
-    if (nextProps.error) {
+    if (this.state.hasMore && nextProps.error) {
       this.setState({ hasMore: false })
     }
   }
@@ -44,7 +48,7 @@ class Home extends Component {
 
     this.props.actions.fetchNewTopics({
       page,
-      limit: 25,
+      limit: TOPIC_LIMIT,
     })
   }
 

@@ -15,7 +15,6 @@ export function* fetchNewTopicsSaga(action) {
   const { page, limit } = action.payload
 
   const { data } = yield call(api.topics.new, { page, limit })
-  console.log(data)
   try {
     if (data.success) {
       yield put({ type: types.FETCH_NEW_TOPICS_SUCCESS, payload: data.model })
