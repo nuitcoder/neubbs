@@ -2,6 +2,7 @@ package org.neusoft.neubbs.service.impl;
 
 import org.apache.log4j.Logger;
 import org.neusoft.neubbs.constant.api.ApiMessage;
+import org.neusoft.neubbs.constant.api.ParamConst;
 import org.neusoft.neubbs.constant.log.LogWarn;
 import org.neusoft.neubbs.controller.exception.AccountErrorException;
 import org.neusoft.neubbs.controller.exception.DatabaseOperationFailException;
@@ -192,6 +193,11 @@ public class TopicServiceImpl implements ITopicService {
             if (topic.getLastreplyuserid() != null) {
                 lastReplyUserMap = JsonUtil.toMapByObject(userService.getUserInfoById(topic.getLastreplyuserid()));
                 MapFilterUtil.filterTopicUserInfo(lastReplyUserMap);
+            }
+
+            //result json filter category
+            if (category != null) {
+                topicMap.remove(ParamConst.CATEGORY);
             }
 
             topicMap.putAll(topicContentMap);
