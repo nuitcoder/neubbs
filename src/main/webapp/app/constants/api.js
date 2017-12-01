@@ -14,4 +14,3 @@ export const VALIDATE_ACCOUNT_URL = `${ACCOUNT_URL}/validate`
 
 // topics
 export const TOPICS_URL = `${API_PREFIX}/topics`
-export const TOPICS_NEW_URL = `${TOPICS_URL}/new`
