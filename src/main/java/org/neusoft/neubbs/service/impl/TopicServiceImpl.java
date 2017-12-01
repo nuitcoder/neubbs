@@ -192,7 +192,7 @@ public class TopicServiceImpl implements ITopicService {
             listTopic = topicDAO.listTopicByStartRowByCountByCategory((page - 1) * limit, limit, category);
         } else if (username != null) {
             UserDO userDO = userService.getUserInfoByName(username);
-            listTopic = topicDAO.listTopicByStartRowByCountByUsername((page - 1) * limit, limit, userDO.getId());
+            listTopic = topicDAO.listTopicByStartRowByCountByUserId((page - 1) * limit, limit, userDO.getId());
         } else {
             //default
             listTopic = topicDAO.listTopicByStartRowByCount((page - 1) * limit, limit);

@@ -60,7 +60,7 @@
       FROM forum_topic WHERE ft_category = #{param3, jdbcType = VARCHAR}
       LIMIT #{param1, jdbcType = INTEGER}, #{param2, jdbcType = INTEGER}
    </select>
-   <select id="listTopicByStartRowByCountByUsername" resultMap="TopicMap">
+   <select id="listTopicByStartRowByCountByUserId" resultMap="TopicMap">
       SELECT ft_id, fu_id, ft_category, ft_title, ft_comment,ft_lastreplyuserid, ft_lastreplytime, ft_createtime
       FROM forum_topic WHERE fu_id = #{param3, jdbcType = INTEGER}
       LIMIT #{param1, jdbcType = INTEGER}, #{param2, jdbcType = INTEGER}

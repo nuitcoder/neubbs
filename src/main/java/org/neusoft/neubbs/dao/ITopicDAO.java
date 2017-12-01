@@ -109,7 +109,7 @@ public interface ITopicDAO {
      * @param userId 用户id
      * @return List<TopicDO> 话题列表
      */
-    List<TopicDO> listTopicByStartRowByCountByUsername(int startRow, int count, int userId);
+    List<TopicDO> listTopicByStartRowByCountByUserId(int startRow, int count, int userId);
 
     /**
      * 更新话题分类

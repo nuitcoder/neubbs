@@ -196,7 +196,7 @@ public class TopicDAOTest {
         int count = 10;
         int userId = 6;
 
-        List<TopicDO> listTopic = topicDAO.listTopicByStartRowByCountByUsername(startRow, count, userId);
+        List<TopicDO> listTopic = topicDAO.listTopicByStartRowByCountByUserId(startRow, count, userId);
         for (TopicDO topic: listTopic) {
             System.out.println(JsonUtil.toJSONStringByObject(listTopic));
         }
