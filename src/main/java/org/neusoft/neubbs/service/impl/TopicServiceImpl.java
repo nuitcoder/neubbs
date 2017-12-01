@@ -13,6 +13,7 @@ import org.neusoft.neubbs.dao.ITopicReplyDAO;
 import org.neusoft.neubbs.entity.TopicContentDO;
 import org.neusoft.neubbs.entity.TopicDO;
 import org.neusoft.neubbs.entity.TopicReplyDO;
+import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.service.ITopicService;
 import org.neusoft.neubbs.service.IUserService;
 import org.neusoft.neubbs.utils.JsonUtil;
@@ -143,7 +144,7 @@ public class TopicServiceImpl implements ITopicService {
     }
 
     @Override
-    public List<Map<String, Object>> listTopics(int limit, int page, String category)
+    public List<Map<String, Object>> listTopics(int limit, int page, String category, String username)
             throws TopicErrorException, AccountErrorException {
 
         //获取话题总数，判断输入 page，limit 是否超出指定范围
@@ -154,7 +155,7 @@ public class TopicServiceImpl implements ITopicService {
                     .log(LogWarn.TOPIC_12
                             + "（话题总数 = " + topicCount
                             + "，若 limit = " + limit
-                            + "，最多跳转至 " + maxPage  + " 页）");
+                            + "，最多跳转至 " + maxPage + " 页）");
         }
 
         //根据 page and limit，获取指定列数的话题列表
@@ -162,6 +163,9 @@ public class TopicServiceImpl implements ITopicService {
         if (category != null) {
             //select category topic
             listTopic = topicDAO.listTopicByStartRowByCountByCategory((page - 1) * limit, limit, category);
+        } else if (username != null) {
+            UserDO userDO = userService.getUserInfoByName(username);
+            listTopic = topicDAO.listTopicByStartRowByCountByUsername((page - 1) * limit, limit, userDO.getId());
         } else {
             //default
             listTopic = topicDAO.listTopicByStartRowByCount((page - 1) * limit, limit);
@@ -201,7 +205,11 @@ public class TopicServiceImpl implements ITopicService {
             }
 
             topicMap.putAll(topicContentMap);
-            topicMap.put("user", authorUserMap);
+
+            if (username == null) {
+                topicMap.put("user", authorUserMap);
+            }
+
             topicMap.put("lastreplyuser", lastReplyUserMap);
 
             resultTopics.add(topicMap);

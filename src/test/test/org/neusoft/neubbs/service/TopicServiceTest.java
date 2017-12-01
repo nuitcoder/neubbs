@@ -88,7 +88,8 @@ public class TopicServiceTest {
         int page = 10;
         int count = 10;
         String category = null;
-        List<Map<String, Object>> topics = topicService.listTopics(page, count, category);
+        String username = "suvan";
+        List<Map<String, Object>> topics = topicService.listTopics(page, count, category, username);
 
         for(Map map: topics) {
             System.out.println("*************************** topic ****************************");

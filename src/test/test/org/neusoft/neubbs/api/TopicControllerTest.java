@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.neusoft.neubbs.constant.api.ApiMessage;
 import org.neusoft.neubbs.controller.exception.AccountErrorException;
 import org.neusoft.neubbs.controller.exception.ParamsErrorException;
 import org.neusoft.neubbs.controller.exception.TopicErrorException;
@@ -240,7 +241,7 @@ public class TopicControllerTest {
         }
 
 
-        //input input limit,page,category
+        //input param: limit,page,category
         String category = "分类 2";
         System.out.println("input param[ limit=1, page=1,category=" + category + "]");
         mockMvc.perform(
@@ -250,7 +251,19 @@ public class TopicControllerTest {
                 .param("category", category)
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
          .andExpect(MockMvcResultMatchers.jsonPath("$.message").doesNotExist())
-         .andExpect(MockMvcResultMatchers.jsonPath("$.model[0].category").value(category));
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model[0].category").doesNotExist());
+
+        //input param: limit,page,username
+        String username = "suvan";
+        System.out.println("input param[ limit=1, page=1,username=" + username + "]");
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/api/topics")
+                    .param("limit", "1")
+                    .param("page", "1")
+                    .param("username", "suvan")
+        ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.message").doesNotExist())
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model[0].user").doesNotExist());
 
         printSuccessPassTestMehtodMessage();
     }
@@ -312,6 +325,20 @@ public class TopicControllerTest {
                         )
                 );
             }
+        }
+
+        //the same input category and username
+        try {
+            mockMvc.perform(
+                    MockMvcRequestBuilders.get("/api/topics")
+                            .param("page", "1")
+                            .param("limit", "1")
+                            .param("category", "fasdf")
+                            .param("username", "asdf")
+            ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
+             .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(ApiMessage.PARAM_ERROR));
+        } catch (NestedServletException ne) {
+            Assert.assertTrue(ne.getRootCause() instanceof TopicErrorException);
         }
 
         printSuccessPassTestMehtodMessage();

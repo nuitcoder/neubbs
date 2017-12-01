@@ -79,6 +79,16 @@ public interface ITopicDAO {
     List<TopicDO> listTopicByStartRowByCountByCategory(int startRow, int count, String category);
 
     /**
+     * 获取话题列表（用户名获取）
+     *
+     * @param startRow 开始行数
+     * @param count 获取数量
+     * @param userId 用户id
+     * @return List<TopicDO> 话题列表
+     */
+    List<TopicDO> listTopicByStartRowByCountByUsername(int startRow, int count, int userId);
+
+    /**
      * 更新话题分类
      *
      * @param topicId 话题id

@@ -1,8 +1,10 @@
 package org.neusoft.neubbs.controller.api;
 
 import org.neusoft.neubbs.constant.ajax.AjaxRequestStatus;
+import org.neusoft.neubbs.constant.api.ApiMessage;
 import org.neusoft.neubbs.constant.api.ParamConst;
 import org.neusoft.neubbs.constant.api.SetConst;
+import org.neusoft.neubbs.constant.log.LogWarn;
 import org.neusoft.neubbs.controller.annotation.AccountActivation;
 import org.neusoft.neubbs.controller.annotation.AdminRank;
 import org.neusoft.neubbs.controller.annotation.LoginAuthorization;
@@ -114,21 +116,28 @@ public class TopicController {
     @ResponseBody
     public ResponseJsonListDTO listTopics(@RequestParam(value = "limit", required = false) String limit,
                                           @RequestParam(value = "page", required = false) String page,
-                                          @RequestParam(value = "category", required = false) String category)
+                                          @RequestParam(value = "category", required = false) String category,
+                                          @RequestParam(value = "username", required = false) String username)
             throws ParamsErrorException, TopicErrorException, AccountErrorException {
 
         RequestParamCheckUtil.check(ParamConst.NUMBER, page);
         if (limit != null) {
             RequestParamCheckUtil.check(ParamConst.NUMBER, limit);
         }
-        if (category != null) {
+
+        if (category != null && username != null) {
+            throw new TopicErrorException(ApiMessage.PARAM_ERROR).log(LogWarn.TOPIC_13);
+        } else if (category != null) {
             RequestParamCheckUtil.check(ParamConst.CATEGORY, category);
+        } else if (username != null) {
+            RequestParamCheckUtil.check(ParamConst.USERNAME, username);
         }
 
         Integer selectLimit = limit != null
                 ? Integer.parseInt(limit) : neubbsConfig.getTopicsApiRequestParamLimitDefault();
 
-        List<Map<String, Object>> topics = topicService.listTopics(selectLimit, Integer.parseInt(page), category);
+        List<Map<String, Object>> topics = topicService
+                .listTopics(selectLimit, Integer.parseInt(page), category, username);
 
         return new ResponseJsonListDTO(AjaxRequestStatus.SUCCESS, topics);
     }

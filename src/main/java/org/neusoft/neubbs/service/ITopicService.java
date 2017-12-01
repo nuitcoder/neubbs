@@ -68,11 +68,13 @@ public interface ITopicService {
      * @param limit 每页显示数量
      * @param page 跳转到指定页数
      * @param category 分类目录
+     * @param username 用户名
      * @return List 列表
      * @throws TopicErrorException 话题错误异常
      * @throws AccountErrorException 账户错误异常
      */
-    List<Map<String, Object>> listTopics(int limit, int page, String category) throws TopicErrorException, AccountErrorException;
+    List<Map<String, Object>> listTopics(int limit, int page, String category, String username)
+            throws TopicErrorException, AccountErrorException;
 
     /**
      * 保存话题

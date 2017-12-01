@@ -150,6 +150,21 @@ public class TopicDAOTest {
     }
 
     /**
+     * 获取话题列表（用户名获取）
+     */
+    @Test
+    public void testListTopicByStartRowByCountByUsername() {
+        int startRow = 0;
+        int count = 10;
+        int userId = 6;
+
+        List<TopicDO> listTopic = topicDAO.listTopicByStartRowByCountByUsername(startRow, count, userId);
+        for (TopicDO topic: listTopic) {
+            System.out.println(JsonUtil.toJSONStringByObject(listTopic));
+        }
+    }
+
+    /**
      * 更新分类
      */
     @Ignore
