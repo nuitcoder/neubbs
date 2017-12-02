@@ -98,9 +98,8 @@ public final class RequestParamCheckUtil {
      *
      * @param type 参数类型
      * @param param 参数值
-     * @throws ParamsErrorException 参数错误异常
      */
-    public static void check(String type, String param) throws ParamsErrorException {
+    public static void check(String type, String param) {
         //空检查
         checkNull(type, param);
 
@@ -115,9 +114,8 @@ public final class RequestParamCheckUtil {
      * 检查器
      *
      * @param typeParamMap 类型-参数，键值对
-     * @throws ParamsErrorException 参数错误异常
      */
-    public static void check(Map<String, String> typeParamMap) throws ParamsErrorException {
+    public static void check(Map<String, String> typeParamMap) {
         //统一空检查
         for (Map.Entry<String, String> entry : typeParamMap.entrySet()) {
             checkNull(entry.getKey(), entry.getValue());
@@ -135,9 +133,8 @@ public final class RequestParamCheckUtil {
      *
      * @param type 参数类型
      * @param param 参数值
-     * @throws ParamsErrorException 参数错误异常
      */
-    private static void checkNull(String type, String param) throws ParamsErrorException {
+    private static void checkNull(String type, String param) {
         if (StringUtil.isEmpty(param) | NULL.equals(param)) {
             throw new ParamsErrorException(ApiMessage.PARAM_ERROR).log(param + " （" + type + " 类型）参数不能为空；");
         }
@@ -148,9 +145,8 @@ public final class RequestParamCheckUtil {
      *
      * @param type 参数类型
      * @param param 参数值
-     * @throws ParamsErrorException 参数错误异常
      */
-    private static void checkScope(String type, String param) throws ParamsErrorException {
+    private static void checkScope(String type, String param) {
         Scope scope = typeScopeMap.get(type);
         if (scope == null) {
             return;
@@ -169,9 +165,8 @@ public final class RequestParamCheckUtil {
      *
      * @param type 参数类型
      * @param param 参数值
-     * @throws ParamsErrorException 参数错误异常
      */
-    private static void checkPattern(String type, String param) throws ParamsErrorException {
+    private static void checkPattern(String type, String param) {
         Pattern pattern = typePatternMap.get(type);
         if (pattern == null) {
             return;

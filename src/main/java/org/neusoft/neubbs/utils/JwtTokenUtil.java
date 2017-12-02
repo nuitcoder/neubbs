@@ -44,9 +44,8 @@ public final class JwtTokenUtil {
      *
      * @param user 用户对象
      * @return String 加密后密文
-     * @throws TokenErrorException token错误异常
      */
-    public static String createToken(UserDO user) throws TokenErrorException {
+    public static String createToken(UserDO user) {
         Map<String, Object> headerMap = new HashMap<>(SetConst.SIZE_TWO);
             headerMap.put(HEADER_ALG, HS256);
             headerMap.put(HEADER_TYP, JWT);

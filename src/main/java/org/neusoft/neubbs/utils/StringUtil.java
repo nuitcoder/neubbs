@@ -67,9 +67,8 @@ public final class StringUtil {
      *
      * @param expireTime 过期指定时间（时间戳）
      * @return boolean 检测结果
-     * @throws TokenErrorException 口令错误异常
      */
-    public static boolean isExpire(String expireTime) throws TokenErrorException {
+    public static boolean isExpire(String expireTime) {
         long time;
         try {
             time = Long.parseLong(expireTime);

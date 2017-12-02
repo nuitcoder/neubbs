@@ -94,7 +94,7 @@ public final class FtpUtil {
      * 检查是否存在服务器目录
      *
      * @param serverDirectoryPath 服务器目录
-     * @throws IOException IO以换仓
+     * @throws IOException IO异常
      */
     private static void checkIsExistServerDirectory(String serverDirectoryPath) throws IOException {
         if (!ftpClient.changeWorkingDirectory(serverDirectoryPath)) {

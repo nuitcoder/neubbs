@@ -21,7 +21,6 @@ public final class JsonUtil {
      *
      * @param obj Object对象
      * @return String JSON格式字符串
-     * @throws JsonProcessingException Json格式转换异常
      */
     public static String toJSONStringByObject(Object obj) {
         ObjectMapper mapper = new ObjectMapper();
@@ -39,7 +38,6 @@ public final class JsonUtil {
      *
      * @param json JSON格式字符串
      * @return Map<String,Object>键值对
-     * @throws IOException
      */
     public static Map<String, Object> toMapByJSONString(String json) {
         ObjectMapper mapper = new ObjectMapper();

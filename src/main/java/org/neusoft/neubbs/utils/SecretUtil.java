@@ -1,6 +1,5 @@
 package org.neusoft.neubbs.utils;
 
-import com.sun.javafx.fxml.expression.Expression;
 import org.neusoft.neubbs.constant.api.ApiMessage;
 import org.neusoft.neubbs.constant.log.LogWarn;
 import org.neusoft.neubbs.controller.exception.TokenErrorException;
@@ -98,7 +97,7 @@ public final class SecretUtil {
      * @return String 明文
      * @throws TokenErrorException 口令错误异常
      */
-    public static String decryptBase64(String token) throws TokenErrorException{
+    public static String decryptBase64(String token) throws TokenErrorException {
         try {
             return new String(Base64.getDecoder().decode(token));
         } catch (Exception e) {
