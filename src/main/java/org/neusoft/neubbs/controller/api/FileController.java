@@ -8,9 +8,6 @@ import org.neusoft.neubbs.constant.secret.SecretInfo;
 import org.neusoft.neubbs.controller.annotation.AccountActivation;
 import org.neusoft.neubbs.controller.annotation.LoginAuthorization;
 import org.neusoft.neubbs.controller.exception.AccountErrorException;
-import org.neusoft.neubbs.controller.exception.DatabaseOperationFailException;
-import org.neusoft.neubbs.controller.exception.FileUploadErrorException;
-import org.neusoft.neubbs.controller.exception.FtpServiceErrorException;
 import org.neusoft.neubbs.dto.ResponseJsonDTO;
 import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.entity.properties.NeubbsConfigDO;
@@ -70,18 +67,12 @@ public class FileController {
      * @param multipartFile 用户上传的文件对象
      * @param request http请求
      * @return ResponseJsonDTO 响应JSON传输对象
-     * @throws FileUploadErrorException 文件上传错误异常
-     * @throws AccountErrorException 账户错误异常
-     * @throws DatabaseOperationFailException 数据库操作异常
-     * @throws FtpServiceErrorException FTP服务错误异常
      */
     @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/avator", method = RequestMethod.POST)
     @ResponseBody
     public ResponseJsonDTO uploadUserImage(@RequestParam("avatorImage")MultipartFile multipartFile,
-                                           HttpServletRequest request)
-            throws FileUploadErrorException, AccountErrorException,
-                DatabaseOperationFailException, FtpServiceErrorException {
+                                           HttpServletRequest request) {
 
         fileService.checkUserImageNorm(multipartFile);
 
