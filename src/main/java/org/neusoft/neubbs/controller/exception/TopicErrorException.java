@@ -8,7 +8,7 @@ import org.neusoft.neubbs.controller.annotation.ApiException;
  * @author Suvan
  */
 @ApiException
-public class TopicErrorException extends Exception implements IPrintLog {
+public class TopicErrorException extends RuntimeException implements IPrintLog {
 
     private String logMessage;
 

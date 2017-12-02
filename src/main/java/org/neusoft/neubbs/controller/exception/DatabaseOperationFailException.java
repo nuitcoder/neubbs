@@ -5,7 +5,7 @@ package org.neusoft.neubbs.controller.exception;
  *
  * @author Suvan
  */
-public class DatabaseOperationFailException extends Exception implements IPrintLog {
+public class DatabaseOperationFailException extends RuntimeException implements IPrintLog {
 
     private String logMessage;
 

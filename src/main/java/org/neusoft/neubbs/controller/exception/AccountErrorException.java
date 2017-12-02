@@ -9,7 +9,7 @@ import org.neusoft.neubbs.controller.annotation.ApiException;
  * @author Suvan
  */
 @ApiException
-public class AccountErrorException extends Exception implements IPrintLog {
+public class AccountErrorException extends RuntimeException implements IPrintLog {
 
    private String logMessage;
 

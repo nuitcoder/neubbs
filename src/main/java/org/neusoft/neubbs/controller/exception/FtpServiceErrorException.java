@@ -8,7 +8,7 @@ import org.neusoft.neubbs.controller.annotation.ApiException;
  * @author Suvan
  */
 @ApiException
-public class FtpServiceErrorException extends Exception implements IPrintLog {
+public class FtpServiceErrorException extends RuntimeException implements IPrintLog {
 
     private String logMessage;
 

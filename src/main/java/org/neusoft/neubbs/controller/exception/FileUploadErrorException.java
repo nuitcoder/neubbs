@@ -8,7 +8,7 @@ import org.neusoft.neubbs.controller.annotation.ApiException;
  * @author Suvan
  */
 @ApiException
-public class FileUploadErrorException extends Exception implements IPrintLog {
+public class FileUploadErrorException extends RuntimeException implements IPrintLog {
 
     private String logMessage;
 

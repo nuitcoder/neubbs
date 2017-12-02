@@ -8,7 +8,7 @@ import org.neusoft.neubbs.controller.annotation.ApiException;
  * @author Suvan
  */
 @ApiException
-public class ParamsErrorException extends Exception implements IPrintLog {
+public class ParamsErrorException extends RuntimeException implements IPrintLog {
 
     /**
      * 日志信息
