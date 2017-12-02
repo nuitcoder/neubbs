@@ -20,7 +20,7 @@ import java.io.IOException;
 public class FtpServiceImpl implements IFtpService {
 
     @Override
-    public void registerUserCreatePersonDirectory(UserDO user) throws FtpServiceErrorException {
+    public void registerUserCreatePersonDirectory(UserDO user) {
         try {
             FtpUtil.createDirectory("/user/" + user.getId() + "-" + user.getName() + "/avator");
         } catch (IOException ioe) {
@@ -29,7 +29,7 @@ public class FtpServiceImpl implements IFtpService {
     }
 
     @Override
-    public void uploadUserAvatorImage(String ftpPath, String fileName, MultipartFile multipartFile) throws FtpServiceErrorException {
+    public void uploadUserAvatorImage(String ftpPath, String fileName, MultipartFile multipartFile) {
         try {
             FtpUtil.uploadFile(ftpPath, fileName, multipartFile.getInputStream());
         } catch (IOException ioe) {

@@ -1,8 +1,5 @@
 package org.neusoft.neubbs.service;
 
-import org.neusoft.neubbs.controller.exception.AccountErrorException;
-import org.neusoft.neubbs.controller.exception.DatabaseOperationFailException;
-import org.neusoft.neubbs.controller.exception.TopicErrorException;
 import org.neusoft.neubbs.entity.TopicContentDO;
 import org.neusoft.neubbs.entity.TopicDO;
 import org.neusoft.neubbs.entity.TopicReplyDO;
@@ -21,46 +18,40 @@ public interface ITopicService {
      * 获取 TopicDO（查询 forum_topic 表）
      * @param topicId 话题id
      * @return TopicDO 话题对象
-     * @throws TopicErrorException 话题错误异常
      */
-    TopicDO getTopicDOByTopicId(int topicId) throws TopicErrorException;
+    TopicDO getTopicDOByTopicId(int topicId);
 
     /**
      * 获取 TopicContentDO（查询 forum_topic_content 表）
      *
      * @param topicId 话题id
      * @return TopicContentDO 话题内容对象
-     * @throws TopicErrorException 话题错误异常
      */
-    TopicContentDO getTopicContentDOByTopicId(int topicId) throws TopicErrorException;
+    TopicContentDO getTopicContentDOByTopicId(int topicId);
 
     /**
      * 获取 TopicReplyDO（查询 forum_topic_reply 表）
      *
      * @param replyId 回复id
      * @return TopicReplyDO 话题回复对象
-     * @throws TopicErrorException 话题错误异常
      */
-    TopicReplyDO getTopicReplyDOByReplyId(int replyId) throws TopicErrorException;
+    TopicReplyDO getTopicReplyDOByReplyId(int replyId);
 
     /**
      * 获取话题信息（基本信息 + 内容 + 回复）
      *
      * @param topicId 话题 id
      * @return Map 话题内容信息
-     * @throws TopicErrorException 话题错误异常
-     * @throws AccountErrorException 账户错误异常
      */
-    Map<String, Object> getTopic(int topicId) throws TopicErrorException, AccountErrorException;
+    Map<String, Object> getTopic(int topicId);
 
     /**
      * 获取回复信息（单条回复）
      *
      * @param replyId 回复id
      * @return Map 回复信息
-     * @throws AccountErrorException 账户错误异常
      */
-    Map<String, Object> getReply(int replyId) throws AccountErrorException;
+    Map<String, Object> getReply(int replyId);
 
 
     /**
@@ -68,7 +59,7 @@ public interface ITopicService {
      *
      * @param category 话题类别
      */
-    void isTopicCategoryExist(String category) throws TopicErrorException;
+    void isTopicCategoryExist(String category);
 
     /**
      * 获取话题总页数
@@ -77,10 +68,8 @@ public interface ITopicService {
      * @param category 分类
      * @param username 用户名
      * @return String 总页数
-     * @throws AccountErrorException 账户错误异常
      */
-    String getTopicTotalPages(int limit, String category, String username)
-            throws AccountErrorException, TopicErrorException;
+    String getTopicTotalPages(int limit, String category, String username);
 
     /**
      * 获取话题列表（包含话题数据与基本用户数据）
@@ -90,11 +79,8 @@ public interface ITopicService {
      * @param category 分类目录
      * @param username 用户名
      * @return List 列表
-     * @throws TopicErrorException 话题错误异常
-     * @throws AccountErrorException 账户错误异常
      */
-    List<Map<String, Object>> listTopics(int limit, int page, String category, String username)
-            throws TopicErrorException, AccountErrorException;
+    List<Map<String, Object>> listTopics(int limit, int page, String category, String username);
 
     /**
      * 获取所有话题分类（去重）
@@ -111,11 +97,8 @@ public interface ITopicService {
      * @param title 话题标题
      * @param topicContent 话题内容
      * @return int 新增的话题id
-     * @throws AccountErrorException 账户错误异常
-     * @throws DatabaseOperationFailException 数据库操作失败异常
      */
-    int saveTopic(int userId, String category, String title, String topicContent)
-            throws AccountErrorException, DatabaseOperationFailException;
+    int saveTopic(int userId, String category, String title, String topicContent);
 
     /**
      * 保存回复
@@ -124,30 +107,22 @@ public interface ITopicService {
      * @param topicId 话题id
      * @param replyContent 话题内容
      * @return int 新增的回复id
-     * @throws AccountErrorException 账户错误异常
-     * @throws TopicErrorException 主题错误异常
-     * @throws DatabaseOperationFailException 数据操作失败异常
      */
-    int saveReply(int userId, int topicId, String replyContent)
-            throws AccountErrorException, TopicErrorException, DatabaseOperationFailException;
+    int saveReply(int userId, int topicId, String replyContent);
 
     /**
      * 删除话题
      *
      * @param topicId 要删除的话题id
-     * @throws TopicErrorException 话题错误异常
-     * @throws DatabaseOperationFailException 数据库操作失败异常
      */
-    void removeTopic(int topicId) throws TopicErrorException, DatabaseOperationFailException;
+    void removeTopic(int topicId);
 
     /**
      * 删除回复
      *
      * @param replyId 回复id
-     * @throws TopicErrorException 话题错误异常
-     * @throws DatabaseOperationFailException 数据库操作失败异常
      */
-    void removeReply(int replyId) throws TopicErrorException, DatabaseOperationFailException;
+    void removeReply(int replyId);
 
     /**
      * 修改话题内容
@@ -156,20 +131,14 @@ public interface ITopicService {
      * @param newCategory 分类
      * @param newTitle 新标题
      * @param newTopicContent 新话题内容
-     * @throws TopicErrorException 话题错误异常
-     * @throws DatabaseOperationFailException 数据库操作失败异常
      */
-    void alterTopicContent(int topicId, String newCategory, String newTitle, String newTopicContent)
-            throws TopicErrorException, DatabaseOperationFailException;
+    void alterTopicContent(int topicId, String newCategory, String newTitle, String newTopicContent);
 
     /**
      * 修改回复内容
      *
      * @param replyId 回复id
      * @param newReplyContent 新回复内容
-     * @throws TopicErrorException 话题错误异常
-     * @throws DatabaseOperationFailException 数据库操作失败异常
      */
-     void alterReplyContent(int replyId, String newReplyContent)
-             throws TopicErrorException, DatabaseOperationFailException;
+     void alterReplyContent(int replyId, String newReplyContent);
 }
