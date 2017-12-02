@@ -68,4 +68,15 @@ public final class CookieUtil {
 
         return null;
     }
+
+    /**
+     * 是否存在 Cookie
+     *
+     * @param request http请求
+     * @param cookieName Cookie名
+     * @return boolean 是否存在
+     */
+    public static boolean isExistCookie(HttpServletRequest request, String cookieName) {
+        return getCookieValue(request, cookieName) != null;
+    }
 }
