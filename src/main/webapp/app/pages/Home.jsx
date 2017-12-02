@@ -17,16 +17,16 @@ class Home extends Component {
     super(props)
 
     const page = Math.floor(props.topic.length / TOPIC_LIMIT)
-    const hasMore = props.error === ''
     this.state = {
       page,
-      hasMore,
     }
 
     this.loadTopic = this.loadTopic.bind(this)
+    this.loadTopicsPages = this.loadTopicsPages.bind(this)
   }
 
   componentWillMount() {
+    this.loadTopicsPages()
     this.loadTopic()
   }
 
@@ -37,10 +37,12 @@ class Home extends Component {
         page: page + 1,
       })
     }
+  }
 
-    if (this.state.hasMore && nextProps.error) {
-      this.setState({ hasMore: false })
-    }
+  loadTopicsPages() {
+    this.props.actions.fetchTopicsPages({
+      limit: TOPIC_LIMIT,
+    })
   }
 
   loadTopic() {
@@ -53,13 +55,14 @@ class Home extends Component {
   }
 
   render() {
-    const { topic } = this.props
+    const { topic, totalPage } = this.props
+    const { page } = this.state
     return (
       <Row>
         <TopicList
           data={topic}
           pageStart={1}
-          hasMore={this.state.hasMore}
+          hasMore={totalPage > page}
           loadMore={_.throttle(this.loadTopic, 1000)}
         />
         <Widgets />
@@ -81,10 +84,11 @@ const mapDispatchToProps = (dispatch) => {
 }
 
 Home.propTypes = {
-  error: PropTypes.string.isRequired,
   topic: PropTypes.arrayOf(Object).isRequired,
+  totalPage: PropTypes.number.isRequired,
   actions: PropTypes.shape({
     fetchNewTopics: PropTypes.func.isRequired,
+    fetchTopicsPages: PropTypes.func.isRequired,
   }).isRequired,
 }
 

@@ -12,12 +12,28 @@ function* handleError(action, error) {
 }
 
 export function* fetchNewTopicsSaga(action) {
-  const { page, limit } = action.payload
+  const { page, limit, category, username } = action.payload
 
-  const { data } = yield call(api.topics.topic, { page, limit })
+  const { data } = yield call(api.topics.topic, { page, limit, category, username })
   try {
     if (data.success) {
       yield put({ type: types.FETCH_NEW_TOPICS_SUCCESS, payload: data.model })
+    } else {
+      yield call(handleError, action, data)
+    }
+  } catch (err) {
+    yield call(handleError, action, err)
+  }
+}
+
+export function* fetchTopicsPagesSaga(action) {
+  const { limit, category, username } = action.payload
+
+  const { data } = yield call(api.topics.pages, { limit, category, username })
+  console.log(data)
+  try {
+    if (data.success) {
+      yield put({ type: types.FETCH_TOPICS_PAGES_SUCCESS, payload: data.model.totalpages })
     } else {
       yield call(handleError, action, data)
     }
