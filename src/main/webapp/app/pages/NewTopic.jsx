@@ -1,7 +1,11 @@
 import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import { Row, Col, Panel, FormGroup, FormControl, Button } from 'react-bootstrap'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
 
+import actions from '../actions'
 import Editor from '../components/Editor'
 
 const InputErrorText = styled.span`
@@ -30,6 +34,15 @@ class NewTopic extends Component {
   onSubmit(evt) {
     evt.preventDefault()
     this.setState({ hasSubmit: true })
+
+    const { title, content } = this.state
+    if (title !== '' && content !== '') {
+      this.props.actions.addNewTopic({
+        title,
+        content,
+        category: 'topic-new-test', // TODO: need to fix
+      })
+    }
   }
 
   changeTitle(evt) {
@@ -42,7 +55,7 @@ class NewTopic extends Component {
   }
 
   render() {
-    const { title, hasSubmit } = this.state
+    const { title, content, hasSubmit } = this.state
     return (
       <Row>
         <Col md={12}>
@@ -62,6 +75,8 @@ class NewTopic extends Component {
                   content={this.state.content}
                   onChange={this.changeContent}
                 />
+                {(content === '' && hasSubmit) &&
+                  <InputErrorText>内容不能为空</InputErrorText>}
               </FormGroup>
               <Button type="submit" bsStyle="primary">
                 发布主题
@@ -74,4 +89,19 @@ class NewTopic extends Component {
   }
 }
 
-export default NewTopic
+const mapDispatchToProps = (dispatch) => {
+  return {
+    actions: bindActionCreators(actions, dispatch),
+  }
+}
+
+NewTopic.propTypes = {
+  actions: PropTypes.shape({
+    addNewTopic: PropTypes.func.isRequired,
+  }).isRequired,
+}
+
+export default connect(
+  null,
+  mapDispatchToProps,
+)(NewTopic)

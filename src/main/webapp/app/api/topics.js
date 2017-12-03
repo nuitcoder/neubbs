@@ -1,12 +1,13 @@
 import axios from 'axios'
 import {
   TOPICS_URL,
+  TOPIC_URL,
   TOPICS_PAGES_URL,
 } from '../constants/api'
 
 const topics = {
 
-  topics({ page = 1, limit = 25, category = '', username = '' }) {
+  fetchTopics({ page = 1, limit = 25, category = '', username = '' }) {
     const params = { page, limit }
 
     if (category !== '') {
@@ -22,7 +23,7 @@ const topics = {
     })
   },
 
-  pages({ limit = 25, category = '', username = '' }) {
+  fetchTopicsPages({ limit = 25, category = '', username = '' }) {
     const params = { limit }
 
     if (category !== '') {
@@ -38,8 +39,8 @@ const topics = {
     })
   },
 
-  add({ title, content, category }) {
-    return axios.post(TOPICS_URL, {
+  addNewTopic({ title, content, category }) {
+    return axios.post(TOPIC_URL, {
       title,
       content,
       category,

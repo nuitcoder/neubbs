@@ -19,6 +19,7 @@ function* rootSagas() {
     // topics
     takeLatest(types.FETCH_TOPICS_REQUEST, topics.fetchTopicsSaga),
     takeLatest(types.FETCH_TOPICS_PAGES_REQUEST, topics.fetchTopicsPagesSaga),
+    takeLatest(types.ADD_NEW_TOPIC_REQUEST, topics.addNewTopicSaga),
   ]
 }
 

@@ -20,6 +20,10 @@ injectGlobal`
     font-size: 14px;
     font-family: Helvetica, Arial, "PingFang SC", Roboto, "Microsoft Yahei", "sans-serif";
   }
+
+  .app {
+    padding-top: 50px;
+  }
 `
 
 const StyledAlert = styled(Alert)`
@@ -31,7 +35,7 @@ const StyledGridP = styled(Grid)`
 `
 
 const StyledGrid = styled(Grid)`
-  padding-top: 70px;
+  padding-top: 20px;
   padding-bottom: 20px;
 `
 
@@ -77,6 +81,7 @@ class App extends Component {
 
   renderValidateSuccess() {
     const { ref } = this.props.location.query
+
     if (ref === 'validate_success') {
       return (
         <StyledAlert bsStyle="success">
