@@ -46,12 +46,16 @@ class Header extends Component {
     const { pathname } = window.location
 
     if (pathname === routes.ROOT) {
-      this.props.actions.clearTopics()
-      this.props.actions.fetchTopicsPages()
-      this.props.actions.fetchTopics()
+      this.refreshHomePage()
     } else {
       this.props.router.push(routes.ROOT)
     }
+  }
+
+  refreshHomePage() {
+    this.props.actions.clearTopics()
+    this.props.actions.fetchTopicsPages()
+    this.props.actions.fetchTopics()
   }
 
   handleRightNavbar(eventKey) {
@@ -133,6 +137,9 @@ Header.propTypes = {
   intl: PropTypes.object.isRequired,
   actions: PropTypes.shape({
     logout: PropTypes.func.isRequired,
+    clearTopics: PropTypes.func.isRequired,
+    fetchTopicsPages: PropTypes.func.isRequired,
+    fetchTopics: PropTypes.func.isRequired,
   }).isRequired,
 }
 

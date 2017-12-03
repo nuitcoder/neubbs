@@ -40,7 +40,7 @@ const StyledCodeMirror = styled(CodeMirror)`
     min-height: 300px;
     border: 1px solid #ddd;
     border-top: 0;
-    border-radius: 0px 4px 4px 4px;
+    border-radius: 0 4px 4px;
   }
 
   & .CodeMirror-scroll {
@@ -53,7 +53,7 @@ const StyledMarkdown = styled(Markdown)`
   padding: 4px;
   border: 1px solid #ddd;
   border-top: 0;
-  border-radius: 0px 4px 4px 4px;
+  border-radius: 0 4px 4px;
   font-family: monospace;
 
   & > p {

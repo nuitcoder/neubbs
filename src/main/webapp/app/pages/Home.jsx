@@ -32,12 +32,6 @@ class Home extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    // const { page } = this.state
-    // if (nextProps.topics.length > this.props.topics.length) {
-      // this.setState({
-        // page: page + 1,
-      // })
-    // }
     const page = Math.ceil(nextProps.topics.length / TOPIC_LIMIT)
     this.setState({ page })
   }

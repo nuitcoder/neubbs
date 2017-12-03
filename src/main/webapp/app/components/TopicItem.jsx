@@ -5,7 +5,7 @@ import { FormattedMessage, FormattedRelative } from 'react-intl'
 
 const Wrapper = styled.div`
   padding: 10px 15px;
-  border-bottom: 1px solid #F0F0F0;
+  border-bottom: 1px solid #f0f0f0;
 `
 
 const Left = styled.div`
@@ -66,7 +66,7 @@ const Username = styled.a`
 const Count = styled.a`
   display: inline-block;
   color: #fff;
-  background: #CFD3E6;
+  background: #cfd3e6;
   min-width: 32px;
   padding: 3px 8px;
   line-height: 11px;
