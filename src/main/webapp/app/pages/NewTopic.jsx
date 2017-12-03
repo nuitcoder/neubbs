@@ -4,6 +4,7 @@ import styled from 'styled-components'
 import { Row, Col, Panel, FormGroup, FormControl, Button } from 'react-bootstrap'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
+import { injectIntl, FormattedMessage } from 'react-intl'
 
 import actions from '../actions'
 import Editor from '../components/Editor'
@@ -56,19 +57,24 @@ class NewTopic extends Component {
 
   render() {
     const { title, content, hasSubmit } = this.state
+    const { intl: { formatMessage } } = this.props
+
+    const panelHeaderMsg = formatMessage({ id: 'topic.new.header' })
+    const titleMsg = formatMessage({ id: 'topic.new.title' })
+
     return (
       <Row>
         <Col md={12}>
-          <Panel header="发布新主题">
+          <Panel header={panelHeaderMsg}>
             <form onSubmit={this.onSubmit}>
               <FormGroup controlId="title">
                 <FormControl
                   type="text"
-                  placeholder="主题标题"
+                  placeholder={titleMsg}
                   onChange={this.changeTitle}
                 />
                 {(title === '' && hasSubmit) &&
-                  <InputErrorText>标题不能为空</InputErrorText>}
+                  <InputErrorText><FormattedMessage id="validate.title.required" /></InputErrorText>}
               </FormGroup>
               <FormGroup controlId="content">
                 <Editor
@@ -76,10 +82,10 @@ class NewTopic extends Component {
                   onChange={this.changeContent}
                 />
                 {(content === '' && hasSubmit) &&
-                  <InputErrorText>内容不能为空</InputErrorText>}
+                  <InputErrorText><FormattedMessage id="validate.content.required" /></InputErrorText>}
               </FormGroup>
               <Button type="submit" bsStyle="primary">
-                发布主题
+                <FormattedMessage id="topic.new.submit" />
               </Button>
             </form>
           </Panel>
@@ -96,6 +102,9 @@ const mapDispatchToProps = (dispatch) => {
 }
 
 NewTopic.propTypes = {
+  intl: PropTypes.shape({
+    formatMessage: PropTypes.func.isRequired,
+  }).isRequired,
   actions: PropTypes.shape({
     addNewTopic: PropTypes.func.isRequired,
   }).isRequired,
@@ -104,4 +113,4 @@ NewTopic.propTypes = {
 export default connect(
   null,
   mapDispatchToProps,
-)(NewTopic)
+)(injectIntl(NewTopic))

@@ -13,6 +13,8 @@ export default {
   'form.field.password_confirmation': '确认密码',
   'form.submit.login': '登录',
   'form.submit.register': '注册',
+  'form.editor.edit': '编辑',
+  'form.editor.preview': '预览',
 
   // Validate
   'validate.username.required': '请输入用户名',
@@ -26,6 +28,8 @@ export default {
   'validate.password.between': '密码应为 6 ～ 16 个字符',
   'validate.password_confirmation.required': '请输入确认密码',
   'validate.password_confirmation.same': '确认密码错误',
+  'validate.title.required': '标题不能为空',
+  'validate.content.required': '内容不能为空',
 
   // Activate
   'activate.alert.text': '你的账号尚未激活，投票、评论、关注等功能将无法使用',
@@ -46,6 +50,9 @@ export default {
   // Topic
   'topic.createtime.text': ' · 发布于 {time}',
   'topic.lastreply.text': ' · 最后由 {username} 回复于 {time}',
+  'topic.new.header': '发布新主题',
+  'topic.new.title': '主题标题',
+  'topic.new.submit': '发布主题',
 
   // Widget
   'widgets.newtopic.text': '发布新话题',

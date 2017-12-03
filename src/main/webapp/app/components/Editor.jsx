@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import { Row, Col, Tab, Nav, NavItem } from 'react-bootstrap'
+import { FormattedMessage } from 'react-intl'
 import CodeMirror from 'react-codemirror'
 import Markdown from 'react-markdown'
 
@@ -71,7 +72,6 @@ class Editor extends Component {
 
   handleCange(content) {
     this.props.onChange(content)
-    console.log(content)
   }
 
   render() {
@@ -82,10 +82,10 @@ class Editor extends Component {
           <Col md={12}>
             <Nav bsStyle="tabs">
               <StyledNavItem eventKey={tabs.EDIT}>
-                编辑
+                <FormattedMessage id="form.editor.edit" />
               </StyledNavItem>
               <StyledNavItem eventKey={tabs.PREVIEW}>
-                预览
+                <FormattedMessage id="form.editor.preview" />
               </StyledNavItem>
             </Nav>
             <Tab.Content animation>
