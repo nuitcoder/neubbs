@@ -16,27 +16,34 @@ class Home extends Component {
   constructor(props) {
     super(props)
 
-    const page = Math.floor(props.topic.length / TOPIC_LIMIT)
     this.state = {
-      page,
+      page: 0,
     }
 
+    this.clearTopics = this.clearTopics.bind(this)
     this.loadTopic = this.loadTopic.bind(this)
     this.loadTopicsPages = this.loadTopicsPages.bind(this)
   }
 
   componentWillMount() {
+    this.clearTopics()
     this.loadTopicsPages()
     this.loadTopic()
   }
 
   componentWillReceiveProps(nextProps) {
-    const { page } = this.state
-    if (nextProps.topic.length > this.props.topic.length) {
-      this.setState({
-        page: page + 1,
-      })
-    }
+    // const { page } = this.state
+    // if (nextProps.topics.length > this.props.topics.length) {
+      // this.setState({
+        // page: page + 1,
+      // })
+    // }
+    const page = Math.ceil(nextProps.topics.length / TOPIC_LIMIT)
+    this.setState({ page })
+  }
+
+  clearTopics() {
+    this.props.actions.clearTopics()
   }
 
   loadTopicsPages() {
@@ -46,21 +53,20 @@ class Home extends Component {
   }
 
   loadTopic() {
-    const page = this.state.page + 1
-
-    this.props.actions.fetchNewTopics({
-      page,
+    const { page } = this.state
+    this.props.actions.fetchTopics({
+      page: page + 1,
       limit: TOPIC_LIMIT,
     })
   }
 
   render() {
-    const { topic, totalPage } = this.props
+    const { topics, totalPage } = this.props
     const { page } = this.state
     return (
       <Row>
         <TopicList
-          data={topic}
+          data={topics}
           pageStart={1}
           hasMore={totalPage > page}
           loadMore={_.throttle(this.loadTopic, 1000)}
@@ -84,10 +90,11 @@ const mapDispatchToProps = (dispatch) => {
 }
 
 Home.propTypes = {
-  topic: PropTypes.arrayOf(Object).isRequired,
+  topics: PropTypes.arrayOf(Object).isRequired,
   totalPage: PropTypes.number.isRequired,
   actions: PropTypes.shape({
-    fetchNewTopics: PropTypes.func.isRequired,
+    clearTopics: PropTypes.func.isRequired,
+    fetchTopics: PropTypes.func.isRequired,
     fetchTopicsPages: PropTypes.func.isRequired,
   }).isRequired,
 }

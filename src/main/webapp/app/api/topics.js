@@ -6,7 +6,7 @@ import {
 
 const topics = {
 
-  topic({ page, limit = 25, category = '', username = '' }) {
+  topics({ page = 1, limit = 25, category = '', username = '' }) {
     const params = { page, limit }
 
     if (category !== '') {
@@ -35,6 +35,14 @@ const topics = {
 
     return axios.get(TOPICS_PAGES_URL, {
       params,
+    })
+  },
+
+  add({ title, content, category }) {
+    return axios.post(TOPICS_URL, {
+      title,
+      content,
+      category,
     })
   },
 }

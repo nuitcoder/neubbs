@@ -11,13 +11,14 @@ function* handleError(action, error) {
   })
 }
 
-export function* fetchNewTopicsSaga(action) {
-  const { page, limit, category, username } = action.payload
+export function* fetchTopicsSaga(action) {
+  const { payload = {} } = action
+  const { page, limit, category, username } = payload
 
-  const { data } = yield call(api.topics.topic, { page, limit, category, username })
+  const { data } = yield call(api.topics.topics, { page, limit, category, username })
   try {
     if (data.success) {
-      yield put({ type: types.FETCH_NEW_TOPICS_SUCCESS, payload: data.model })
+      yield put({ type: types.FETCH_TOPICS_SUCCESS, payload: data.model })
     } else {
       yield call(handleError, action, data)
     }
@@ -27,10 +28,10 @@ export function* fetchNewTopicsSaga(action) {
 }
 
 export function* fetchTopicsPagesSaga(action) {
-  const { limit, category, username } = action.payload
+  const { payload = {} } = action
+  const { limit, category, username } = payload
 
   const { data } = yield call(api.topics.pages, { limit, category, username })
-  console.log(data)
   try {
     if (data.success) {
       yield put({ type: types.FETCH_TOPICS_PAGES_SUCCESS, payload: data.model.totalpages })

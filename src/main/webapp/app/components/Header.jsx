@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import { Link } from 'react-router'
 import styled from 'styled-components'
 import PropTypes from 'prop-types'
 import { Navbar, Nav, NavItem } from 'react-bootstrap'
@@ -8,6 +7,7 @@ import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl'
 
 import actions from '../actions'
+import * as routes from '../constants/routes'
 
 const LOGIN_EVENT_KEY = 'LOGIN'
 const LOGOUT_EVENT_KEY = 'LOGOUT'
@@ -19,10 +19,11 @@ const StyledNavbar = styled(Navbar)`
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
 `
 
-const StyledLogoLink = styled(Link)`
+const StyledLogo = styled.span`
   color: #dd4c4f !important;
   font-size: 18px;
   font-weight: bold;
+  cursor: pointer;
 `
 
 class Header extends Component {
@@ -33,6 +34,7 @@ class Header extends Component {
     }
 
     this.setNavExpanded = this.setNavExpanded.bind(this)
+    this.handleClickLogo = this.handleClickLogo.bind(this)
     this.handleRightNavbar = this.handleRightNavbar.bind(this)
   }
 
@@ -40,18 +42,30 @@ class Header extends Component {
     this.setState({ navExpanded: expanded })
   }
 
+  handleClickLogo() {
+    const { pathname } = window.location
+
+    if (pathname === routes.ROOT) {
+      this.props.actions.clearTopics()
+      this.props.actions.fetchTopicsPages()
+      this.props.actions.fetchTopics()
+    } else {
+      this.props.router.push(routes.ROOT)
+    }
+  }
+
   handleRightNavbar(eventKey) {
     const { router } = this.props
 
     switch (eventKey) {
       case LOGIN_EVENT_KEY:
-        router.push('/account/login')
+        router.push(routes.ACCOUNT_LOGIN)
+        break
+      case REGISTER_EVENT_KEY:
+        router.push(routes.ACCOUNT_REGISTER)
         break
       case LOGOUT_EVENT_KEY:
         this.props.actions.logout()
-        break
-      case REGISTER_EVENT_KEY:
-        router.push('/account/register')
         break
       default:
     }
@@ -97,7 +111,7 @@ class Header extends Component {
       >
         <Navbar.Header>
           <Navbar.Brand>
-            <StyledLogoLink to="/">Neubbs</StyledLogoLink>
+            <StyledLogo onClick={this.handleClickLogo}>Neubbs</StyledLogo>
           </Navbar.Brand>
           <Navbar.Toggle />
         </Navbar.Header>

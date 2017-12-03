@@ -17,7 +17,7 @@ function* rootSagas() {
     takeLatest(types.VALIDATE_ACCOUNT_REQUEST, account.validateAccountSaga),
 
     // topics
-    takeLatest(types.FETCH_NEW_TOPICS_REQUEST, topics.fetchNewTopicsSaga),
+    takeLatest(types.FETCH_TOPICS_REQUEST, topics.fetchTopicsSaga),
     takeLatest(types.FETCH_TOPICS_PAGES_REQUEST, topics.fetchTopicsPagesSaga),
   ]
 }
