@@ -24,6 +24,12 @@ injectGlobal`
   .app {
     padding-top: 50px;
   }
+
+  /* fix panel heading border bottom */
+  .panel-default > .panel-heading {
+    background-color: #fafafa;
+    border-color: #eee;
+  }
 `
 
 const StyledAlert = styled(Alert)`

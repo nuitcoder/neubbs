@@ -8,9 +8,7 @@ import { FormattedMessage, FormattedRelative } from 'react-intl'
 import Markdown from './Markdown'
 
 const HeaderWrapper = styled.div`
-  margin: -10px -15px;
-  padding: 15px;
-  background-color: #fafafa;
+  padding: 5px 0;
 `
 
 const Left = styled.div`

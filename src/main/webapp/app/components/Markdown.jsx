@@ -1,6 +1,8 @@
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
 
+import '../assets/css/markdown.css'
+
 // eslint-disable-next-line
 const punctuationRe = /[~`!@#$%^&*(){}\[\];:"'<,.>?\/\\|_+=-]/g
 
@@ -31,6 +33,7 @@ const Markdown = (props) => {
   return (
     <ReactMarkdown
       className="markdown"
+      escapeHtml={false}
       renderers={{
         heading: Heading,
       }}
