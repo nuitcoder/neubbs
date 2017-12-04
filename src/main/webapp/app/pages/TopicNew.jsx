@@ -17,7 +17,7 @@ const InputErrorText = styled.span`
   font-size: 12px;
 `
 
-class NewTopic extends Component {
+class TopicNew extends Component {
   constructor(props) {
     super(props)
 
@@ -38,7 +38,7 @@ class NewTopic extends Component {
 
     const { title, content } = this.state
     if (title !== '' && content !== '') {
-      this.props.actions.addNewTopic({
+      this.props.actions.addTopicNew({
         title,
         content,
         category: 'topic-new-test', // TODO: need to fix
@@ -101,16 +101,16 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-NewTopic.propTypes = {
+TopicNew.propTypes = {
   intl: PropTypes.shape({
     formatMessage: PropTypes.func.isRequired,
   }).isRequired,
   actions: PropTypes.shape({
-    addNewTopic: PropTypes.func.isRequired,
+    addTopicNew: PropTypes.func.isRequired,
   }).isRequired,
 }
 
 export default connect(
   null,
   mapDispatchToProps,
-)(injectIntl(NewTopic))
+)(injectIntl(TopicNew))

@@ -12,7 +12,7 @@ import Widgets from '../components/Widgets'
 
 const TOPIC_LIMIT = 25
 
-class Home extends Component {
+class Topics extends Component {
   constructor(props) {
     super(props)
 
@@ -83,7 +83,7 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-Home.propTypes = {
+Topics.propTypes = {
   topics: PropTypes.arrayOf(Object).isRequired,
   totalPage: PropTypes.number.isRequired,
   actions: PropTypes.shape({
@@ -96,4 +96,4 @@ Home.propTypes = {
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(Home)
+)(Topics)

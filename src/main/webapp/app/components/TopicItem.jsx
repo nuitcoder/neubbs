@@ -1,7 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
+import { Link } from 'react-router'
 import { FormattedMessage, FormattedRelative } from 'react-intl'
+
+import * as routes from '../constants/routes'
 
 const Wrapper = styled.div`
   padding: 10px 15px;
@@ -43,12 +46,12 @@ const Info = styled.div`
   font-size: 12px;
 `
 
-const Category = styled.a`
+const Category = styled(Link)`
   color: #777;
   margin-right: 3px;
 `
 
-const Title = styled.a`
+const Title = styled(Link)`
   color: #333;
   font-weight: 400;
 
@@ -58,12 +61,12 @@ const Title = styled.a`
   }
 `
 
-const Username = styled.a`
+const Username = styled(Link)`
   color: #797776;
   text-decoration: underline;
 `
 
-const Count = styled.a`
+const Count = styled(Link)`
   display: inline-block;
   color: #fff;
   background: #cfd3e6;
@@ -81,20 +84,22 @@ const Count = styled.a`
 
 const TopicItem = (props) => {
   const { topic } = props
+
+  const url = routes.TOPIC_DETAIL.replace(':id', topic.topicid)
   return (
     <Wrapper>
       <Left>
-        <a href="#" title={topic.user.username}>
+        <Link to="#" title={topic.user.username}>
           <AvatorImg src={topic.user.avator} />
-        </a>
+        </Link>
       </Left>
       <Center>
         <Header>
           <Category>{topic.category}</Category>
-          <Title href="#">{topic.title}</Title>
+          <Title to={url}>{topic.title}</Title>
         </Header>
         <Info>
-          <Username href="#">{topic.user.username}</Username>
+          <Username to="#">{topic.user.username}</Username>
           {topic.replies === '0' ?
             <FormattedMessage
               id="topic.createtime.text"
@@ -105,14 +110,14 @@ const TopicItem = (props) => {
             <FormattedMessage
               id="topic.lastreply.text"
               values={{
-                username: <Username href="#">{topic.lastreplyuser.username}</Username>,
+                username: <Username to="#">{topic.lastreplyuser.username}</Username>,
                 time: <FormattedRelative value={topic.lastreplytime} />,
               }}
             />}
         </Info>
       </Center>
       <Right>
-        <Count href="#">{topic.replies}</Count>
+        <Count to={`${url}#replies`}>{topic.replies}</Count>
       </Right>
     </Wrapper>
   )

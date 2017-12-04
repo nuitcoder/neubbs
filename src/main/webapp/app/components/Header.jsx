@@ -45,10 +45,10 @@ class Header extends Component {
   handleClickLogo() {
     const { pathname } = window.location
 
-    if (pathname === routes.ROOT) {
+    if (pathname === routes.TOPICS) {
       this.refreshHomePage()
     } else {
-      this.props.router.push(routes.ROOT)
+      this.props.router.push(routes.TOPICS)
     }
   }
 

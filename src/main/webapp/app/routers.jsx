@@ -2,17 +2,18 @@
 import React from 'react'
 import { Provider } from 'react-redux'
 import { IntlProvider, addLocaleData } from 'react-intl'
-import { Router, Route, IndexRoute, browserHistory } from 'react-router'
+import { Router, Route, IndexRedirect, browserHistory } from 'react-router'
 import { syncHistoryWithStore } from 'react-router-redux'
 import zh from 'react-intl/locale-data/zh'
 
 import App from './App'
-import HomePage from './pages/Home'
 import LoginPage from './pages/Login'
 import RegisterPage from './pages/Register'
 import ValidatePage from './pages/Validate'
 import SettingsPage from './pages/Settings'
-import NewTopicPage from './pages/NewTopic'
+import TopicsPage from './pages/Topics'
+import TopicNewPage from './pages/TopicNew'
+import TopicDetailPage from './pages/TopicDetail'
 
 import auth from './auth'
 import * as routes from './constants/routes'
@@ -53,7 +54,7 @@ const Routers = () => (
     <IntlProvider locale={language} messages={setLocale(language)}>
       <Router history={history}>
         <Route path={routes.ROOT} component={App}>
-          <IndexRoute component={HomePage} />
+          <IndexRedirect to={routes.TOPICS} />
 
           {/* Account */}
           <Route path={routes.ACCOUNT_LOGIN} component={LoginPage} onEnter={requireNotLogged} />
@@ -62,7 +63,9 @@ const Routers = () => (
           <Route path={routes.ACCOUNT_SETTINGS} component={SettingsPage} onEnter={requireLogged} />
 
           {/* Topic */}
-          <Route path={routes.TOPIC_NEW} component={NewTopicPage} onEnter={requireLogged} />
+          <Route path={routes.TOPICS} component={TopicsPage} />
+          <Route path={routes.TOPIC_NEW} component={TopicNewPage} onEnter={requireLogged} />
+          <Route path={routes.TOPIC_DETAIL} component={TopicDetailPage} />
         </Route>
       </Router>
     </IntlProvider>
