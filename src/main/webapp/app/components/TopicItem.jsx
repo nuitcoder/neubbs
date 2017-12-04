@@ -30,7 +30,7 @@ const Right = styled.div`
   padding-top: 15px;
 `
 
-const AvatorImg = styled.img`
+const Avator = styled.img`
   height: 48px;
   width: 48px;
   border-radius: 50%;
@@ -90,7 +90,7 @@ const TopicItem = (props) => {
     <Wrapper>
       <Left>
         <Link to="#" title={topic.user.username}>
-          <AvatorImg src={topic.user.avator} />
+          <Avator src={topic.user.avator} />
         </Link>
       </Left>
       <Center>
@@ -100,7 +100,7 @@ const TopicItem = (props) => {
         </Header>
         <Info>
           <Username to="#">{topic.user.username}</Username>
-          {topic.replies === '0' ?
+          {topic.replies == 0 ?
             <FormattedMessage
               id="topic.createtime.text"
               values={{

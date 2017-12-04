@@ -4,11 +4,12 @@ import styled from 'styled-components'
 import { Row, Col, Tab, Nav, NavItem } from 'react-bootstrap'
 import { FormattedMessage } from 'react-intl'
 import CodeMirror from 'react-codemirror'
-import Markdown from 'react-markdown'
 
 import 'codemirror/lib/codemirror.css'
 import 'codemirror/mode/xml/xml'
 import 'codemirror/mode/markdown/markdown'
+
+import Markdown from './Markdown'
 
 const tabs = {
   EDIT: 'EDIT',

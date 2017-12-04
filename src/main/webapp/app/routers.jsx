@@ -12,8 +12,8 @@ import RegisterPage from './pages/Register'
 import ValidatePage from './pages/Validate'
 import SettingsPage from './pages/Settings'
 import TopicsPage from './pages/Topics'
+import TopicPage from './pages/Topic'
 import TopicNewPage from './pages/TopicNew'
-import TopicDetailPage from './pages/TopicDetail'
 
 import auth from './auth'
 import * as routes from './constants/routes'
@@ -65,7 +65,7 @@ const Routers = () => (
           {/* Topic */}
           <Route path={routes.TOPICS} component={TopicsPage} />
           <Route path={routes.TOPIC_NEW} component={TopicNewPage} onEnter={requireLogged} />
-          <Route path={routes.TOPIC_DETAIL} component={TopicDetailPage} />
+          <Route path={routes.TOPIC_DETAIL} component={TopicPage} />
         </Route>
       </Router>
     </IntlProvider>

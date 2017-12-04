@@ -38,10 +38,10 @@ class TopicNew extends Component {
 
     const { title, content } = this.state
     if (title !== '' && content !== '') {
-      this.props.actions.addTopicNew({
+      this.props.actions.createNewTopic({
         title,
         content,
-        category: 'topic-new-test', // TODO: need to fix
+        category: 'test', // TODO: need to fix
       })
     }
   }
@@ -106,7 +106,7 @@ TopicNew.propTypes = {
     formatMessage: PropTypes.func.isRequired,
   }).isRequired,
   actions: PropTypes.shape({
-    addTopicNew: PropTypes.func.isRequired,
+    createNewTopic: PropTypes.func.isRequired,
   }).isRequired,
 }
 

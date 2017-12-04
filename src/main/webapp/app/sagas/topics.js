@@ -2,6 +2,7 @@ import { call, put } from 'redux-saga/effects'
 import { browserHistory } from 'react-router'
 
 import api from '../api'
+import * as routes from '../constants/routes'
 import * as types from '../constants/actionTypes'
 
 function* handleError(action, error) {
@@ -44,17 +45,33 @@ export function* fetchTopicsPagesSaga(action) {
   }
 }
 
-export function* addNewTopicSaga(action) {
+export function* createNewTopicSaga(action) {
   const { payload = {} } = action
   const { title, content, category } = payload
 
-  const { data } = yield call(api.topics.addNewTopic, { title, content, category })
+  const { data } = yield call(api.topics.createNewTopic, { title, content, category })
   try {
     if (data.success) {
-      yield put({ type: types.ADD_NEW_TOPIC_SUCCESS, payload: data.model })
+      yield put({ type: types.CREATE_NEW_TOPIC_SUCCESS, payload: data.model })
 
       const { topicid } = data.model
-      browserHistory.push(`/topic/${topicid}`)
+      browserHistory.push(routes.TOPIC_DETAIL.replace(':id', topicid))
+    } else {
+      yield call(handleError, action, data)
+    }
+  } catch (err) {
+    yield call(handleError, action, err)
+  }
+}
+
+export function* fetchTopicDetailSaga(action) {
+  const { payload = {} } = action
+  const { id } = payload
+
+  const { data } = yield call(api.topics.fetchTopicDetail, { id })
+  try {
+    if (data.success) {
+      yield put({ type: types.FETCH_TOPIC_DEDAIL_SUCCESS, payload: data.model })
     } else {
       yield call(handleError, action, data)
     }

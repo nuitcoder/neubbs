@@ -2,6 +2,7 @@ import * as types from '../constants/actionTypes'
 
 const initialState = {
   topics: [],
+  topic: {},
   totalPage: 1,
   error: '',
 }
@@ -29,6 +30,18 @@ export default (state = initialState, action) => {
         ...state,
         error: '',
         totalPage: +payload,
+      }
+    }
+    case types.FETCH_TOPIC_DEDAIL_SUCCESS: {
+      const { topicid } = payload
+
+      return {
+        ...state,
+        topic: {
+          ...state.topic,
+          [topicid]: payload,
+        },
+        error: '',
       }
     }
     case types.TOPIC_REQUEST_ERROR: {

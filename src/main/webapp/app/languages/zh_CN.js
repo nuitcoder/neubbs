@@ -50,6 +50,7 @@ export default {
   // Topic
   'topic.createtime.text': ' · 发布于 {time}',
   'topic.lastreply.text': ' · 最后由 {username} 回复于 {time}',
+  'topic.read.text': ' · 阅读量 {count}',
   'topic.new.header': '发布新主题',
   'topic.new.title': '主题标题',
   'topic.new.submit': '发布主题',

@@ -7,6 +7,11 @@ import {
 
 const topics = {
 
+  /**
+   * fetch topic list
+   *
+   * @returns {object}
+   */
   fetchTopics({ page = 1, limit = 25, category = '', username = '' }) {
     const params = { page, limit }
 
@@ -23,6 +28,11 @@ const topics = {
     })
   },
 
+  /**
+   * fetch topic list total page
+   *
+   * @returns {object}
+   */
   fetchTopicsPages({ limit = 25, category = '', username = '' }) {
     const params = { limit }
 
@@ -39,11 +49,28 @@ const topics = {
     })
   },
 
-  addNewTopic({ title, content, category }) {
+  /**
+   * create new topic
+   *
+   * @returns {object}
+   */
+  createNewTopic({ title, content, category }) {
     return axios.post(TOPIC_URL, {
       title,
       content,
       category,
+    })
+  },
+
+  /**
+   * fetch topic detail
+   *
+   * @returns {object}
+   */
+  fetchTopicDetail({ id }) {
+    const params = { topicid: id }
+    return axios.get(TOPIC_URL, {
+      params,
     })
   },
 }
