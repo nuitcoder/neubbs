@@ -1,8 +1,9 @@
 export default {
   // Header
-  'header.login': '登录',
-  'header.register': '注册',
-  'header.logout': '注销',
+  'header.login.text': '登录',
+  'header.register.text': '注册',
+  'header.logout.text': '注销',
+  'header.account.text': '我的主页',
 
   // Form
   'form.title.login': '用户登陆',

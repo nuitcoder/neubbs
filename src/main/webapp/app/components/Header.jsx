@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import styled from 'styled-components'
 import PropTypes from 'prop-types'
-import { Navbar, Nav, NavItem } from 'react-bootstrap'
+import { Navbar, Nav, NavItem, NavDropdown, MenuItem, Glyphicon } from 'react-bootstrap'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl'
@@ -9,9 +9,12 @@ import { injectIntl } from 'react-intl'
 import actions from '../actions'
 import * as routes from '../constants/routes'
 
-const LOGIN_EVENT_KEY = 'LOGIN'
-const LOGOUT_EVENT_KEY = 'LOGOUT'
-const REGISTER_EVENT_KEY = 'REGISTER'
+// navbar event keys
+const LOGIN = 'LOGIN'
+const LOGOUT = 'LOGOUT'
+const REGISTER = 'REGISTER'
+const ACCOUNT = 'ACCOUNT'
+const CREATE = 'CREATE'
 
 const StyledNavbar = styled(Navbar)`
   margin-bottom: 0;
@@ -19,11 +22,34 @@ const StyledNavbar = styled(Navbar)`
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
 `
 
+const StyledNavDropdown = styled(NavDropdown)`
+  & > .dropdown-menu {
+    border: 1px solid #dfe0e4;
+    box-shadow: 0px 1px 2px rgba(0,0,0,0.15);
+  }
+
+  /* fix dropdown menu background color when hover it */
+  & a[role=menuitem]:hover {
+    background-color: #fff;
+  }
+`
+
 const StyledLogo = styled.span`
   color: #dd4c4f !important;
   font-size: 18px;
   font-weight: bold;
   cursor: pointer;
+`
+
+const StyledGlyphicon = styled(Glyphicon)`
+  position: relative;
+  top: 5px;
+`
+
+const Avator = styled.img`
+  display: inline-block;
+  width: 24px;
+  height: 24px;
 `
 
 class Header extends Component {
@@ -35,7 +61,8 @@ class Header extends Component {
 
     this.setNavExpanded = this.setNavExpanded.bind(this)
     this.handleClickLogo = this.handleClickLogo.bind(this)
-    this.handleRightNavbar = this.handleRightNavbar.bind(this)
+    this.handleLoginOrRegister = this.handleLoginOrRegister.bind(this)
+    this.handleAccount = this.handleAccount.bind(this)
   }
 
   setNavExpanded(expanded) {
@@ -58,48 +85,76 @@ class Header extends Component {
     this.props.actions.fetchTopics()
   }
 
-  handleRightNavbar(eventKey) {
+  handleLoginOrRegister(eventKey) {
     const { router } = this.props
 
     switch (eventKey) {
-      case LOGIN_EVENT_KEY:
+      case LOGIN:
         router.push(routes.ACCOUNT_LOGIN)
         break
-      case REGISTER_EVENT_KEY:
+      case REGISTER:
         router.push(routes.ACCOUNT_REGISTER)
-        break
-      case LOGOUT_EVENT_KEY:
-        this.props.actions.logout()
         break
       default:
     }
     this.setNavExpanded(false)
   }
 
+  handleAccount(eventKey) {
+    const { router } = this.props
+    const { profile: { username } } = this.props.account
+
+    switch (eventKey) {
+      case CREATE:
+        router.push(routes.TOPIC_NEW)
+        break
+      case ACCOUNT:
+        router.push(routes.ACCOUNT.replace(':username', username))
+        break
+      case LOGOUT:
+        this.props.actions.logout()
+        break
+      default:
+    }
+  }
+
   renderRightNavbar() {
     const { isLogin, intl } = this.props
     const { formatMessage } = intl
 
-    const loginMsg = formatMessage({ id: 'header.login' })
-    const registerMsg = formatMessage({ id: 'header.register' })
-    const logoutMsg = formatMessage({ id: 'header.logout' })
+    const loginMsg = formatMessage({ id: 'header.login.text' })
+    const registerMsg = formatMessage({ id: 'header.register.text' })
+    const logoutMsg = formatMessage({ id: 'header.logout.text' })
+    const accountMsg = formatMessage({ id: 'header.account.text' })
 
     if (isLogin) {
+      const { profile: { username, avator } } = this.props.account
+
       return (
-        <Nav onSelect={this.handleRightNavbar} pullRight>
-          <NavItem eventKey={LOGOUT_EVENT_KEY}>
-            {logoutMsg}
+        <Nav onSelect={this.handleAccount} pullRight>
+          <NavItem eventKey={CREATE}>
+            <StyledGlyphicon glyph="plus" />
           </NavItem>
+          <StyledNavDropdown
+            id="account"
+            title={
+              <Avator src={avator} title={username} />
+            }
+          >
+            <MenuItem eventKey={ACCOUNT}>{accountMsg}</MenuItem>
+            <MenuItem divider />
+            <MenuItem eventKey={LOGOUT}>{logoutMsg}</MenuItem>
+          </StyledNavDropdown>
         </Nav>
       )
     }
 
     return (
-      <Nav onSelect={this.handleRightNavbar} pullRight>
-        <NavItem eventKey={REGISTER_EVENT_KEY}>
+      <Nav onSelect={this.handleLoginOrRegister} pullRight>
+        <NavItem eventKey={REGISTER}>
           {registerMsg}
         </NavItem>
-        <NavItem eventKey={LOGIN_EVENT_KEY}>
+        <NavItem eventKey={LOGIN}>
           {loginMsg}
         </NavItem>
       </Nav>
@@ -120,10 +175,6 @@ class Header extends Component {
           <Navbar.Toggle />
         </Navbar.Header>
         <Navbar.Collapse>
-          {/* <Nav> */}
-            {/* <NavItem eventKey={1} href="#">Link</NavItem> */}
-            {/* <NavItem eventKey={2} href="#">Link</NavItem> */}
-            {/* </Nav> */}
           {this.renderRightNavbar()}
         </Navbar.Collapse>
       </StyledNavbar>
@@ -135,6 +186,9 @@ Header.propTypes = {
   isLogin: PropTypes.bool.isRequired,
   router: PropTypes.object.isRequired,
   intl: PropTypes.object.isRequired,
+  account: PropTypes.shape({
+    profile: PropTypes.object.isRequired,
+  }).isRequired,
   actions: PropTypes.shape({
     logout: PropTypes.func.isRequired,
     clearTopics: PropTypes.func.isRequired,
