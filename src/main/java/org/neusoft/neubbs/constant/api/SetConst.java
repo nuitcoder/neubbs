@@ -44,6 +44,7 @@ public final class SetConst {
     /**
      * 数字
      */
+    public static final int ZERO = 0;
     public static final int THOUSAND = 1000;
     public static final int TWENTY_FOUR = 24;
     public static final int SIXTY = 60;
@@ -56,6 +57,7 @@ public final class SetConst {
     /**
      * 面积
      */
+    public static final int SIZE_ONE = 1;
     public static final int SIZE_TWO = 2;
     public static final int SIZE_THREE = 3;
     public static final int SIZE_FOUR = 4;
@@ -87,4 +89,18 @@ public final class SetConst {
      *      - 用于区分用户头像是否为默认值
      */
     public static final String DEFAULT = "default";
+
+    /**
+     * 发送邮箱
+     */
+    public static final String EMAIL_SENDER_NAME = "Neubbs";
+    public static final String EMAIL_SUBJECT_ACTIVATE = "Neubbs 账户激活";
+    public static final String EMAIL_SUBJECT_TEMPORARY_PASSWORD = "Neubbs 账户临时密码";
+    public static final String EMAIL_TIMER = "timer";
+
+    /**
+     * Redis 数据库
+     */
+    public static final String KEY_ACTIVATE = "activate";
+
 }

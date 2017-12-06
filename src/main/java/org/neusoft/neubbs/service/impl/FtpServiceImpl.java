@@ -36,4 +36,14 @@ public class FtpServiceImpl implements IFtpService {
             throw new FtpServiceErrorException(ApiMessage.FTP_SERVICE_EXCEPTION).log(LogWarn.FTP_02);
         }
     }
+
+    @Override
+    public String getServerPersonalUserAvatorDirectoryPath(UserDO user) {
+        return "/user/" + user.getId() + "-" + user.getName() + "/avator/";
+    }
+
+    @Override
+    public String generateServerUserAvatorFileName(MultipartFile multipartFile) {
+        return System.currentTimeMillis() + "_" + multipartFile.getOriginalFilename();
+    }
 }

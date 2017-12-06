@@ -10,7 +10,7 @@ import java.util.Map;
  *
  *  @author Suvan
  */
-public class ResponseJsonListDTO {
+public class PageJsonListDTO {
     private Boolean success;
     private String message;
 
@@ -20,8 +20,9 @@ public class ResponseJsonListDTO {
     /**
      * Constructor
      */
-    public ResponseJsonListDTO(Boolean success, List<Map<String, Object>> listModel) {
+    public PageJsonListDTO(Boolean success, List<Map<String, Object>> listModel) {
         this.success = success;
+        this.message = "";
         this.model = listModel;
     }
 
@@ -53,7 +54,7 @@ public class ResponseJsonListDTO {
 
     @Override
     public String toString() {
-        return "ResponseJsonListDTO{"
+        return "PageJsonListDTO{"
                 + "success=" + success
                 + ", message='" + message + '\''
                 + ", model=" + model

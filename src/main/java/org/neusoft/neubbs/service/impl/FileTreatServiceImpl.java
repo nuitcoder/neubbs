@@ -4,7 +4,7 @@ import org.neusoft.neubbs.constant.api.ApiMessage;
 import org.neusoft.neubbs.constant.api.SetConst;
 import org.neusoft.neubbs.constant.log.LogWarn;
 import org.neusoft.neubbs.controller.exception.FileUploadErrorException;
-import org.neusoft.neubbs.service.IFileService;
+import org.neusoft.neubbs.service.IFileTreatService;
 import org.neusoft.neubbs.utils.PatternUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -13,15 +13,15 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * IFileServer 接口实现类
+ * IFileTreatServer 接口实现类
  *
  * @author Suvan
  */
-@Service("fileServiceImpl")
-public class FileServiceImpl implements IFileService {
+@Service("fileTreatServiceImpl")
+public class FileTreatServiceImpl implements IFileTreatService {
 
     @Override
-    public void checkUserImageNorm(MultipartFile userImageFile) {
+    public void checkUploadUserAvatorImageFileNorm(MultipartFile userImageFile) {
         //no empty
         if (userImageFile.isEmpty()) {
             throw new FileUploadErrorException(ApiMessage.NO_CHOICE_PICTURE).log(LogWarn.FILE_01);
@@ -39,14 +39,10 @@ public class FileServiceImpl implements IFileService {
         }
     }
 
-    @Override
-    public String buildServerKeppUserImageFileName(int userId, String uploadFileName) {
-        return userId + "_" + System.currentTimeMillis() + "_" + uploadFileName;
-    }
 
     @Override
-    public void transferToServer(MultipartFile multipartFile, String serverSaveUserImageFilePath, String fileName) {
-        File imageFile = new File(serverSaveUserImageFilePath, fileName);
+    public void transferToServer(MultipartFile multipartFile, String serverDirectoryPath, String serverFileName) {
+        File imageFile = new File(serverDirectoryPath, serverFileName);
         if (!imageFile.getParentFile().exists()) {
             throw new FileUploadErrorException(ApiMessage.NO_PARENT_DIRECTORY).log(LogWarn.FILE_03);
         }
@@ -58,13 +54,9 @@ public class FileServiceImpl implements IFileService {
         }
     }
 
+    @Deprecated
     @Override
     public MultipartFile compressFile(MultipartFile multipartFile) {
-        //文件压缩处理
-//        if (multipartFile.getSize() >= SetConst.SIZE_ONE_MB) {
-//
-//        }
-
         return null;
     }
 }

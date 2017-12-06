@@ -62,7 +62,7 @@ public final class LogWarn {
     public static final String TOPIC_04 = " 话题删除失败";
     public static final String TOPIC_05 = " 话题内容删除失败";
     public static final String TOPIC_06 = " 话题回复删除失败";
-    public static final String TOPIC_07 = " 话题题修改失败";
+    public static final String TOPIC_07 = " 话题内容修改失败";
     public static final String TOPIC_08 = " 话题内容修改失败";
     public static final String TOPIC_09 = " 话题回复修改失败";
     public static final String TOPIC_10 = " 不存在话题";

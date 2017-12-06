@@ -3,19 +3,16 @@ package org.neusoft.neubbs.controller.api;
 import org.neusoft.neubbs.constant.ajax.AjaxRequestStatus;
 import org.neusoft.neubbs.constant.api.ApiMessage;
 import org.neusoft.neubbs.constant.api.ParamConst;
-import org.neusoft.neubbs.constant.log.LogWarn;
 import org.neusoft.neubbs.constant.secret.SecretInfo;
 import org.neusoft.neubbs.controller.annotation.AccountActivation;
 import org.neusoft.neubbs.controller.annotation.LoginAuthorization;
-import org.neusoft.neubbs.controller.exception.AccountErrorException;
-import org.neusoft.neubbs.dto.ResponseJsonDTO;
+import org.neusoft.neubbs.dto.PageJsonDTO;
 import org.neusoft.neubbs.entity.UserDO;
-import org.neusoft.neubbs.entity.properties.NeubbsConfigDO;
-import org.neusoft.neubbs.service.IFileService;
+import org.neusoft.neubbs.service.IFileTreatService;
 import org.neusoft.neubbs.service.IFtpService;
+import org.neusoft.neubbs.service.IHttpService;
+import org.neusoft.neubbs.service.ISecretService;
 import org.neusoft.neubbs.service.IUserService;
-import org.neusoft.neubbs.utils.CookieUtil;
-import org.neusoft.neubbs.utils.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,59 +35,53 @@ import javax.servlet.http.HttpServletRequest;
 public class FileController {
 
     private final IUserService userService;
-    private final IFileService fileService;
+    private final IFileTreatService fileService;
+    private final IHttpService httpService;
+    private final ISecretService secretService;
     private final IFtpService ftpService;
-    private final NeubbsConfigDO neubbsConfig;
 
-    /**
-     * Constructor
-     */
     @Autowired
-    public FileController(IUserService userService, IFileService fileService,
-                          IFtpService ftpService, NeubbsConfigDO neubbsConfig) {
+    public FileController(IUserService userService, IFileTreatService fileService,
+                          IHttpService httpService, ISecretService secretService,
+                          IFtpService ftpService) {
         this.userService = userService;
         this.fileService = fileService;
+        this.httpService = httpService;
+        this.secretService = secretService;
         this.ftpService = ftpService;
-        this.neubbsConfig = neubbsConfig;
     }
 
     /**
      * 1.上传用户头像（新上传的会覆盖旧的）
      *
-     * 业务流程
-     *      - 检查用户图片规范（不为空，后缀格式，大小不超过 5MB）
-     *      - 压缩文件
-     *      - 传输文件(传输至 FTP 服务器)
-     *      - 更改数据库（forum_user 的 image）
-     *      - 返回成功状态
-     *
      * @param multipartFile 用户上传的文件对象
      * @param request http请求
-     * @return ResponseJsonDTO 响应JSON传输对象
+     * @return PageJsonDTO 响应JSON传输对象
      */
     @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/avator", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseJsonDTO uploadUserImage(@RequestParam("avatorImage")MultipartFile multipartFile,
-                                           HttpServletRequest request) {
+    public PageJsonDTO uploadUserImage(@RequestParam("avatorImage")MultipartFile multipartFile,
+                                       HttpServletRequest request) {
 
-        fileService.checkUserImageNorm(multipartFile);
+        fileService.checkUploadUserAvatorImageFileNorm(multipartFile);
 
         //compress picture, function no finish
 //      MultipartFile compressedFile = fileService.compressFile(multipartFile)
 
-        String authentication = CookieUtil.getCookieValue(request, ParamConst.AUTHENTICATION);
-        UserDO cookieUser = JwtTokenUtil.verifyToken(authentication, SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY);
-        if (cookieUser == null) {
-            throw new AccountErrorException(ApiMessage.TOKEN_EXPIRED).log(LogWarn.ACCOUNT_05);
-        }
+        String authentication = httpService.getCookieValue(request, ParamConst.AUTHENTICATION);
+        UserDO cookieUser
+                = secretService.jwtVerifyTokenByTokenByKey(authentication, SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY);
 
-        String serverDirectoryPath = "/user/" + cookieUser.getId() + "-" + cookieUser.getName() + "/avator/";
-        String serverFileName  = System.currentTimeMillis() + "_" + multipartFile.getOriginalFilename();
-        ftpService.uploadUserAvatorImage(serverDirectoryPath, serverFileName, multipartFile);
+        String serverUserAvatorImageName = ftpService.generateServerUserAvatorFileName(multipartFile);
+        ftpService.uploadUserAvatorImage(
+                ftpService.getServerPersonalUserAvatorDirectoryPath(cookieUser),
+                serverUserAvatorImageName,
+                multipartFile
+        );
 
-        userService.uploadUserImage(cookieUser.getName(), serverFileName);
+        userService.alterUserAvatorImage(cookieUser.getName(), serverUserAvatorImageName);
 
-        return new ResponseJsonDTO(AjaxRequestStatus.SUCCESS, ApiMessage.UPLOAD_SUCCESS);
+        return new PageJsonDTO(AjaxRequestStatus.SUCCESS, ApiMessage.UPLOAD_SUCCESS);
     }
 }

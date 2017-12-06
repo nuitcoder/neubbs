@@ -51,6 +51,10 @@ public final class ParamConst {
 
     public static final String TOTAL_PAGES = "totalpages";
 
+    public static final String USER = "user";
+    public static final String LAST_REPLY_USER = "lastreplyuser";
+    public static final String REPLYS = "replys";
+
     /**
      * Reply
      */

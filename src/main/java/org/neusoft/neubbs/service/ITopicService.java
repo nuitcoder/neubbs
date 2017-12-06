@@ -1,9 +1,5 @@
 package org.neusoft.neubbs.service;
 
-import org.neusoft.neubbs.entity.TopicContentDO;
-import org.neusoft.neubbs.entity.TopicDO;
-import org.neusoft.neubbs.entity.TopicReplyDO;
-
 import java.util.List;
 import java.util.Map;
 
@@ -15,70 +11,60 @@ import java.util.Map;
 public interface ITopicService {
 
     /**
-     * 获取 TopicDO（查询 forum_topic 表）
-     * @param topicId 话题id
-     * @return TopicDO 话题对象
-     */
-    TopicDO getTopicDOByTopicId(int topicId);
-
-    /**
-     * 获取 TopicContentDO（查询 forum_topic_content 表）
+     * 修改话题内容
      *
      * @param topicId 话题id
-     * @return TopicContentDO 话题内容对象
+     * @param newCategory 分类
+     * @param newTitle 新标题
+     * @param newTopicContent 新话题内容
      */
-    TopicContentDO getTopicContentDOByTopicId(int topicId);
+    void alterTopicContent(int topicId, String newCategory, String newTitle, String newTopicContent);
 
     /**
-     * 获取 TopicReplyDO（查询 forum_topic_reply 表）
+     * 修改回复内容
      *
      * @param replyId 回复id
-     * @return TopicReplyDO 话题回复对象
+     * @param newReplyContent 新回复内容
      */
-    TopicReplyDO getTopicReplyDOByReplyId(int replyId);
+    void alterReplyContent(int replyId, String newReplyContent);
 
     /**
-     * 获取话题信息（基本信息 + 内容 + 回复）
-     *
-     * @param topicId 话题 id
-     * @return Map 话题内容信息
-     */
-    Map<String, Object> getTopic(int topicId);
-
-    /**
-     * 获取回复信息（单条回复）
-     *
-     * @param replyId 回复id
-     * @return Map 回复信息
-     */
-    Map<String, Object> getReply(int replyId);
-
-
-    /**
-     * 判断话题类别
-     *
-     * @param category 话题类别
-     */
-    void isTopicCategoryExist(String category);
-
-    /**
-     * 获取话题总页数
+     * 统计话题总页数
      *
      * @param limit 每页限制多少条
      * @param category 分类
      * @param username 用户名
-     * @return String 总页数
+     * @return int 总页数
      */
-    String getTopicTotalPages(int limit, String category, String username);
+    int countTopicTotalPages(int limit, String category, String username);
 
     /**
-     * 获取话题列表（包含话题数据与基本用户数据）
+     * 获取话题内容页面 Map
+     *
+     * @param topicId 话题id
+     * @return Map 话题内容页信息
+     */
+    Map<String, Object> getTopicContentPageModelMap(int topicId);
+
+    /**
+     * 获取话题回复页面Map
+     *      - 单条回复
+     *
+     * @param replyId 回复id
+     * @return Map 回复信息
+     */
+    Map<String, Object> getReplyPageModelMap(int replyId);
+
+    /**
+     * 获取话题列表
+     *      - 包含话题基本信息，内容
+     *      - 话题用户信息
      *
      * @param limit 每页显示数量
      * @param page 跳转到指定页数
      * @param category 分类目录
      * @param username 用户名
-     * @return List 列表
+     * @return List<Map> 话题列表
      */
     List<Map<String, Object>> listTopics(int limit, int page, String category, String username);
 
@@ -88,6 +74,20 @@ public interface ITopicService {
      * @return List<String> 话题分类列表
      */
     List<String> listTopicCategory();
+
+    /**
+     * 删除话题
+     *
+     * @param topicId 要删除的话题id
+     */
+    void removeTopic(int topicId);
+
+    /**
+     * 删除回复
+     *
+     * @param replyId 回复id
+     */
+    void removeReply(int replyId);
 
     /**
      * 保存话题
@@ -109,36 +109,4 @@ public interface ITopicService {
      * @return int 新增的回复id
      */
     int saveReply(int userId, int topicId, String replyContent);
-
-    /**
-     * 删除话题
-     *
-     * @param topicId 要删除的话题id
-     */
-    void removeTopic(int topicId);
-
-    /**
-     * 删除回复
-     *
-     * @param replyId 回复id
-     */
-    void removeReply(int replyId);
-
-    /**
-     * 修改话题内容
-     *
-     * @param topicId 话题id
-     * @param newCategory 分类
-     * @param newTitle 新标题
-     * @param newTopicContent 新话题内容
-     */
-    void alterTopicContent(int topicId, String newCategory, String newTitle, String newTopicContent);
-
-    /**
-     * 修改回复内容
-     *
-     * @param replyId 回复id
-     * @param newReplyContent 新回复内容
-     */
-     void alterReplyContent(int replyId, String newReplyContent);
 }

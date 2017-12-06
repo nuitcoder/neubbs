@@ -25,4 +25,20 @@ public interface IFtpService {
      * @param multipartFile 用户上传文件对象
      */
     void uploadUserAvatorImage(String serverDirectoryPath, String serverFileName, MultipartFile multipartFile);
+
+    /**
+     * 获取服务器个人用户头像目录路径
+     *
+     * @param user 用户对象
+     * @return String 服务器个人用户头像目录路径
+     */
+    String getServerPersonalUserAvatorDirectoryPath(UserDO user);
+
+    /**
+     * 生成服务器用户头像文件名
+     *
+     * @param multipartFile 用户上传文件对象
+     * @return String 服务器用户头像文件名
+     */
+    String generateServerUserAvatorFileName(MultipartFile multipartFile);
 }

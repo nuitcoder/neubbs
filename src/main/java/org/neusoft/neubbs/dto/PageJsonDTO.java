@@ -11,43 +11,41 @@ import java.util.Map;
  *
  * @author Suvan
  */
-public class ResponseJsonDTO {
+public class PageJsonDTO {
     private Boolean success;
     private String message;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private Map<String, Object> model;
+    private Map<String, Object> model = new LinkedHashMap<>();
 
     /**
      * Constructor
-     *      1.仅返回成功状态（message = null）
-     *      2.返回成功状态 + 提示信息
-     *      3.返回成功状态（message = null） + 响应数据
-     *      4.返回成功状态（message = null） + 响应数据（适用单条 key-value 情况）
-     *      5.返回成功状态（message = null） + 提示信息 + 响应数据（单条 key-value）
      */
-    public ResponseJsonDTO(boolean success) {
+    public PageJsonDTO(boolean success) {
         this.success = success;
+        this.message = "";
     }
-    public ResponseJsonDTO(boolean success, String message) {
+    public PageJsonDTO(boolean success, Map<String, Object> map) {
         this.success = success;
-        this.message = message;
-    }
-    public ResponseJsonDTO(boolean success, Map<String, Object> map) {
-        this.success = success;
+        this.message = "";
+
+        this.model = null;
         this.model = map;
     }
-    public ResponseJsonDTO(boolean success, String key, Object obj) {
+    public PageJsonDTO(boolean success, String key, Object obj) {
         this.success = success;
+        this.message = "";
 
-        this.model = new LinkedHashMap<>();
         this.model.put(key, obj);
     }
-    public ResponseJsonDTO(boolean success, String message, String key, Object obj) {
+    public PageJsonDTO(boolean success, String message) {
+        this.success = success;
+        this.message = message;
+    }
+    public PageJsonDTO(boolean success, String message, String key, Object obj) {
         this.success = success;
         this.message = message;
 
-        this.model = new LinkedHashMap<>();
         this.model.put(key, obj);
     }
 
@@ -79,7 +77,7 @@ public class ResponseJsonDTO {
 
     @Override
     public String toString() {
-        return "ResponseJsonDTO{"
+        return "PageJsonDTO{"
                 + "success=" + success
                 + ", message='" + message + '\''
                 + ", model=" + model

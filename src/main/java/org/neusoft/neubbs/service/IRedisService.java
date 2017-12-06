@@ -1,7 +1,7 @@
 package org.neusoft.neubbs.service;
 
 /**
- * Redis数据库 业务接口
+ * Redis 业务接口
  *
  * @author Suvan
  */
