@@ -37,26 +37,27 @@ public class CountControllerTest {
 
     private MockMvc mockMvc;
 
+
     /**
      * 打印成功通过 Test 函数消息
      */
     public void printSuccessPassTestMehtodMessage() {
-        //当前正在执行函数（调用此函数的函数）
+        //current executing mehtod
         String currentDoingMethod = Thread.currentThread().getStackTrace()[2].getMethodName();
 
-        System.out.println("*************************** 【" + currentDoingMethod + "()】 "
-                + "pass all the tests ****************************");
+        System.out.println("*************************** 【"
+                + currentDoingMethod + "()】 "
+                + " pass all the tests ****************************");
     }
 
     @BeforeClass
     public static void init() {
-        //本地数据库
         SwitchDataSourceHandler.setDataSourceType(SwitchDataSourceHandler.LOCALHOST_DATA_SOURCE_MYSQL);
     }
 
     @Before
     public void setup() {
-        //设置在线访问人数 + 在线登录人数
+        //set servlet context online visit user and loin user
         ServletContext context = webApplicationContext.getServletContext();
             context.setAttribute(ParamConst.COUNT_VISIT_USER, 21);
             context.setAttribute(ParamConst.COUNT_LOGIN_USER, 50);
@@ -72,7 +73,7 @@ public class CountControllerTest {
        mockMvc.perform(
                MockMvcRequestBuilders.get("/api/count/visit")
        ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
-        .andExpect(MockMvcResultMatchers.jsonPath("$.message").doesNotExist())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
         .andExpect(MockMvcResultMatchers.jsonPath("$.model." + ParamConst.COUNT_VISIT_USER).value(21));
 
        printSuccessPassTestMehtodMessage();
@@ -86,7 +87,7 @@ public class CountControllerTest {
         mockMvc.perform(
                 MockMvcRequestBuilders.get("/api/count/login")
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
-         .andExpect(MockMvcResultMatchers.jsonPath("$.message").doesNotExist())
+         .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
          .andExpect(MockMvcResultMatchers.jsonPath("$.model." + ParamConst.COUNT_LOGIN_USER).value(50));
 
         printSuccessPassTestMehtodMessage();

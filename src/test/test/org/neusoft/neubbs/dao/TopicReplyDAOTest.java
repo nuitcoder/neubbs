@@ -107,6 +107,7 @@ public class TopicReplyDAOTest {
 
     /**
      * 指定话题 id，获取话题回复列表
+     *      - 返回 List 集合为空对象（不为 null）
      */
     @Test
     public void testListTopicReplyByTopicId(){

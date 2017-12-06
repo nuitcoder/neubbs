@@ -12,6 +12,7 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
         AccountCollectorTest.class,
         CountControllerTest.class,
-        FileControllerTest.class
+        FileControllerTest.class,
+        TopicControllerTest.class
 })
 public class TestAllApi { }

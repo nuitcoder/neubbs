@@ -14,7 +14,6 @@ import org.neusoft.neubbs.controller.exception.FileUploadErrorException;
 import org.neusoft.neubbs.controller.exception.FtpServiceErrorException;
 import org.neusoft.neubbs.controller.handler.SwitchDataSourceHandler;
 import org.neusoft.neubbs.entity.UserDO;
-import org.neusoft.neubbs.entity.properties.NeubbsConfigDO;
 import org.neusoft.neubbs.service.IUserService;
 import org.neusoft.neubbs.utils.FtpUtil;
 import org.neusoft.neubbs.utils.JwtTokenUtil;
@@ -56,18 +55,17 @@ public class FileControllerTest {
     @Autowired
     private IUserService userService;
 
-    @Autowired
-    private NeubbsConfigDO neubbsConfig;
 
     /**
-            * 打印成功通过 Test 函数消息
+     * 打印成功通过 Test 函数消息
      */
     public void printSuccessPassTestMehtodMessage() {
-        //当前正在执行函数（调用此函数的函数）
+        //current executing mehtod
         String currentDoingMethod = Thread.currentThread().getStackTrace()[2].getMethodName();
 
-        System.out.println("*************************** 【" + currentDoingMethod + "()】 "
-                + "pass all the tests ****************************");
+        System.out.println("*************************** 【"
+                + currentDoingMethod + "()】 "
+                + " pass all the tests ****************************");
     }
 
     @BeforeClass

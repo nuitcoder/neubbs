@@ -65,7 +65,7 @@ public class TopicServiceTest {
     public void testGetTopic() throws Exception {
         int topicId = 1;
 
-        Map<String, Object> topicMap = topicService.getTopic(topicId);
+        Map<String, Object> topicMap = topicService.getTopicContentPageModelMap(topicId);
         System.out.println(JsonUtil.toJSONStringByObject(topicMap));
     }
 
@@ -76,7 +76,7 @@ public class TopicServiceTest {
     public void testGetReply() throws Exception {
         int replyId = 1;
 
-        Map<String, Object> replyMap = topicService.getReply(replyId);
+        Map<String, Object> replyMap = topicService.getReplyPageModelMap(replyId);
         System.out.println(JsonUtil.toJSONStringByObject(replyMap));
     }
 
