@@ -8,6 +8,7 @@ import _ from 'lodash'
 import actions from '../actions'
 import Loader from '../components/Loader'
 import TopicDetail from '../components/TopicDetail'
+import TopicReplies from '../components/TopicReplies'
 
 class Topic extends Component {
   constructor(props) {
@@ -34,6 +35,8 @@ class Topic extends Component {
       <Row>
         <Col md={9}>
           <TopicDetail topic={topic} />
+          {topic.replies != 0 &&
+            <TopicReplies replies={topic.replys} />}
         </Col>
       </Row>
     )

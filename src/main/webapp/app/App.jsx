@@ -29,6 +29,7 @@ injectGlobal`
   .panel-default > .panel-heading {
     background-color: #fafafa;
     border-color: #eee;
+    padding: 6px 15px;
   }
 `
 

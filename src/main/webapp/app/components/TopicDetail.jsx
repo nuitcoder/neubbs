@@ -7,8 +7,12 @@ import { FormattedMessage, FormattedRelative } from 'react-intl'
 
 import Markdown from './Markdown'
 
+const StyledPanel = styled(Panel)`
+  margin-bottom: 15px;
+`
+
 const HeaderWrapper = styled.div`
-  padding: 5px 0;
+  padding: 9px 0;
 `
 
 const Left = styled.div`
@@ -105,9 +109,9 @@ const TopicDetail = ({ topic }) => {
   }
 
   return (
-    <Panel header={<Header />}>
+    <StyledPanel header={<Header />}>
       <Markdown source={topic.content} />
-    </Panel>
+    </StyledPanel>
   )
 }
 

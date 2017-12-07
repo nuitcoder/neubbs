@@ -55,6 +55,7 @@ export default {
   'topic.new.header': '发布新主题',
   'topic.new.title': '主题标题',
   'topic.new.submit': '发布主题',
+  'topic.replies.text': '共收到 {number} 条评论',
 
   // Widget
   'widgets.newtopic.text': '发布新话题',
