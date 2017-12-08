@@ -40,6 +40,7 @@ class ReplyForm extends Component {
     const { content } = this.state
     if (content !== '') {
       this.props.onSubmit({ content })
+      this.setState({ content: '' })
     }
   }
 
@@ -54,7 +55,7 @@ class ReplyForm extends Component {
       editor.focus()
     }
 
-    const newReceiver = value.match(/@\w+/g)
+    const newReceiver = value.match(/@\w+/g) || []
     this.props.updateReceiver(newReceiver)
   }
 

@@ -30,7 +30,8 @@ class Topic extends Component {
   }
 
   onSubmitReply({ content }) {
-    console.log(content)
+    const { topicid } = this.props.topic
+    this.props.actions.replyTopic({ topicid, content })
   }
 
   addReceiver(username) {
@@ -96,6 +97,7 @@ Topic.propTypes = {
   }).isRequired,
   actions: PropTypes.shape({
     fetchTopicDetail: PropTypes.func.isRequired,
+    replyTopic: PropTypes.func.isRequired,
   }).isRequired,
   topic: PropTypes.object.isRequired,
 }

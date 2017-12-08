@@ -1,8 +1,9 @@
 import axios from 'axios'
 import {
   TOPICS_URL,
-  TOPIC_URL,
   TOPICS_PAGES_URL,
+  TOPIC_URL,
+  TOPIC_REPLY_URL,
 } from '../constants/api'
 
 const topics = {
@@ -71,6 +72,18 @@ const topics = {
     const params = { topicid: id }
     return axios.get(TOPIC_URL, {
       params,
+    })
+  },
+
+  /**
+   * reply topic by topicid
+   *
+   * @returns {object}
+   */
+  replyTopic({ topicid, content }) {
+    return axios.post(TOPIC_REPLY_URL, {
+      topicid,
+      content,
     })
   },
 }

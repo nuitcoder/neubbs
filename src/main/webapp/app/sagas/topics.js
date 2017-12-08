@@ -79,3 +79,20 @@ export function* fetchTopicDetailSaga(action) {
     yield call(handleError, action, err)
   }
 }
+
+export function* replyTopicSaga(action) {
+  const { payload = {} } = action
+  const { topicid, content } = payload
+
+  const { data } = yield call(api.topics.replyTopic, { topicid, content })
+  try {
+    if (data.success) {
+      yield put({ type: types.REPLY_TOPIC_SUCCESS })
+      yield put({ type: types.FETCH_TOPIC_DEDAIL_REQUEST, payload: { id: topicid } })
+    } else {
+      yield call(handleError, action, data)
+    }
+  } catch (err) {
+    yield call(handleError, action, err)
+  }
+}
