@@ -20,7 +20,7 @@ class ReplyForm extends Component {
   componentWillReceiveProps(nextProps) {
     const nextLen = nextProps.receiver.length
     const currentLen = this.props.receiver.length
-    if (nextLen - currentLen) {
+    if (nextLen > currentLen) {
       const receiver = `@${nextProps.receiver[nextLen - 1]} `
 
       let { content } = this.state
@@ -55,8 +55,9 @@ class ReplyForm extends Component {
       editor.focus()
     }
 
-    const newReceiver = value.match(/@\w+/g) || []
-    this.props.updateReceiver(newReceiver)
+    // TODO: edit receiver
+    // let newReceiver = value.match(/@\w+/g) || []
+    // this.props.updateReceiver(newReceiver)
   }
 
   render() {
