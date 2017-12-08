@@ -83,9 +83,10 @@ class TopicReplies extends Component {
   render() {
     const { replies } = this.props
 
+    const PanelHeader = <FormattedMessage id="topic.replies.text" values={{ number: replies.length }} />
     return (
       <StyledPanel
-        header={<FormattedMessage id="topic.replies.text" values={{ number: replies.length }} />}
+        header={PanelHeader}
       >
         <RepliesWrapper>
           {replies.map((reply, i) => {
