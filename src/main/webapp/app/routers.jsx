@@ -49,10 +49,25 @@ const requireNotValidate = (_, replace) => {
     })
 }
 
+// https://stackoverflow.com/questions/40280369/use-anchors-with-react-router
+const hashLinkScroll = () => {
+  const { hash } = window.location;
+  if (hash !== '') {
+    // Push onto callback queue so it runs after the DOM is updated,
+    // this is required when navigating from a different page so that
+    // the element is rendered on the page before trying to getElementById.
+    setTimeout(() => {
+      const id = hash.replace('#', '');
+      const element = document.getElementById(id);
+      if (element) element.scrollIntoView();
+    }, 0);
+  }
+}
+
 const Routers = () => (
   <Provider store={store}>
     <IntlProvider locale={language} messages={setLocale(language)}>
-      <Router history={history}>
+      <Router history={history} onUpdate={hashLinkScroll}>
         <Route path={routes.ROOT} component={App}>
           <IndexRedirect to={routes.TOPICS} />
 

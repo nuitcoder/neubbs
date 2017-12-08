@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import { Row, Col, Tab, Nav, NavItem } from 'react-bootstrap'
 import { FormattedMessage } from 'react-intl'
-import CodeMirror from 'react-codemirror'
+import { Controlled as CodeMirror } from 'react-codemirror2'
 
 import 'codemirror/lib/codemirror.css'
 import 'codemirror/mode/xml/xml'
@@ -39,19 +39,19 @@ const StyledNavItem = styled(NavItem)`
 const StyledCodeMirror = styled(CodeMirror)`
   & > .CodeMirror {
     height: auto;
-    min-height: 300px;
+    min-height: ${props => props.minHeight}px;
     border: 1px solid #ddd;
     border-top: 0;
     border-radius: 0 4px 4px;
   }
 
   & .CodeMirror-scroll {
-    min-height: 300px;
+    min-height: ${props => props.minHeight}px;
   }
 `
 
 const StyledMarkdown = styled(Markdown)`
-  min-height: 300px;
+  min-height: ${props => props.minHeight}px;
   padding: 4px;
   border: 1px solid #ddd;
   border-top: 0;
@@ -68,15 +68,24 @@ class Editor extends Component {
   constructor(props) {
     super(props)
 
-    this.handleCange = this.handleCange.bind(this)
+    this.handleChange = this.handleChange.bind(this)
+    this.handleBeforeChange = this.handleBeforeChange.bind(this)
   }
 
-  handleCange(content) {
-    this.props.onChange(content)
+  // eslint-disable-next-line class-methods-use-this
+  handleChange(editor) {
+    if (!editor.state.focused) {
+      editor.focus()
+    }
+  }
+
+  handleBeforeChange(editor, data, value) {
+    this.props.onChange(value)
   }
 
   render() {
-    const { content } = this.props
+    const { content, minHeight } = this.props
+
     return (
       <Tab.Container id="editor" defaultActiveKey={tabs.EDIT}>
         <Row className="clearfix">
@@ -92,13 +101,15 @@ class Editor extends Component {
             <Tab.Content animation>
               <Tab.Pane eventKey={tabs.EDIT}>
                 <StyledCodeMirror
+                  minHeight={minHeight}
                   value={content}
                   options={options}
-                  onChange={this.handleCange}
+                  onBeforeChange={this.props.onBeforeChange}
+                  onChange={this.props.onChange}
                 />
               </Tab.Pane>
               <Tab.Pane eventKey={tabs.PREVIEW}>
-                <StyledMarkdown source={content} />
+                <StyledMarkdown minHeight={minHeight} source={content} />
               </Tab.Pane>
             </Tab.Content>
           </Col>
@@ -108,9 +119,17 @@ class Editor extends Component {
   }
 }
 
+Editor.defaultProps = {
+  minHeight: 300,
+  onChange: () => {},
+  onBeforeChange: () => {},
+}
+
 Editor.propTypes = {
+  minHeight: PropTypes.number,
   content: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired,
+  onChange: PropTypes.func,
+  onBeforeChange: PropTypes.func,
 }
 
 export default Editor

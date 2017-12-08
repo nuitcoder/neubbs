@@ -9,15 +9,40 @@ import actions from '../actions'
 import Loader from '../components/Loader'
 import TopicDetail from '../components/TopicDetail'
 import TopicReplies from '../components/TopicReplies'
+import ReplyForm from '../components/ReplyForm'
 
 class Topic extends Component {
   constructor(props) {
     super(props)
+
+    this.state = {
+      receiver: [],
+    }
+
+    this.addReceiver = this.addReceiver.bind(this)
+    this.updateReceiver = this.updateReceiver.bind(this)
+    this.onSubmitReply = this.onSubmitReply.bind(this)
   }
 
   componentWillMount() {
     const { id } = this.props.params
     this.props.actions.fetchTopicDetail({ id })
+  }
+
+  onSubmitReply({ content }) {
+    console.log(content)
+  }
+
+  addReceiver(username) {
+    const { receiver } = this.state
+
+    this.setState({
+      receiver: [...(new Set([...receiver, username]))],
+    })
+  }
+
+  updateReceiver(receiver) {
+    this.setState({ receiver })
   }
 
   render() {
@@ -36,7 +61,15 @@ class Topic extends Component {
         <Col md={9}>
           <TopicDetail topic={topic} />
           {topic.replies != 0 &&
-            <TopicReplies replies={topic.replys} />}
+            <TopicReplies
+              replies={topic.replys}
+              onClickReply={this.addReceiver}
+            />}
+          <ReplyForm
+            receiver={this.state.receiver}
+            updateReceiver={this.updateReceiver}
+            onSubmit={this.onSubmitReply}
+          />
         </Col>
       </Row>
     )

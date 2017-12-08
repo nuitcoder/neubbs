@@ -44,8 +44,10 @@ class TopicForm extends Component {
     this.setState({ title })
   }
 
-  changeContent(content) {
-    this.setState({ content })
+  changeContent(editor, data, value) {
+    this.setState({
+      content: value,
+    })
   }
 
   render() {
@@ -70,7 +72,7 @@ class TopicForm extends Component {
           <FormGroup controlId="content">
             <Editor
               content={this.state.content}
-              onChange={this.changeContent}
+              onBeforeChange={this.changeContent}
             />
             {(content === '' && hasSubmit) &&
               <InputErrorText><FormattedMessage id="validate.content.required" /></InputErrorText>}

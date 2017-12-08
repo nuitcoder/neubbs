@@ -4,6 +4,7 @@ import { Panel, Glyphicon } from 'react-bootstrap'
 import styled from 'styled-components'
 import { Link } from 'react-router'
 import { FormattedMessage, FormattedRelative } from 'react-intl'
+import { browserHistory } from 'react-router'
 
 import Markdown from './Markdown'
 
@@ -78,6 +79,16 @@ const Content = styled.div`
 class TopicReplies extends Component {
   constructor(props) {
     super(props)
+
+    this.onClickReply = this.onClickReply.bind(this)
+  }
+
+  onClickReply(evt) {
+    const { username } = evt.target.dataset
+    this.props.onClickReply(username)
+
+    const { pathname } = window.location
+    browserHistory.push(`${pathname}#reply`)
   }
 
   render() {
@@ -106,8 +117,11 @@ class TopicReplies extends Component {
                     <Floor>#{i + 1}</Floor>
                     <FormattedRelative value={createtime} />
                     <Options>
-                      <StyledGlyphicon glyph="share-alt" />
-                      <StyledGlyphicon glyph="heart" />
+                      <StyledGlyphicon
+                        glyph="share-alt"
+                        data-username={username}
+                        onClick={this.onClickReply}
+                      />
                     </Options>
                   </Info>
                   <Content>
@@ -125,6 +139,7 @@ class TopicReplies extends Component {
 
 TopicReplies.propTypes = {
   replies: PropTypes.array.isRequired,
+  onClickReply: PropTypes.func.isRequired,
 }
 
 export default TopicReplies
