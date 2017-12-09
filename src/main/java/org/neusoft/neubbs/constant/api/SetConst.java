@@ -2,6 +2,7 @@ package org.neusoft.neubbs.constant.api;
 
 /**
  * 设置信息
+ *      - 项目使用各项常量设置
  *
  * @author Suvan
  */
@@ -102,5 +103,11 @@ public final class SetConst {
      * Redis 数据库
      */
     public static final String KEY_ACTIVATE = "activate";
+
+    /**
+     * TCP/IP 协议
+     */
+    public static final String HTTP = "http";
+    public static final String FTP = "ftp";
 
 }

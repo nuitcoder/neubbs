@@ -106,9 +106,9 @@ public final class AccountController {
         }
 
         //get user information（if no login, only return [success:true]）
-        boolean loginState = httpService.getCookieValue(request, ParamConst.AUTHENTICATION) != null;
+        boolean noLoginState = httpService.getCookieValue(request, ParamConst.AUTHENTICATION) == null;
         boolean isUserExistState = userService.isUserExist(username, email);
-        return loginState
+        return noLoginState
                 ? new PageJsonDTO(isUserExistState)
                 : new PageJsonDTO(isUserExistState, userService.getUserInfoToPageModelMap(username, email));
     }
@@ -292,7 +292,7 @@ public final class AccountController {
         //another thread to send mail
         String token = secretService.getEmailActivateToken(email);
 
-        //get email content((if param activateUrl = null, default use neubbs.properties settings)
+        //get email content(if param activateUrl = null, default use neubbs.properties settings)
         String emailContent = emailService.getEmailContentxtToActivateUserMailHtml(null, token);
         emailService.sendEmail(SetConst.EMAIL_SENDER_NAME, email, SetConst.EMAIL_SUBJECT_ACTIVATE, emailContent);
 

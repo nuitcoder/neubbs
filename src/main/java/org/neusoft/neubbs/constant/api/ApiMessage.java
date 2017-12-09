@@ -57,9 +57,14 @@ public final class ApiMessage {
      */
     public static final String NO_TOPIC = "no topic";
     public static final String NO_REPLY = "no reply";
-    public static final String NO_TOPIC_CATEGORY = "no topic category";
+    public static final String NO_CATEGORY = "no category";
 
-    public static final String FAIL_GET_TOPIC_LSIT = "failed to get topic list";
+    public static final String QUERY_EXCEED_TOPIC_NUMBER = "query exceed max topic number";
+
+    public static final String ALREAD_EXIST_CATEGORY_NICK = "already exist category id, no repeat save";
+    public static final String ALREAD_EXIST_CATEGORY_NAME = "already exist category name, no repeat save";
+
+    public static final String NO_QUERY_TOPICS = "no query topics";
 
     /**
      * Ftp Service

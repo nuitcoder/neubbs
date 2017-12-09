@@ -5,6 +5,7 @@ import org.neusoft.neubbs.constant.api.SetConst;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -30,6 +31,7 @@ public final class ResponsePrintWriterUtil {
         Map<String, Object> map = new LinkedHashMap<>(SetConst.LENGTH_TWO);
             map.put("success", false);
             map.put("message", failMessage);
+            map.put("model", new HashMap<>(SetConst.SIZE_ONE));
 
         //将 Map 转换为 JSON 格式字符串
         String json = JsonUtil.toJSONStringByObject(map);

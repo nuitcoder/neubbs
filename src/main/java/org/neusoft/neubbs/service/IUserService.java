@@ -6,50 +6,31 @@ import java.util.Map;
 
 /**
  * 用户业务接口
+ *      - 增删查改排序
  *
  * @author Suvan
  */
 public interface IUserService {
 
     /**
-     * 修改用户密码
-     *      - 失败直接抛出异常
+     * 注册用户
      *
      * @param username 用户名
-     * @param newPassword 用户新密码
-     */
-    void alterUserPasswordByName(String username, String newPassword);
-
-    /**
-     * 修改用户密码
-     *
+     * @param password 用户密码
      * @param email 用户邮箱
-     * @param newPassword 用户新密码
+     * @return UserDO 注册成功，获取新用户信息
      */
-    void alterUserPasswordByEmail(String email, String newPassword);
+    UserDO registerUser(String username, String password, String email);
 
     /**
-     * 修改用户邮箱
+     * 登录认证
      *
      * @param username 用户名
-     * @param newEmail 用户新邮箱
-     */
-    void alterUserEmail(String username, String newEmail);
-
-    /**
-     * 修改用户头像
+     * @param password 用户密码
+     * @return UserDO 通过登录验证,获取用户信息
      *
-     * @param username 用户名
-     * @param newImageName 用户新头像名字
      */
-    void alterUserAvatorImage(String username, String newImageName);
-
-    /**
-     * (Base64 加密 token)修改用户激活状态
-     *
-     * @param token Base64加密密文
-     */
-    void alterUserActivateStateByToken(String token);
+    UserDO loginAuthenticate(String username, String password);
 
     /**
      * （邮箱）确认用户已经激活
@@ -135,22 +116,42 @@ public interface IUserService {
     boolean isUserActivatedByState(int state);
 
     /**
-     * 登录认证
+     * 修改用户密码
+     *      - 失败直接抛出异常
      *
      * @param username 用户名
-     * @param password 用户密码
-     * @return UserDO 通过登录验证,获取用户信息
-     *
+     * @param newPassword 用户新密码
      */
-    UserDO loginAuthenticate(String username, String password);
+    void alterUserPasswordByName(String username, String newPassword);
 
     /**
-     * 注册用户
+     * 修改用户密码
+     *
+     * @param email 用户邮箱
+     * @param newPassword 用户新密码
+     */
+    void alterUserPasswordByEmail(String email, String newPassword);
+
+    /**
+     * 修改用户邮箱
      *
      * @param username 用户名
-     * @param password 用户密码
-     * @param email 用户邮箱
-     * @return UserDO 注册成功，获取新用户信息
+     * @param newEmail 用户新邮箱
      */
-    UserDO registerUser(String username, String password, String email);
+    void alterUserEmail(String username, String newEmail);
+
+    /**
+     * 修改用户头像
+     *
+     * @param username 用户名
+     * @param newImageName 用户新头像名字
+     */
+    void alterUserAvatorImage(String username, String newImageName);
+
+    /**
+     * (Base64 加密 token)修改用户激活状态
+     *
+     * @param token Base64加密密文
+     */
+    void alterUserActivateStateByToken(String token);
 }

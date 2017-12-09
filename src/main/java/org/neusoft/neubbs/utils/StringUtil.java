@@ -142,22 +142,24 @@ public final class StringUtil {
 
     /**
      * 拼接用户头像 URL
-     *      - 可选 FTP or http
+     *      - userInfoMap 中获取 id + name 拼接用户个人文件夹
+     *      - userInfoMap 中获取 avator 拼接用户头像 URL
+     *      - 支持 FTP or http
      *
      * @param userInfoMap 用户信息键值对
-     * @param urlType URL类型（目前：ftp[默认] 和 http）
-     * @return String 用户头像FTP-URL
+     * @param urlType URL类型（支持：ftp 和 http[目前仅使用此]）
+     * @return String 用户头像 URL）
      */
     public static String spliceUserAvatorUrl(Map<String, Object> userInfoMap, String urlType) {
         StringBuilder avatorFtpUrl = new StringBuilder();
-        if ("http".equals(urlType)) {
+        if (SetConst.HTTP.equals(urlType)) {
             avatorFtpUrl.append(getNginxHttpUrlPreFix());
         } else {
             //default
             avatorFtpUrl.append(getFtpUrlPreFix());
         }
 
-        String imageFileName = (String) userInfoMap.get(ParamConst.IMAGE);
+        String imageFileName = (String) userInfoMap.get(ParamConst.AVATOR);
         if (isUserAvatorDefault(imageFileName)) {
             avatorFtpUrl.append(getUserDefaultPath() + imageFileName);
         } else {
@@ -165,6 +167,7 @@ public final class StringUtil {
                     getUserPersonalPath((Integer) userInfoMap.get(ParamConst.ID),
                             (String) userInfoMap.get(ParamConst.NAME))
             );
+
             avatorFtpUrl.append("avator/" + imageFileName);
         }
 

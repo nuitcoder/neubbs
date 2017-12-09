@@ -8,10 +8,12 @@ import org.neusoft.neubbs.constant.log.LogWarn;
 import org.neusoft.neubbs.controller.exception.AccountErrorException;
 import org.neusoft.neubbs.controller.exception.DatabaseOperationFailException;
 import org.neusoft.neubbs.controller.exception.TopicErrorException;
+import org.neusoft.neubbs.dao.ITopicCategoryDAO;
 import org.neusoft.neubbs.dao.ITopicContentDAO;
 import org.neusoft.neubbs.dao.ITopicDAO;
 import org.neusoft.neubbs.dao.ITopicReplyDAO;
 import org.neusoft.neubbs.dao.IUserDAO;
+import org.neusoft.neubbs.entity.TopicCategoryDO;
 import org.neusoft.neubbs.entity.TopicContentDO;
 import org.neusoft.neubbs.entity.TopicDO;
 import org.neusoft.neubbs.entity.TopicReplyDO;
@@ -41,6 +43,7 @@ public class TopicServiceImpl implements ITopicService {
 
     private final ITopicDAO topicDAO;
     private final ITopicContentDAO topicContentDAO;
+    private final ITopicCategoryDAO topicCategoryDAO;
     private final ITopicReplyDAO topicReplyDAO;
     private final IUserDAO userDAO;
 
@@ -48,200 +51,32 @@ public class TopicServiceImpl implements ITopicService {
 
     @Autowired
     public TopicServiceImpl(ITopicDAO topicDAO, ITopicContentDAO topicContentDAO,
-                            ITopicReplyDAO topicReplyDAO, IUserDAO userDAO,
-                            NeubbsConfigDO neubbsConfig) {
+                            ITopicReplyDAO topicReplyDAO, ITopicCategoryDAO topicCategoryDAO,
+                            IUserDAO userDAO, NeubbsConfigDO neubbsConfig) {
         this.topicDAO = topicDAO;
         this.topicContentDAO = topicContentDAO;
         this.topicReplyDAO = topicReplyDAO;
+        this.topicCategoryDAO = topicCategoryDAO;
         this.userDAO = userDAO;
         this.neubbsConfig = neubbsConfig;
     }
 
     @Override
-    public void alterTopicContent(int topicId, String newCategory, String newTitle, String newTopicContent) {
-        this.confirmTopicNotNull(topicId);
-
-        //update category,title from forum_topic
-        if (topicDAO.updateCategoryById(topicId, newCategory) == 0
-                || topicDAO.updateTitleById(topicId, newTitle) == 0) {
-            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.TOPIC_07);
-        }
-
-        //update conent from forum_topic_content
-        if (topicContentDAO.updateContentByTopicId(topicId, newTopicContent) == 0) {
-            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.TOPIC_08);
-        }
-    }
-
-    @Override
-    public void alterReplyContent(int replyId, String newReplyContent) {
-        this.confirmTopicReplyNotNull(replyId);
-
-        //update reply content from forum_topic_reply
-        if (topicReplyDAO.updateContentByIdByContent(replyId, newReplyContent) == 0) {
-            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.TOPIC_09);
-        }
-    }
-
-    @Override
-    public int countTopicTotalPages(int limit, String category, String username) {
-        if (limit == SetConst.ZERO) {
-            limit = neubbsConfig.getTopicsApiRequestParamLimitDefault();
-        }
-
-        int topicCount = this.countTopicCount(category, username);
-
-        return topicCount % limit == 0 ? topicCount / limit : topicCount / limit + 1;
-    }
-
-    @Override
-    public Map<String, Object> getTopicContentPageModelMap(int topicId) {
-        TopicDO topic = this.getTopicDO(topicId);
-        TopicContentDO topicContent = this.getTopicContentDO(topicId);
-        UserDO topicAuthorUser = this.getTopicAuthorUserDO(topic.getUserid());
-
-        Map<String, Object> topicMap = this.getTopicInfoMap(topic);
-        Map<String, Object> topicContentMap = this.getTopicContentInfoMap(topicContent);
-        Map<String, Object> authorUserMap = this.getTopicUserInfoMap(topicAuthorUser);
-
-        //consider topic no reply user
-        Integer topicLastReplyUserId = topic.getLastreplyuserid();
-        Map<String, Object> lastReplyUserMap = topicLastReplyUserId == null
-                ? this.getTopicUserInfoMap(null)
-                : this.getTopicUserInfoMap(this.getTopicAuthorUserDO(topicLastReplyUserId));
-
-
-        //get topic reply list map,
-        List<TopicReplyDO> listReply = topicReplyDAO.listTopicReplyByTopicId(topicId);
-        List<Map<String, Object>> listReplyMap = new ArrayList<>(listReply.size());
-        for (TopicReplyDO reply : listReply) {
-            Map<String, Object> replyMap = this.getTopicReplyInfoMap(reply);
-            replyMap.put(ParamConst.USER, this.getTopicUserInfoMap(this.getTopicReplyAuthorUserDO(reply.getUserid())));
-
-            listReplyMap.add(replyMap);
-        }
-
-        //merge all information map
-        topicMap.putAll(topicContentMap);
-        topicMap.put(ParamConst.USER, authorUserMap);
-        topicMap.put(ParamConst.LAST_REPLY_USER, lastReplyUserMap);
-        topicMap.put(ParamConst.REPLYS, listReplyMap);
-
-        return topicMap;
-    }
-
-    @Override
-    public Map<String, Object> getReplyPageModelMap(int replyId) {
-        TopicReplyDO reply = this.getTopicReplyDO(replyId);
-        Map<String, Object> replyInfoMap = this.getTopicReplyInfoMap(reply);
-
-        //if user == null, no throw exception
-        UserDO replyUser = userDAO.getUserById(reply.getUserid());
-        replyInfoMap.put(ParamConst.USER, this.getTopicUserInfoMap(replyUser));
-
-        return replyInfoMap;
-    }
-
-
-    @Override
-    public List<Map<String, Object>> listTopics(int limit, int page, String category, String username) {
-        //if limit = 0, explain no input limit, use neubbs.properties default param
-        if (limit == SetConst.ZERO) {
-            limit = neubbsConfig.getTopicsApiRequestParamLimitDefault();
-        }
-
-        //confirm no exceed database topic number
-        this.confirmNoExceedTopicNumber(limit, page);
-
-        //get specified page topic list
-        List<TopicDO> listTopic = this.getTopicList(limit, page, category, username);
-
-        //foreach topic list
-        List<Map<String, Object>> topicsList = new ArrayList<>(listTopic.size());
-        for (TopicDO topic : listTopic) {
-            //get information map
-            Map<String, Object> topicInfoMap = this.getTopicInfoMap(topic);
-            Map<String, Object> topicContentInfoMap
-                    = this.getTopicContentInfoMap(this.getTopicContentDO(topic.getId()));
-            Map<String, Object> authorUserMap = this.getTopicUserInfoMap(userDAO.getUserById(topic.getUserid()));
-            Map<String, Object> lastReplyUserMap
-                    = this.getTopicUserInfoMap(userDAO.getUserById(topic.getLastreplyuserid()));
-
-            //result map remove category key-value, when category != null
-            if (category != null) {
-                topicInfoMap.remove(ParamConst.CATEGORY);
-            }
-            //result map remove user key-value, when username != null
-            if (username != null) {
-                topicInfoMap.put(ParamConst.USER, authorUserMap);
-            }
-
-            //merge all information map
-            topicInfoMap.putAll(topicContentInfoMap);
-            topicInfoMap.put(ParamConst.USER, authorUserMap);
-            topicInfoMap.put(ParamConst.LAST_REPLY_USER, lastReplyUserMap);
-            topicsList.add(topicInfoMap);
-        }
-
-        return topicsList;
-    }
-
-    @Override
-    public List<String> listTopicCategory() {
-        return topicDAO.listTopicCategory();
-    }
-
-    @Override
-    public void removeTopic(int topicId) {
-        this.confirmTopicNotNull(topicId);
-
-        //delete topic data from forum_topic_content
-        if (topicContentDAO.removeTopicContentById(topicId) == 0) {
-            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.TOPIC_05);
-        }
-
-        //delete topic all reply from forum_topic_reply
-        if (topicReplyDAO.removeListTopicReplyByTopicId(topicId) == 0) {
-            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.TOPIC_06);
-        }
-
-        //delete topic from forum_topic
-        if (topicDAO.removeTopicById(topicId) == 0) {
-            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.TOPIC_04);
-        }
-    }
-
-    @Override
-    public void removeReply(int replyId) {
-        this.confirmTopicReplyNotNull(replyId);
-
-         //delete reply from forum_topic_reply
-         if (topicReplyDAO.removeTopicReplyById(replyId) == 0) {
-            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.TOPIC_05);
-         }
-
-         //update comment -1 from forum_topic
-         int replyTopicId = topicReplyDAO.getTopicReplyById(replyId).getTopicid();
-         if (topicDAO.updateCommentCutOneById(replyTopicId) == 0) {
-            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.TOPIC_07);
-        }
-    }
-
-    @Override
-    public int saveTopic(int userId, String category, String title, String topicContent) {
+    public int saveTopic(int userId, String categoryNick, String title, String topicContent) {
         //because userId of cookie already cookie, so no null empty check
+        TopicCategoryDO category = this.getTopicCategoryNotNullByNick(categoryNick);
 
         //insert forum_topic table
         TopicDO topic = new TopicDO();
             topic.setUserid(userId);
-            topic.setCategory(category);
+            topic.setCategoryid(category.getId());
             topic.setTitle(title);
 
         if (topicDAO.saveTopic(topic) == 0) {
             throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.TOPIC_01);
         }
 
-        //insert forum_topic_content table
+        //insert forum_topic_content
         TopicContentDO topicContentDO = new TopicContentDO();
             topicContentDO.setTopicid(topic.getId());
             topicContentDO.setContent(topicContent);
@@ -255,26 +90,277 @@ public class TopicServiceImpl implements ITopicService {
 
     @Override
     public int saveReply(int userId, int topicId, String replyContent) {
-        this.confirmTopicNotNull(topicId);
+        this.getTopicNotNull(topicId);
 
         //insert forum_topic_reply
         TopicReplyDO topicReply = new TopicReplyDO();
-        topicReply.setUserid(userId);
-        topicReply.setTopicid(topicId);
-        topicReply.setContent(replyContent);
+            topicReply.setUserid(userId);
+            topicReply.setTopicid(topicId);
+            topicReply.setContent(replyContent);
 
         if (topicReplyDAO.saveTopicReply(topicReply) == 0) {
             throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.TOPIC_03);
         }
 
         //update comment, lastreplyuserid, lastreplytime from forum_topic
-        if (topicDAO.updateCommentAddOneById(topicId) == 0
-                ||  topicDAO.updateLastreplyuseridById(topicId, userId) == 0
-                || topicDAO.updateLastreplytimeById(topicId, new Date()) == 0) {
+        Date topicLastReplyTime = topicReplyDAO.getTopicReplyById(topicReply.getId()).getCreatetime();
+        if (topicDAO.updateRepliesAddOneById(topicId) == 0
+                ||  topicDAO.updateLastReplyUserIdById(topicId, userId) == 0
+                || topicDAO.updateLastReplyTimeById(topicId, topicLastReplyTime) == 0) {
             throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.TOPIC_03);
         }
 
         return topicReply.getId();
+    }
+
+    @Override
+    public Map<String, Object> saveCategory(String categoryNick, String categoryName) {
+
+        if (topicCategoryDAO.getTopicCategoryByNick(categoryNick) != null) {
+            throw new TopicErrorException(ApiMessage.ALREAD_EXIST_CATEGORY_NICK)
+                    .log(categoryNick + LogWarn.TOPIC_15);
+        }
+
+        if (topicCategoryDAO.getTopicCategoryByName(categoryName) != null) {
+            throw new TopicErrorException(ApiMessage.ALREAD_EXIST_CATEGORY_NAME)
+                    .log(categoryName + LogWarn.TOPIC_16);
+        }
+
+        TopicCategoryDO category = new TopicCategoryDO();
+            category.setNick(categoryNick);
+            category.setName(categoryName);
+        topicCategoryDAO.saveTopicCategory(category);
+
+        return this.getTopicCategoryInfoMap(category);
+    }
+
+    @Override
+    public void removeTopic(int topicId) {
+        this.getTopicNotNull(topicId);
+
+        //delete topic data from forum_topic_content
+        if (topicContentDAO.removeTopicContentByTopicId(topicId) == 0) {
+            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.TOPIC_05);
+        }
+
+        //delete topic all reply from forum_topic_reply
+        if (topicReplyDAO.removeTopicAllReplyByTopicId(topicId) == 0) {
+            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.TOPIC_06);
+        }
+
+        //delete topic from forum_topic
+        if (topicDAO.removeTopicById(topicId) == 0) {
+            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.TOPIC_04);
+        }
+    }
+
+    @Override
+    public void removeReply(int replyId) {
+        TopicReplyDO reply = this.getTopicReplyNotNull(replyId);
+
+        //delete reply from forum_topic_reply
+        if (topicReplyDAO.removeTopicReplyById(replyId) == 0) {
+            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.TOPIC_05);
+        }
+
+        //update replies -1 from forum_topic (lastreplytime no update)
+        if (topicDAO.updateRepliesCutOneById(reply.getTopicid()) == 0) {
+            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.TOPIC_07);
+        }
+    }
+
+    @Override
+    public void removeCategory(String categoryNick) {
+        TopicCategoryDO category = this.getTopicCategoryNotNullByNick(categoryNick);
+        userDAO.removeUserById(category.getId());
+    }
+
+    @Override
+    public int countTopicTotalPages(int limit, String categoryNick, String username) {
+        if (limit == SetConst.ZERO) {
+            limit = neubbsConfig.getTopicsApiRequestParamLimitDefault();
+        }
+
+        //confirm user input categoryNick or username param (null express user no input)
+        int categoryId = categoryNick == null
+                ? 0 : this.getTopicCategoryNotNullByNick(categoryNick).getId();
+        int userId = username == null
+                ? 0 : this.getUserNotNullByName(username).getId();
+
+        int topicNumber = this.countTopicCount(categoryId, userId);
+        this.confirmQueryTopicListResultSizeNotEqualZero(topicNumber);
+
+        //count totalpages by limit by topicNumber
+        return topicNumber % limit == 0 ? topicNumber / limit : topicNumber / limit + 1;
+    }
+
+    @Override
+    public Map<String, Object> getTopicContentPageModelMap(int topicId) {
+        TopicDO topic = this.getTopicNotNull(topicId);
+        TopicContentDO topicContent = this.getTopicContentNotNull(topicId);
+        TopicCategoryDO topicCategory = this.getTopicCategoryNotNullById(topic.getCategoryid());
+        UserDO topicAuthorUser = this.getUserNotNullById(topic.getUserid());
+
+        Map<String, Object> topicInfoMap = this.getTopicInfoMap(topic);
+        Map<String, Object> topicContentInfoMap = this.getTopicContentInfoMap(topicContent);
+        Map<String, Object> topicCategoryInfoMap = this.getTopicCategoryInfoMap(topicCategory);
+        Map<String, Object> authorUserInfoMap = this.getTopicUserInfoMap(topicAuthorUser);
+
+        //consider topic no reply user
+        Integer topicLastReplyUserId = topic.getLastreplyuserid();
+        Map<String, Object> lastReplyUserMap = topicLastReplyUserId == null
+                ? this.getTopicUserInfoMap(null)
+                : this.getTopicUserInfoMap(this.getUserNotNullById(topicLastReplyUserId));
+
+
+        //get topic reply list map,
+        List<TopicReplyDO> listReply = topicReplyDAO.listTopicReplyByTopicId(topicId);
+        List<Map<String, Object>> listReplyInfoMap = new ArrayList<>(listReply.size());
+        for (TopicReplyDO reply : listReply) {
+            Map<String, Object> replyInfoMap = this.getTopicReplyInfoMap(reply);
+
+            //allow user empty(if replyUser=null, explain database exist garbage data)
+            replyInfoMap.put(ParamConst.USER, this.getTopicUserInfoMap(userDAO.getUserById(reply.getUserid())));
+
+            //remove topicid, because the reply is based on topicid to query
+            replyInfoMap.remove(ParamConst.TOPIC_ID);
+
+            listReplyInfoMap.add(replyInfoMap);
+        }
+
+        //merge all information map
+        topicInfoMap.putAll(topicContentInfoMap);
+        topicInfoMap.put(ParamConst.CATEGORY, topicCategoryInfoMap);
+        topicInfoMap.put(ParamConst.USER, authorUserInfoMap);
+        topicInfoMap.put(ParamConst.LAST_REPLY_USER, lastReplyUserMap);
+        topicInfoMap.put(ParamConst.REPLYS, listReplyInfoMap);
+
+        //remove topicid, because the function is based on topicid to query
+        topicInfoMap.remove(ParamConst.TOPIC_ID);
+
+        //topic read + 1
+        if (topicContentDAO.updateReadAddOneByTopicId(topicId) == 0) {
+            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.TOPIC_07);
+        }
+
+        return topicInfoMap;
+    }
+
+    @Override
+    public Map<String, Object> getReplyPageModelMap(int replyId) {
+        TopicReplyDO reply = this.getTopicReplyNotNull(replyId);
+        Map<String, Object> replyInfoMap = this.getTopicReplyInfoMap(reply);
+
+        //if user == null, throw exception
+        UserDO replyUser = this.getUserNotNullById(reply.getUserid());
+        replyInfoMap.put(ParamConst.USER, this.getTopicUserInfoMap(replyUser));
+
+        //remove replyid, because the function is based on replyid to query
+        replyInfoMap.remove(ParamConst.REPLY_ID);
+
+        return replyInfoMap;
+    }
+
+    @Override
+    public List<Map<String, Object>> listTopics(int limit, int page, String categoryNick, String username) {
+        //if limit = 0, explain no input limit, use neubbs.properties default param
+        if (limit == SetConst.ZERO) {
+            limit = neubbsConfig.getTopicsApiRequestParamLimitDefault();
+        }
+
+        this.confirmNoExceedTopicNumber(limit, page);
+
+        int categoryId = categoryNick == null
+                ? 0 : this.getTopicCategoryNotNullByNick(categoryNick).getId();
+        int userId = username == null
+                ? 0 : this.getUserNotNullByName(username).getId();
+
+
+        List<TopicDO> dbTopicList = this.getTopicList(limit, page, categoryId, userId);
+        this.confirmQueryTopicListResultSizeNotZero(dbTopicList);
+
+        List<Map<String, Object>> resultTopicList = new ArrayList<>(dbTopicList.size());
+        //foreach topic list
+        for (TopicDO topic : dbTopicList) {
+            //get information map (if obj == null, explain database exist garbage data)
+            Map<String, Object> topicInfoMap = this.getTopicInfoMap(topic);
+            Map<String, Object> topicContentInfoMap
+                    = this.getTopicContentInfoMap(topicContentDAO.getTopicContentByTopicId(topic.getId()));
+            Map<String, Object> topicCategoryInfoMap
+                    = this.getTopicCategoryInfoMap(topicCategoryDAO.getTopicCategoryById(topic.getCategoryid()));
+            Map<String, Object> authorUserMap = this.getTopicUserInfoMap(userDAO.getUserById(topic.getUserid()));
+            Map<String, Object> lastReplyUserMap
+                    = this.getTopicUserInfoMap(userDAO.getUserById(topic.getLastreplyuserid()));
+
+            //merge all information map
+            topicInfoMap.putAll(topicContentInfoMap);
+            topicInfoMap.put(ParamConst.CATEGORY, topicCategoryInfoMap);
+            topicInfoMap.put(ParamConst.USER, authorUserMap);
+            topicInfoMap.put(ParamConst.LAST_REPLY_USER, lastReplyUserMap);
+
+            //if user input exist categoryNick or username param, delete page display filed
+            if (categoryNick != null) {
+                topicInfoMap.remove(ParamConst.CATEGORY);
+            }
+            if (username != null) {
+                topicInfoMap.remove(ParamConst.USER);
+            }
+
+            resultTopicList.add(topicInfoMap);
+        }
+
+        return resultTopicList;
+    }
+
+    @Override
+    public List<Map<String, Object>> listAllTopicCategorys() {
+        List<TopicCategoryDO> allCategoryList = topicCategoryDAO.listAllTopicCategory();
+
+        List<Map<String, Object>> resultCategoryList = new ArrayList<>(allCategoryList.size());
+        for (TopicCategoryDO category: allCategoryList) {
+            resultCategoryList.add(this.getTopicCategoryInfoMap(category));
+        }
+
+        return resultCategoryList;
+    }
+
+    @Override
+    public void alterTopicContent(int topicId, String categoryNick, String newTitle, String newTopicContent) {
+        //confirm topicid not null
+        this.getTopicNotNull(topicId);
+        this.getTopicContentNotNull(topicId);
+        TopicCategoryDO category = this.getTopicCategoryNotNullByNick(categoryNick);
+
+        //update category,title from forum_topic
+        if (topicDAO.updateCategoryById(topicId, category.getId()) == 0
+                || topicDAO.updateTitleById(topicId, newTitle) == 0) {
+            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.TOPIC_07);
+        }
+
+        //update conent from forum_topic_content
+        if (topicContentDAO.updateContentByTopicId(topicId, newTopicContent) == 0) {
+            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.TOPIC_08);
+        }
+    }
+
+    @Override
+    public void alterReplyContent(int replyId, String newReplyContent) {
+        //confirm reply not null
+        this.getTopicReplyNotNull(replyId);
+
+        //update reply content from forum_topic_reply
+        if (topicReplyDAO.updateContentByIdByContent(replyId, newReplyContent) == 0) {
+            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.TOPIC_09);
+        }
+    }
+
+    @Override
+    public void alterTopicReadAddOne(int topicId) {
+        this.getTopicNotNull(topicId);
+
+        if (topicContentDAO.updateReadAddOneByTopicId(topicId) == 0) {
+            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.TOPIC_07);
+        }
     }
 
     /*
@@ -283,40 +369,44 @@ public class TopicServiceImpl implements ITopicService {
      * ***********************************************
      */
 
-    /**
-     * 确认话题不为空（存在指定 topicId 话题）
-     *      - forum_topic
-     *      - forum_topic_content
-     *
-     * @param topicId 话题id
+    /*
+     * ***********************************************
+     * count method
+     * ***********************************************
      */
-    private void confirmTopicNotNull(int topicId) {
-        if (topicDAO.getTopicById(topicId) == null || topicContentDAO.getTopicContentById(topicId) == null) {
-            throwNoTopicException(topicId);
-        }
-    }
 
     /**
-     * 确认话题回复不为空（存在指定 replyId 话题回复）
+     * 获取话题数量
+     *      - 话题分类 id + 用户 id
+     *      - 话题分类 id
+     *      - 用户 id
+     *      - 默认
      *
-     * @param replyId 话题回复id
+     * @param categoryId 话题分类id
+     * @param userId 用户id
+     * @return int 话题数量
      */
-    private void confirmTopicReplyNotNull(int replyId) {
-        if (topicReplyDAO.getTopicReplyById(replyId) == null) {
-            throw new TopicErrorException(ApiMessage.NO_REPLY).log(replyId + LogWarn.TOPIC_11);
+    private int countTopicCount(int categoryId, int userId) {
+        //if categoryId=0 or userId=0, explain user no input
+        int topicCount;
+        if (categoryId != 0 && userId != 0) {
+            topicCount = topicDAO.countTopicByCategoryIdByUserId(categoryId, userId);
+        } else if (categoryId != 0) {
+            topicCount = topicDAO.countTopicByCategoryId(categoryId);
+        } else if (userId != 0) {
+            topicCount = topicDAO.countTopicByUserId(userId);
+        } else {
+            topicCount = topicDAO.countTopic();
         }
+
+        return topicCount;
     }
 
-    /**
-     * 确认用户不能为空
-     *
-     * @param user 用户对象
+    /*
+     * ***********************************************
+     * confirm method
+     * ***********************************************
      */
-    private void confirmUserNotNull(UserDO user) {
-        if (user == null) {
-            throwNoUserException();
-        }
-    }
 
     /**
      * 确认不会超过话题数量
@@ -325,191 +415,221 @@ public class TopicServiceImpl implements ITopicService {
      * @param page 跳转指定页数
      */
     private void confirmNoExceedTopicNumber(int limit, int page) {
-        int topicCount = topicDAO.countTopic();
-        int maxPage = topicCount % limit == 0 ? topicCount / limit : topicCount / limit + 1;
+        int allTopicTotals = topicDAO.countTopic();
+        int maxPage = allTopicTotals % limit == 0
+                ? allTopicTotals / limit : allTopicTotals / limit + 1;
 
-        if (limit > topicCount || page > maxPage) {
-            throw new TopicErrorException(ApiMessage.FAIL_GET_TOPIC_LSIT)
+        if (limit > allTopicTotals || page > maxPage) {
+            throw new TopicErrorException(ApiMessage.QUERY_EXCEED_TOPIC_NUMBER)
                     .log(LogWarn.TOPIC_12
-                            + "（话题总数 = " + topicCount
+                            + "（话题总数 = " + allTopicTotals
                             + "，若 limit = " + limit
                             + "，最多跳转至 " + maxPage + " 页）");
         }
     }
 
     /**
-     * 获取话题数量
-     *      - 分类 + 用户名 查询
-     *      - 分类查询
-     *      - 用户名查询
-     *      - (no finish) support the same input category and username
+     * 确认查询话题列表结果不为空
+     *      - 根据条件查询的话题列表，列表长度不为 0
      *
-     * @param category 话题分类
-     * @param username 用户名
-     * @return int 话题数量
+     * @param topicList 话题集合
      */
-    private int countTopicCount(String category, String username) {
-        //mybatis count value default = 0
-        int topicCount;
-        if (category != null && username != null) {
-            //the same input username and category
-            topicCount = 0;
-        } else if (category != null) {
-            topicCount = topicDAO.countTopicByCategory(category);
-        } else if (username != null) {
-            topicCount = topicDAO.countTopicByUserid(this.getTopicAuthorUserDOByName(username).getId());
-        } else {
-            topicCount = topicDAO.countTopic();
+    private void confirmQueryTopicListResultSizeNotZero(List<TopicDO> topicList) {
+        if (topicList.size() == SetConst.ZERO) {
+            throw new TopicErrorException(ApiMessage.NO_QUERY_TOPICS).log(LogWarn.TOPIC_17);
         }
-
-        return topicCount;
     }
 
     /**
-     * 获取 TopicDO
-     *      - 不存在则抛出异常
+     * 确认查询话题总页数不等于 0
+     *      - 根据条件查询的获得的话题总页数，结果不为 0
+     *
+     * @param topicNumber 话题数量
+     */
+    private void confirmQueryTopicListResultSizeNotEqualZero(int topicNumber) {
+        if (topicNumber == SetConst.ZERO) {
+            throw new TopicErrorException(ApiMessage.NO_QUERY_TOPICS).log(LogWarn.TOPIC_18);
+        }
+    }
+
+    /*
+     * ***********************************************
+     * get method
+     * ***********************************************
+     */
+
+    /**
+     * 获取话题，不能为空
+     *      - forum_topic
      *
      * @param topicId 话题id
      * @return TopicDO 话题对象
      */
-    private TopicDO getTopicDO(int topicId) {
-        TopicDO topicDO = topicDAO.getTopicById(topicId);
-        if (topicDO == null) {
-            this.throwNoTopicException(topicId);
+    private TopicDO getTopicNotNull(int topicId) {
+        TopicDO topic = topicDAO.getTopicById(topicId);
+        if (topic == null) {
+            throwNoTopicException(topicId);
         }
-        return topicDO;
+
+        return topic;
     }
 
     /**
-     * 获取话题回复列表
-     *      - 不存在则抛出异常
-     *
-     * @param topicId 话题id
-     * @return List 话题回复列表
-     */
-    private List<TopicReplyDO> getTopicReplyDOList(int topicId) {
-        List<TopicReplyDO> replys = topicReplyDAO.listTopicReplyByTopicId(topicId);
-        if (replys == null) {
-            replys = new ArrayList<>(SetConst.SIZE_TWO);
-        }
-
-        return replys;
-    }
-
-    /**
-     * 获取 TopicReplyDO
-     *      - 不存在则抛出异常
-     *
-     * @param replyId 回复id
-     * @return TopicReplyDO 话题回复对象
-     */
-    private TopicReplyDO getTopicReplyDO(int replyId) {
-        TopicReplyDO topicReplyDO = topicReplyDAO.getTopicReplyById(replyId);
-        if (topicReplyDO == null) {
-            throw new TopicErrorException(ApiMessage.NO_REPLY).log(replyId + LogWarn.TOPIC_11);
-        }
-        return topicReplyDO;
-    }
-
-
-    /**
-     * 获取 TopicContentDO
-     *      - 不存在抛出异常
+     * 获取话题内容，不能为空
+     *      - forum_topic_content
      *
      * @param topicId 话题id
      * @return TopicContentDO 话题内容对象
      */
-    private TopicContentDO getTopicContentDO(int topicId) {
-        TopicContentDO topicContentDO = topicContentDAO.getTopicContentById(topicId);
-        if (topicContentDO == null) {
-            this.throwNoTopicException(topicId);
+    private TopicContentDO getTopicContentNotNull(int topicId) {
+        TopicContentDO topicContent = topicContentDAO.getTopicContentByTopicId(topicId);
+        if (topicContent == null) {
+            throwNoTopicContentException(topicId);
         }
-        return topicContentDO;
+
+        return topicContent;
     }
 
     /**
-     * 获取话题作者用户信息
+     * （id）确认话题分类不为空
+     *      - forum_topic_category
      *
-     * @param userId 用户id
-     * @return UserDO 话题发表人用户对象
+     * @param categoryId 分类Id
+     * @return  TopicCategoryDO 话题分类对象
      */
-    private UserDO getTopicAuthorUserDO(int userId) {
-        return this.getUserNotNull(userId);
+    private TopicCategoryDO getTopicCategoryNotNullById(int categoryId) {
+        TopicCategoryDO category = topicCategoryDAO.getTopicCategoryById(categoryId);
+        if (category == null) {
+            throwNotCategoryExceptionById(categoryId);
+        }
+
+        return category;
     }
 
     /**
-     * 获取 话题回复发表人信息信息
+     * （Nick）确认话题分类不为空
+     *      - forum_topic_category
      *
-     * @param replyAuthorUserId 发表人用户id
-     * @return UserDO 回复发表人用户对象
+     * @param categoryNick 话题昵称（英文）
+     * @return TopicCategoryDO 话题分类对象
      */
-    private UserDO getTopicReplyAuthorUserDO(int replyAuthorUserId) {
-        return this.getUserNotNull(replyAuthorUserId);
-    }
+    private TopicCategoryDO getTopicCategoryNotNullByNick(String categoryNick) {
+        TopicCategoryDO category = topicCategoryDAO.getTopicCategoryByNick(categoryNick);
+        if (category == null) {
+            throwNotCategoryExceptionByNick(categoryNick);
+        }
 
-    /**
-     * 获取用户对象不能为空
-     *
-     * @param userId 用户id
-     * @return UserDO 用户对象
-     */
-    private UserDO getUserNotNull(int userId) {
-        UserDO user = userDAO.getUserById(userId);
-        this.confirmUserNotNull(user);
-
-        return user;
-    }
-
-    /**
-     * 获取话题作者用户信息
-     *
-     * @param username 用户名
-     * @return UserDO 话题发表人用户对象
-     */
-    private UserDO getTopicAuthorUserDOByName(String username) {
-        UserDO user = userDAO.getUserByName(username);
-        this.confirmUserNotNull(user);
-
-        return user;
+        return category;
     }
 
     /**
      * 获取话题列表
-     *      - (no finish )support the same input category and username
+     *      - 话题分类 id + 用户名 id
+     *      - 话题分类 id
+     *      - 用户 id
+     *      - 默认
      *
      * @param limit 每页显示数量
      * @param page 跳转指定页数
-     * @param category 话题分类
-     * @param username 用户名
+     * @param categoryId 话题分类id
+     * @param userId 用户id
      * @return 话题集合列表
      */
-    private List<TopicDO> getTopicList(int limit, int page, String category, String username) {
+    private List<TopicDO> getTopicList(int limit, int page, int categoryId, int userId) {
+        //if categoryId=0 or userId=0, explain user no input
         int startRow = (page - 1) * limit;
-
-        //mybatis default return list is empty object， no equal null
         List<TopicDO> topicList;
-        if (category != null && username != null) {
-            //the same input username and category
-            topicList = new ArrayList<>(SetConst.SIZE_ONE);
-        } else if (category != null) {
-            topicList = topicDAO.listTopicByStartRowByCountByCategory(startRow, limit, category);
-        } else if (username != null) {
-            UserDO user = this.getTopicAuthorUserDOByName(username);
-            topicList = topicDAO.listTopicByStartRowByCountByUserId(startRow, limit, user.getId());
+        if (categoryId != 0 && userId != 0) {
+            topicList
+                    = topicDAO.listTopicDESCByStartRowByCountByCategoryIdByUserId(startRow, limit, categoryId, userId);
+        } else if (categoryId != 0) {
+            topicList = topicDAO.listTopicDESCByStartRowByCountByCategoryId(startRow, limit, categoryId);
+        } else if (userId != 0) {
+            topicList = topicDAO.listTopicDESCByStartRowByCountByUserId(startRow, limit, userId);
         } else {
-            topicList = topicDAO.listTopicByStartRowByCount(startRow, limit);
+            topicList = topicDAO.listTopicDESCByStartRowByCount(startRow, limit);
         }
 
         return topicList;
     }
 
     /**
-     * 获取话题信息 Map
+     * 确认话题回复不为空
+     *      - forum_topic_reply
+     *
+     * @param replyId 话题回复id
+     * @return TopicReplyDO 话题回复对象
+     */
+    private TopicReplyDO getTopicReplyNotNull(int replyId) {
+        TopicReplyDO reply = topicReplyDAO.getTopicReplyById(replyId);
+        if (reply == null) {
+            throw new TopicErrorException(ApiMessage.NO_REPLY).log(replyId + LogWarn.TOPIC_11);
+        }
+
+        return reply;
+    }
+
+    /**
+     * 获取话题回复列表
+     *      - 查询列表返回的是空对象
+     *
+     * @param topicId 话题id
+     * @return List 话题回复列表
+     */
+    private List<TopicReplyDO> getTopicReplyDOList(int topicId) {
+        List<TopicReplyDO> replys = topicReplyDAO.listTopicReplyByTopicId(topicId);
+
+        return replys.size() != 0 ? replys : new ArrayList<>(SetConst.SIZE_TWO);
+    }
+
+    /**
+     * （name）确认用户不能为空
+     *      - forum_user
+     *
+     * @param username 用户名
+     * @return UserDO 用户对象
+     */
+    private UserDO getUserNotNullByName(String username) {
+        UserDO user = userDAO.getUserByName(username);
+        if (user == null) {
+            throwNoUserExceptionByName(username);
+        }
+
+        return user;
+    }
+
+    /**
+     * （id）确认用户不能为空
+     *
+     * @param userId 用户名
+     * @return UserDO 用户对象
+     */
+    private UserDO getUserNotNullById(int userId) {
+        UserDO user = userDAO.getUserById(userId);
+        if (user == null) {
+            throwNoUserExceptionById(userId);
+        }
+
+        return user;
+    }
+
+    /*
+     * ***********************************************
+     * filter information map (use util/MapFilter.java)
+     * ***********************************************
+     */
+
+    /**
+     * 获取话题基本信息 Map
      *
      * @param topic 话题对象
      * @return Map 已处理的话题信息
      */
     private Map<String, Object> getTopicInfoMap(TopicDO topic) {
+        if (topic == null) {
+            return new LinkedHashMap<>(SetConst.SIZE_ONE);
+        }
+
         Map<String, Object> topicInfoMap = JsonUtil.toMapByObject(topic);
         MapFilterUtil.filterTopicInfo(topicInfoMap);
 
@@ -523,23 +643,25 @@ public class TopicServiceImpl implements ITopicService {
      * @return Map 已处理的话题内容信息
      */
     private Map<String, Object> getTopicContentInfoMap(TopicContentDO topicContent) {
+        if (topicContent == null) {
+            return new LinkedHashMap<>(SetConst.SIZE_ONE);
+        }
+
         Map<String, Object> topicContentInfoMap = JsonUtil.toMapByObject(topicContent);
         MapFilterUtil.filterTopicContentInfo(topicContentInfoMap);
 
         return topicContentInfoMap;
     }
 
-    /**
-     * 获取话题回复信息 Map
-     *
-     * @param topicReply 话题回复对象
-     * @return Map 已处理的话题回复信息
-     */
-    private Map<String, Object> getTopicReplyInfoMap(TopicReplyDO topicReply) {
-        Map<String, Object> topicReplyInfoMap = JsonUtil.toMapByObject(topicReply);
-        MapFilterUtil.filterTopicReply(topicReplyInfoMap);
+    private Map<String, Object> getTopicCategoryInfoMap(TopicCategoryDO category) {
+        if (category == null) {
+            return new LinkedHashMap<>(SetConst.SIZE_ONE);
+        }
 
-        return topicReplyInfoMap;
+        Map<String, Object> topicCategoryInfoMap = JsonUtil.toMapByObject(category);
+        MapFilterUtil.filterTopicCategory(topicCategoryInfoMap);
+
+        return topicCategoryInfoMap;
     }
 
     /**
@@ -550,19 +672,43 @@ public class TopicServiceImpl implements ITopicService {
      */
     private Map<String, Object> getTopicUserInfoMap(UserDO topicUser) {
         if (topicUser == null) {
-            LinkedHashMap<String, Object> userInfoMap = new LinkedHashMap<>(SetConst.SIZE_TWO);
-                userInfoMap.put(ParamConst.USERNAME, "");
-                userInfoMap.put(ParamConst.AVATOR, "");
+            //build empty map
+            LinkedHashMap<String, Object> topicUserInfoMap = new LinkedHashMap<>(SetConst.SIZE_TWO);
+                topicUserInfoMap.put(ParamConst.USERNAME, "");
+                topicUserInfoMap.put(ParamConst.AVATOR, "");
 
-            return userInfoMap;
+            return topicUserInfoMap;
         }
 
         //json -> Map, filter topic user information map
-        Map<String, Object> userInfoMap = JsonUtil.toMapByObject(topicUser);
-        MapFilterUtil.filterTopicUserInfo(userInfoMap);
+        Map<String, Object> topicUserInfoMap = JsonUtil.toMapByObject(topicUser);
+        MapFilterUtil.filterTopicUserInfo(topicUserInfoMap);
 
-        return userInfoMap;
+        return topicUserInfoMap;
     }
+
+    /**
+     * 获取话题回复信息 Map
+     *
+     * @param topicReply 话题回复对象
+     * @return Map 已处理的话题回复信息
+     */
+    private Map<String, Object> getTopicReplyInfoMap(TopicReplyDO topicReply) {
+        if (topicReply == null) {
+            return new LinkedHashMap<>(SetConst.SIZE_ONE);
+        }
+
+        Map<String, Object> topicReplyInfoMap = JsonUtil.toMapByObject(topicReply);
+        MapFilterUtil.filterTopicReply(topicReplyInfoMap);
+
+        return topicReplyInfoMap;
+    }
+
+    /*
+     * ***********************************************
+     * throw exception method
+     * ***********************************************
+     */
 
     /**
      * 抛出不存在话题异常
@@ -570,13 +716,63 @@ public class TopicServiceImpl implements ITopicService {
      * @param topicId 话题id
      */
     private void throwNoTopicException(int topicId) {
-        throw new TopicErrorException(ApiMessage.NO_TOPIC).log(topicId + LogWarn.TOPIC_10);
+        throw new TopicErrorException(ApiMessage.NO_TOPIC)
+                .log("topicId=" + topicId + LogWarn.TOPIC_10);
     }
 
     /**
-     * 抛出不存在用户异常
+     * 抛出不存在话题内容异常
+     *
+     * @param topicId 话题id
      */
-    private void throwNoUserException() {
-        throw new AccountErrorException(ApiMessage.NO_USER).log(LogWarn.ACCOUNT_01);
+    private void throwNoTopicContentException(int topicId) {
+        throw new TopicErrorException(ApiMessage.NO_TOPIC)
+                .log("topic content topicId=" + topicId + LogWarn.TOPIC_10);
+    }
+
+    /**
+     * (id)抛出不存在用户异常
+     *
+     * @param userId 用户id
+     */
+    private void throwNoUserExceptionById(int userId) {
+        throw new AccountErrorException(ApiMessage.NO_USER)
+                .log("userId=" + userId + LogWarn.ACCOUNT_01);
+    }
+
+    /**
+     * （username）抛出不存在用户异常
+     *
+     * @param username 用户名
+     */
+    private void throwNoUserExceptionByName(String username) {
+        throw new AccountErrorException(ApiMessage.NO_USER)
+                .log("username=" + username + LogWarn.ACCOUNT_01);
+    }
+
+    /**
+     * （id）抛出不存话题分类异常
+     */
+    private void throwNotCategoryExceptionById(int categoryId) {
+        throw new TopicErrorException(ApiMessage.NO_CATEGORY)
+                .log("nategroyId=" + categoryId + LogWarn.TOPIC_14);
+    }
+
+    /**
+     * （nick）抛出不存话题分类异常
+     */
+    private void throwNotCategoryExceptionByNick(String nick) {
+        throw new TopicErrorException(ApiMessage.NO_CATEGORY)
+                .log("CategoryNick=" + nick + LogWarn.TOPIC_14);
+    }
+
+    /**
+     * 抛出不存在话题回复异常
+     *
+     * @param replyId 回复id
+     */
+    private void throwNoReplyException(int replyId) {
+        throw new TopicErrorException(ApiMessage.NO_REPLY)
+                .log("replyId=" + replyId + LogWarn.TOPIC_11);
     }
 }

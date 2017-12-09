@@ -5,38 +5,72 @@ import java.util.Map;
 
 /**
  * 话题业务接口
+ *      - 增删查改顺序
  *
  * @author Suvan
  */
 public interface ITopicService {
 
     /**
-     * 修改话题内容
+     * 保存话题
      *
-     * @param topicId 话题id
-     * @param newCategory 分类
-     * @param newTitle 新标题
-     * @param newTopicContent 新话题内容
+     * @param userId 用户id
+     * @param categoryNick 话题分类昵称
+     * @param title 话题标题
+     * @param topicContent 话题内容
+     * @return int 新增的话题id
      */
-    void alterTopicContent(int topicId, String newCategory, String newTitle, String newTopicContent);
+    int saveTopic(int userId, String categoryNick, String title, String topicContent);
 
     /**
-     * 修改回复内容
+     * 保存回复
+     *
+     * @param userId 用户id
+     * @param topicId 话题id
+     * @param replyContent 话题内容
+     * @return int 新增的回复id
+     */
+    int saveReply(int userId, int topicId, String replyContent);
+
+    /**
+     * 保存话题分类
+     *
+     * @param categoryNick 话题分类昵称（英文）
+     * @param categoryName 话题分类名称（中文）
+     * @return Map 话题分类Map（包含 id（原 nick，英文），name）
+     */
+    Map<String, Object> saveCategory(String categoryNick, String categoryName);
+
+    /**
+     * 删除话题
+     *
+     * @param topicId 要删除的话题id
+     */
+    void removeTopic(int topicId);
+
+    /**
+     * 删除回复
      *
      * @param replyId 回复id
-     * @param newReplyContent 新回复内容
      */
-    void alterReplyContent(int replyId, String newReplyContent);
+    void removeReply(int replyId);
+
+    /**
+     * 删除话题分类
+     *
+     * @param categoryNick 话题分类昵称（英文）
+     */
+    void removeCategory(String categoryNick);
 
     /**
      * 统计话题总页数
      *
      * @param limit 每页限制多少条
-     * @param category 分类
+     * @param categoryNick 话题分类昵称
      * @param username 用户名
      * @return int 总页数
      */
-    int countTopicTotalPages(int limit, String category, String username);
+    int countTopicTotalPages(int limit, String categoryNick, String username);
 
     /**
      * 获取话题内容页面 Map
@@ -62,51 +96,42 @@ public interface ITopicService {
      *
      * @param limit 每页显示数量
      * @param page 跳转到指定页数
-     * @param category 分类目录
+     * @param categoryNick 话题分类昵称
      * @param username 用户名
      * @return List<Map> 话题列表
      */
-    List<Map<String, Object>> listTopics(int limit, int page, String category, String username);
+    List<Map<String, Object>> listTopics(int limit, int page, String categoryNick, String username);
 
     /**
-     * 获取所有话题分类（去重）
+     * 获取所有话题分类
+     *      - map 包含（id(过滤后)，name）
      *
      * @return List<String> 话题分类列表
      */
-    List<String> listTopicCategory();
+    List<Map<String, Object>> listAllTopicCategorys();
 
     /**
-     * 删除话题
+     * 修改话题内容
      *
-     * @param topicId 要删除的话题id
+     * @param topicId 话题id
+     * @param categoryNick 话题分类昵称
+     * @param newTitle 新标题
+     * @param newTopicContent 新话题内容
      */
-    void removeTopic(int topicId);
+    void alterTopicContent(int topicId, String categoryNick, String newTitle, String newTopicContent);
 
     /**
-     * 删除回复
+     * 修改回复内容
      *
      * @param replyId 回复id
+     * @param newReplyContent 新回复内容
      */
-    void removeReply(int replyId);
+    void alterReplyContent(int replyId, String newReplyContent);
 
     /**
-     * 保存话题
+     * 修改话题回复数（+1）
      *
-     * @param userId 用户id
-     * @param category 话题分类
-     * @param title 话题标题
-     * @param topicContent 话题内容
-     * @return int 新增的话题id
-     */
-    int saveTopic(int userId, String category, String title, String topicContent);
-
-    /**
-     * 保存回复
-     *
-     * @param userId 用户id
      * @param topicId 话题id
-     * @param replyContent 话题内容
-     * @return int 新增的回复id
      */
-    int saveReply(int userId, int topicId, String replyContent);
+    void alterTopicReadAddOne(int topicId);
 }

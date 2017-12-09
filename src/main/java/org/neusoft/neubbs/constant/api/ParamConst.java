@@ -55,6 +55,11 @@ public final class ParamConst {
     public static final String LAST_REPLY_USER = "lastreplyuser";
     public static final String REPLYS = "replys";
 
+    public static final String CATEGORY_ID = "categoryid";
+    public static final String NICK = "nick";
+
+    public static final String CATEGORY_NAME = "categoryName";
+
     /**
      * Reply
      */

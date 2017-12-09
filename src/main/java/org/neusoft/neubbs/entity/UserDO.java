@@ -1,7 +1,5 @@
 package org.neusoft.neubbs.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 import java.util.Date;
 
 /**
@@ -24,7 +22,7 @@ public class UserDO {
     private String position;
 
     private String description;
-    private String image;
+    private String avator;
 
     private String rank;
     private Integer state;
@@ -58,8 +56,8 @@ public class UserDO {
     public String getDescription() {
         return description;
     }
-    public String getImage() {
-        return image;
+    public String getAvator() {
+        return avator;
     }
     public String getRank() {
         return rank;
@@ -67,7 +65,6 @@ public class UserDO {
     public Integer getState() {
         return state;
     }
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
     public Date getCreatetime() {
         return createtime;
     }
@@ -99,8 +96,8 @@ public class UserDO {
     public void setDescription(String description) {
         this.description = description;
     }
-    public void setImage(String image) {
-        this.image = image;
+    public void setAvator(String avator) {
+        this.avator = avator;
     }
     public void setRank(String rank) {
         this.rank = rank;
@@ -123,7 +120,7 @@ public class UserDO {
                 + ", birthday='" + birthday + '\''
                 + ", position='" + position + '\''
                 + ", description='" + description + '\''
-                + ", image='" + image + '\''
+                + ", avator='" + avator + '\''
                 + ", rank='" + rank + '\''
                 + ", state=" + state
                 + ", createtime=" + createtime

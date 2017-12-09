@@ -71,7 +71,14 @@ public final class LogWarn {
     public static final String TOPIC_12 = "page 与 limit 参数有误， 获取范围超过话题数量，";
     public static final String TOPIC_13 = "参数错误，不能同时输入 category 和 username 参数（二选其一）";
 
-    public static final String TOPIC_14 = " 不存在该话题类别";
+    public static final String TOPIC_14 = " 不存在话题分类";
+
+    public static final String TOPIC_15 = " 已经存在话题昵称（英文 id），不要重复插入";
+    public static final String TOPIC_16 = " 已经存在话题名称（中文名），不要重复插入";
+
+    public static final String TOPIC_17 = " 根据筛选条件（limit, page, category, username）"
+            + "，话题数为 0，获取的话题列表长度为 0";
+    public static final String TOPIC_18 = " 根据筛选条件（limit, category, username）, 话题数为 0， 话题总页数为 0";
 
     /******************************Ftp Service*********************************/
     public static final String FTP_01 = "注册用户，ftp 服务器新建 个人目录，抛出 IO 异常";

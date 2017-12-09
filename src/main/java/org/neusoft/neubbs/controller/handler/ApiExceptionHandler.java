@@ -2,7 +2,6 @@ package org.neusoft.neubbs.controller.handler;
 
 import org.apache.log4j.Logger;
 import org.neusoft.neubbs.controller.annotation.ApiException;
-import org.neusoft.neubbs.controller.api.TopicController;
 import org.neusoft.neubbs.controller.exception.IPrintLog;
 import org.neusoft.neubbs.utils.AnnotationUtil;
 import org.neusoft.neubbs.utils.ResponsePrintWriterUtil;
@@ -19,7 +18,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class ApiExceptionHandler implements HandlerExceptionResolver {
 
-    private Logger logger = Logger.getLogger(TopicController.class);
+    private Logger logger = Logger.getRootLogger();
 
     /**
      * 解析异常

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.neusoft.neubbs.dao.ITopicCategoryDAO">
+   <resultMap id="TopicCategoryMap" type="org.neusoft.neubbs.entity.TopicCategoryDO">
+      <id column="ftcg_id" property="id" javaType="Integer" jdbcType="INTEGER" />
+      <result column="ftcg_nick" property="nick" javaType="String" jdbcType="VARCHAR" />
+      <result column="ftcg_name" property="name" javaType="String" jdbcType="VARCHAR" />
+   </resultMap>
+
+   <insert id="saveTopicCategory" parameterType="org.neusoft.neubbs.entity.TopicCategoryDO" useGeneratedKeys="true" keyProperty="ftcg_id">
+      INSERT INTO forum_topic_category (ftcg_nick, ftcg_name)
+      VALUES (#{nick, jdbcType = VARCHAR},
+              #{name, jdbcType = VARCHAR})
+      <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+         SELECT LAST_INSERT_ID() AS ftcg_id
+      </selectKey>
+   </insert>
+
+   <delete id="removeTopicCategoryById" parameterType="java.lang.Integer">
+      DELETE FROM forum_topic_category WHERE ftcg_id = #{param1, jdbcType = INTEGER}
+   </delete>
+
+   <select id="getTopicCategoryById" parameterType="java.lang.Integer" resultMap="TopicCategoryMap">
+      SELECT ftcg_id, ftcg_nick, ftcg_name FROM forum_topic_category
+      WHERE ftcg_id = #{param1, jdbcType = VARCHAR}
+   </select>
+   <select id="getTopicCategoryByNick" parameterType="java.lang.String" resultMap="TopicCategoryMap">
+      SELECT ftcg_id, ftcg_nick, ftcg_name FROM forum_topic_category
+      WHERE ftcg_nick = #{param1, jdbcType = VARCHAR}
+   </select>
+   <select id="getTopicCategoryByName" parameterType="java.lang.String" resultMap="TopicCategoryMap">
+      SELECT ftcg_id, ftcg_nick, ftcg_name FROM forum_topic_category
+      WHERE ftcg_name = #{param1, jdbcType = VARCHAR}
+   </select>
+
+   <select id="listAllTopicCategory" parameterType="java.lang.Integer" resultMap="TopicCategoryMap">
+       SELECT ftcg_id, ftcg_nick, ftcg_name FROM forum_topic_category
+   </select>
+</mapper>
+

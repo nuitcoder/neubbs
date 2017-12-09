@@ -6,7 +6,9 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 /**
- * forum_topic_reply 数据访问对象（TopicRelayMapper.xml 映射接口）
+ * 话题回复数据访问接口
+ *      - 针对 forum_topic_reply
+ *      - resources/mapping/TopicReplyMapper.xml 配置 SQL
  *
  * @author Suvan
  */
@@ -30,22 +32,23 @@ public interface ITopicReplyDAO {
     int removeTopicReplyById(int replyId);
 
     /**
-     * 删除话题回复（指定话题id，所有回复）
+     * 测试删除指定 topicId 所有回复
      *
      * @param topicId 话题id
      * @return int 删除行数
      */
-    int removeListTopicReplyByTopicId(int topicId);
+    int removeTopicAllReplyByTopicId(int topicId);
 
     /**
-     * 获取话题回复总数
+     * 获取最大的话题回复 id
+     *      - 最新插入的回复 id
      *
-     * @return int 回复总数
+     * @return int 话题回复id
      */
-    int getTopicReplyMaxId();
+    int getMaxTopicReplyId();
 
     /**
-     * 查询话题回复
+     * 获取话题回复
      *
      * @param replyId 回复id
      * @return TopicReplyDO 话题回复对象
@@ -53,10 +56,10 @@ public interface ITopicReplyDAO {
     TopicReplyDO getTopicReplyById(int replyId);
 
     /**
-     * 获取话题回复列表（指定话题id）
+     * 获取话题回复列表（指定话题 id）
      *
      * @param topicId 话题id
-     * @return List<TopicReplyDO>
+     * @return List 话题回复列表
      */
     List<TopicReplyDO> listTopicReplyByTopicId(int topicId);
 
@@ -72,7 +75,7 @@ public interface ITopicReplyDAO {
     /**
      * 更新点赞数（自动 +1）
      *
-     * @param id 回复id
+     * @param replyId 回复id
      * @return int 更新行数
      */
     int updateAgreeAddOneById(int replyId);

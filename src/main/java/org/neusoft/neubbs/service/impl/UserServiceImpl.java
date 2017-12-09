@@ -41,79 +41,49 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public void alterUserPasswordByName(String username, String newPassword) {
-        Map<String, String> paramsMap = new LinkedHashMap<>(SetConst.SIZE_TWO);
-        paramsMap.put(ParamConst.USERNAME, username);
-        paramsMap.put(ParamConst.PASSWORD, newPassword);
-        RequestParamCheckUtil.check(paramsMap);
+    public UserDO registerUser(String username, String password, String email) {
+        //judge username and email params, whether occupied
+        this.confirmUserNotOccupiedByUsername(username);
+        this.confirmUserNotOccupiedByEmail(email);
 
-        //secret new password, update user passowrd
-        if (userDAO.updateUserPasswordByName(username, SecretUtil.encryptUserPassword(newPassword)) == 0) {
+        //build user
+        UserDO user = new UserDO();
+        user.setName(username);
+        user.setEmail(email);
+        user.setPassword(SecretUtil.encryptUserPassword(password));
+
+        //register user to database
+        if (userDAO.saveUser(user) == 0) {
+            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.SERVICE_01);
+        }
+
+        //update data user image filed, set default avator image
+        if (userDAO.updateUserAvatorByName(user.getName(), ParamConst.USER_DEFAULT_IMAGE) == 0) {
             throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.SERVICE_02);
         }
+
+        //again select user information by new register user id
+        return this.getUserInfoById(user.getId());
     }
 
     @Override
-    public void alterUserPasswordByEmail(String email, String newPassword) {
-        Map<String, String> paramsMap = new LinkedHashMap<>(SetConst.SIZE_TWO);
-        paramsMap.put(ParamConst.EMAIL, email);
-        paramsMap.put(ParamConst.PASSWORD, newPassword);
-        RequestParamCheckUtil.check(paramsMap);
-
-        //get username by email
-        String username = this.getUserInfoByEmail(email).getName();
-
-        //secret new password, update user passowrd
-        if (userDAO.updateUserPasswordByName(username, SecretUtil.encryptUserPassword(newPassword)) == 0) {
-            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.SERVICE_02);
-        }
-    }
-
-    @Override
-    public void alterUserEmail(String username, String newEmail) {
-        Map<String, String> paramsMap = new LinkedHashMap<>(SetConst.SIZE_TWO);
-        paramsMap.put(ParamConst.USERNAME, username);
-        paramsMap.put(ParamConst.EMAIL, newEmail);
-        RequestParamCheckUtil.check(paramsMap);
-
-        //judge new email, whether occupied
-        this.confirmUserNotOccupiedByEmail(newEmail);
-
-        if (userDAO.updateUserEmailByName(username, newEmail) == 0) {
-            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.SERVICE_02);
-        }
-    }
-
-    @Override
-    public void alterUserAvatorImage(String username, String newImageName) {
-        if (userDAO.updateUserImageByName(username, newImageName) == 0) {
-            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.SERVICE_02);
-        }
-    }
-
-    @Override
-    public void alterUserActivateStateByToken(String token) {
-        //解析 token
-        String plainText = SecretUtil.decryptBase64(token);
-        String[] array = plainText.split("-");
-        if (array.length != SetConst.LENGTH_TWO) {
-            throw new TokenErrorException(ApiMessage.IVALID_TOKEN).log(token + LogWarn.ACCOUNT_15);
+    public UserDO loginAuthenticate(String username, String password) {
+        //check username, get user information
+        UserDO user;
+        try {
+            user = this.getUserInfoByName(username);
+        } catch (AccountErrorException ae) {
+            throw new AccountErrorException(ApiMessage.USERNAME_OR_PASSWORD_INCORRECT).log(ae.getLogMessage());
         }
 
-        String email = array[0];
-        if (!PatternUtil.matchEmail(email)) {
-            throw new TokenErrorException(ApiMessage.IVALID_TOKEN).log(token + LogWarn.ACCOUNT_15);
-        }
-        String expireTime = array[1];
-        if (StringUtil.isExpire(expireTime)) {
-            throw new TokenErrorException(ApiMessage.LINK_INVALID).log(token + LogWarn.ACCOUNT_05);
+        //judge user passowrd whether correct
+        String cipherText = SecretUtil.encryptUserPassword(password);
+        if (!cipherText.equals(user.getPassword())) {
+            throw new AccountErrorException(ApiMessage.USERNAME_OR_PASSWORD_INCORRECT)
+                    .log(username + LogWarn.ACCOUNT_09);
         }
 
-        this.confirmUserActivatedByEmail(email);
-
-        if (userDAO.updateUserStateForActivationByEmail(email) == 0) {
-            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.SERVICE_02);
-        }
+        return user;
     }
 
     @Override
@@ -177,11 +147,15 @@ public class UserServiceImpl implements IUserService {
     @Override
     public Map<String, Object> getUserInfoMapByUser(UserDO user) {
         if (user == null) {
-            return new LinkedHashMap<>();
+            return new LinkedHashMap<>(SetConst.SIZE_ONE);
         }
 
         Map<String, Object> userInfoMap = JsonUtil.toMapByObject(user);
         MapFilterUtil.filterUserInfo(userInfoMap);
+
+        //alter state type: int -> boolean
+        Integer stateInt = (Integer) userInfoMap.get(ParamConst.STATE);
+        userInfoMap.put(ParamConst.STATE, this.isUserActivatedByState(stateInt));
 
         return userInfoMap;
     }
@@ -209,50 +183,72 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public UserDO loginAuthenticate(String username, String password) {
-        //check username, get user information
-        UserDO user;
-        try {
-            user = this.getUserInfoByName(username);
-        } catch (AccountErrorException ae) {
-            throw new AccountErrorException(ApiMessage.USERNAME_OR_PASSWORD_INCORRECT).log(ae.getLogMessage());
-        }
+    public void alterUserPasswordByName(String username, String newPassword) {
+        Map<String, String> paramsMap = new LinkedHashMap<>(SetConst.SIZE_TWO);
+        paramsMap.put(ParamConst.USERNAME, username);
+        paramsMap.put(ParamConst.PASSWORD, newPassword);
+        RequestParamCheckUtil.check(paramsMap);
 
-        //judge user passowrd whether correct
-        String cipherText = SecretUtil.encryptUserPassword(password);
-        if (!cipherText.equals(user.getPassword())) {
-            throw new AccountErrorException(ApiMessage.USERNAME_OR_PASSWORD_INCORRECT)
-                    .log(username + LogWarn.ACCOUNT_09);
+        //secret new password, update user passowrd
+        if (userDAO.updateUserPasswordByName(username, SecretUtil.encryptUserPassword(newPassword)) == 0) {
+            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.SERVICE_02);
         }
-
-        return user;
     }
 
     @Override
-    public UserDO registerUser(String username, String password, String email) {
-        //judge username and email params, whether occupied
-        this.confirmUserNotOccupiedByUsername(username);
-        this.confirmUserNotOccupiedByEmail(email);
+    public void alterUserPasswordByEmail(String email, String newPassword) {
+        //get username by email
+        String username = this.getUserInfoByEmail(email).getName();
 
-        //build user
-        UserDO user = new UserDO();
-            user.setName(username);
-            user.setEmail(email);
-            user.setPassword(SecretUtil.encryptUserPassword(password));
-
-        //register user to database
-        if (userDAO.saveUser(user) == 0) {
-            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.SERVICE_01);
-        }
-
-        //update data user image filed, set default avator image
-        if (userDAO.updateUserImageByName(user.getName(), ParamConst.USER_DEFAULT_IMAGE) == 0) {
+        //secret new password, update user passowrd
+        if (userDAO.updateUserPasswordByName(username, SecretUtil.encryptUserPassword(newPassword)) == 0) {
             throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.SERVICE_02);
         }
-
-        //again select user information by new register user id
-        return this.getUserInfoById(user.getId());
     }
+
+    @Override
+    public void alterUserEmail(String username, String newEmail) {
+        //judge new email, whether occupied
+        this.getUserInfoByName(username);
+        this.confirmUserNotOccupiedByEmail(newEmail);
+
+        if (userDAO.updateUserEmailByName(username, newEmail) == 0) {
+            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.SERVICE_02);
+        }
+    }
+
+    @Override
+    public void alterUserAvatorImage(String username, String newImageName) {
+        if (userDAO.updateUserAvatorByName(username, newImageName) == 0) {
+            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.SERVICE_02);
+        }
+    }
+
+    @Override
+    public void alterUserActivateStateByToken(String token) {
+        //解析 token
+        String plainText = SecretUtil.decryptBase64(token);
+        String[] array = plainText.split("-");
+        if (array.length != SetConst.LENGTH_TWO) {
+            throw new TokenErrorException(ApiMessage.IVALID_TOKEN).log(token + LogWarn.ACCOUNT_15);
+        }
+
+        String email = array[0];
+        if (!PatternUtil.matchEmail(email)) {
+            throw new TokenErrorException(ApiMessage.IVALID_TOKEN).log(token + LogWarn.ACCOUNT_15);
+        }
+        String expireTime = array[1];
+        if (StringUtil.isExpire(expireTime)) {
+            throw new TokenErrorException(ApiMessage.LINK_INVALID).log(token + LogWarn.ACCOUNT_05);
+        }
+
+        this.confirmUserActivatedByEmail(email);
+
+        if (userDAO.updateUserStateToActivateByEmail(email) == 0) {
+            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.SERVICE_02);
+        }
+    }
+
 
     /*
      * ***********************************************
@@ -260,6 +256,39 @@ public class UserServiceImpl implements IUserService {
      * ***********************************************
      */
 
+     /*
+     * ***********************************************
+     * confirm method
+     * ***********************************************
+     */
+
+    /**
+     * （用户名）确认用户未被占用
+     *
+     * @param username 用户名
+     */
+    private void confirmUserNotOccupiedByUsername(String username) {
+        if (userDAO.getUserByName(username) != null) {
+            throw new AccountErrorException(ApiMessage.USERNAME_REGISTERED).log(username + LogWarn.ACCOUNT_14);
+        }
+    }
+
+    /**
+     * （邮箱）确认用户未被占用
+     *
+     * @param email 用户邮箱
+     */
+    private void confirmUserNotOccupiedByEmail(String email) {
+        if (userDAO.getUserByEmail(email) != null) {
+            throw new AccountErrorException(ApiMessage.EMAIL_REGISTERED).log(email + LogWarn.ACCOUNT_08);
+        }
+    }
+
+    /*
+     * ***********************************************
+     * is method
+     * ***********************************************
+     */
     /**
      * 是否为邮件类型
      *
@@ -300,32 +329,15 @@ public class UserServiceImpl implements IUserService {
         return user == null;
     }
 
+    /*
+     * ***********************************************
+     * throw exception method
+     * ***********************************************
+     */
     /**
      * 抛出不存用户异常
      */
     private void throwNoUserException() {
-            throw new AccountErrorException(ApiMessage.NO_USER).log(LogWarn.ACCOUNT_01);
-    }
-
-    /**
-     * （用户名）确认用户未被占用
-     *
-     * @param username 用户名
-     */
-    private void confirmUserNotOccupiedByUsername(String username) {
-        if (userDAO.getUserByName(username) != null) {
-            throw new AccountErrorException(ApiMessage.USERNAME_REGISTERED).log(username + LogWarn.ACCOUNT_14);
-        }
-    }
-
-    /**
-     * （邮箱）确认用户未被占用
-     *
-     * @param email 用户邮箱
-     */
-    private void confirmUserNotOccupiedByEmail(String email) {
-        if (userDAO.getUserByEmail(email) != null) {
-            throw new AccountErrorException(ApiMessage.EMAIL_REGISTERED).log(email + LogWarn.ACCOUNT_08);
-        }
+        throw new AccountErrorException(ApiMessage.NO_USER).log(LogWarn.ACCOUNT_01);
     }
 }

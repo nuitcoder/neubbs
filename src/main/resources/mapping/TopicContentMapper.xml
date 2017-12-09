@@ -5,30 +5,24 @@
       <id column="ftc_id" property="id" javaType="Integer" jdbcType="INTEGER" />
       <result column="ft_id" property="topicid" javaType="Integer" jdbcType="INTEGER" />
       <result column="ftc_content" property="content" javaType="String" jdbcType="VARCHAR" />
-      <result column="ftc_read" property="read" javaType="String" jdbcType="VARCHAR" />
-      <result column="ftc_agree" property="agree" javaType="String" jdbcType="VARCHAR" />
+      <result column="ftc_read" property="read" javaType="Integer" jdbcType="INTEGER" />
+      <result column="ftc_like" property="like" javaType="Integer" jdbcType="INTEGER" />
    </resultMap>
 
    
-   <insert id="saveTopicContent" parameterType="org.neusoft.neubbs.entity.TopicContentDO" useGeneratedKeys="true" keyProperty="ftc_id">
+   <insert id="saveTopicContent" parameterType="org.neusoft.neubbs.entity.TopicContentDO">
       INSERT INTO forum_topic_content (ft_id, ftc_content)
-      VALUES (#{topicid, jdbcType = INTEGER},
-              #{content, jdbcType = VARCHAR})
-      <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
-         SELECT LAST_INSERT_ID() AS ftc_id
-      </selectKey>
+      VALUES (#{topicid, jdbcType = INTEGER}, #{content, jdbcType = VARCHAR})
    </insert>
 
-   <delete id="removeTopicContentById" parameterType="java.lang.Integer">
-      DELETE FROM forum_topic_content WHERE ft_id = #{id, jdbcType = INTEGER}
+   <delete id="removeTopicContentByTopicId" parameterType="java.lang.Integer">
+      DELETE FROM forum_topic_content WHERE ft_id = #{param1, jdbcType = INTEGER}
    </delete>
 
-   <select id="getTopicContentMaxId" resultType="java.lang.Integer">
-      SELECT MAX(ftc_id) FROM forum_topic_content;
-   </select>
-   <select id="getTopicContentById" parameterType="java.lang.Integer" resultMap="TopicContentMap">
-      SELECT ftc_id, ft_id, ftc_content, ftc_read, ftc_agree
-      FROM forum_topic_content WHERE ft_id = #{id, jdbcType = INTEGER}
+
+   <select id="getTopicContentByTopicId" parameterType="java.lang.Integer" resultMap="TopicContentMap">
+      SELECT ftc_id, ft_id, ftc_content, ftc_read, ftc_like
+      FROM forum_topic_content WHERE ft_id = #{param1, jdbcType = INTEGER}
    </select>
 
    <update id="updateContentByTopicId">
@@ -39,12 +33,12 @@
       UPDATE forum_topic_content SET ftc_read = ftc_read + 1
       WHERE ft_id = #{param1, jdbcType =INTEGER}
    </update>
-   <update id="updateAgreeAddOneByTopicId" parameterType="java.lang.Integer">
-      UPDATE forum_topic_content SET ftc_agree = ftc_agree + 1
+   <update id="updateLikeAddOneByTopicId" parameterType="java.lang.Integer">
+      UPDATE forum_topic_content SET ftc_like = ftc_like + 1
       WHERE ft_id = #{param1, jdbcType =INTEGER}
    </update>
-   <update id="updateAgreeCutOneByTopicId" parameterType="java.lang.Integer">
-      UPDATE forum_topic_content SET ftc_agree = ftc_agree - 1
+   <update id="updateLikeCutOneByTopicId" parameterType="java.lang.Integer">
+      UPDATE forum_topic_content SET ftc_like = ftc_like - 1
       WHERE ft_id = #{param1, jdbcType =INTEGER}
    </update>
 </mapper>

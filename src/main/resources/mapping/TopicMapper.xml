@@ -4,9 +4,9 @@
    <resultMap id="TopicMap" type="org.neusoft.neubbs.entity.TopicDO">
       <id column="ft_id" property="id" javaType="Integer" jdbcType="INTEGER" />
       <result column="fu_id" property="userid" javaType="Integer" jdbcType="INTEGER" />
-      <result column="ft_category" property="category" javaType="String" jdbcType="VARCHAR" />
+      <result column="ftcg_id" property="categoryid" javaType="Integer" jdbcType="INTEGER" />
       <result column="ft_title" property="title" javaType="String" jdbcType="VARCHAR" />
-      <result column="ft_comment" property="comment" javaType="String" jdbcType="VARCHAR" />
+      <result column="ft_replies" property="replies" javaType="Integer" jdbcType="INTEGER" />
       <result column="ft_lastreplyuserid" property="lastreplyuserid" javaType="Integer" jdbcType="INTEGER" />
       <result column="ft_lastreplytime" property="lastreplytime" javaType="java.util.Date" jdbcType="TIMESTAMP" />
       <result column="ft_createtime" property="createtime" javaType="java.util.Date" jdbcType="TIMESTAMP" />
@@ -14,9 +14,9 @@
 
    
    <insert id="saveTopic" parameterType="org.neusoft.neubbs.entity.TopicDO" useGeneratedKeys="true" keyProperty="ft_id">
-      INSERT INTO forum_topic (fu_id, ft_category, ft_title)
+      INSERT INTO forum_topic (fu_id, ftcg_id, ft_title)
       VALUES (#{userid, jdbcType = INTEGER},
-              #{category, jdbcType = VARCHAR},
+              #{categoryid, jdbcType = INTEGER},
               #{title, jdbcType = VARCHAR})
       <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
          SELECT LAST_INSERT_ID() AS ft_id
@@ -24,69 +24,76 @@
    </insert>
 
    <delete id="removeTopicById" parameterType="java.lang.Integer">
-      DELETE FROM forum_topic WHERE ft_id = #{id, jdbcType = INTEGER}
+      DELETE FROM forum_topic WHERE ft_id = #{param1, jdbcType = INTEGER}
    </delete>
 
    <select id="countTopic" resultType="java.lang.Integer">
       SELECT COUNT(ft_id) FROM forum_topic;
    </select>
-   <select id="countTopicByCategory" resultType="java.lang.Integer">
-      SELECT COUNT(ft_id) FROM forum_topic WHERE ft_category = #{category, jdbcType = VARCHAR}
+   <select id="countTopicByCategoryId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+      SELECT COUNT(ft_id) FROM forum_topic WHERE ftcg_id = #{param1, jdbcType = INTEGER}
    </select>
-   <select id="countTopicByUserid" resultType="java.lang.Integer">
-      SELECT COUNT(ft_id) FROM forum_topic WHERE fu_id = #{userId, jdbcType = INTEGER}
+   <select id="countTopicByUserId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+      SELECT COUNT(ft_id) FROM forum_topic WHERE fu_id = #{param1, jdbcType = INTEGER}
+   </select>
+   <select id="countTopicByCategoryIdByUserId" resultType="java.lang.Integer">
+      SELECT COUNT(ft_id) FROM forum_topic
+      WHERE ftcg_id = #{param1, jdbcType = INTEGER} AND fu_id = #{param2, jdbcType = INTEGER}
    </select>
 
-   <select id="getTopicMaxId" resultType="java.lang.Integer">
+   <select id="getMaxTopicId" resultType="java.lang.Integer">
       SELECT MAX(ft_id) FROM forum_topic;
    </select>
    <select id="getTopicById" parameterType="java.lang.Integer" resultMap="TopicMap">
-      SELECT ft_id, fu_id, ft_category, ft_title, ft_comment,ft_lastreplyuserid, ft_lastreplytime, ft_createtime
+      SELECT ft_id, fu_id, ftcg_id, ft_title, ft_replies, ft_lastreplyuserid, ft_lastreplytime, ft_createtime
       FROM forum_topic WHERE ft_id = #{id, jdbcType = INTEGER}
    </select>
-   <select id="listTopicCategory" resultType="String">
-      SELECT DISTINCT(ft_category) FROM forum_topic;
-   </select>
+
    <select id="listTopicDESCByCount"  parameterType="java.lang.Integer" resultMap="TopicMap">
-      SELECT ft_id, fu_id, ft_category, ft_title, ft_comment,ft_lastreplyuserid, ft_lastreplytime, ft_createtime
+      SELECT ft_id, fu_id, ftcg_id, ft_title, ft_replies, ft_lastreplyuserid, ft_lastreplytime, ft_createtime
       FROM forum_topic ORDER BY ft_createtime DESC LIMIT #{param1, jdbcType = INTEGER};
    </select>
-   <select id="listTopicByStartRowByCount" resultMap="TopicMap">
-      SELECT ft_id, fu_id, ft_category, ft_title, ft_comment,ft_lastreplyuserid, ft_lastreplytime, ft_createtime
-      FROM forum_topic LIMIT #{param1, jdbcType = INTEGER}, #{param2, jdbcType = INTEGER}
+   <select id="listTopicDESCByStartRowByCount" resultMap="TopicMap">
+      SELECT ft_id, fu_id, ftcg_id, ft_title, ft_replies, ft_lastreplyuserid, ft_lastreplytime, ft_createtime
+      FROM forum_topic ORDER BY ft_createtime DESC LIMIT #{param1, jdbcType = INTEGER}, #{param2, jdbcType = INTEGER}
    </select>
-   <select id="listTopicByStartRowByCountByCategory" resultMap="TopicMap">
-      SELECT ft_id, fu_id, ft_category, ft_title, ft_comment,ft_lastreplyuserid, ft_lastreplytime, ft_createtime
-      FROM forum_topic WHERE ft_category = #{param3, jdbcType = VARCHAR}
-      LIMIT #{param1, jdbcType = INTEGER}, #{param2, jdbcType = INTEGER}
+   <select id="listTopicDESCByStartRowByCountByCategoryId" resultMap="TopicMap">
+      SELECT ft_id, fu_id, ftcg_id, ft_title, ft_replies, ft_lastreplyuserid, ft_lastreplytime, ft_createtime
+      FROM forum_topic  WHERE ftcg_id = #{param3, jdbcType = INTEGER}
+      ORDER BY ft_createtime DESC LIMIT #{param1, jdbcType = INTEGER}, #{param2, jdbcType = INTEGER}
    </select>
-   <select id="listTopicByStartRowByCountByUserId" resultMap="TopicMap">
-      SELECT ft_id, fu_id, ft_category, ft_title, ft_comment,ft_lastreplyuserid, ft_lastreplytime, ft_createtime
+   <select id="listTopicDESCByStartRowByCountByUserId" resultMap="TopicMap">
+      SELECT ft_id, fu_id, ftcg_id, ft_title, ft_replies, ft_lastreplyuserid, ft_lastreplytime, ft_createtime
       FROM forum_topic WHERE fu_id = #{param3, jdbcType = INTEGER}
-      LIMIT #{param1, jdbcType = INTEGER}, #{param2, jdbcType = INTEGER}
+      ORDER BY ft_createtime DESC LIMIT #{param1, jdbcType = INTEGER}, #{param2, jdbcType = INTEGER}
+   </select>
+   <select id="listTopicDESCByStartRowByCountByCategoryIdByUserId" resultMap="TopicMap">
+      SELECT ft_id, fu_id, ftcg_id, ft_title, ft_replies, ft_lastreplyuserid, ft_lastreplytime, ft_createtime
+      FROM forum_topic WHERE ftcg_id = #{param3, jdbcType = INTEGER} AND fu_id = #{param4, jdbcType = INTEGER}
+      ORDER BY ft_createtime DESC LIMIT #{param1, jdbcType = INTEGER}, #{param2, jdbcType = INTEGER}
    </select>
 
    <update id="updateCategoryById">
-      UPDATE forum_topic SET ft_category = #{param2, jdbcType = VARCHAR}
+      UPDATE forum_topic SET ftcg_id = #{param2, jdbcType = INTEGER}
       WHERE ft_id = #{param1, jdbcType = INTEGER}
    </update>
    <update id="updateTitleById">
       UPDATE forum_topic SET ft_title = #{param2, jdbcType = VARCHAR}
       WHERE ft_id = #{param1, jdbcType = INTEGER}
    </update>
-   <update id="updateCommentAddOneById" parameterType="java.lang.Integer">
-      UPDATE forum_topic SET ft_comment = ft_comment + 1
-      WHERE ft_id = #{id, jdbcType = INTEGER}
+   <update id="updateRepliesAddOneById" parameterType="java.lang.Integer">
+      UPDATE forum_topic SET ft_replies = ft_replies + 1
+      WHERE ft_id = #{param1, jdbcType = INTEGER}
    </update>
-   <update id="updateCommentCutOneById" parameterType="java.lang.Integer">
-      UPDATE forum_topic SET ft_comment = ft_comment - 1
-      WHERE ft_id = #{id, jdbcType = INTEGER}
+   <update id="updateRepliesCutOneById" parameterType="java.lang.Integer">
+      UPDATE forum_topic SET ft_replies = ft_replies - 1
+      WHERE ft_id = #{param1, jdbcType = INTEGER}
    </update>
-   <update id="updateLastreplyuseridById">
+   <update id="updateLastReplyUserIdById">
       UPDATE forum_topic SET ft_lastreplyuserid = #{param2, jdbcType = INTEGER}
       WHERE ft_id = #{param1, jdbcType = INTEGER}
    </update>
-   <update id="updateLastreplytimeById">
+   <update id="updateLastReplyTimeById">
       UPDATE forum_topic SET ft_lastreplytime = #{param2, jdbcType = TIMESTAMP}
       WHERE ft_id = #{param1, jdbcType =INTEGER}
    </update>

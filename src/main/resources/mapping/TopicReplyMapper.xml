@@ -6,8 +6,8 @@
       <result column="fu_id" property="userid" javaType="Integer" jdbcType="INTEGER" />
       <result column="ft_id" property="topicid" javaType="Integer" jdbcType="INTEGER" />
       <result column="ftr_content" property="content" javaType="String" jdbcType="VARCHAR" />
-      <result column="ftr_agree" property="agree" javaType="String" jdbcType="VARCHAR" />
-      <result column="ftr_oppose" property="oppose" javaType="String" jdbcType="VARCHAR" />
+      <result column="ftr_agree" property="agree" javaType="Integer" jdbcType="INTEGER" />
+      <result column="ftr_oppose" property="oppose" javaType="Integer" jdbcType="INTEGER" />
       <result column="ftr_createtime" property="createtime" javaType="java.util.Date" jdbcType="TIMESTAMP" />
    </resultMap>
 
@@ -23,18 +23,18 @@
    </insert>
 
    <delete id="removeTopicReplyById" parameterType="java.lang.Integer">
-      DELETE FROM forum_topic_reply WHERE ftr_id = #{id, jdbcType = INTEGER}
+      DELETE FROM forum_topic_reply WHERE ftr_id = #{param1, jdbcType = INTEGER}
    </delete>
-   <delete id="removeListTopicReplyByTopicId" parameterType="java.lang.Integer">
-      DELETE FROM forum_topic_reply WHERE ft_id = #{ft_id, jdbcType = INTEGER}
+   <delete id="removeTopicAllReplyByTopicId" parameterType="java.lang.Integer">
+      DELETE FROM forum_topic_reply WHERE ft_id = #{param1, jdbcType = INTEGER}
    </delete>
 
-   <select id="getTopicReplyMaxId" resultType="java.lang.Integer">
+   <select id="getMaxTopicReplyId" resultType="java.lang.Integer">
       SELECT MAX(ftr_id) FROM forum_topic_reply;
    </select>
    <select id="getTopicReplyById" parameterType="java.lang.Integer" resultMap="TopicReplyMap">
       SELECT ftr_id, fu_id, ft_id, ftr_content, ftr_agree, ftr_oppose, ftr_createtime
-      FROM forum_topic_reply WHERE ftr_id = #{id, jdbcType = INTEGER}
+      FROM forum_topic_reply WHERE ftr_id = #{param1, jdbcType = INTEGER}
    </select>
    <select id="listTopicReplyByTopicId" parameterType="java.lang.Integer" resultMap="TopicReplyMap">
       SELECT ftr_id, fu_id, ft_id, ftr_content, ftr_agree, ftr_oppose, ftr_createtime

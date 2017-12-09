@@ -10,8 +10,9 @@ public class TopicContentDO {
     private Integer topicid;
 
     private String content;
-    private String read;
-    private String agree;
+
+    private Integer read;
+    private Integer like;
 
     /**
      * Getter
@@ -25,13 +26,12 @@ public class TopicContentDO {
     public String getContent() {
         return content;
     }
-    public String getRead() {
+    public Integer getRead() {
         return read;
     }
-    public String getAgree() {
-        return agree;
+    public Integer getLike() {
+        return like;
     }
-
 
     /**
      * Setter
@@ -45,11 +45,11 @@ public class TopicContentDO {
     public void setContent(String content) {
         this.content = content;
     }
-    public void setRead(String read) {
+    public void setRead(Integer read) {
         this.read = read;
     }
-    public void setAgree(String agree) {
-        this.agree = agree;
+    public void setLike(Integer like) {
+        this.like = like;
     }
 
     @Override
@@ -59,7 +59,7 @@ public class TopicContentDO {
                 + ", topicid=" + topicid
                 + ", content='" + content + '\''
                 + ", read='" + read + '\''
-                + ", agree='" + agree + '\''
+                + ", like='" + like + '\''
                 + '}';
     }
 }

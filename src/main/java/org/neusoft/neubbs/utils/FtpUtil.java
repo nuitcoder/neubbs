@@ -228,7 +228,7 @@ public final class FtpUtil {
         String path = StringUtil.completeBeforeAfterSprit(serverDirectoryPath);
 
         FTPFile[] files = ftpClient.listFiles(path);
-        if (files != null && files.length >= 0) {
+        if (files != null) {
             for (FTPFile file: files) {
                 if (file.isDirectory()) {
                     //递归删除目录所有文件

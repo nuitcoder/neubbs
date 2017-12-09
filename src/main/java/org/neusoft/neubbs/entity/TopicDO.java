@@ -8,13 +8,13 @@ import java.util.Date;
  * @author Suvan
  */
 public class TopicDO {
+
     private Integer id;
     private Integer userid;
+    private Integer categoryid;
 
-    private String category;
     private String title;
-    private String comment;
-
+    private Integer replies;
     private Integer lastreplyuserid;
     private Date lastreplytime;
     private Date createtime;
@@ -28,14 +28,14 @@ public class TopicDO {
     public Integer getUserid() {
         return userid;
     }
-    public String getCategory() {
-        return category;
+    public Integer getCategoryid() {
+        return categoryid;
     }
     public String getTitle() {
         return title;
     }
-    public String getComment() {
-        return comment;
+    public Integer getReplies() {
+        return replies;
     }
     public Integer getLastreplyuserid() {
         return lastreplyuserid;
@@ -56,14 +56,14 @@ public class TopicDO {
     public void setUserid(Integer userid) {
         this.userid = userid;
     }
-    public void setCategory(String category) {
-        this.category = category;
+    public void setCategoryid(Integer categoryid) {
+        this.categoryid = categoryid;
     }
     public void setTitle(String title) {
         this.title = title;
     }
-    public void setComment(String comment) {
-        this.comment = comment;
+    public void setReplies(Integer replies) {
+        this.replies = replies;
     }
     public void setLastreplyuserid(Integer lastreplyuserid) {
         this.lastreplyuserid = lastreplyuserid;
@@ -80,9 +80,9 @@ public class TopicDO {
         return "TopicDO{"
                 + "id=" + id
                 + ", userid=" + userid
-                + ", category='" + category + '\''
+                + ", categoryid='" + categoryid + '\''
                 + ", title='" + title + '\''
-                + ", comment='" + comment + '\''
+                + ", replies='" + replies + '\''
                 + ", lastreplyuserid=" + lastreplyuserid
                 + ", lastreplytime=" + lastreplytime
                 + ", createtime=" + createtime

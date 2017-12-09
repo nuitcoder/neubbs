@@ -10,7 +10,7 @@
         <result column="fu_birthday" property="birthday" javaType="String" jdbcType="VARCHAR" />
         <result column="fu_position" property="position" javaType="String" jdbcType="VARCHAR" />
         <result column="fu_description" property="description" javaType="String" jdbcType="VARCHAR" />
-        <result column="fu_image" property="image" javaType="String" jdbcType="VARCHAR" />
+        <result column="fu_avator" property="avator" javaType="String" jdbcType="VARCHAR" />
         <result column="fu_rank" property="rank" javaType="String" jdbcType="VARCHAR" />
         <result column="fu_state" property="state" javaType="Integer" jdbcType="INTEGER" />
 
@@ -24,44 +24,29 @@
         VALUES (#{name, jdbcType = VARCHAR},
                 #{password, jdbcType = VARCHAR},
                 #{email, jdbcType = VARCHAR})
-        <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER"><!-- id from UserDO , After Do-->
+        <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER"><!-- new user id, inject old UserDO-->
             SELECT LAST_INSERT_ID() AS fu_id
         </selectKey>
     </insert>
 
     <delete id="removeUserById" parameterType="java.lang.Integer">
-        DELETE FROM forum_user WHERE fu_id = #{id, jdbcType = INTEGER}
+        DELETE FROM forum_user WHERE fu_id = #{param1, jdbcType = INTEGER}
     </delete>
 
-    <select id="getUserMaxId" resultType="java.lang.Integer"><!-- 获取最新（最大值）插入的 id -->
+    <select id="getMaxUserId" resultType="java.lang.Integer">
         SELECT MAX(fu_id) FROM forum_user;
     </select>
     <select id="getUserById" parameterType="java.lang.Integer" resultMap="UserMap">
-        SELECT fu_id,fu_name,fu_password,fu_email,fu_sex,fu_birthday,fu_position,fu_description,fu_image,fu_rank,fu_state,fu_createtime
-        FROM forum_user WHERE fu_id = #{id, jdbcType = INTEGER};
+        SELECT fu_id,fu_name,fu_password,fu_email,fu_sex,fu_birthday,fu_position,fu_description,fu_avator,fu_rank,fu_state,fu_createtime
+        FROM forum_user WHERE fu_id = #{param1, jdbcType = INTEGER};
     </select>
     <select id="getUserByName" parameterType="java.lang.String" resultMap="UserMap">
-        SELECT fu_id,fu_name,fu_password,fu_email,fu_sex,fu_birthday,fu_position,fu_description,fu_image,fu_rank,fu_state,fu_createtime
-        FROM forum_user WHERE fu_name = #{name, jdbcType = VARCHAR};
+        SELECT fu_id,fu_name,fu_password,fu_email,fu_sex,fu_birthday,fu_position,fu_description,fu_avator,fu_rank,fu_state,fu_createtime
+        FROM forum_user WHERE fu_name = #{param1, jdbcType = VARCHAR};
     </select>
     <select id="getUserByEmail" parameterType="java.lang.String" resultMap="UserMap">
-        SELECT fu_id,fu_name,fu_password,fu_email,fu_sex,fu_birthday,fu_position,fu_description,fu_image,fu_rank,fu_state,fu_createtime
-        FROM forum_user WHERE fu_email = #{email, jdbcType = VARCHAR};
-    </select>
-    <select id="listAllAdminUser" resultMap="UserMap"><!-- <![CDATA[ ]]>内容会被解析器忽略 -->
-        <![CDATA[
-                  SELECT fu_id,fu_name,fu_password,fu_email,fu_sex,fu_birthday,fu_position,fu_description,fu_image,fu_rank,fu_state,fu_createtime
-                 FROM forum_user WHERE fu_rank = 'admin';
-            ]]>
-    </select>
-    <select id="listAssignDateRegisterUserByYearMonth" resultMap="UserMap">
-        SELECT fu_id,fu_name,fu_password,fu_email,fu_sex,fu_birthday,fu_position,fu_description,fu_image,fu_rank,fu_state,fu_createtime
-        FROM forum_user
-        WHERE YEAR(fu_createtime) = #{param1, jdbcType = INTEGER} AND MONTH(fu_createtime) = #{param2, jdbcType = INTEGER};
-    </select>
-    <select id="listAllUser" resultMap="UserMap">
-        SELECT fu_id,fu_name,fu_password,fu_email,fu_sex,fu_birthday,fu_position,fu_description,fu_image,fu_rank,fu_state,fu_createtime
-        FROM forum_user;
+        SELECT fu_id,fu_name,fu_password,fu_email,fu_sex,fu_birthday,fu_position,fu_description,fu_avator,fu_rank,fu_state,fu_createtime
+        FROM forum_user WHERE fu_email = #{param1, jdbcType = VARCHAR};
     </select>
 
     <update id="updateUserPasswordByName">
@@ -76,15 +61,12 @@
         UPDATE forum_user SET fu_rank = #{param2, jdbcType = VARCHAR}
         WHERE fu_name = #{param1, jdbcType = VARCHAR}
     </update>
-    <update id="updateUserImageByName">
-        UPDATE forum_user SET fu_image = #{param2, jdbcType = VARCHAR}
+    <update id="updateUserAvatorByName">
+        UPDATE forum_user SET fu_avator = #{param2, jdbcType = VARCHAR}
         WHERE fu_name = #{param1, jdbcType = VARCHAR}
     </update>
-    <update id="updateUserStateForActivationByEmail" parameterType="String">
+    <update id="updateUserStateToActivateByEmail" parameterType="String">
         UPDATE forum_user SET fu_state = 1
-        WHERE fu_email = #{email, jdbcType = VARCHAR}
-    </update>
-    <update id="truncateUserTable"><!-- 删减表  ${tableName}-->
-        TRUNCATE TABLE forum_user
+        WHERE fu_email = #{param1, jdbcType = VARCHAR}
     </update>
 </mapper>

@@ -114,7 +114,8 @@ public class TopicController {
             paramCheckService.check(ParamConst.NUMBER, limit);
             inputLimit = Integer.parseInt(limit);
         }
-        //consider category and username not null 3 condition
+
+        //（mearn: categoryId == categoryNick）idonsider category and username not null 3 condition
         paramCheckService
                 .checkTwoParamNotNulThreeCondition(ParamConst.CATEGORY, category, ParamConst.USERNAME, username);
 
@@ -155,8 +156,8 @@ public class TopicController {
      */
     @RequestMapping(value = "/topic/categorys", method = RequestMethod.GET)
     @ResponseBody
-    public PageJsonDTO topicCategorys() {
-        return new PageJsonDTO(AjaxRequestStatus.SUCCESS, ParamConst.CATEGORYS, topicService.listTopicCategory());
+    public PageJsonListDTO topicCategorys() {
+        return new PageJsonListDTO(AjaxRequestStatus.SUCCESS,  topicService.listAllTopicCategorys());
     }
 
     /**
@@ -264,16 +265,16 @@ public class TopicController {
     @ResponseBody
     public PageJsonDTO topicContentUpdate(@RequestBody Map<String, Object> requestBodyParamsMap) {
         Integer topicId = (Integer) requestBodyParamsMap.get(ParamConst.TOPIC_ID);
-        String newCategory = (String) requestBodyParamsMap.get(ParamConst.CATEGORY);
+        String newCategoryNick = (String) requestBodyParamsMap.get(ParamConst.CATEGORY);
         String newTitle = (String) requestBodyParamsMap.get(ParamConst.TITLE);
         String newTopicContent = (String) requestBodyParamsMap.get(ParamConst.CONTENT);
 
         paramCheckService.check(ParamConst.ID, String.valueOf(topicId));
-        paramCheckService.check(ParamConst.CATEGORY, newCategory);
+        paramCheckService.check(ParamConst.CATEGORY, newCategoryNick);
         paramCheckService.check(ParamConst.TITLE, newTitle);
         paramCheckService.check(ParamConst.TOPIC_CONTENT, newTopicContent);
 
-        topicService.alterTopicContent(topicId, newCategory, newTitle, newTopicContent);
+        topicService.alterTopicContent(topicId, newCategoryNick, newTitle, newTopicContent);
 
         return new PageJsonDTO(AjaxRequestStatus.SUCCESS);
    }

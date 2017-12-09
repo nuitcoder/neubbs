@@ -8,14 +8,13 @@ import java.util.Date;
  * @author Suvan
  */
 public class TopicReplyDO {
+
     private Integer id;
     private Integer userid;
     private Integer topicid;
-
     private String content;
-    private String agree;
-    private String oppose;
-
+    private Integer agree;
+    private Integer oppose;
     private Date createtime;
 
     /**
@@ -33,10 +32,10 @@ public class TopicReplyDO {
     public String getContent() {
         return content;
     }
-    public String getAgree() {
+    public Integer getAgree() {
         return agree;
     }
-    public String getOppose() {
+    public Integer getOppose() {
         return oppose;
     }
     public Date getCreatetime() {
@@ -58,10 +57,10 @@ public class TopicReplyDO {
     public void setContent(String content) {
         this.content = content;
     }
-    public void setAgree(String agree) {
+    public void setAgree(Integer agree) {
         this.agree = agree;
     }
-    public void setOppose(String oppose) {
+    public void setOppose(Integer oppose) {
         this.oppose = oppose;
     }
     public void setCreatetime(Date createtime) {

@@ -1,7 +1,8 @@
 package org.neusoft.neubbs.dto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+import org.neusoft.neubbs.constant.api.SetConst;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -14,8 +15,7 @@ public class PageJsonListDTO {
     private Boolean success;
     private String message;
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private List<Map<String, Object>> model;
+    private List<Map<String, Object>> model = new ArrayList<>(SetConst.SIZE_ONE);
 
     /**
      * Constructor
