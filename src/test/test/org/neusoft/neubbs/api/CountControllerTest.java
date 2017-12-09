@@ -74,6 +74,7 @@ public class CountControllerTest {
                MockMvcRequestBuilders.get("/api/count/visit")
        ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
         .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
+        .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
         .andExpect(MockMvcResultMatchers.jsonPath("$.model." + ParamConst.COUNT_VISIT_USER).value(21));
 
        printSuccessPassTestMehtodMessage();
@@ -88,6 +89,7 @@ public class CountControllerTest {
                 MockMvcRequestBuilders.get("/api/count/login")
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
          .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
          .andExpect(MockMvcResultMatchers.jsonPath("$.model." + ParamConst.COUNT_LOGIN_USER).value(50));
 
         printSuccessPassTestMehtodMessage();

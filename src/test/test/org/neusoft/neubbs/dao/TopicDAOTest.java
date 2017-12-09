@@ -2,7 +2,6 @@ package test.org.neusoft.neubbs.dao;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.neusoft.neubbs.controller.handler.SwitchDataSourceHandler;
@@ -13,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.List;
 
@@ -24,233 +24,363 @@ import java.util.List;
 public class TopicDAOTest {
 
     @Autowired
-    ITopicDAO topicDAO;
-
-   @BeforeClass
-   public static void init() {
-       SwitchDataSourceHandler.setDataSourceType(SwitchDataSourceHandler.LOCALHOST_DATA_SOURCE_MYSQL);
-   }
+    private ITopicDAO topicDAO;
 
     /**
-     * 插入话题
+     * 获取测试对象
+     *      - need ft_id=1 from forum_user
+     *      - need ftcg_id=1 from forum_topic_category
+     *
+     * @return TopicDO 测试对象
      */
-    @Ignore
-    public void testSaveTopic(){
+    private TopicDO getTestTopicDO() {
         TopicDO topic = new TopicDO();
             topic.setUserid(1);
-            topic.setCategory("testtopic");
-            topic.setTitle("测试话题");
+            topic.setCategoryid(1);
+            topic.setTitle("new topic content");
 
-        Assert.assertNotEquals(topicDAO.saveTopic(topic), 0);
-        System.out.println("插入新话题:" + JsonUtil.toJSONStringByObject(topic));
+        return topic;
     }
 
     /**
-     * 插入 100 条话题，用于测试
+     * 保存测试话题对象至数据库
+     *
+     * @return TopicDO 数据库保存后，重新 id 查询的测试对象
      */
-    @Ignore
-    public void testSaveTopic_100() {
-        //插入100行数据进行测试（用户 id 必须存在，受外键约束）
-        for(int i = 1; i <= 100; i++){
-            TopicDO topic = new TopicDO();
-            topic.setUserid(i % 5 + 1);
-            topic.setCategory("分类" + i + "种");
-            topic.setTitle("主题" + i + "号");
+    private TopicDO saveTestTopicToDB() {
+        TopicDO topic = this.getTestTopicDO();
+        Assert.assertEquals(1, topicDAO.saveTopic(topic));
 
-            topicDAO.saveTopic(topic);
-            System.out.println("成功插入第" + i + "行数据");
-        }
+        return topicDAO.getTopicById(topic.getId());
+    }
+
+    @BeforeClass
+    public static void init() {
+        //set local database source
+       SwitchDataSourceHandler.setDataSourceType(SwitchDataSourceHandler.LOCALHOST_DATA_SOURCE_MYSQL);
     }
 
     /**
-     * 删除主题
+     * 测试保存话题
      */
     @Test
+    @Transactional
+    public void testSaveTopic() {
+        TopicDO topic = this.getTestTopicDO();
+        Assert.assertEquals(1, topicDAO.saveTopic(topic));
+        Assert.assertTrue(topic.getId() > 0);
+        Assert.assertNotNull(topicDAO.getTopicById(topic.getId()));
+
+        System.out.println("insert topic informatioin : "
+                + JsonUtil.toJSONStringByObject(topicDAO.getTopicById(topic.getId())));
+    }
+
+    /**
+     * 测试删除话题
+     */
+    @Test
+    @Transactional
     public void testRemoveTopicById(){
-       TopicDO topic = new TopicDO();
-            topic.setUserid(98);
-            topic.setCategory("remove");
-            topic.setTitle("即将被删除的话题");
+        TopicDO topic = this.saveTestTopicToDB();
+        Assert.assertEquals(1, topicDAO.removeTopicById(topic.getId()));
 
-        Assert.assertNotEquals(topicDAO.saveTopic(topic), 0);
-        Assert.assertNotEquals(topicDAO.removeTopicById(topic.getId()), 0);
-        System.out.println("删除话题 id = " + topic.getId());
+        System.out.println("remove id=" + topic.getId() + " topic");
     }
 
     /**
-     * 统计话题总数
+     * 测试统计话题总数
      */
     @Test
+    @Transactional
     public void testCountTopic() {
-        System.out.println("话题总数：" + topicDAO.countTopic());
+        this.saveTestTopicToDB();
+
+        int topicTotal = topicDAO.countTopic();
+        Assert.assertTrue(topicTotal > 0);
+
+        System.out.println("total topic count：" + topicTotal);
     }
 
     /**
-     * 统计话题总数（分类）
+     * 测试（分类）统计话题总数
      */
     @Test
+    @Transactional
     public void testCountTopicByCategory() {
-        String category = "分类 1";
-        System.out.println(category + "（类别 ）话题总数:" + topicDAO.countTopicByCategory(category));
+        this.saveTestTopicToDB();
+
+        int categoryId = 1;
+        int topicTotal = topicDAO.countTopicByCategoryId(categoryId);
+        Assert.assertTrue(topicTotal >= 1);
+
+        System.out.println("categoryid=" + categoryId + " topic total count: " + topicTotal);
     }
 
     /**
-     * 统计话题总数（用户 id）
+     * 测试（用户 id）统计话题总数
      */
     @Test
-    public void testCountTopicByUserid() {
-        int userId = 5;
-        System.out.println(userId + "（用户id）话题总数：" + topicDAO.countTopicByUserid(userId));
+    @Transactional
+    public void testCountTopicByUserId() {
+        this.saveTestTopicToDB();
+
+        int userId = 1;
+        int topicTotal = topicDAO.countTopicByUserId(userId);
+        Assert.assertTrue(topicTotal >= 1);
+
+        System.out.println("userid=" + userId + " topic total count: " +  topicTotal);
     }
 
     /**
-     * 查询 id 最大值（最新插入 id）
+     * 测试（话题分类id，用户 id）统计话题总数
      */
     @Test
-    public void testTopicMaxId(){
-        System.out.println("最大值 id = " + topicDAO.getTopicMaxId());
+    @Transactional
+    public void testCountTopicByCategoryIdByUserId() {
+        this.saveTestTopicToDB();
+
+        int categoryId = 1, userId = 1;
+        int topicTotal = topicDAO.countTopicByCategoryIdByUserId(categoryId, userId);
+        Assert.assertTrue(topicTotal >= 1);
+
+        System.out.println("categoryid=" + categoryId + "and userid=" + userId + " topic total count: " + topicTotal);
     }
 
     /**
-     * id 查询话题
+     * 测试获取最大的话题 id
+     *      - 最新发布的话题
      */
     @Test
-    public void testTopicById(){
-        TopicDO topic = topicDAO.getTopicById(topicDAO.getTopicMaxId());
+    @Transactional
+    public void testMaxTopicId() {
+        this.saveTestTopicToDB();
 
-        Assert.assertNotNull(topic);
-        System.out.println("id 查询话题（最新插入）" + JsonUtil.toJSONStringByObject(topic));
+        int maxTopicId = topicDAO.getMaxTopicId();
+        Assert.assertTrue(maxTopicId > 0);
+
+        System.out.println("get max topic id=" + maxTopicId);
     }
 
     /**
-     * 获取话题分类列表
+     * 测试 （id）查询话题
      */
     @Test
-    public void testListTopicCategory() {
-        List<String> topicCategoryList = topicDAO.listTopicCategory();
+    @Transactional
+    public void testTopicById() {
+        TopicDO topic = this.saveTestTopicToDB();
+        TopicDO selectTopic = topicDAO.getTopicById(topic.getId());
+        Assert.assertNotNull(selectTopic);
 
-        int count = 1;
-        for (String category: topicCategoryList) {
-            System.out.print(category + " \t ");
-
-            //换行
-            if ((count++) % 10 == 0) {
-                System.out.println();
-            }
-        }
-
-        System.out.println("hava " + (--count) + " different category!");
+        System.out.println("get id=" + topic.getId() + " topic information: "
+                + JsonUtil.toJSONStringByObject(selectTopic));
     }
 
     /**
-     * 获取话题列表（逆序-最新插入，指定数量）
+     * 测试（降序，仅输入 count）获取话题列表
      */
     @Test
-    public void testListTopicDESCByCount(){
+    @Transactional
+    public void testListTopicDESCByCount() {
+        this.saveTestTopicToDB();
+
         List<TopicDO> listTopic = topicDAO.listTopicDESCByCount(10);
+        Assert.assertTrue(listTopic.size() >= 1);
 
         for(TopicDO topic: listTopic){
-            System.out.println("话题信息：" + JsonUtil.toJSONStringByObject(topic));
+            System.out.println("output topic information：" + JsonUtil.toJSONStringByObject(topic));
         }
     }
 
 
     /**
-     * 获取话题列表（指定开始行数，数量）
+     * 测试（降序）获取话题列表
      */
     @Test
-    public void testListTopicByStartByCount(){
-        int startRow = 0;
-        int count = 10;
-        List<TopicDO> listTopic = topicDAO.listTopicByStartRowByCount(startRow, count);
+    @Transactional
+    public void testListTopicByStartByCount() {
+        this.saveTestTopicToDB();
 
-        System.out.println("********从" + startRow + "行开始," + "输出" + count + "条记录***********");
+        //first page
+        int startRow = 0, count = 10;
+        List<TopicDO> listTopic = topicDAO.listTopicDESCByStartRowByCount(startRow, count);
+        Assert.assertTrue(listTopic.size() >= 1);
+
+        //foreach list
+        int recordCount = 1;
         for(TopicDO topic: listTopic){
-            System.out.println(JsonUtil.toJSONStringByObject(topic));
+            System.out.println("output topic information (No." + (recordCount++) + " recoders): "
+                    + JsonUtil.toJSONStringByObject(topic));
         }
-        System.out.println("*************************** 结束 ****************************");
     }
 
 
     /**
-     * 获取话题列表（分类获取）
+     * 测试（降序，分类）获取话题列表
      */
     @Test
+    @Transactional
     public void testListTopicByStartRowByCountByCategory() {
-        int startRow = 0;
-        int count = 10;
-        String category = "分类 1";
+        this.saveTestTopicToDB();
 
-        List<TopicDO> listTopic = topicDAO.listTopicByStartRowByCountByCategory(startRow, count, category);
-        for (TopicDO topic: listTopic) {
-            System.out.println(JsonUtil.toJSONStringByObject(topic));
+        //first page
+        int startRow = 0, count = 10;
+        int categoryId = 1;
+        List<TopicDO> listTopic = topicDAO.listTopicDESCByStartRowByCountByCategoryId(startRow, count, categoryId);
+        Assert.assertTrue(listTopic.size() >= 1);
+
+        //foreach list
+        int recordCount = 1;
+        for(TopicDO topic: listTopic){
+            System.out.println("output categoryid=" + categoryId
+                    + " topic information (No." + (recordCount++) + " recoders): "
+                    + JsonUtil.toJSONStringByObject(topic));
         }
     }
 
     /**
-     * 获取话题列表（用户名获取）
+     * 测试（降序，用户 id 分类）获取话题列表
      */
     @Test
+    @Transactional
     public void testListTopicByStartRowByCountByUsername() {
-        int startRow = 0;
-        int count = 10;
-        int userId = 6;
+        this.saveTestTopicToDB();
 
-        List<TopicDO> listTopic = topicDAO.listTopicByStartRowByCountByUserId(startRow, count, userId);
-        for (TopicDO topic: listTopic) {
-            System.out.println(JsonUtil.toJSONStringByObject(listTopic));
+        //first page
+        int startRow = 0, count = 10;
+        int userId = 1;
+        List<TopicDO> listTopic = topicDAO.listTopicDESCByStartRowByCountByUserId(startRow, count, userId);
+        Assert.assertTrue(listTopic.size() >= 1);
+
+        //foreach list
+        int recordCount = 1;
+        for(TopicDO topic: listTopic){
+            System.out.println("output userid=" + userId
+                    + " topic information (No." + (recordCount++) + " recoders): "
+                    + JsonUtil.toJSONStringByObject(topic));
+        }
+    }
+
+
+    /**
+     * 测试（降序，话题分类 id，用户 id）获取话题列表
+     */
+    @Test
+    @Transactional
+    public void testListTopicDESCByStartRowByCountByCategoryIdByUserId() {
+        this.saveTestTopicToDB();
+
+        //first page
+        int startRow = 0, count = 10;
+        int ccategoryId = 1, userId = 1;
+        List<TopicDO> listTopic
+                = topicDAO.listTopicDESCByStartRowByCountByCategoryIdByUserId(startRow, count, ccategoryId,userId);
+        Assert.assertTrue(listTopic.size() >= 1);
+
+        //foreach list
+        int recordCount = 1;
+        for(TopicDO topic: listTopic){
+            System.out.println("output categoryid=" + ccategoryId +" and userid=" + userId
+                    + " topic information (No." + (recordCount++) + " recoders): "
+                    + JsonUtil.toJSONStringByObject(topic));
         }
     }
 
     /**
-     * 更新分类
+     * 测试更新话题分类
+     *      - need insert categoryId == 2;
      */
-    @Ignore
-    public void testUpdateCategoryById(){
-        String newCategory = "新更新分类";
-        Assert.assertNotEquals(topicDAO.updateCategoryById(topicDAO.getTopicMaxId(), newCategory), 0);
+    @Test
+    @Transactional
+    public void testUpdateCategoryById() {
+        TopicDO topic = this.saveTestTopicToDB();
+
+        int newCategoryId = 2;
+        Assert.assertEquals(1, topicDAO.updateCategoryById(topic.getId(), newCategoryId));
+        Assert.assertNotEquals(topic.getCategoryid(), topicDAO.getTopicById(topic.getId()).getCategoryid());
+
+        System.out.println("update topicId=" + topic.getId() + " topic categoryid=<" + newCategoryId + "> success!");
     }
 
     /**
-     * 更新标题
+     * 测试更新话题名
      */
-    @Ignore
-    public void testUpdateTitle(){
-        String newTitle = "新标题";
-        Assert.assertNotEquals(topicDAO.updateTitleById(topicDAO.getTopicMaxId(), newTitle), 0);
+    @Test
+    @Transactional
+    public void testUpdateTitleById() {
+        TopicDO topic = this.saveTestTopicToDB();
+
+        String newTitle = "test update new Title";
+        Assert.assertEquals(1, topicDAO.updateTitleById(topic.getId(), newTitle));
+        Assert.assertNotEquals(topic.getTitle(), topicDAO.getTopicById(topic.getId()).getTitle());
+
+        System.out.println("update topicId=" + topic.getId() + " topic title=<" + newTitle+ "> success!");
     }
 
     /**
-     * 更新评论数（自动 +1）
+     * 测试更新评论回复数（自动 +1）
      */
-    @Ignore
-    public void testUpdateCommentAddOneById(){
-        Assert.assertNotEquals(topicDAO.updateCommentAddOneById(topicDAO.getTopicMaxId()), 0);
+    @Test
+    @Transactional
+    public void testUpdateRepliesAddOneById() {
+        TopicDO topic = this.saveTestTopicToDB();
+
+        Assert.assertEquals(1, topicDAO.updateRepliesAddOneById(topic.getId()));
+
+        //default 0 + 1 = 1
+        Integer expectReplies = 1;
+        Assert.assertEquals(expectReplies, topicDAO.getTopicById(topic.getId()).getReplies());
+
+        System.out.println("update topicId=" + topic.getId() + " topic replies+1 success!");
     }
 
     /**
-     * 更新评论数（自动 -1）
+     * 测试更新评论回复数（自动 -1）
      */
-    @Ignore
-    public void testUpdateCommentCutOneById(){
-        Assert.assertNotEquals(topicDAO.updateCommentCutOneById(topicDAO.getTopicMaxId()), 0);
+    @Test
+    @Transactional
+    public void testUpdateRepliesCutOneById() {
+        TopicDO topic = this.saveTestTopicToDB();
+
+        Assert.assertEquals(1, topicDAO.updateRepliesCutOneById(topic.getId()));
+
+        //default 0 - 1 = -1
+        Integer expectReplies = -1;
+        Assert.assertEquals(expectReplies, topicDAO.getTopicById(topic.getId()).getReplies());
+
+        System.out.println("update topicId=" + topic.getId() + " topic replies-1 success!");
     }
 
     /**
-     * 更新最后回复 id
-     *      - id 有外键约束
+     * 测试更新最后回复人 id
      */
-    @Ignore
-    public void testUpdateLastreplyuseridById(){
-        int newLastReplyUserId = 1;
-        Assert.assertNotEquals(topicDAO.updateLastreplyuseridById(topicDAO.getTopicMaxId(), newLastReplyUserId), 0);
+    @Test
+    @Transactional
+    public void testUpdateLastReplyUserIdById() {
+        TopicDO topic = this.saveTestTopicToDB();
+
+        Integer newLastReplyUserId = 2;
+        Assert.assertEquals(1, topicDAO.updateLastReplyUserIdById(topic.getId(), newLastReplyUserId));
+        Assert.assertNotEquals(topic.getLastreplyuserid(),
+                topicDAO.getTopicById(topic.getId()).getLastreplyuserid());
+
+        System.out.println("update topicId=" + topic.getId()
+                + " topic lastreplyuserid=<" + newLastReplyUserId+ "> success!");
     }
 
     /**
-     * 更新最后回复时间
+     * 测试更新最后回复时间
      */
-    @Ignore
-    public void testUpdateLastreplytimeById(){
-        Assert.assertNotEquals(topicDAO.updateLastreplytimeById(topicDAO.getTopicMaxId(), new Date()), 0);
+    @Test
+    @Transactional
+    public void testUpdateLastReplyTimeById() {
+        TopicDO topic = this.saveTestTopicToDB();
+
+        Date newLastReplyTime = new Date();
+        Assert.assertEquals(1, topicDAO.updateLastReplyTimeById(topic.getId(), newLastReplyTime));
+        Assert.assertNotEquals(topic.getLastreplytime(),
+                topicDAO.getTopicById(topic.getId()).getLastreplytime());
+
+        System.out.println("update topicId=" + topic.getId()
+                + " topic lastreplytime=<" + newLastReplyTime+ "> success!");
     }
 }

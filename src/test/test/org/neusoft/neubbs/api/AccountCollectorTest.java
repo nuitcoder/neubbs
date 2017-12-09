@@ -1,5 +1,6 @@
 package test.org.neusoft.neubbs.api;
 
+import com.alibaba.fastjson.JSON;
 import com.google.code.kaptcha.Producer;
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
@@ -10,7 +11,6 @@ import org.junit.runner.RunWith;
 import org.neusoft.neubbs.constant.api.ApiMessage;
 import org.neusoft.neubbs.constant.api.ParamConst;
 import org.neusoft.neubbs.constant.api.SetConst;
-import org.neusoft.neubbs.constant.secret.SecretInfo;
 import org.neusoft.neubbs.controller.exception.AccountErrorException;
 import org.neusoft.neubbs.controller.exception.DatabaseOperationFailException;
 import org.neusoft.neubbs.controller.exception.ParamsErrorException;
@@ -18,10 +18,10 @@ import org.neusoft.neubbs.controller.exception.TokenErrorException;
 import org.neusoft.neubbs.controller.handler.SwitchDataSourceHandler;
 import org.neusoft.neubbs.dao.IUserDAO;
 import org.neusoft.neubbs.entity.UserDO;
+import org.neusoft.neubbs.service.ICaptchaService;
 import org.neusoft.neubbs.service.IRedisService;
 import org.neusoft.neubbs.service.IUserService;
 import org.neusoft.neubbs.utils.FtpUtil;
-import org.neusoft.neubbs.utils.JsonUtil;
 import org.neusoft.neubbs.utils.JwtTokenUtil;
 import org.neusoft.neubbs.utils.SecretUtil;
 import org.neusoft.neubbs.utils.StringUtil;
@@ -37,7 +37,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -48,6 +47,7 @@ import javax.transaction.Transactional;
 import javax.ws.rs.HttpMethod;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Account api 测试
@@ -110,6 +110,22 @@ public class AccountCollectorTest {
                 + " pass all the tests ****************************");
     }
 
+    /**
+     * 确认结果集 Model Map 应该拥有以下 Key 选项
+     *
+     * @param result MvcResult 结果集
+     * @param keyItems key选项
+     * @throws Exception 所有异常
+     */
+    private void confirmMvcResultModlMapShouldHavaKeyItems(MvcResult result, String... keyItems) throws Exception {
+        Map resultMap = (Map) JSON.parse(result.getResponse().getContentAsString());
+        Map modelMap = (Map) resultMap.get("model");
+
+        //compare length and judge exist item
+        Assert.assertEquals(keyItems.length, modelMap.size());
+        Assert.assertThat((Set<String>) modelMap.keySet(), CoreMatchers.hasItems(keyItems));
+    }
+
     @BeforeClass
     public static void init() {
 //      //使用本地数据库（默认是云数据库）
@@ -140,13 +156,15 @@ public class AccountCollectorTest {
 
         for (Param param : paramList) {
             System.out.println("input: key=" + param.key + ", value=" + param.value);
+
             mockMvc.perform(
                     MockMvcRequestBuilders.get(API_ACCOUNT)
                             .param(param.key, (String) param.value)
             ).andExpect(MockMvcResultMatchers.status().is(200))
              .andExpect(MockMvcResultMatchers.content().contentType("application/json;charset=UTF-8"))
              .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
-             .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""));
+             .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
+             .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
         }
 
         printSuccessPassTestMehtodMessage();
@@ -171,15 +189,21 @@ public class AccountCollectorTest {
         Cookie autoLoginCookie = new Cookie(ParamConst.AUTHENTICATION, JwtTokenUtil.createToken(user));
 
         for (Param param : paramList) {
-            mockMvc.perform(
+            System.out.println("input: key=" + param.key + ", value=" + param.value);
+
+            MvcResult result = mockMvc.perform(
                     MockMvcRequestBuilders.get(API_ACCOUNT)
                             .param(param.key, (String) param.value)
                             .cookie(autoLoginCookie)
             ).andExpect(MockMvcResultMatchers.status().isOk())
-                    .andExpect(MockMvcResultMatchers.content().contentType("application/json;charset=UTF-8"))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
+             .andExpect(MockMvcResultMatchers.content().contentType("application/json;charset=UTF-8"))
+             .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
+             .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists())
+                    .andReturn();
+
+            this.confirmMvcResultModlMapShouldHavaKeyItems(result,
+                    "email", "sex", "birthday", "position", "description",
+                    "createtime", "username", "avator", "state");
         }
 
         printSuccessPassTestMehtodMessage();
@@ -188,7 +212,7 @@ public class AccountCollectorTest {
     /**
      * 【/api/account】 test same time input two param get user information throw exception
      *      - database exception
-     *          - no user
+     *          - no exist username, exist email
      */
     @Test
     public void testSameTimeInputTwoParamGetUserInformationThrowException() throws Exception {
@@ -199,7 +223,6 @@ public class AccountCollectorTest {
                             .param("email", "liushuwei0925@gmail.com")
             ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
              .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""));
-
         } catch (NestedServletException ne) {
             Throwable throwable = ne.getRootCause();
             Assert.assertThat(throwable, CoreMatchers.is(CoreMatchers.instanceOf(AccountErrorException.class)));
@@ -211,7 +234,7 @@ public class AccountCollectorTest {
 
     /**
      * 【/api/account】 test get user information throws exception
-     *      - request param check
+     *      - request param error, no norm
      *      - database exception
      */
     @Test
@@ -232,7 +255,9 @@ public class AccountCollectorTest {
             try {
                 mockMvc.perform(
                         MockMvcRequestBuilders.get(API_ACCOUNT).param(param.key, (String) param.value)
-                ).andDo(MockMvcResultHandlers.print());
+                ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
+                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists())
+                 .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
 
             } catch (NestedServletException ne) {
                 Assert.assertThat(ne.getRootCause(),
@@ -253,16 +278,17 @@ public class AccountCollectorTest {
     @Test
     public void testGetUserActivateStateSuccess() throws Exception {
         mockMvc.perform(
-                MockMvcRequestBuilders.get(API_ACCOUNT_STATE)
-                        .param("username", "suvan")
-        ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true));
+                MockMvcRequestBuilders.get(API_ACCOUNT_STATE).param("username", "suvan")
+        ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
 
         printSuccessPassTestMehtodMessage();
     }
 
     /**
      * 【/api/account/state】test get user activate state throw exception
-     *      - request param check
+     *      - request param error, no norm
      *      - database exception
      */
     @Test
@@ -271,12 +297,14 @@ public class AccountCollectorTest {
         String[] values = {null, "a", "12**+-3123", "hello"};
 
         for (String value : values) {
-            System.out.println("params: " + key + " = " + value);
+            System.out.println("input param: " + key + " = " + value);
 
             try {
                 mockMvc.perform(
                         MockMvcRequestBuilders.get(API_ACCOUNT_STATE).param(key, value)
-                ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false));
+                ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
+                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists())
+                 .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
 
             } catch (NestedServletException ne) {
                 Assert.assertThat(ne.getRootCause(),
@@ -305,37 +333,27 @@ public class AccountCollectorTest {
         String inputPassword = "123456";
 
         String reuqesetBody = "{\"username\":\"" + inputUsername + "\", \"password\":\"" + inputPassword + "\"}";
+        System.out.println("input reqeust-body: " + reuqesetBody);
+
         MvcResult result = mockMvc.perform(
                 MockMvcRequestBuilders.post(API_ACCOUNT_LOGIN)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(reuqesetBody)
                         .accept(MediaType.APPLICATION_JSON)
-        ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
+        ).andExpect(MockMvcResultMatchers.cookie().exists(ParamConst.AUTHENTICATION))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
          .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
          .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
-         .andExpect(MockMvcResultMatchers.jsonPath("$.model.state").exists())
-         .andExpect(MockMvcResultMatchers.jsonPath("$.model.authentication").exists())
-         .andExpect(MockMvcResultMatchers.cookie().exists(ParamConst.AUTHENTICATION))
             .andReturn();
 
-        //结果比较
-        Map<String, Object> resultMap = JsonUtil.toMapByJSONString(result.getResponse().getContentAsString());
-        Map<String, Object> model = (Map<String, Object>) resultMap.get("model");
-
-        Assert.assertTrue(model.size() == 2);
-
-        String tokenAuthentication = (String) model.get(ParamConst.AUTHENTICATION);
-
-        UserDO resultUser = JwtTokenUtil.verifyToken(tokenAuthentication, SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY);
-        Assert.assertNotNull(resultUser);
-        Assert.assertEquals(resultUser.getName(), inputUsername);
+        this.confirmMvcResultModlMapShouldHavaKeyItems(result, "state", "authentication");
 
         printSuccessPassTestMehtodMessage();
     }
 
     /**
      * 【/api/account/login】 test login throw Exception
-     *      - request param check
+     *      - request param error, no norm
      *      - database exception
      */
     @Test
@@ -351,10 +369,8 @@ public class AccountCollectorTest {
         for (String[] param: params) {
             String username = param[0];
             String password = param[1];
-            String requestBody = "{\"username\":\"" + username + "\","
-                    + "\"password\":\"" + password + "\"}";
-
-            System.out.println("requestbody: " + requestBody);
+            String requestBody = "{\"username\":\"" + username + "\"," + "\"password\":\"" + password + "\"}";
+            System.out.println("input request-body: " + requestBody);
 
             try {
                 mockMvc.perform(
@@ -362,7 +378,8 @@ public class AccountCollectorTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(requestBody)
                 ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
-                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists());
+                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists())
+                 .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
 
             } catch (NestedServletException ne) {
                 Assert.assertThat(ne.getRootCause(),
@@ -379,6 +396,8 @@ public class AccountCollectorTest {
 
     /**
      * 【/api/account/logout】 test logout success
+     *      - set session
+     *      - add already login user cookie
      */
     @Test
     public void testLogoutSuccess() throws Exception {
@@ -396,23 +415,27 @@ public class AccountCollectorTest {
                 MockMvcRequestBuilders.get(API_ACCOUNT_LOGOUT)
                         .cookie(new Cookie(ParamConst.AUTHENTICATION, authentication))
                         .accept(MediaType.APPLICATION_JSON)
-        ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true));
+        ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
 
         printSuccessPassTestMehtodMessage();
     }
 
     /**
      * 【/api/account/logout】 test logout throw Exception
-     *      - no login
-     *          - test @LogintAuthorization （pass ApiInterceptor）
+     *      - no login, test @LogintAuthorization
      */
     @Test
     public void testLogoutThrowException() throws Exception {
         try {
-            //no Cookie, ApiInterceptor do interceptor
+            //no Cookie, do ApiInterceptor do interceptor
             mockMvc.perform(
                     MockMvcRequestBuilders.get(API_ACCOUNT_LOGOUT)
-            );
+            ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
+             .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists())
+             .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
+
         } catch (NestedServletException ne) {
             Throwable throwable = ne.getRootCause();
             Assert.assertTrue(throwable instanceof AccountErrorException);
@@ -422,30 +445,34 @@ public class AccountCollectorTest {
 
     /**
      * 【/api/account/register】test register user success
-     *     - use @Transactional finish rollback
+     *     - u
      */
     @Test
     @Transactional
     public void testRegisterUserSuccess() throws Exception {
         String username = "apiTestUser";
         String password = "apiTestPassword";
-        String email = "apiTestEmail@neubs.com";
+        String email = "apiTestEmail@neubBs.com";
 
         String requestBody = "{\"username\":\"" + username + "\","
                 + "\"password\":\"" + password + "\","
                 + "\"email\":\"" + email + "\"}";
+        System.out.println("input request-body: " + requestBody);
 
-        mockMvc.perform(
+        MvcResult result = mockMvc.perform(
                 MockMvcRequestBuilders.post(API_ACCOUNT_REGISTER)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody)
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
          .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
          .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
-         .andExpect(MockMvcResultMatchers.jsonPath("$.model.username").value(username));
+                .andReturn();
 
-        //remove ftp server directory
-        int userId = userDAO.getUserMaxId();
+        this.confirmMvcResultModlMapShouldHavaKeyItems(result,
+                "username", "email", "sex", "birthday", "position", "description", "avator", "state", "createtime");
+
+        //becasue register will create personal directory on ftp server, so need to remove
+        int userId = userDAO.getMaxUserId();
         FtpUtil.deleteDirectory("/user/" + userId + "-" + username);
 
         printSuccessPassTestMehtodMessage();
@@ -453,7 +480,7 @@ public class AccountCollectorTest {
 
     /**
      * 【/api/account/register】test register user throw exception
-     *      - request param check
+     *      - request param error, no norm
      *      - database exception
      */
     @Test
@@ -470,13 +497,9 @@ public class AccountCollectorTest {
         };
 
         for (String[] arr : params) {
-            String username = arr[0];
-            String password = arr[1];
-            String email = arr[2];
-
-            String requestBody = "{\"username\":\"" + username + "\","
-                    + "\"password\":\"" + password + "\","
-                    + "\"email\":\"" + email + "\"}";
+            String requestBody = "{\"username\":\"" + arr[0] + "\","
+                    + "\"password\":\"" + arr[1] + "\","
+                    + "\"email\":\"" + arr[2] + "\"}";
             System.out.println("requestbody: " + requestBody);
 
             try {
@@ -486,7 +509,7 @@ public class AccountCollectorTest {
                                 .content(requestBody)
                 ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
                  .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists())
-                 .andExpect(MockMvcResultMatchers.jsonPath("$.model").doesNotExist());
+                 .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
 
             } catch (NestedServletException ne) {
                 Assert.assertThat(ne.getRootCause(),
@@ -504,16 +527,15 @@ public class AccountCollectorTest {
 
     /**
      * 【/api/account/update-password】 test user update password success
-     *      - @LoginAuthorization @AccountActivation
+     *      - new user already login and activated (pass @LoginAuthorization @AccountActivation)
      */
     @Test
     @Transactional
     public void testUserUpdatePasswordSuccess() throws Exception {
         String inputUsername = "suvan";
         String inputNewPassword = "liushuwei";
-
         String requestBody = "{\"username\":\"" + inputUsername + "\",\"password\":\"" + inputNewPassword + "\"}";
-
+        System.out.println("input request-body:" + requestBody);
 
         String authentication = JwtTokenUtil.createToken(userService.getUserInfoByName(inputUsername));
 
@@ -523,8 +545,10 @@ public class AccountCollectorTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody)
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
-         .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""));
+         .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
 
+        //database check
         UserDO user = userService.getUserInfoByName(inputUsername);
         Assert.assertEquals(user.getName(), inputUsername);
         Assert.assertEquals(user.getPassword(), SecretUtil.encryptUserPassword(inputNewPassword));
@@ -536,20 +560,21 @@ public class AccountCollectorTest {
      * 【/api/account/update-password】 test user update password throw exception
      *      - no login
      *      - account no activated
-     *      - request param check
+     *      - request param error, no norm
      *      - database exception
      */
     @Test
     @Transactional
     public void testUserUpdatePasswordThrowException() throws Exception {
-        //test no pass @LoginAuthorization
+        //no login
         try {
             mockMvc.perform(
                     MockMvcRequestBuilders.post(API_ACCOUNT_UPDATE_PASSWORD)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content("{}")
             ).andExpect(MockMvcResultMatchers.jsonPath("$.success.").value(false))
-             .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists());
+             .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(ApiMessage.NO_PERMISSION))
+             .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
 
         } catch (NestedServletException ne) {
             Throwable throwable = ne.getRootCause();
@@ -557,7 +582,7 @@ public class AccountCollectorTest {
             Assert.assertEquals(throwable.getMessage(), ApiMessage.NO_PERMISSION);
         }
 
-        //test no pass @AccountActivation
+        //account no activate
         UserDO noActivationUser = new UserDO();
             noActivationUser.setName("noActivationUser");
             noActivationUser.setState(0);
@@ -569,7 +594,8 @@ public class AccountCollectorTest {
                             .contentType(MediaType.APPLICATION_JSON)
                             .content("{}")
             ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
-             .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists());
+             .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(ApiMessage.NO_ACTIVATE))
+             .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
 
         } catch (NestedServletException ne) {
             Throwable throwable = ne.getRootCause();
@@ -577,7 +603,7 @@ public class AccountCollectorTest {
             Assert.assertEquals(throwable.getMessage(), ApiMessage.NO_ACTIVATE);
         }
 
-        //test api exception
+        //reqeust param error, no norm and database exception
         String[][] params = {
                 {null, null}, {null, "123456"}, {"suvan", null},
                 {"s", "123456"}, {"suvan*--0", "123456"},
@@ -593,6 +619,7 @@ public class AccountCollectorTest {
             String username = param[0];
             String newPassword = param[1];
             String requestBody = "{\"username\":\"" + username + "\",\"password\":\"" + newPassword + "\"}";
+            System.out.println("input request-body: " + requestBody);
 
             if ("noExist".equals(username)) {
                 //test database no exist user
@@ -610,10 +637,13 @@ public class AccountCollectorTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(requestBody)
                 ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
-                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists());
+                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists())
+                 .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
+
             } catch (NestedServletException ne) {
                 Assert.assertThat(ne.getRootCause(),
-                        CoreMatchers.anyOf(CoreMatchers.instanceOf(ParamsErrorException.class),
+                        CoreMatchers.anyOf(
+                                CoreMatchers.instanceOf(ParamsErrorException.class),
                                 CoreMatchers.instanceOf(AccountErrorException.class),
                                 CoreMatchers.instanceOf(DatabaseOperationFailException.class)
                         )
@@ -633,8 +663,8 @@ public class AccountCollectorTest {
     public void testUserUpdateEmailSuccess() throws Exception {
         String inputUsername = "suvan";
         String inputEmail = "newEmail@email.com";
-
         String reqeustBody = "{\"username\":\"" + inputUsername + "\",\"email\":\"" + inputEmail + "\"}";
+        System.out.println("input reqeust-body: " + reqeustBody);
 
         String authentication = JwtTokenUtil.createToken(userService.getUserInfoByName(inputUsername));
 
@@ -644,8 +674,10 @@ public class AccountCollectorTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(reqeustBody)
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
-         .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""));
+         .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
 
+        //database data check
         UserDO user = userService.getUserInfoByName(inputUsername);
         Assert.assertNotNull(user);
         Assert.assertEquals(user.getEmail(), inputEmail);
@@ -656,25 +688,28 @@ public class AccountCollectorTest {
     /**
      * 【/api/account/update-email】test user update email throw exception
      *      - no login
-     *      - request param check
+     *      - request param error, no norm
      *      - database exception
      */
     @Test
     @Transactional
     public void testUserUpdateEmailThrowException() throws Exception {
-        //test no pass @LoginAuthorization
+        //no login
         try {
             mockMvc.perform(
                     MockMvcRequestBuilders.post(API_ACCOUNT_UPDATE_EMAIL)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content("{}")
             ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
-             .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists());
+             .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists())
+             .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
+
         } catch (NestedServletException ne) {
             Assert.assertTrue(ne.getRootCause() instanceof AccountErrorException);
             Assert.assertEquals(ne.getRootCause().getMessage(), ApiMessage.NO_PERMISSION);
         }
 
+        //request param error, no norm and database exception
         String[][] params = {
                 {null, null}, {null, "test@test.com"}, {"test", null},
                 {"t", "test@test.com"}, {"test*~", "test@test.com"},
@@ -693,8 +728,10 @@ public class AccountCollectorTest {
             String requestBody = "{\"username\":\"" + username + "\",\"email\":\"" + newEmail + "\"}";
 
             if ("noExist".equals(username)) {
+                //if cookie exist user, but database user, will throw exception
                 UserDO noExistUser = new UserDO();
                     noExistUser.setName("noExist");
+
                 userCookie.setValue(JwtTokenUtil.createToken(noExistUser));
             }
 
@@ -705,12 +742,14 @@ public class AccountCollectorTest {
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(requestBody)
                 ).andExpect(MockMvcResultMatchers.jsonPath("success").value(false))
-                 .andExpect(MockMvcResultMatchers.jsonPath("message").exists());
+                 .andExpect(MockMvcResultMatchers.jsonPath("message").exists())
+                 .andExpect(MockMvcResultMatchers.jsonPath("model").exists());
+
             } catch (NestedServletException ne) {
                 Assert.assertThat(ne.getRootCause(),
-                        CoreMatchers.anyOf(CoreMatchers.instanceOf(ParamsErrorException.class),
-                            CoreMatchers.instanceOf(AccountErrorException.class),
-                            CoreMatchers.instanceOf(DatabaseOperationFailException.class)
+                        CoreMatchers.anyOf(
+                                CoreMatchers.instanceOf(ParamsErrorException.class),
+                                CoreMatchers.instanceOf(AccountErrorException.class)
                         )
                 );
             }
@@ -728,6 +767,7 @@ public class AccountCollectorTest {
     public void testSendEmailToActivateUserSuccess() throws Exception {
         String email = "13202405189@163.com";
         String requestBody = "{\"email\":\"" + email + "\"}";
+        System.out.println("input reqeust-body: " + requestBody);
 
         //register new user, no accept return value, after rollback
         userService.registerUser("activateUser", "123456", email);
@@ -737,17 +777,18 @@ public class AccountCollectorTest {
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(requestBody)
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
-         .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""));
+         .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
 
        /*
         * need to blocking main thread, otherwise no do taskExecutor send eamil
         * taskExecutor active thread count > 0, try blocking main thread 20s
         */
         ThreadPoolTaskExecutor taskExecutor = (ThreadPoolTaskExecutor) webApplicationContext.getBean("taskExecutor");
-        int time = 1;
-        while (taskExecutor.getActiveCount() != 0 && time < 20) {
+        int timer = 1;
+        while (taskExecutor.getActiveCount() != 0 && timer < 20) {
             Thread.sleep(1000);
-            System.out.println("already wait " + (time++) + "s");
+            System.out.println("already wait " + (timer++) + "s");
         }
         System.out.println("send eamil success !");
 
@@ -756,16 +797,18 @@ public class AccountCollectorTest {
 
     /**
      * 【/api/account/activate】test send eamil to activate user throw exception
-     *      - request param check
+     *      - request param error, no norm
      *      - database exception
      */
     @Test
     @Transactional
     public void testSendEmailToActivateUserThrowException() throws Exception{
+        //request param error, no norm
        String [] emailParams = {null, "test@","liushuwei0925@gmail.com"};
 
         for (String email: emailParams) {
             String requestBody = "{\"email\":\"" + email + "\"}";
+            System.out.println("input post param request-body: " +requestBody);
 
             try {
                 mockMvc.perform(
@@ -773,7 +816,8 @@ public class AccountCollectorTest {
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(requestBody)
                 ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
-                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists());
+                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists())
+                 .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
 
             } catch (NestedServletException ne) {
                 Assert.assertThat(ne.getRootCause(),
@@ -785,11 +829,11 @@ public class AccountCollectorTest {
             }
        }
 
-       //test send email timer limit
+       //new register user
         String email = "alreadySend@neubbs.com";
-
         userService.registerUser(email.substring(0, email.indexOf("@")), "123456", email);
 
+        //get redis service on web container
         IRedisService redisService = (IRedisService) webApplicationContext.getBean("redisServiceImpl");
         redisService.save(email, "activate", SetConst.EXPIRE_TIME_MS_SIXTY_SECOND);
 
@@ -799,7 +843,9 @@ public class AccountCollectorTest {
                     .content("{\"email\":\"" + email + "\"}")
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
          .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(ApiMessage.WATI_TIMER))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
          .andExpect(MockMvcResultMatchers.jsonPath("$.model.timer").exists());
+
         System.out.println("send email timer limit effective!");
 
         printSuccessPassTestMehtodMessage();
@@ -819,11 +865,12 @@ public class AccountCollectorTest {
 
         //validate token and activate user
         mockMvc.perform(
-                MockMvcRequestBuilders.get(API_ACCOUNT_VALIDATE)
-                    .param("token", token)
+                MockMvcRequestBuilders.get(API_ACCOUNT_VALIDATE).param("token", token)
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
-         .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""));
+         .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
 
+        //confirm database user activated
         Assert.assertTrue(userService.getUserInfoByEmail(user.getEmail()).getState() == 1);
 
         printSuccessPassTestMehtodMessage();
@@ -831,7 +878,7 @@ public class AccountCollectorTest {
 
     /**
      * 【/api/account/validate】test validate token activate user throw exception
-     *      - request param check
+     *      - request param error, no norm
      *      - database exception
      */
     @Test
@@ -848,19 +895,22 @@ public class AccountCollectorTest {
 
         for (String param: parmas) {
             String token = param != null ? SecretUtil.encryptBase64(param) : null;
+            System.out.println("input token=" + token);
 
             try {
                mockMvc.perform(
                        MockMvcRequestBuilders.get(API_ACCOUNT_VALIDATE).param("token", token)
                ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists());
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
 
             } catch (NestedServletException ne) {
                 Assert.assertThat(ne.getRootCause(),
-                        CoreMatchers.anyOf(CoreMatchers.instanceOf(ParamsErrorException.class),
+                        CoreMatchers.anyOf(
+                                CoreMatchers.instanceOf(ParamsErrorException.class),
                                 CoreMatchers.instanceOf(TokenErrorException.class),
-                                CoreMatchers.instanceOf(AccountErrorException.class),
-                                CoreMatchers.instanceOf(DatabaseOperationFailException.class))
+                                CoreMatchers.instanceOf(AccountErrorException.class)
+                        )
                 );
             }
         }
@@ -870,6 +920,8 @@ public class AccountCollectorTest {
 
     /**
      * 【/api/account/captcha】 test generate picture captcha success
+     *      - need judge session exist captcha text
+     *      - nedd judge page display content type is image/jpeg
      */
     @Test
     public void testGerneatePictureCaptchaSuccess() throws Exception {
@@ -886,38 +938,43 @@ public class AccountCollectorTest {
 
     /**
      * 【/api/account/check-captcha】 test check user input captcha match success
+     *      - need session save key-value
      */
     @Test
     public void testCheckUserInputCaptchaMatchSuccess() throws Exception {
-        Producer captchaProducer = (Producer) this.webApplicationContext.getBean("captchaProducer");
-        String captcha = captchaProducer.createText();
+        //web container get captcha service
+        ICaptchaService captchaService = (ICaptchaService) this.webApplicationContext.getBean("captchaServiceImpl");
+        String captcha = captchaService.getCaptchaText();
 
         mockMvc.perform(
                 MockMvcRequestBuilders.get(API_ACCOUNT_CHECK_CAPTCHA)
                     .sessionAttr(SetConst.SESSION_CAPTCHA, captcha)
                     .param("captcha", captcha)
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
-         .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""));
+         .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
 
         printSuccessPassTestMehtodMessage();
     }
 
     /**
      * 【/api/account/check-captcha】 test check user input captcha match throw exception
-     *      - request param check
-     *      - database exception
+     *      - request param error, no norm
+     *      - no to generate captcha picture, session no captcha text
      */
     @Test
     public void testCheckUserInputCaptchaMatchThrowException() throws Exception {
-       String[] params = {
-               null, "123", "abs", "ABC", "12asdfABN", "*0-=123", "55555"};
+       String[] params = {null, "123", "abs", "ABC", "12asdfABN", "*0-=123", "55555"};
 
        for (String param: params) {
+           System.out.println("input captcha=" + param);
+
            try {
                mockMvc.perform(
                        MockMvcRequestBuilders.get(API_ACCOUNT_CHECK_CAPTCHA).param("captcha", param)
                ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists());
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(ApiMessage.CAPTCHA_INCORRECT))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
 
            } catch (NestedServletException ne) {
                Assert.assertThat(ne.getRootCause(),
@@ -929,7 +986,7 @@ public class AccountCollectorTest {
            }
        }
 
-       //test no match session captcha（lamdba）
+       //test no to generate captcha picture, session no captcha text
        Producer captchaProducer = (Producer) webApplicationContext.getBean("captchaProducer");
        RequestBuilder request = servletContext -> {
            MockHttpServletRequest mockRequest = new MockHttpServletRequest();
@@ -945,7 +1002,9 @@ public class AccountCollectorTest {
        try {
            mockMvc.perform(request)
                         .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
-                        .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(ApiMessage.CAPTCHA_INCORRECT));
+                        .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(ApiMessage.CAPTCHA_INCORRECT))
+                        .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
+
        } catch (NestedServletException ne) {
            Assert.assertSame(ne.getRootCause().getClass(), AccountErrorException.class);
            Assert.assertEquals(ne.getRootCause().getMessage(), ApiMessage.CAPTCHA_INCORRECT);
@@ -962,19 +1021,22 @@ public class AccountCollectorTest {
     public void testUserForgetPasswordSendEmailUpdateNewTempPasswordSuccess() throws Exception {
         String email = "liushuwei0925@gmail.com";
         String requestBody = "{\"email\":\"" + email + "\"}";
+        System.out.println("input request-body:" + requestBody);
 
         mockMvc.perform(
                 MockMvcRequestBuilders.post(API_ACCOUNT_FORGET_PASSWORD)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(requestBody)
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
-         .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""));
+         .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
 
+        //web container get thread poor executor object
         ThreadPoolTaskExecutor taskExecutor = (ThreadPoolTaskExecutor) webApplicationContext.getBean("taskExecutor");
-        int time = 1;
-        while (taskExecutor.getActiveCount() != 0 || time == 20) {
+        int timer = 1;
+        while (taskExecutor.getActiveCount() != 0 || timer < 20) {
             Thread.sleep(1000);
-            System.out.println("already wait " + (time++) + "s");
+            System.out.println("already wait " + (timer++) + "s");
         }
 
         printSuccessPassTestMehtodMessage();
@@ -982,7 +1044,7 @@ public class AccountCollectorTest {
 
     /**
      * 【/api/account/forget-password】 test user forget password send email update new temp password throw exception
-     *      - request param check
+     *      - request param error, no norm
      *      - database exception
      */
     @Test
@@ -992,20 +1054,22 @@ public class AccountCollectorTest {
 
         for (String param: parmas) {
             String requestBody = "{\"email\":\"" + param + "\"}";
+            System.out.println("input request-body: " + requestBody);
 
             try {
                 mockMvc.perform(
                         MockMvcRequestBuilders.post(API_ACCOUNT_FORGET_PASSWORD)
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(requestBody)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(requestBody)
                 ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
-                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists());
+                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists())
+                 .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
+
             } catch (NestedServletException ne) {
                 Assert.assertThat(ne.getRootCause(),
                         CoreMatchers.anyOf(
                                 CoreMatchers.instanceOf(ParamsErrorException.class),
-                                CoreMatchers.instanceOf(AccountErrorException.class),
-                                CoreMatchers.instanceOf(DatabaseOperationFailException.class)
+                                CoreMatchers.instanceOf(AccountErrorException.class)
                         )
                 );
             }

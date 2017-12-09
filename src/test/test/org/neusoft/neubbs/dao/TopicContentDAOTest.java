@@ -2,108 +2,175 @@ package test.org.neusoft.neubbs.dao;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.neusoft.neubbs.controller.handler.SwitchDataSourceHandler;
 import org.neusoft.neubbs.dao.ITopicContentDAO;
+import org.neusoft.neubbs.dao.ITopicDAO;
 import org.neusoft.neubbs.entity.TopicContentDO;
+import org.neusoft.neubbs.entity.TopicDO;
 import org.neusoft.neubbs.utils.JsonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.transaction.Transactional;
+
 /**
- * ITopicContentDAO 测试用例
+ * 测试 ITopicContentDAO 接口
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:spring-context.xml"})
 public class TopicContentDAOTest {
 
     @Autowired
-    ITopicContentDAO topicContentDAO;
+    private ITopicDAO topicDAO;
+
+    @Autowired
+    private ITopicContentDAO topicContentDAO;
+
+
+    /**
+     * 保存话题内容至数据库
+     *      - need exist
+     *           - fu_id from forum_user
+     *           - ftcg_id from forum_topic_category
+     *           - ft_id from forum_topic
+     *
+     * @return TopicContent 数据库保存后，重新查询的话题内容
+     */
+    private TopicContentDO savaTestTopicContentDOToDatabase() {
+        //build TopicDO, sava database
+        TopicDO topic = new TopicDO();
+            topic.setUserid(1);
+            topic.setCategoryid(1);
+            topic.setTitle("topic title");
+        Assert.assertEquals(1, topicDAO.saveTopic(topic));
+
+        //build TopicContentDO, sava database
+        TopicContentDO topicContent = new TopicContentDO();
+            topicContent.setTopicid(topic.getId());
+            topicContent.setContent("topic content");
+        Assert.assertEquals(1, topicContentDAO.saveTopicContent(topicContent));
+
+        return topicContentDAO.getTopicContentByTopicId(topic.getId());
+    }
+
 
     @BeforeClass
     public static void init() {
+        //set local database source
         SwitchDataSourceHandler.setDataSourceType(SwitchDataSourceHandler.LOCALHOST_DATA_SOURCE_MYSQL);
     }
 
     /**
-     * 插入话题内容
-     *      - 话题 id，外键约束
-     */
-    @Ignore
-    public void testSaveTopiContent(){
-        TopicContentDO topicContent = new TopicContentDO();
-            topicContent.setTopicid(1);
-            topicContent.setContent("主题内容");
-
-        Assert.assertNotEquals(topicContentDAO.saveTopicContent(topicContent), 0);
-        System.out.println("保存话题内容：" + JsonUtil.toJSONStringByObject(topicContent));
-    }
-
-    /**
-     * topicid 删除话题内容
-     */
-    @Ignore
-    public void test2_RemoveTopicContentById(){
-       TopicContentDO topicContent = new TopicContentDO();
-            topicContent.setTopicid(2);
-            topicContent.setContent("被删除的主题内容");
-
-        Assert.assertNotEquals(topicContentDAO.saveTopicContent(topicContent), 0);
-        Assert.assertNotEquals(topicContentDAO.removeTopicContentById(topicContent.getId()), 0);
-        System.out.println("删除话题 id = " + topicContent.getId());
-    }
-
-    /**
-     * 查询话题内容 id 最大值(最新插入 id)
+     * 测试保存话题
      */
     @Test
-    public void testTopicContentMaxId(){
-        System.out.println("最新话题内容（ftc_id） id = " + topicContentDAO.getTopicContentMaxId());
+    @Transactional
+    public void testSaveTopiContent() {
+        TopicContentDO topicContent = this.savaTestTopicContentDOToDatabase();
+        System.out.println("insert topic content information: "
+                + JsonUtil.toJSONStringByObject(topicContentDAO.getTopicContentByTopicId(topicContent.getTopicid())));
     }
+
     /**
-     * topicid 获取主题内容
+     * 测试删除话题内容
      */
     @Test
-    public void testTopicContentById(){
-       TopicContentDO topicContent = topicContentDAO.getTopicContentById(1);
-       Assert.assertNotNull(topicContent);
-       System.out.println("话题内容信息：" + JsonUtil.toJSONStringByObject(topicContent));
+    @Transactional
+    public void testRemoveTopicContentByTopicId() {
+        TopicContentDO topicContent = this.savaTestTopicContentDOToDatabase();
+        int topicId = topicContent.getTopicid();
+        Assert.assertEquals(1, topicContentDAO.removeTopicContentByTopicId(topicId));
+        Assert.assertNull(topicContentDAO.getTopicContentByTopicId(topicId));
+
+        System.out.println("delete topicid=" + topicContent.getTopicid() + " topic content");
     }
 
     /**
-     * 更新内容
+     * 测试（topicid） 获取话题内容
      */
-    @Ignore
-    public void testUpdateContentById(){
-       String newContent = "新的话题内容";
-       Assert.assertNotEquals(topicContentDAO.updateContentByTopicId(1, newContent), 0);
+    @Test
+    @Transactional
+    public void testTopicContentByTopicId() {
+       TopicContentDO topicContent = this.savaTestTopicContentDOToDatabase();
+
+       TopicContentDO selectTopicContent = topicContentDAO.getTopicContentByTopicId(topicContent.getTopicid());
+       Assert.assertNotNull(selectTopicContent);
+
+       System.out.println("get topic content information： "
+               + JsonUtil.toJSONStringByObject(selectTopicContent));
     }
 
     /**
-     * 更新阅读数量（自动 +1）
+     * 测试更新话题内容
      */
-    @Ignore
-    public void testUpdateReadById(){
-        Assert.assertNotEquals(topicContentDAO.updateReadAddOneByTopicId(1), 0);
+    @Test
+    @Transactional
+    public void testUpdateContentById() {
+        TopicContentDO topicContent = this.savaTestTopicContentDOToDatabase();
+
+        int topicId = topicContent.getTopicid();
+        String newContent = "new topic content";
+        Assert.assertEquals(1, topicContentDAO.updateContentByTopicId(topicId, newContent));
+        Assert.assertEquals(newContent, topicContentDAO.getTopicContentByTopicId(topicId).getContent());
+
+        System.out.println("update topicId=" + topicId + " topic content=<" + newContent + "> success!");
     }
 
     /**
-     * 更新赞同数（自动 +1）
+     * 测试更新阅读数量（自动 +1）
      */
-    @Ignore
-    public void testUpdateAgreeAddOneByTopicId(){
-        Assert.assertNotEquals(topicContentDAO.updateAgreeAddOneByTopicId(1), 0);
+    @Test
+    @Transactional
+    public void testUpdateReadById() {
+        TopicContentDO topicContent = this.savaTestTopicContentDOToDatabase();
+
+        int topicId = topicContent.getTopicid();
+        int beforeRead = topicContent.getRead();
+        Assert.assertEquals(1, topicContentDAO.updateReadAddOneByTopicId(topicId));
+
+        int afterRead = topicContentDAO.getTopicContentByTopicId(topicId).getRead();
+        Assert.assertEquals(beforeRead + 1, afterRead);
+
+        System.out.println("update topicId=" + topicId + " topic content read+1 success!");
     }
 
     /**
-     * 更新赞同数（自动 -1）
+     * 测试更新喜欢人数（自动 +1）
      */
-    @Ignore
-    public void test56_updateAgreeCutOneByTopicId(){
-        Assert.assertNotEquals(topicContentDAO.updateAgreeCutOneByTopicId(1), 0);
+    @Test
+    @Transactional
+    public void testUpdateAgreeAddOneByTopicId() {
+        TopicContentDO topicContent = this.savaTestTopicContentDOToDatabase();
+
+        int topicId = topicContent.getTopicid();
+        int beforeLike = topicContent.getLike();
+        Assert.assertEquals(1, topicContentDAO.updateLikeAddOneByTopicId(topicId));
+
+        int affterLike = topicContentDAO.getTopicContentByTopicId(topicId).getLike();
+        Assert.assertEquals(beforeLike + 1, affterLike);
+
+        System.out.println("update topicId=" + topicId + " topic content like+1 success!");
+    }
+
+    /**
+     * 测试更新喜欢人数（自动 -1）
+     */
+    @Test
+    @Transactional
+    public void test56_updateAgreeCutOneByTopicId() {
+        TopicContentDO topicContent = this.savaTestTopicContentDOToDatabase();
+
+        int topicId = topicContent.getTopicid();
+        int beforeLike = topicContent.getLike();
+        Assert.assertEquals(1, topicContentDAO.updateLikeCutOneByTopicId(topicId));
+
+        int afterLike = topicContentDAO.getTopicContentByTopicId(topicId).getLike();
+        Assert.assertEquals(beforeLike - 1, afterLike);
+
+        System.out.println("update topicId=" + topicId + " topic content like-1 success!");
     }
 
 }

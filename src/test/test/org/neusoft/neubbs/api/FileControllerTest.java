@@ -104,7 +104,8 @@ public class FileControllerTest {
                             .file(file)
                             .cookie(new Cookie(ParamConst.AUTHENTICATION, authentication))
             ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
-             .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(ApiMessage.UPLOAD_SUCCESS));
+             .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(ApiMessage.UPLOAD_SUCCESS))
+             .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
 
            System.out.println("upload " + file.getOriginalFilename() + " success!");
         }
@@ -152,7 +153,9 @@ public class FileControllerTest {
                     MockMvcRequestBuilders.fileUpload(apiUrl)
             ).andExpect(MockMvcResultMatchers.status().is(200))
              .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
-             .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(ApiMessage.NO_PERMISSION));
+             .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(ApiMessage.NO_PERMISSION))
+             .andExpect(MockMvcResultMatchers.jsonPath("$.success").exists());
+
         }catch (NestedServletException ne) {
             Assert.assertThat(ne.getRootCause(), CoreMatchers.instanceOf(AccountErrorException.class));
             Assert.assertEquals(ne.getRootCause().getMessage(), ApiMessage.NO_PERMISSION);
@@ -181,14 +184,17 @@ public class FileControllerTest {
                             .cookie(new Cookie(ParamConst.AUTHENTICATION, authentication))
                 ).andExpect(MockMvcResultMatchers.status().is(200))
                  .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
-                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists());
+                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists())
+                 .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
 
             } catch (NestedServletException ne) {
                 Assert.assertThat(ne.getRootCause(),
-                        CoreMatchers.anyOf(CoreMatchers.instanceOf(FileUploadErrorException.class),
+                        CoreMatchers.anyOf(
+                                CoreMatchers.instanceOf(FileUploadErrorException.class),
                                 CoreMatchers.instanceOf(AccountErrorException.class),
                                 CoreMatchers.instanceOf(DatabaseOperationFailException.class),
-                                CoreMatchers.instanceOf(FtpServiceErrorException.class))
+                                CoreMatchers.instanceOf(FtpServiceErrorException.class)
+                        )
                 );
             }
         }
