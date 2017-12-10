@@ -144,8 +144,10 @@ public final class FtpUtil {
                 continue;
             }
 
-            //no exist directory, return false and create success, return true
+            //already exist directory, return false,
             ftpClient.makeDirectory(path);
+
+            //no exist directory, return false
             ftpClient.changeWorkingDirectory(path);
         }
 
