@@ -296,14 +296,6 @@ public class TopicServiceImpl implements ITopicService {
             topicInfoMap.put(ParamConst.USER, authorUserMap);
             topicInfoMap.put(ParamConst.LAST_REPLY_USER, lastReplyUserMap);
 
-            //if user input exist categoryNick or username param, delete page display filed
-            if (categoryNick != null) {
-                topicInfoMap.remove(ParamConst.CATEGORY);
-            }
-            if (username != null) {
-                topicInfoMap.remove(ParamConst.USER);
-            }
-
             resultTopicList.add(topicInfoMap);
         }
 
