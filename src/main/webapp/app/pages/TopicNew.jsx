@@ -18,7 +18,7 @@ class TopicNew extends Component {
     this.props.actions.createNewTopic({
       title,
       content,
-      category: 'test', // TODO: need to fix
+      category: 'school', // TODO: need to fix
     })
   }
 

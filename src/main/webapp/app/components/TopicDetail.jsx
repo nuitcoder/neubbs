@@ -72,7 +72,7 @@ const TopicDetail = ({ topic }) => {
       <HeaderWrapper>
         <Left>
           <Title>
-            <Category to="#">{topic.category}</Category>
+            <Category to="#">{topic.category.name}</Category>
             {topic.title}
           </Title>
           <Info>
@@ -83,7 +83,7 @@ const TopicDetail = ({ topic }) => {
                 time: <FormattedRelative value={topic.createtime} />,
               }}
             />
-            {topic.replies != 0 &&
+            {topic.replies !== 0 &&
               <FormattedMessage
                 id="topic.lastreply.text"
                 values={{

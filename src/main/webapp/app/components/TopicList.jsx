@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { Col } from 'react-bootstrap'
 import styled from 'styled-components'
 import InfiniteScroll from 'react-infinite-scroller'
+import _ from 'lodash'
 
 import Loader from './Loader'
 import TopicItem from './TopicItem'
@@ -22,6 +23,7 @@ const TopicList = (props) => {
     )
   }
 
+  const topics = _.uniqBy(props.data, 'topicid')
   return (
     <Col md={9}>
       <Wrapper>
@@ -31,7 +33,7 @@ const TopicList = (props) => {
           loadMore={props.loadMore}
           loader={<Loader size={10} />}
         >
-          {props.data.map(item => {
+          {topics.map(item => {
             return <TopicItem key={item.topicid} topic={item} />
           })}
         </InfiniteScroll>

@@ -71,7 +71,8 @@ export function* fetchTopicDetailSaga(action) {
   const { data } = yield call(api.topics.fetchTopicDetail, { id })
   try {
     if (data.success) {
-      yield put({ type: types.FETCH_TOPIC_DEDAIL_SUCCESS, payload: data.model })
+      // TODO: need to fix
+      yield put({ type: types.FETCH_TOPIC_DEDAIL_SUCCESS, payload: Object.assign(data.model, { topicid: id }) })
     } else {
       yield call(handleError, action, data)
     }

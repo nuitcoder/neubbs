@@ -95,12 +95,12 @@ const TopicItem = (props) => {
       </Left>
       <Center>
         <Header>
-          <Category>{topic.category}</Category>
+          <Category>{topic.category.name}</Category>
           <Title to={url}>{topic.title}</Title>
         </Header>
         <Info>
           <Username to="#">{topic.user.username}</Username>
-          {topic.replies == 0 ?
+          {topic.replies === 0 ?
             <FormattedMessage
               id="topic.createtime.text"
               values={{

@@ -51,7 +51,7 @@ const StyledCodeMirror = styled(CodeMirror)`
 `
 
 const StyledMarkdown = styled(Markdown)`
-  min-height: ${props => props.minHeight}px;
+  min-height: ${props => props.minHeight + 1}px;
   padding: 4px;
   border: 1px solid #ddd;
   border-top: 0;
@@ -98,7 +98,7 @@ class Editor extends Component {
                 <FormattedMessage id="form.editor.preview" />
               </StyledNavItem>
             </Nav>
-            <Tab.Content animation>
+            <Tab.Content animation={false}>
               <Tab.Pane eventKey={tabs.EDIT}>
                 <StyledCodeMirror
                   minHeight={minHeight}
