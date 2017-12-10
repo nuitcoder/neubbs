@@ -134,4 +134,21 @@ public class TopicCategoryDAOTest {
 
         System.out.println("get all category list success!");
     }
+
+    /**
+     * 测试修改话题分类描述
+     */
+    @Test
+    @Transactional
+    public void testUpdateDescriptionByNick() {
+        TopicCategoryDO category = this.savaTestTopicCategoryDOToDatabase();
+
+        String newDescription = "this is new category description";
+        Assert.assertEquals(1, topicCategoryDAO.updateDescriptionByNick(category.getNick(), newDescription));
+
+        Assert.assertEquals(newDescription, topicCategoryDAO.getTopicCategoryById(category.getId()).getDescription());
+
+        System.out.println("update categoryNick=" + category.getNick()
+                + " category description=<" + newDescription + ">");
+    }
 }

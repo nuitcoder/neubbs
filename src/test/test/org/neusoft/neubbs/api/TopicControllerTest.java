@@ -166,12 +166,11 @@ public class TopicControllerTest {
         //judge $.model
         Map modelMap = (Map) resultMap.get("model");
         this.confirmMapShouldHavaKeyItems(modelMap,
-                "title", "replies", "lastreplytime", "createtime", "content",
+                "title", "replies", "lastreplytime", "createtime", "topicid" ,"content",
                 "read", "like", "category", "user", "lastreplyuser", "replys");
 
         //judge $.model.category
-        this.confirmMapShouldHavaKeyItems((Map) modelMap.get("category"), "id", "name");
-
+        this.confirmMapShouldHavaKeyItems((Map) modelMap.get("category"), "id", "name", "description");
         //judge $.model.user
         Map modelUserMap = (Map) modelMap.get("user");
         this.confirmMapShouldHavaKeyItems((Map) modelMap.get("user"), "username", "avator");
@@ -185,7 +184,7 @@ public class TopicControllerTest {
             //get first reply map
             Map firstReplyMap = (Map) modelReplysList.get(0);
             this.confirmMapShouldHavaKeyItems(firstReplyMap,
-                    "content", "agree", "oppose", "createtime", "replyid", "user");
+                    "topicid", "content", "agree", "oppose", "createtime", "replyid", "user");
 
             //judge $.model.replys[0].user
             this.confirmMapShouldHavaKeyItems( (Map) firstReplyMap.get("user"), "username", "avator");
@@ -338,7 +337,7 @@ public class TopicControllerTest {
                 "content", "read", "like", "category", "user", "lastreplyuser");
 
         //judge $.mode.category
-        this.confirmMapShouldHavaKeyItems((Map) firstModelListMap.get("category"), "id", "name");
+        this.confirmMapShouldHavaKeyItems((Map) firstModelListMap.get("category"), "id", "name", "description");
 
         //judge $.model.user
         this.confirmMapShouldHavaKeyItems((Map) firstModelListMap.get("user"), "username", "avator");
@@ -529,7 +528,7 @@ public class TopicControllerTest {
 
         //judge $.model[0], is map
         Map firstModelListCategoryMap = (Map) modelList.get(1);
-        this.confirmMapShouldHavaKeyItems(firstModelListCategoryMap, "id", "name");
+        this.confirmMapShouldHavaKeyItems(firstModelListCategoryMap, "id", "name", "description");
 
         printSuccessPassTestMehtodMessage();
     }

@@ -132,16 +132,27 @@ public class InsertTestData {
      */
     private void addTenTopicCategory() {
         String[][] paramsArray = {
-                {"music", "音乐"}, {"game", "游戏"}, {"movie", "电影"}, {"read", "阅读"}, {"life", "生活"},
-                {"school", "校园"}, {"technology", "技术"}, {"recruit", "招聘"}, {"news", "新闻"}, {"neusoft", "东软"}
+                {"music", "音乐", "热爱音乐，热爱生活"}, {"game", "游戏", "LOL, 绝地求生，守望先锋....."},
+                {"movie", "电影", "电影，是由活动照相术和幻灯放映术结合发展起来的一种连续的影像画面"},
+                {"read", "阅读", "阅读是运用语言文字来获取信息，认识世界，发展思维，并获得审美体验的活动"},
+                {"life", "生活", "幸福的意义在哪里，你幸福码？"},
+                {"school", "校园", "那些年，我们读过的那吨书......"},
+                {"technology", "技术", "是指借助于计算机来达到某一目的或解决某个问题的技术"},
+                {"recruit", "招聘", "为最好的你，量身定做！"},
+                {"news", "新闻", "真实、新鲜、重要、趣味可读，时效性极强"},
+                {"neusoft", "东软", "Welcome to Neusoft"}
         };
 
         for (String[] param: paramsArray) {
             String categoryNick = param[0];
             String categoryName = param[1];
+            String categoryDescription = param[2];
 
             topicService.saveCategory(categoryNick, categoryName);
-            System.out.println("add category[nick=" + categoryNick +", name=" + categoryName + "]");
+            System.out.println("add category[nick=" + categoryNick +", name=" + categoryName + "] ");
+
+            topicService.alterTopicCategoryDescription(categoryNick, categoryDescription);
+            System.out.println("alter category description -> <" + categoryDescription + "> ");
         }
 
         System.out.println("*************************** success add 10 topic category! ****************************");
