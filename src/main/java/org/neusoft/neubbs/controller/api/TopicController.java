@@ -114,10 +114,12 @@ public class TopicController {
             paramCheckService.check(ParamConst.NUMBER, limit);
             inputLimit = Integer.parseInt(limit);
         }
-
-        //（mearn: categoryId == categoryNick）idonsider category and username not null 3 condition
-        paramCheckService
-                .checkTwoParamNotNulThreeCondition(ParamConst.CATEGORY, category, ParamConst.USERNAME, username);
+        if (category != null) {
+            paramCheckService.check(ParamConst.TOPIC_CATEGORY_NICK, category);
+        }
+        if (username != null) {
+            paramCheckService.check(ParamConst.USERNAME, username);
+        }
 
         return new PageJsonListDTO(AjaxRequestStatus.SUCCESS,
                 topicService.listTopics(inputLimit, Integer.parseInt(page), category, username));
@@ -141,11 +143,12 @@ public class TopicController {
             paramCheckService.check(ParamConst.NUMBER, limit);
             inputLimit = Integer.parseInt(limit);
         }
-
-        paramCheckService.checkTwoParamNotNulThreeCondition(
-                ParamConst.TOPIC_CATEGORY_NICK, category,
-                ParamConst.USERNAME, username
-        );
+        if (category != null) {
+            paramCheckService.check(ParamConst.TOPIC_CATEGORY_NICK, category);
+        }
+        if (username != null) {
+            paramCheckService.check(ParamConst.USERNAME, username);
+        }
 
         return new PageJsonDTO(AjaxRequestStatus.SUCCESS,
                 ParamConst.TOTAL_PAGES, topicService.countTopicTotalPages(inputLimit, category, username));

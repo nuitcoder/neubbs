@@ -22,19 +22,6 @@ public class ParamCheckServiceImpl implements IParamCheckService {
     }
 
     @Override
-    public void checkTwoParamNotNulThreeCondition(String paramType1, String paramValue1,
-                                                  String paramType2, String paramValue2) {
-        if (paramValue1 != null && paramValue2 != null) {
-            this.check(paramType1, paramValue1);
-            this.check(paramType2, paramValue2);
-        } else if (paramValue1 != null) {
-            this.check(paramType1, paramValue1);
-        } else if (paramValue2 != null) {
-            this.check(paramType2, paramValue2);
-        }
-    }
-
-    @Override
     public void paramsNotNull(String... params) {
         int count = 0;
         for (String param: params) {

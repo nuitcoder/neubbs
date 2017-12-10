@@ -5,9 +5,6 @@ import org.neusoft.neubbs.constant.api.ApiMessage;
 import org.neusoft.neubbs.constant.api.ParamConst;
 import org.neusoft.neubbs.constant.api.SetConst;
 import org.neusoft.neubbs.constant.log.LogWarn;
-import org.neusoft.neubbs.exception.AccountErrorException;
-import org.neusoft.neubbs.exception.DatabaseOperationFailException;
-import org.neusoft.neubbs.exception.TopicErrorException;
 import org.neusoft.neubbs.dao.ITopicCategoryDAO;
 import org.neusoft.neubbs.dao.ITopicContentDAO;
 import org.neusoft.neubbs.dao.ITopicDAO;
@@ -19,9 +16,13 @@ import org.neusoft.neubbs.entity.TopicDO;
 import org.neusoft.neubbs.entity.TopicReplyDO;
 import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.entity.properties.NeubbsConfigDO;
+import org.neusoft.neubbs.exception.AccountErrorException;
+import org.neusoft.neubbs.exception.DatabaseOperationFailException;
+import org.neusoft.neubbs.exception.TopicErrorException;
 import org.neusoft.neubbs.service.ITopicService;
 import org.neusoft.neubbs.utils.JsonUtil;
 import org.neusoft.neubbs.utils.MapFilterUtil;
+import org.neusoft.neubbs.utils.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -270,11 +271,10 @@ public class TopicServiceImpl implements ITopicService {
 
         this.confirmNoExceedTopicNumber(limit, page);
 
-        int categoryId = categoryNick == null
+        int categoryId = StringUtil.isEmpty(categoryNick)
                 ? 0 : this.getTopicCategoryNotNullByNick(categoryNick).getId();
-        int userId = username == null
+        int userId = StringUtil.isEmpty(username)
                 ? 0 : this.getUserNotNullByName(username).getId();
-
 
         List<TopicDO> dbTopicList = this.getTopicList(limit, page, categoryId, userId);
         this.confirmQueryTopicListResultSizeNotZero(dbTopicList);
@@ -284,13 +284,11 @@ public class TopicServiceImpl implements ITopicService {
         for (TopicDO topic : dbTopicList) {
             //get information map (if obj == null, explain database exist garbage data)
             Map<String, Object> topicInfoMap = this.getTopicInfoMap(topic);
-            Map<String, Object> topicContentInfoMap
-                    = this.getTopicContentInfoMap(topicContentDAO.getTopicContentByTopicId(topic.getId()));
+            Map<String, Object> topicContentInfoMap = this.getTopicContentInfoMap(this.getTopicContent(topic.getId()));
             Map<String, Object> topicCategoryInfoMap
-                    = this.getTopicCategoryInfoMap(topicCategoryDAO.getTopicCategoryById(topic.getCategoryid()));
-            Map<String, Object> authorUserMap = this.getTopicUserInfoMap(userDAO.getUserById(topic.getUserid()));
-            Map<String, Object> lastReplyUserMap
-                    = this.getTopicUserInfoMap(userDAO.getUserById(topic.getLastreplyuserid()));
+                    = this.getTopicCategoryInfoMap(this.getTopicCategory(topic.getCategoryid()));
+            Map<String, Object> authorUserMap = this.getTopicUserInfoMap(this.getUser(topic.getUserid()));
+            Map<String, Object> lastReplyUserMap = this.getTopicUserInfoMap(this.getUser(topic.getLastreplyuserid()));
 
             //merge all information map
             topicInfoMap.putAll(topicContentInfoMap);
@@ -469,6 +467,61 @@ public class TopicServiceImpl implements ITopicService {
      * get method
      * ***********************************************
      */
+
+    /**
+     * 获取用户对象
+     *      - 可以为空
+     *
+     * @param userId 用户id
+     * @return UserDO 用户对象
+     */
+    private UserDO getUser(Integer userId) {
+        return userId == null ? null : userDAO.getUserById(userId);
+    }
+
+    /**
+     * 获取话题对象
+     *      - 可以为空
+     *
+     * @param topicId 话题 id
+     * @return TopicDO 话题对象
+     */
+    private TopicDO getTopic(Integer topicId) {
+        return topicId == null ? null : topicDAO.getTopicById(topicId);
+    }
+
+    /**
+     * 获取话题内容对象
+     *      - 可以为空
+     *
+     * @param topicId 话题 id
+     * @return TopicContentDO 话题内容对象
+     */
+    private TopicContentDO getTopicContent(Integer topicId) {
+        return topicId == null ? null : topicContentDAO.getTopicContentByTopicId(topicId);
+    }
+
+    /**
+     * 获取话题分类对象
+     *      - 可以为空
+     *
+     * @param categoryId 分类id
+     * @return TopicCategoryDO 话题分类对象
+     */
+    private TopicCategoryDO getTopicCategory(Integer categoryId) {
+        return categoryId == null ? null : topicCategoryDAO.getTopicCategoryById(categoryId);
+    }
+
+    /**
+     * 获取话题回复对象
+     *      - 可以为空
+     *
+     * @param replyId 回复 id
+     * @return TopicReplyDO 话题回复对象
+     */
+    private TopicReplyDO getTopicReply(Integer replyId) {
+        return replyId == null ? null : topicReplyDAO.getTopicReplyById(replyId);
+    }
 
     /**
      * 获取话题，不能为空

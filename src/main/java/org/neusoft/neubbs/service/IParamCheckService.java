@@ -17,22 +17,6 @@ public interface IParamCheckService {
     void check(String paramType, String paramValue);
 
     /**
-     * 检查 2 个参数不能为空的 3 种情况（执行相应参数检查）
-     *      - 参数 1 和 参数 2 都不为空
-     *      - 参数 1 不为空，参数 2 为空
-     *      - 参数 1 为空，参数 2不为空
-     *
-     *      -【/topics 接口】 category 和 username
-     *
-     * @param paramType1 参数类型1
-     * @param paramValue1 参数值1
-     * @param paramType2 参数类型2
-     * @param paramValue2 参数类型2
-     */
-    void checkTwoParamNotNulThreeCondition(String paramType1, String paramValue1,
-                                           String paramType2, String paramValue2);
-
-    /**
      * 参数集合不能为空
      *      - 使用可变参数
      *
