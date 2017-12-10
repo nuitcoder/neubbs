@@ -589,7 +589,9 @@ public class TopicControllerTest {
      *      - reqest param error, no norm
      *          - [✔] null check
      *          - [ ] param norm
-     *              - category nick no is pure english
+     *              - [✔] topic category nick no is pure english
+     *              - [ ] topic length length limit(5 <= lenth <= 50)
+     *              - [✔] topic content length limit(50 <= lenth <= 100000)
      *      - database exception
      *          - [ ] no user (get user from cookie)
      *          - [ ] no category
@@ -613,15 +615,25 @@ public class TopicControllerTest {
         }
 
         //reqest param error, no norm
-        String category = "test category";
+        String category = "testCategory";
         String title = "test title";
         String content = "test content";
         String[][] params = {
                 {null, null, null}, {null, title, content}, {category, null, content}, {category, title, null},
-                {"moive 123", title, content}
+                {"moive 123", title, content},
+                {category, title, "testContentLength"}
         };
 
         for (String[] param: params) {
+            if ("testContentLength".equals(param[2])) {
+                //test 100001 topic content length
+                StringBuilder sb = new StringBuilder();
+                for (int i = 1; i <= 100001; i++) {
+                    sb.append("a");
+                }
+                param[2] = sb.toString();
+            }
+
             String requestBody = "{" + this.getJsonField("category", param[0]) + ","
                     + this.getJsonField("title", param[1]) + ","
                     + this.getJsonField("content", param[2]) + "}";
@@ -815,7 +827,7 @@ public class TopicControllerTest {
         int topicId = 1;
         String newCategoryNick = "school";
         String newTitle = "new title";
-        String newContent = "new content";
+        String newContent = "update new content";
 
         String requestBodyJson = "{" + this.getJsonField("topicid", topicId) + ","
                 + this.getJsonField("category", newCategoryNick) + ","

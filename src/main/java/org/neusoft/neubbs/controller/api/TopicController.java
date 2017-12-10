@@ -178,7 +178,7 @@ public class TopicController {
         String topicContent = (String) requestBodyParamsMap.get(ParamConst.CONTENT);
 
         paramCheckService.check(ParamConst.TOPIC_CATEGORY_NICK, category);
-        paramCheckService.check(ParamConst.TITLE, title);
+        paramCheckService.check(ParamConst.TOPIC_TITLE, title);
         paramCheckService.check(ParamConst.TOPIC_CONTENT, topicContent);
 
         //cookie get userid
@@ -273,7 +273,7 @@ public class TopicController {
 
         paramCheckService.check(ParamConst.ID, String.valueOf(topicId));
         paramCheckService.check(ParamConst.TOPIC_CATEGORY_NICK, newCategoryNick);
-        paramCheckService.check(ParamConst.TITLE, newTitle);
+        paramCheckService.check(ParamConst.TOPIC_TITLE, newTitle);
         paramCheckService.check(ParamConst.TOPIC_CONTENT, newTopicContent);
 
         topicService.alterTopicContent(topicId, newCategoryNick, newTitle, newTopicContent);

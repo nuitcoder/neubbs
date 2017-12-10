@@ -33,7 +33,9 @@ public final class RequestParamCheckUtil {
     private static final Integer TWENTY = 20;
     private static final Integer FIFTY = 50;
     private static final Integer ONE_HUNDRED_FIFTY = 150;
+    private static final Integer FIVE_HUNDRED = 500;
     private static final Integer TEN_THOUSAND = 10000;
+    private static final Integer ONE_HUNDRED_THOUSAND = 100000;
 
     private static final String NULL = "null";
 
@@ -81,9 +83,9 @@ public final class RequestParamCheckUtil {
         typeScopeMap.put(ParamConst.CAPTCHA, new Scope(FIVE, FIVE));
         typeScopeMap.put(ParamConst.ID, new Scope(ONE, TEN));
         typeScopeMap.put(ParamConst.NUMBER, new Scope(ONE, TEN));
-        typeScopeMap.put(ParamConst.TITLE, new Scope(ONE, FIFTY));
+        typeScopeMap.put(ParamConst.TOPIC_TITLE, new Scope(FIVE, FIFTY));
         typeScopeMap.put(ParamConst.TOPIC_CATEGORY_NICK, new Scope(ONE, TWENTY));
-        typeScopeMap.put(ParamConst.TOPIC_CONTENT, new Scope(ONE, TEN_THOUSAND));
+        typeScopeMap.put(ParamConst.TOPIC_CONTENT, new Scope(TEN, ONE_HUNDRED_THOUSAND));
         typeScopeMap.put(ParamConst.REPLY_CONTENT, new Scope(ONE, ONE_HUNDRED_FIFTY));
 
         typePatternMap.put(ParamConst.ID, new Pattern("isPureNumber", " （类型）参数不符合规范，必须为纯数字（0 ~ 9）！"));
@@ -157,8 +159,11 @@ public final class RequestParamCheckUtil {
         int min = scope.min;
         int max = scope.max;
         if (!StringUtil.isScope(param, min, max)) {
+            if (param.length() >= FIFTY) {
+                param = param.substring(0, FIFTY) + "......";
+            }
             throw new ParamsErrorException(ApiMessage.PARAM_ERROR)
-                    .log(param + " （ " + type + " 类型）长度不符合范围（" + min + " <= length <=" + max + "）");
+                    .log(param + " （ " + type + " 类型）长度不符合范围（" + min + " <= length <= " + max + "）");
         }
     }
 
