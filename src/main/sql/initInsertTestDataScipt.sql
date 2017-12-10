@@ -30,16 +30,16 @@ INSERT INTO `forum_user` VALUES ('6', 'suvan', '5f1d7a84db00d2fce00b31a7fc73224f
 -- ----------------------------
 -- Records of forum_topic_category
 -- ----------------------------
-INSERT INTO `forum_topic_category` VALUES ('1', 'music', '音乐');
-INSERT INTO `forum_topic_category` VALUES ('2', 'game', '游戏');
-INSERT INTO `forum_topic_category` VALUES ('3', 'movie', '电影');
-INSERT INTO `forum_topic_category` VALUES ('4', 'read', '阅读');
-INSERT INTO `forum_topic_category` VALUES ('5', 'life', '生活');
-INSERT INTO `forum_topic_category` VALUES ('6', 'school', '校园');
-INSERT INTO `forum_topic_category` VALUES ('7', 'technology', '技术');
-INSERT INTO `forum_topic_category` VALUES ('8', 'recruit', '招聘');
-INSERT INTO `forum_topic_category` VALUES ('9', 'news', '新闻');
-INSERT INTO `forum_topic_category` VALUES ('10', 'neusoft', '东软');
+INSERT INTO `forum_topic_category` VALUES ('1', 'music', '音乐', '热爱音乐，热爱生活');
+INSERT INTO `forum_topic_category` VALUES ('2', 'game', '游戏', 'LOL, 绝地求生，守望先锋.....');
+INSERT INTO `forum_topic_category` VALUES ('3', 'movie', '电影', '电影，是由活动照相术和幻灯放映术结合发展起来的一种连续的影像画面');
+INSERT INTO `forum_topic_category` VALUES ('4', 'read', '阅读', '阅读是运用语言文字来获取信息，认识世界，发展思维，并获得审美体验的活动');
+INSERT INTO `forum_topic_category` VALUES ('5', 'life', '生活', '幸福的意义在哪里，你幸福码？');
+INSERT INTO `forum_topic_category` VALUES ('6', 'school', '校园', '那些年，我们读过的那吨书......');
+INSERT INTO `forum_topic_category` VALUES ('7', 'technology', '技术', '是指借助于计算机来达到某一目的或解决某个问题的技术');
+INSERT INTO `forum_topic_category` VALUES ('8', 'recruit', '招聘', '为最好的你，量身定做！');
+INSERT INTO `forum_topic_category` VALUES ('9', 'news', '新闻', '真实、新鲜、重要、趣味可读，时效性极强');
+INSERT INTO `forum_topic_category` VALUES ('10', 'neusoft', '东软', 'Welcome to Neusoft');
 
 
 -- ----------------------------

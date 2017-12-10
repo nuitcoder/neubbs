@@ -94,6 +94,7 @@ CREATE TABLE `forum_topic_category` (
   `ftcg_id` INT(11) NOT NULL AUTO_INCREMENT comment '话题分类id',
   `ftcg_nick` VARCHAR(100) DEFAULT NULL comment '分类昵称（全英文）',
   `ftcg_name` VARCHAR(100) DEFAULT NULL comment '分类名字',
+  `ftcg_description` VARCHAR(150) DEFAULT 'no' comment '分类描述',
   PRIMARY KEY (`ftcg_id`),
   UNIQUE KEY `ftcg_nick` (`ftcg_nick`),
   UNIQUE KEY `ftcg_name` (`ftcg_name`)
