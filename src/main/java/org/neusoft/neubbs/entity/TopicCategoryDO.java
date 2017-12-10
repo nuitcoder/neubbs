@@ -10,6 +10,7 @@ public class TopicCategoryDO {
     private Integer id;
     private String nick;
     private String name;
+    private String description;
 
     /**
      * Getter
@@ -22,6 +23,9 @@ public class TopicCategoryDO {
     }
     public String getName() {
         return name;
+    }
+    public String getDescription() {
+        return description;
     }
 
     /**
@@ -36,6 +40,9 @@ public class TopicCategoryDO {
     public void setName(String name) {
         this.name = name;
     }
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     @Override
     public String toString() {
@@ -43,6 +50,7 @@ public class TopicCategoryDO {
                 + "+ id=" + id
                 + ",+ nick='" + nick + '\''
                 + ",+ name='" + name + '\''
+                + ",+ description'" + description + "\'"
                 + '}';
     }
 }

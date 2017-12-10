@@ -5,6 +5,7 @@
       <id column="ftcg_id" property="id" javaType="Integer" jdbcType="INTEGER" />
       <result column="ftcg_nick" property="nick" javaType="String" jdbcType="VARCHAR" />
       <result column="ftcg_name" property="name" javaType="String" jdbcType="VARCHAR" />
+      <result column="ftcg_description" property="description" javaType="String" jdbcType="VARCHAR" />
    </resultMap>
 
    <insert id="saveTopicCategory" parameterType="org.neusoft.neubbs.entity.TopicCategoryDO" useGeneratedKeys="true" keyProperty="ftcg_id">
@@ -21,20 +22,24 @@
    </delete>
 
    <select id="getTopicCategoryById" parameterType="java.lang.Integer" resultMap="TopicCategoryMap">
-      SELECT ftcg_id, ftcg_nick, ftcg_name FROM forum_topic_category
+      SELECT ftcg_id, ftcg_nick, ftcg_name, ftcg_description FROM forum_topic_category
       WHERE ftcg_id = #{param1, jdbcType = VARCHAR}
    </select>
    <select id="getTopicCategoryByNick" parameterType="java.lang.String" resultMap="TopicCategoryMap">
-      SELECT ftcg_id, ftcg_nick, ftcg_name FROM forum_topic_category
+      SELECT ftcg_id, ftcg_nick, ftcg_name, ftcg_description FROM forum_topic_category
       WHERE ftcg_nick = #{param1, jdbcType = VARCHAR}
    </select>
    <select id="getTopicCategoryByName" parameterType="java.lang.String" resultMap="TopicCategoryMap">
-      SELECT ftcg_id, ftcg_nick, ftcg_name FROM forum_topic_category
+      SELECT ftcg_id, ftcg_nick, ftcg_name, ftcg_description FROM forum_topic_category
       WHERE ftcg_name = #{param1, jdbcType = VARCHAR}
    </select>
-
    <select id="listAllTopicCategory" parameterType="java.lang.Integer" resultMap="TopicCategoryMap">
-       SELECT ftcg_id, ftcg_nick, ftcg_name FROM forum_topic_category
+       SELECT ftcg_id, ftcg_nick, ftcg_name, ftcg_description FROM forum_topic_category
    </select>
+
+   <update id="updateDescriptionByNick">
+      UPDATE forum_topic_category SET ftcg_description = #{param2, jdbcType = VARCHAR}
+      WHERE ftcg_nick = #{param1, jdbcType = VARCHAR}
+   </update>
 </mapper>
 

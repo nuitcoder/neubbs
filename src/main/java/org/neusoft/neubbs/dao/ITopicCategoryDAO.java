@@ -47,7 +47,6 @@ public interface ITopicCategoryDAO {
      */
     TopicCategoryDO getTopicCategoryByNick(String categoryNick);
 
-
     /**
      * (name) 获取话题分类
      *
@@ -62,4 +61,13 @@ public interface ITopicCategoryDAO {
      * @return List 话题分类列表
      */
     List<TopicCategoryDO> listAllTopicCategory();
+
+    /**
+     * 更新话题分类描述
+     *
+     * @param categoryNick 话题昵称（英文）
+     * @param newDescription 新的描述内容
+     * @return int 影响行数
+     */
+    int updateDescriptionByNick(String categoryNick, String newDescription);
 }

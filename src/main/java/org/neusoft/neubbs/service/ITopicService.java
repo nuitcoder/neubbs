@@ -142,4 +142,12 @@ public interface ITopicService {
      * @return int 当前话题点赞数
      */
     int alterTopicLikeAddOne(int topicId);
+
+    /**
+     * 修改话题分类描述
+     *
+     * @param categoryNick 话题分类昵称（英文）
+     * @param newDescription 新的话题分类描述
+     */
+    void alterTopicCategoryDescription(String categoryNick, String newDescription);
 }

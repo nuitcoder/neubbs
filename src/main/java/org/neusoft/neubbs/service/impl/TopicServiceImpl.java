@@ -359,6 +359,16 @@ public class TopicServiceImpl implements ITopicService {
         return beforeTopicLike + 1;
     }
 
+    @Override
+    public void alterTopicCategoryDescription(String categoryNick, String newDescription) {
+        this.getTopicCategoryNotNullByNick(categoryNick);
+
+        if (topicCategoryDAO.updateDescriptionByNick(categoryNick, newDescription) == 0) {
+            throw new DatabaseOperationFailException(categoryNick + ApiMessage.DATABASE_EXCEPTION)
+                    .log(LogWarn.TOPIC_19);
+        }
+    }
+
     /*
      * ***********************************************
      * private method

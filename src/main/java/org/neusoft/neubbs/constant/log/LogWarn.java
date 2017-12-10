@@ -80,6 +80,8 @@ public final class LogWarn {
             + "，话题数为 0，获取的话题列表长度为 0";
     public static final String TOPIC_18 = " 根据筛选条件（limit, category, username）, 话题数为 0， 话题总页数为 0";
 
+    public static final String TOPIC_19 = " 修改话题分类的描述失败！";
+
     /******************************Ftp Service*********************************/
     public static final String FTP_01 = "注册用户，ftp 服务器新建 个人目录，抛出 IO 异常";
     public static final String FTP_02 = "上传用户头像图片，抛出 IO 异常";
