@@ -44,6 +44,7 @@ public final class ParamConst {
     public static final String TOPIC_CONTENT = "topicContent";
 
     public static final String CONTENT = "content";
+    public static final String LIKE = "like";
 
     public static final String NUMBER = "number";
 

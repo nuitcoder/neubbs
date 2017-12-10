@@ -301,4 +301,21 @@ public class TopicController {
 
        return new PageJsonDTO(AjaxRequestStatus.SUCCESS);
    }
+
+    /**
+     * 修改话题点赞数量
+     *
+     * @param requestBodyParamsMap request-body内JSON数据
+     * @return PageJsonDTO 页面传输对象
+     */
+   @LoginAuthorization @AccountActivation
+   @RequestMapping(value = "/topic/like", method = RequestMethod.POST, consumes = "application/json")
+   @ResponseBody
+   public PageJsonDTO topicLike(@RequestBody Map<String, Object> requestBodyParamsMap) {
+       Integer topicId = (Integer) requestBodyParamsMap.get(ParamConst.TOPIC_ID);
+
+       paramCheckService.check(ParamConst.TOPIC_ID, String.valueOf(topicId));
+
+       return new PageJsonDTO(AjaxRequestStatus.SUCCESS, ParamConst.LIKE, topicService.alterTopicLikeAddOne(topicId));
+   }
 }

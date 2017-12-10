@@ -134,4 +134,12 @@ public interface ITopicService {
      * @param topicId 话题id
      */
     void alterTopicReadAddOne(int topicId);
+
+    /**
+     * 修改话题喜欢人数（+1）
+     *
+     * @param topicId 话题id
+     * @return int 当前话题点赞数
+     */
+    int alterTopicLikeAddOne(int topicId);
 }

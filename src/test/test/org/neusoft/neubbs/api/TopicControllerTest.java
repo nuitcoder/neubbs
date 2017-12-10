@@ -9,9 +9,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.neusoft.neubbs.constant.api.ApiMessage;
 import org.neusoft.neubbs.constant.api.ParamConst;
-import org.neusoft.neubbs.exception.AccountErrorException;
-import org.neusoft.neubbs.exception.ParamsErrorException;
-import org.neusoft.neubbs.exception.TopicErrorException;
 import org.neusoft.neubbs.controller.handler.SwitchDataSourceHandler;
 import org.neusoft.neubbs.dao.ITopicCategoryDAO;
 import org.neusoft.neubbs.dao.ITopicContentDAO;
@@ -22,6 +19,9 @@ import org.neusoft.neubbs.entity.TopicContentDO;
 import org.neusoft.neubbs.entity.TopicDO;
 import org.neusoft.neubbs.entity.TopicReplyDO;
 import org.neusoft.neubbs.entity.UserDO;
+import org.neusoft.neubbs.exception.AccountErrorException;
+import org.neusoft.neubbs.exception.ParamsErrorException;
+import org.neusoft.neubbs.exception.TopicErrorException;
 import org.neusoft.neubbs.service.ITopicService;
 import org.neusoft.neubbs.utils.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -912,5 +912,56 @@ public class TopicControllerTest {
      *          - [ ] param norm
      *      - database exception
      *          - [ ] no topic
+     */
+
+    /**
+     * 【/api/topic/like】test update topic content like success
+     *      - need  @LoginAuthorization @AccountActivation
+     */
+    @Test
+    @Transactional
+    public void testUpdateTopicContentLikeSuccess() throws Exception {
+        int topicId = 1;
+        String requestBody = "{" + this.getJsonField("topicid", topicId) + "}";
+        System.out.println("input request-body: "  + requestBody);
+
+        TopicContentDO beforeTopicContent = topicContentDAO.getTopicContentByTopicId(topicId);
+        int beforeTopicContentLike = beforeTopicContent.getLike();
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.post("/api/topic/like")
+                        .cookie(this.getAlreadLoginUserCookie())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody)
+        ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model.like")
+                 .value(CoreMatchers.allOf(
+                         CoreMatchers.notNullValue(),
+                         CoreMatchers.instanceOf(Integer.class)
+                 )
+         ));
+
+        //compare database data
+        TopicContentDO afterTopicContent = topicContentDAO.getTopicContentByTopicId(topicId);
+        int afterTopikcContentLike = afterTopicContent.getLike();
+
+        Assert.assertEquals(beforeTopicContentLike + 1, (int) afterTopikcContentLike);
+
+        printSuccessPassTestMehtodMessage();
+    }
+
+    /**
+     * 【/api/topic/like】test update topic content like throw exception
+     *      - permission exception
+     *          - [ ] no login
+     *          - [ ] account no activate
+     *      - request param error, no norm
+     *          - [ ] null
+     *          - [ ] param norm
+     *      - database exception
+     *          - [ ] no topic
+     *          - [ ] alter forum_topic_content 'like' field fail
      */
 }

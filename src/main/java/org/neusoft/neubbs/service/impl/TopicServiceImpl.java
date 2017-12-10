@@ -363,6 +363,18 @@ public class TopicServiceImpl implements ITopicService {
         }
     }
 
+    @Override
+    public int alterTopicLikeAddOne(int topicId) {
+        TopicContentDO topicContent = this.getTopicContentNotNull(topicId);
+        int beforeTopicLike = topicContent.getLike();
+
+        if (topicContentDAO.updateLikeAddOneByTopicId(topicId) == 0) {
+            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.TOPIC_07);
+        }
+
+        return beforeTopicLike + 1;
+    }
+
     /*
      * ***********************************************
      * private method
