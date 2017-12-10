@@ -4,7 +4,7 @@ import org.neusoft.neubbs.constant.api.ApiMessage;
 import org.neusoft.neubbs.constant.api.ParamConst;
 import org.neusoft.neubbs.constant.api.SetConst;
 import org.neusoft.neubbs.constant.log.LogWarn;
-import org.neusoft.neubbs.controller.exception.TokenErrorException;
+import org.neusoft.neubbs.exception.TokenErrorException;
 import org.neusoft.neubbs.entity.properties.NeubbsConfigDO;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;

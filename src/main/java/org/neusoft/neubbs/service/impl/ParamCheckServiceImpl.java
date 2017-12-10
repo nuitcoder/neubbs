@@ -2,7 +2,7 @@ package org.neusoft.neubbs.service.impl;
 
 import org.neusoft.neubbs.constant.api.ApiMessage;
 import org.neusoft.neubbs.constant.api.ParamConst;
-import org.neusoft.neubbs.controller.exception.ParamsErrorException;
+import org.neusoft.neubbs.exception.ParamsErrorException;
 import org.neusoft.neubbs.service.IParamCheckService;
 import org.neusoft.neubbs.utils.PatternUtil;
 import org.neusoft.neubbs.utils.RequestParamCheckUtil;

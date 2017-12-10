@@ -3,7 +3,7 @@ package org.neusoft.neubbs.service.impl;
 import org.neusoft.neubbs.constant.api.ApiMessage;
 import org.neusoft.neubbs.constant.api.SetConst;
 import org.neusoft.neubbs.constant.log.LogWarn;
-import org.neusoft.neubbs.controller.exception.FileUploadErrorException;
+import org.neusoft.neubbs.exception.FileUploadErrorException;
 import org.neusoft.neubbs.service.IFileTreatService;
 import org.neusoft.neubbs.utils.PatternUtil;
 import org.springframework.stereotype.Service;

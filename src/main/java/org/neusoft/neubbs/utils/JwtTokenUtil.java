@@ -10,7 +10,7 @@ import org.neusoft.neubbs.constant.api.ParamConst;
 import org.neusoft.neubbs.constant.api.SetConst;
 import org.neusoft.neubbs.constant.log.LogWarn;
 import org.neusoft.neubbs.constant.secret.SecretInfo;
-import org.neusoft.neubbs.controller.exception.TokenErrorException;
+import org.neusoft.neubbs.exception.TokenErrorException;
 import org.neusoft.neubbs.entity.UserDO;
 
 import java.io.UnsupportedEncodingException;

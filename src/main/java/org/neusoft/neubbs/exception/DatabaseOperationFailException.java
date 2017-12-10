@@ -1,4 +1,4 @@
-package org.neusoft.neubbs.controller.exception;
+package org.neusoft.neubbs.exception;
 
 /**
  * 数据库操作失败异常

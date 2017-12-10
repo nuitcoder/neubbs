@@ -3,7 +3,7 @@ package org.neusoft.neubbs.utils;
 
 import org.neusoft.neubbs.constant.api.ApiMessage;
 import org.neusoft.neubbs.constant.api.ParamConst;
-import org.neusoft.neubbs.controller.exception.ParamsErrorException;
+import org.neusoft.neubbs.exception.ParamsErrorException;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

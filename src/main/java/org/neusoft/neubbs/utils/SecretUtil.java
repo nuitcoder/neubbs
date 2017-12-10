@@ -2,7 +2,7 @@ package org.neusoft.neubbs.utils;
 
 import org.neusoft.neubbs.constant.api.ApiMessage;
 import org.neusoft.neubbs.constant.log.LogWarn;
-import org.neusoft.neubbs.controller.exception.TokenErrorException;
+import org.neusoft.neubbs.exception.TokenErrorException;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;

@@ -1,29 +1,26 @@
-package org.neusoft.neubbs.controller.exception;
+package org.neusoft.neubbs.exception;
 
 import org.neusoft.neubbs.controller.annotation.ApiException;
 
 /**
- * 参数异常
+ * 话题异常
  *
  * @author Suvan
  */
 @ApiException
-public class ParamsErrorException extends RuntimeException implements IPrintLog {
+public class TopicErrorException extends RuntimeException implements IPrintLog {
 
-    /**
-     * 日志信息
-     */
     private String logMessage;
 
     /**
-     *  Constructor
+     * Constructor
      */
-    public ParamsErrorException(String message) {
+    public TopicErrorException(String message) {
         super(message);
     }
 
     @Override
-    public ParamsErrorException log(String logMessage) {
+    public TopicErrorException log(String logMessage) {
         this.logMessage = logMessage;
         return this;
     }

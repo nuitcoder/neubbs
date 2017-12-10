@@ -1,4 +1,4 @@
-package org.neusoft.neubbs.controller.exception;
+package org.neusoft.neubbs.exception;
 
 /**
  * 打印日志接口

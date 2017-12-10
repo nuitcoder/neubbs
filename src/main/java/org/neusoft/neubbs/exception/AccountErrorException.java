@@ -1,4 +1,4 @@
-package org.neusoft.neubbs.controller.exception;
+package org.neusoft.neubbs.exception;
 
 import org.neusoft.neubbs.controller.annotation.ApiException;
 

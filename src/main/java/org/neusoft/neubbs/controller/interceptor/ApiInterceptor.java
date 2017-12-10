@@ -8,7 +8,7 @@ import org.neusoft.neubbs.constant.secret.SecretInfo;
 import org.neusoft.neubbs.controller.annotation.AccountActivation;
 import org.neusoft.neubbs.controller.annotation.AdminRank;
 import org.neusoft.neubbs.controller.annotation.LoginAuthorization;
-import org.neusoft.neubbs.controller.exception.AccountErrorException;
+import org.neusoft.neubbs.exception.AccountErrorException;
 import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.utils.AnnotationUtil;
 import org.neusoft.neubbs.utils.CookieUtil;

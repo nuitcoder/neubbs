@@ -8,7 +8,7 @@ import org.junit.runners.JUnit4;
 import org.neusoft.neubbs.controller.annotation.ApiException;
 import org.neusoft.neubbs.controller.annotation.LoginAuthorization;
 import org.neusoft.neubbs.controller.api.AccountController;
-import org.neusoft.neubbs.controller.exception.FileUploadErrorException;
+import org.neusoft.neubbs.exception.FileUploadErrorException;
 import org.neusoft.neubbs.controller.interceptor.ApiInterceptor;
 import org.neusoft.neubbs.utils.AnnotationUtil;
 

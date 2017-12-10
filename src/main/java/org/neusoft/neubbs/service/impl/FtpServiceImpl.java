@@ -2,7 +2,7 @@ package org.neusoft.neubbs.service.impl;
 
 import org.neusoft.neubbs.constant.api.ApiMessage;
 import org.neusoft.neubbs.constant.log.LogWarn;
-import org.neusoft.neubbs.controller.exception.FtpServiceErrorException;
+import org.neusoft.neubbs.exception.FtpServiceErrorException;
 import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.service.IFtpService;
 import org.neusoft.neubbs.utils.FtpUtil;

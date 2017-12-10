@@ -2,7 +2,7 @@ package org.neusoft.neubbs.controller.handler;
 
 import org.apache.log4j.Logger;
 import org.neusoft.neubbs.controller.annotation.ApiException;
-import org.neusoft.neubbs.controller.exception.IPrintLog;
+import org.neusoft.neubbs.exception.IPrintLog;
 import org.neusoft.neubbs.utils.AnnotationUtil;
 import org.neusoft.neubbs.utils.ResponsePrintWriterUtil;
 import org.springframework.web.servlet.HandlerExceptionResolver;
