@@ -223,9 +223,6 @@ public class TopicServiceImpl implements ITopicService {
             //allow user empty(if replyUser=null, explain database exist garbage data)
             replyInfoMap.put(ParamConst.USER, this.getTopicUserInfoMap(userDAO.getUserById(reply.getUserid())));
 
-            //remove topicid, because the reply is based on topicid to query
-            replyInfoMap.remove(ParamConst.TOPIC_ID);
-
             listReplyInfoMap.add(replyInfoMap);
         }
 
@@ -235,9 +232,6 @@ public class TopicServiceImpl implements ITopicService {
         topicInfoMap.put(ParamConst.USER, authorUserInfoMap);
         topicInfoMap.put(ParamConst.LAST_REPLY_USER, lastReplyUserMap);
         topicInfoMap.put(ParamConst.REPLYS, listReplyInfoMap);
-
-        //remove topicid, because the function is based on topicid to query
-        topicInfoMap.remove(ParamConst.TOPIC_ID);
 
         //topic read + 1
         if (topicContentDAO.updateReadAddOneByTopicId(topicId) == 0) {
