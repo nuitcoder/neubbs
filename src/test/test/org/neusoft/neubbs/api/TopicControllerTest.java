@@ -152,7 +152,7 @@ public class TopicControllerTest {
      */
     @Test
     public void testGetTopicInformationSuccess() throws Exception {
-        String topicId = "180";
+        String topicId = "1";
 
         MvcResult result = mockMvc.perform(
                 MockMvcRequestBuilders.get("/api/topic").param("topicid", topicId)
@@ -589,6 +589,7 @@ public class TopicControllerTest {
      *      - reqest param error, no norm
      *          - [✔] null check
      *          - [ ] param norm
+     *              - category nick no is pure english
      *      - database exception
      *          - [ ] no user (get user from cookie)
      *          - [ ] no category
@@ -617,6 +618,7 @@ public class TopicControllerTest {
         String content = "test content";
         String[][] params = {
                 {null, null, null}, {null, title, content}, {category, null, content}, {category, title, null},
+                {"moive 123", title, content}
         };
 
         for (String[] param: params) {
@@ -640,6 +642,7 @@ public class TopicControllerTest {
             }
         }
 
+
         printSuccessPassTestMehtodMessage();
     }
 
@@ -649,7 +652,7 @@ public class TopicControllerTest {
     @Test
     @Transactional
     public void testPublishTopicReplySuccess() throws Exception {
-        int topicId = 180;
+        int topicId = 1;
         String content = "new reply content";
         String requestBodyJson = "{" + this.getJsonField("topicid", topicId) + ","
                 + this.getJsonField("content", content) + "}";
@@ -718,7 +721,7 @@ public class TopicControllerTest {
     @Test
     @Transactional
     public void testRemoveTopicSuccess() throws Exception {
-        int topicId = 180;
+        int topicId = 1;
         String requestBodyJson = "{" + this.getJsonField("topicid", topicId) + "}";
         System.out.println("input reqeust-body: " + requestBodyJson);
 
@@ -809,8 +812,8 @@ public class TopicControllerTest {
     @Test
     @Transactional
     public void testUpdateTopicSuccess() throws Exception {
-        int topicId = 180;
-        String newCategoryNick = "study";
+        int topicId = 1;
+        String newCategoryNick = "school";
         String newTitle = "new title";
         String newContent = "new content";
 

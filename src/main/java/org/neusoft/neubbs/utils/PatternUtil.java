@@ -12,7 +12,8 @@ public final class PatternUtil {
 
     private PatternUtil() { }
 
-    private static final String EXIST_NU_PURE_NUMBER = "[^0-9]";
+    private static final String EXIST_NO_PURE_NUMBER = "[^0-9]";
+    private static final String PURE_ENGILISH = "^[A-Za-z]+$";
     private static final String MATCH_USERNAME = "^[A-Za-z0-9]{3,20}$";
     private static final String MATCH_EMAIL = "^([a-z0-9A-Z]+[-|\\.]?)+[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)"
                                                 + "+[a-zA-Z]{2,}$";
@@ -26,10 +27,10 @@ public final class PatternUtil {
      * 是否为纯数字检测（检测是否存在非 0 ~ 9 字符）
      *
      * @param str 纯数字类型字符串
-     * @return Boolean 检测结果
+     * @return boolean 检测结果
      */
-    public static Boolean isPureNumber(String str) {
-        Pattern pattern = Pattern.compile(EXIST_NU_PURE_NUMBER);
+    public static boolean isPureNumber(String str) {
+        Pattern pattern = Pattern.compile(EXIST_NO_PURE_NUMBER);
         Matcher matcher = pattern.matcher(str);
 
         //match.find() = true, 表示存在非数字字符
@@ -37,12 +38,28 @@ public final class PatternUtil {
     }
 
     /**
+     * 是否为全英文检测
+     *      - 支持大小写
+     *      - 匹配由 26 个英文字母组成的字符串
+     *      - 不能存在空格，以及其他符号
+     *
+     * @param str 匹配结果
+     * @return boolean 匹配结果（true-是，false-否，存在非英文字符）
+     */
+    public static boolean isPureEngish(String str) {
+        Pattern pattern = Pattern.compile(PURE_ENGILISH);
+        Matcher matcher = pattern.matcher(str);
+
+        return matcher.find();
+    }
+
+    /**
      * 匹配用户名
      *
      * @param username 用户名字符串
-     * @return Boolean 匹配结果
+     * @return boolean 匹配结果
      */
-    public static Boolean matchUsername(String username) {
+    public static boolean matchUsername(String username) {
         Pattern pattern = Pattern.compile(MATCH_USERNAME);
         Matcher matcher = pattern.matcher(username);
 
@@ -56,7 +73,7 @@ public final class PatternUtil {
      * @param email 邮箱字符串
      * @return Boolean 匹配结果
      */
-    public static Boolean matchEmail(String email) {
+    public static boolean matchEmail(String email) {
         Pattern pattern = Pattern.compile(MATCH_EMAIL);
         Matcher matcher = pattern.matcher(email);
 
@@ -70,7 +87,7 @@ public final class PatternUtil {
      * @param imageType 图片类型字符串
      * @return Boolean 匹配结果
      */
-    public static Boolean matchUserImage(String imageType) {
+    public static boolean matchUserImage(String imageType) {
         Pattern pattern = Pattern.compile(COVER_IMAGE_TYPE);
         Matcher matcher = pattern.matcher(imageType);
 
@@ -83,7 +100,7 @@ public final class PatternUtil {
      * @param category 话题分类
      * @return Boolean 匹配结果
      */
-    public static Boolean matchTopicCategory(String category) {
+    public static boolean matchTopicCategory(String category) {
        Pattern pattern = Pattern.compile(MATCH_CHINESE_AND_ENGLISH);
        Matcher matcher = pattern.matcher(category);
 

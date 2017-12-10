@@ -82,11 +82,13 @@ public final class RequestParamCheckUtil {
         typeScopeMap.put(ParamConst.ID, new Scope(ONE, TEN));
         typeScopeMap.put(ParamConst.NUMBER, new Scope(ONE, TEN));
         typeScopeMap.put(ParamConst.TITLE, new Scope(ONE, FIFTY));
-        typeScopeMap.put(ParamConst.CATEGORY, new Scope(ONE, TWENTY));
+        typeScopeMap.put(ParamConst.TOPIC_CATEGORY_NICK, new Scope(ONE, TWENTY));
         typeScopeMap.put(ParamConst.TOPIC_CONTENT, new Scope(ONE, TEN_THOUSAND));
         typeScopeMap.put(ParamConst.REPLY_CONTENT, new Scope(ONE, ONE_HUNDRED_FIFTY));
 
         typePatternMap.put(ParamConst.ID, new Pattern("isPureNumber", " （类型）参数不符合规范，必须为纯数字（0 ~ 9）！"));
+        typePatternMap.put(ParamConst.TOPIC_CATEGORY_NICK,
+                new Pattern("isPureEngish", " （参数）话题分类昵称不符合规范，必须纯英文（a-zA-Z）"));
         typePatternMap.put(ParamConst.NUMBER, new Pattern("isPureNumber", " （类型）参数不符合规范，必须为纯数字(0 ~ 9)！"));
         typePatternMap.put(ParamConst.USERNAME, new Pattern("matchUsername", "（类型）参数不符合规范（A-Z a-z 0-9）"));
         typePatternMap.put(ParamConst.EMAIL, new Pattern("matchEmail", " （类型）参数不符合规范（xxx@xx.xxx）"));

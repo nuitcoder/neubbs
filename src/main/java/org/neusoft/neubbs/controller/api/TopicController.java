@@ -142,8 +142,10 @@ public class TopicController {
             inputLimit = Integer.parseInt(limit);
         }
 
-        paramCheckService
-                .checkTwoParamNotNulThreeCondition(ParamConst.CATEGORY, category, ParamConst.USERNAME, username);
+        paramCheckService.checkTwoParamNotNulThreeCondition(
+                ParamConst.TOPIC_CATEGORY_NICK, category,
+                ParamConst.USERNAME, username
+        );
 
         return new PageJsonDTO(AjaxRequestStatus.SUCCESS,
                 ParamConst.TOTAL_PAGES, topicService.countTopicTotalPages(inputLimit, category, username));
@@ -175,7 +177,7 @@ public class TopicController {
         String title = (String) requestBodyParamsMap.get(ParamConst.TITLE);
         String topicContent = (String) requestBodyParamsMap.get(ParamConst.CONTENT);
 
-        paramCheckService.check(ParamConst.CATEGORY, category);
+        paramCheckService.check(ParamConst.TOPIC_CATEGORY_NICK, category);
         paramCheckService.check(ParamConst.TITLE, title);
         paramCheckService.check(ParamConst.TOPIC_CONTENT, topicContent);
 
@@ -270,7 +272,7 @@ public class TopicController {
         String newTopicContent = (String) requestBodyParamsMap.get(ParamConst.CONTENT);
 
         paramCheckService.check(ParamConst.ID, String.valueOf(topicId));
-        paramCheckService.check(ParamConst.CATEGORY, newCategoryNick);
+        paramCheckService.check(ParamConst.TOPIC_CATEGORY_NICK, newCategoryNick);
         paramCheckService.check(ParamConst.TITLE, newTitle);
         paramCheckService.check(ParamConst.TOPIC_CONTENT, newTopicContent);
 

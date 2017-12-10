@@ -60,6 +60,8 @@ public final class ParamConst {
 
     public static final String CATEGORY_NAME = "categoryName";
 
+    public static final String TOPIC_CATEGORY_NICK = "topic_category_nick";
+
     /**
      * Reply
      */
