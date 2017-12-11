@@ -159,7 +159,7 @@ public class TopicController {
      *
      * @return ResposneJsonDTO 页面JSON传输数据
      */
-    @RequestMapping(value = "/topic/categorys", method = RequestMethod.GET)
+    @RequestMapping(value = "/topics/categorys", method = RequestMethod.GET)
     @ResponseBody
     public PageJsonListDTO topicCategorys() {
         return new PageJsonListDTO(AjaxRequestStatus.SUCCESS,  topicService.listAllTopicCategorys());
