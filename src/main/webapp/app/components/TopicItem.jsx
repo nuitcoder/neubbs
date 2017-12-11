@@ -85,7 +85,10 @@ const Count = styled(Link)`
 const TopicItem = (props) => {
   const { topic } = props
 
-  const url = routes.TOPIC_DETAIL.replace(':id', topic.topicid)
+  const topicUrl = routes.TOPIC_DETAIL.replace(':id', topic.topicid)
+  const replyUrl = `${topicUrl}#replies`
+  const categoryUrl = `${routes.TOPICS}?category=${topic.category.id}`
+
   return (
     <Wrapper>
       <Left>
@@ -95,8 +98,8 @@ const TopicItem = (props) => {
       </Left>
       <Center>
         <Header>
-          <Category>{topic.category.name}</Category>
-          <Title to={url}>{topic.title}</Title>
+          <Category to={categoryUrl}>{topic.category.name}</Category>
+          <Title to={topicUrl}>{topic.title}</Title>
         </Header>
         <Info>
           <Username to="#">{topic.user.username}</Username>
@@ -117,7 +120,7 @@ const TopicItem = (props) => {
         </Info>
       </Center>
       <Right>
-        <Count to={`${url}#replies`}>{topic.replies}</Count>
+        <Count to={replyUrl}>{topic.replies}</Count>
       </Right>
     </Wrapper>
   )

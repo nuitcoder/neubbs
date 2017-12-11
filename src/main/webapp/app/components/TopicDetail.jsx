@@ -6,6 +6,7 @@ import { Panel } from 'react-bootstrap'
 import { FormattedMessage, FormattedRelative } from 'react-intl'
 
 import Markdown from './Markdown'
+import * as routes from '../constants/routes'
 
 const StyledPanel = styled(Panel)`
   margin-bottom: 15px;
@@ -67,16 +68,19 @@ const Avator = styled.img`
 `
 
 const TopicDetail = ({ topic }) => {
+  const categoryUrl = `${routes.TOPICS}?category=${topic.category.id}`
+  const userUrl = `${routes.ACCOUNT}/${topic.user.username}`
+
   const Header = () => {
     return (
       <HeaderWrapper>
         <Left>
           <Title>
-            <Category to="#">{topic.category.name}</Category>
+            <Category to={categoryUrl}>{topic.category.name}</Category>
             {topic.title}
           </Title>
           <Info>
-            <Username to="#">{topic.user.username}</Username>
+            <Username to={userUrl}>{topic.user.username}</Username>
             <FormattedMessage
               id="topic.createtime.text"
               values={{
@@ -87,7 +91,7 @@ const TopicDetail = ({ topic }) => {
               <FormattedMessage
                 id="topic.lastreply.text"
                 values={{
-                  username: <Username to="#">{topic.lastreplyuser.username}</Username>,
+                  username: <Username to={userUrl}>{topic.lastreplyuser.username}</Username>,
                   time: <FormattedRelative value={topic.lastreplytime} />,
                 }}
               />}

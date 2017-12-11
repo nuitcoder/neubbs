@@ -70,12 +70,16 @@ class Header extends Component {
   }
 
   handleClickLogo() {
-    const { pathname } = window.location
+    const { router } = this.props
+    const { pathname, search } = window.location
 
     if (pathname === routes.TOPICS) {
+      if (search !== '') {
+        router.push(routes.TOPICS)
+      }
       this.refreshHomePage()
     } else {
-      this.props.router.push(routes.TOPICS)
+      router.push(routes.TOPICS)
     }
   }
 

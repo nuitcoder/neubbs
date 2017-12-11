@@ -96,6 +96,7 @@ class TopicReplies extends Component {
     const PanelHeader = <FormattedMessage id="topic.replies.text" values={{ number: replies.length }} />
     return (
       <StyledPanel
+        id="replies"
         header={PanelHeader}
       >
         <RepliesWrapper>

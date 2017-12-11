@@ -16,24 +16,33 @@ class Topics extends Component {
   constructor(props) {
     super(props)
 
+    const { category = '' } = props.location.query
     this.state = {
       page: 0,
+      category,
     }
 
-    this.clearTopics = this.clearTopics.bind(this)
-    this.loadTopic = this.loadTopic.bind(this)
-    this.loadTopicsPages = this.loadTopicsPages.bind(this)
+    this.loadTopics = this.loadTopics.bind(this)
+    this.refreshTopics = this.refreshTopics.bind(this)
   }
 
   componentWillMount() {
-    this.clearTopics()
-    this.loadTopicsPages()
-    this.loadTopic()
+    this.refreshTopics()
   }
 
   componentWillReceiveProps(nextProps) {
     const page = Math.ceil(nextProps.topics.length / TOPIC_LIMIT)
     this.setState({ page })
+
+    const { category = '' } = nextProps.location.query
+    if (this.state.category !== category) {
+      this.setState({
+        page: 0,
+        category,
+      }, () => {
+        this.refreshTopics()
+      })
+    }
   }
 
   clearTopics() {
@@ -43,27 +52,37 @@ class Topics extends Component {
   loadTopicsPages() {
     this.props.actions.fetchTopicsPages({
       limit: TOPIC_LIMIT,
+      category: this.state.category,
     })
   }
 
-  loadTopic() {
-    const { page } = this.state
+  loadTopics() {
+    const { page, category } = this.state
+
     this.props.actions.fetchTopics({
       page: page + 1,
-      limit: TOPIC_LIMIT,
+      category,
     })
+  }
+
+  refreshTopics() {
+    this.clearTopics()
+    this.loadTopicsPages()
+    this.loadTopics()
   }
 
   render() {
     const { topics, totalPage } = this.props
-    const { page } = this.state
+    const { page, category } = this.state
+
     return (
       <Row>
         <TopicList
           data={topics}
+          category={category}
           pageStart={1}
           hasMore={totalPage > page}
-          loadMore={_.throttle(this.loadTopic, 1000)}
+          loadMore={_.throttle(this.loadTopics, 1000)}
         />
         <Widgets />
       </Row>

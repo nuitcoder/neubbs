@@ -33,8 +33,8 @@ const TopicList = (props) => {
           loadMore={props.loadMore}
           loader={<Loader size={10} />}
         >
-          {topics.map(item => {
-            return <TopicItem key={item.topicid} topic={item} />
+          {topics.map(topic => {
+            return <TopicItem key={topic.topicid} topic={topic} />
           })}
         </InfiniteScroll>
       </Wrapper>
