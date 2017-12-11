@@ -2,9 +2,8 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { Panel, Glyphicon } from 'react-bootstrap'
 import styled from 'styled-components'
-import { Link } from 'react-router'
+import { Link, browserHistory } from 'react-router'
 import { FormattedMessage, FormattedRelative } from 'react-intl'
-import { browserHistory } from 'react-router'
 
 import Markdown from './Markdown'
 
