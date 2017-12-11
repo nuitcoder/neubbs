@@ -7,6 +7,7 @@ import _ from 'lodash'
 
 import Loader from './Loader'
 import TopicItem from './TopicItem'
+import CategoryNav from './CategoryNav'
 
 const Wrapper = styled.div`
   background-color: #fff;
@@ -33,6 +34,7 @@ const TopicList = (props) => {
           loadMore={props.loadMore}
           loader={<Loader size={10} />}
         >
+          <CategoryNav data={props.category.all} selected={props.category.selected} />
           {topics.map(topic => {
             return <TopicItem key={topic.topicid} topic={topic} />
           })}
@@ -47,6 +49,7 @@ TopicList.propTypes = {
   pageStart: PropTypes.number.isRequired,
   loadMore: PropTypes.func.isRequired,
   hasMore: PropTypes.bool.isRequired,
+  category: PropTypes.object.isRequired,
 }
 
 export default TopicList

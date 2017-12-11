@@ -29,6 +29,19 @@ export function* fetchTopicsSaga(action) {
   }
 }
 
+export function* fetchTopicsCategorysSaga(action) {
+  const { data } = yield call(api.topics.fetchTopicsCategorys)
+  try {
+    if (data.success) {
+      yield put({ type: types.FETCH_TOPICS_CATEGORYS_SUCCESS, payload: data.model })
+    } else {
+      yield call(handleError, action, data)
+    }
+  } catch (err) {
+    yield call(handleError, action, err)
+  }
+}
+
 export function* fetchTopicsPagesSaga(action) {
   const { payload = {} } = action
   const { limit, category, username } = payload

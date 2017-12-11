@@ -22,11 +22,13 @@ class Topics extends Component {
       category,
     }
 
+    this.loadCategorys = this.loadCategorys.bind(this)
     this.loadTopics = this.loadTopics.bind(this)
     this.refreshTopics = this.refreshTopics.bind(this)
   }
 
   componentWillMount() {
+    this.loadCategorys()
     this.refreshTopics()
   }
 
@@ -45,11 +47,15 @@ class Topics extends Component {
     }
   }
 
+  loadCategorys() {
+    this.props.actions.fetchTopicsCategorys()
+  }
+
   clearTopics() {
     this.props.actions.clearTopics()
   }
 
-  loadTopicsPages() {
+  loadPages() {
     this.props.actions.fetchTopicsPages({
       limit: TOPIC_LIMIT,
       category: this.state.category,
@@ -67,20 +73,25 @@ class Topics extends Component {
 
   refreshTopics() {
     this.clearTopics()
-    this.loadTopicsPages()
+    this.loadPages()
     this.loadTopics()
   }
 
   render() {
-    const { topics, totalPage } = this.props
+    const { topics, totalPage, categorys } = this.props
     const { page, category } = this.state
+
+    const categoryData = {
+      selected: category,
+      all: categorys,
+    }
 
     return (
       <Row>
         <TopicList
           data={topics}
-          category={category}
           pageStart={1}
+          category={categoryData}
           hasMore={totalPage > page}
           loadMore={_.throttle(this.loadTopics, 1000)}
         />
@@ -103,12 +114,17 @@ const mapDispatchToProps = (dispatch) => {
 }
 
 Topics.propTypes = {
+  location: PropTypes.shape({
+    query: PropTypes.object.isRequired,
+  }).isRequired,
   topics: PropTypes.arrayOf(Object).isRequired,
   totalPage: PropTypes.number.isRequired,
+  categorys: PropTypes.array.isRequired,
   actions: PropTypes.shape({
     clearTopics: PropTypes.func.isRequired,
     fetchTopics: PropTypes.func.isRequired,
     fetchTopicsPages: PropTypes.func.isRequired,
+    fetchTopicsCategorys: PropTypes.func.isRequired,
   }).isRequired,
 }
 

@@ -69,7 +69,8 @@ const Avator = styled.img`
 
 const TopicDetail = ({ topic }) => {
   const categoryUrl = `${routes.TOPICS}?category=${topic.category.id}`
-  const userUrl = `${routes.ACCOUNT}/${topic.user.username}`
+  const userUrl = routes.ACCOUNT.replace(':username', topic.user.username)
+  const lastReplyUserUrl = routes.ACCOUNT.replace(':username', topic.lastreplyuser.username)
 
   const Header = () => {
     return (
@@ -91,7 +92,10 @@ const TopicDetail = ({ topic }) => {
               <FormattedMessage
                 id="topic.lastreply.text"
                 values={{
-                  username: <Username to={userUrl}>{topic.lastreplyuser.username}</Username>,
+                  username:
+                    (<Username to={lastReplyUserUrl}>
+                      {topic.lastreplyuser.username}
+                    </Username>),
                   time: <FormattedRelative value={topic.lastreplytime} />,
                 }}
               />}

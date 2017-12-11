@@ -3,6 +3,7 @@ import * as types from '../constants/actionTypes'
 const initialState = {
   topics: [],
   topic: {},
+  categorys: [],
   totalPage: 1,
   error: '',
 }
@@ -23,6 +24,13 @@ export default (state = initialState, action) => {
         ...state,
         error: '',
         topics: state.topics.concat(payload),
+      }
+    }
+    case types.FETCH_TOPICS_CATEGORYS_SUCCESS: {
+      return {
+        ...state,
+        error: '',
+        categorys: payload,
       }
     }
     case types.FETCH_TOPICS_PAGES_SUCCESS: {

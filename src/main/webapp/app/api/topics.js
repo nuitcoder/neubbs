@@ -2,6 +2,7 @@ import axios from 'axios'
 import {
   TOPICS_URL,
   TOPICS_PAGES_URL,
+  TOPICS_CATEGORYS_URL,
   TOPIC_URL,
   TOPIC_REPLY_URL,
 } from '../constants/api'
@@ -27,6 +28,15 @@ const topics = {
     return axios.get(TOPICS_URL, {
       params,
     })
+  },
+
+  /**
+   * fetch topics categorys
+   *
+   * @returns {object}
+   */
+  fetchTopicsCategorys() {
+    return axios.get(TOPICS_CATEGORYS_URL)
   },
 
   /**
