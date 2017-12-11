@@ -50,12 +50,13 @@ public final class JwtTokenUtil {
             headerMap.put(HEADER_ALG, HS256);
             headerMap.put(HEADER_TYP, JWT);
 
-        //签发时间,与过期时间（过期无法解密）
+        //set issuance and expiration time (expired can not be decrypted)
         long iat = System.currentTimeMillis();
-        //long ext = iat + EXPIRE_TIME_ONE_DAY;
-        //long ext = iat + 1;//测试过期token是否无效
 
-        //设置Playload,且使用HS256加密,生成token
+        //long ext = iat + EXPIRE_TIME_ONE_DAY;
+        //long ext = iat + 1;
+
+        //set playload, use HS256 to encrypt, generate token, set no expire time
         try {
              return com.auth0.jwt.JWT.create()
                         .withHeader(headerMap)
@@ -63,7 +64,7 @@ public final class JwtTokenUtil {
                         .withSubject(SET_SUBJECT)
                         .withAudience(SET_AUDIENCE)
                         .withIssuedAt(new Date(iat))
-                        //.withExpiresAt(new Date(ext))   //永久有效，不需要过期时间
+                        //.withExpiresAt(new Date(ext))
                             .withClaim(ParamConst.ID, user.getId())
                             .withClaim(ParamConst.NAME, user.getName())
                             .withClaim(ParamConst.RANK, user.getRank())
@@ -86,18 +87,17 @@ public final class JwtTokenUtil {
         JWTVerifier verifier;
         DecodedJWT decodedJWT;
         try {
-            //解密HS256算法
+            //decrypt HS256
              verifier = com.auth0.jwt.JWT.require(Algorithm.HMAC256(secretKey)).build();
 
-            //解码Base5
+            //decoding Base64
             decodedJWT = verifier.verify(token);
 
         } catch (UnsupportedEncodingException | TokenExpiredException e) {
-            //token 过期和编码错误
             return null;
         }
 
-        //获取 Claim 所储存的用户数据
+        //Get User data
         Claim idClaim = decodedJWT.getClaim(ParamConst.ID);
         Claim nameClaim = decodedJWT.getClaim(ParamConst.NAME);
         Claim rankClaim = decodedJWT.getClaim(ParamConst.RANK);

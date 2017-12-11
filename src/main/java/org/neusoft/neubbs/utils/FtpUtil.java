@@ -70,7 +70,7 @@ public final class FtpUtil {
             ftpClient.connect(ftpIp, ftpPort);
             ftpClient.login(ftpUsername, ftpPassword);
 
-            //二进制方式传输
+            //binary transfer
             ftpClient.setFileType(FTPClient.BINARY_FILE_TYPE);
 
             if (!FTPReply.isPositiveCompletion(ftpClient.getReplyCode())) {
@@ -233,14 +233,14 @@ public final class FtpUtil {
         if (files != null) {
             for (FTPFile file: files) {
                 if (file.isDirectory()) {
-                    //递归删除目录所有文件
+                    //recursive remove all directory
                     deleteDirectory(path + "/" + file.getName());
 
-                    //切换到父目录，删除文件夹（不切换无法删除目录）
+                    //must switch to fatther directory (otherwist can not delete)
                     ftpClient.changeWorkingDirectory(path.substring(0, path.lastIndexOf("/")));
                     ftpClient.removeDirectory(path);
                 } else {
-                    //删除特定文件
+                    //remove file
                     ftpClient.deleteFile(path + "/" + file.getName());
                 }
             }

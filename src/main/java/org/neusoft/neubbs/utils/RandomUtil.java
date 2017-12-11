@@ -33,6 +33,8 @@ public final class RandomUtil {
 
     /**
      * 获取指定范围的随机数
+     *      - .nextInt(可能出现的数字，从0开始的)，例如：.nextInt(99)  生成  0 <= number < 99
+     *      - 0~99区间.nextInt(100),  1~100区间.nextInt(99) + 1，64~128区间.nextInt(65) + 64
      *
      * @param min 最小范围
      * @param max 最大范围
@@ -41,13 +43,12 @@ public final class RandomUtil {
     public static Integer getRandomNumberByScope(int min, int max) {
         Random random = new Random();
 
-        //.nextInt(可能出现的数字，从0开始的)，例如：.nextInt(99)  生成  0 <= number < 99
-        // 0~99区间.nextInt(100),  1~100区间.nextInt(99) + 1，64~128区间.nextInt(65) + 64
         return random.nextInt(max - min + ONE) + min;
     }
 
     /**
      * 获取指定长度随机字符串（a-z, A-Z, 0-9）
+     *  - 【公式】 生成 “min <= 随机数 <= max ” 的随机数   int num = min + (int)(Math.random() * (max-min+1))
      *
      * @param len 字符串长度
      * @return String 随机字符串
@@ -58,18 +59,18 @@ public final class RandomUtil {
         int point;
         int ascii;
         for (int i = ZERO; i < len; i++) {
-            //生成 “min <= 随机数 <= max ” 的随机数   int num = min + (int)(Math.random() * (max-min+1))
+
             point = ONE + (int) (Math.random() * THREE);
 
             if (point == ONE) {
-                //数字
+                //number
                 sb.append((int) (Math.random() * TEN));
             } else if (point == TWO) {
-                //小写字母(97 - 122)
+                //lower case letters(97 - 122)
                 ascii = NINETH_SEVEN + (int) (Math.random() * TWENTY_SIX);
                 sb.append((char) ascii);
             } else if (point == THREE) {
-                //大写字母（65 - 90）
+                //upper case letter（65 - 90）
                 ascii = SIXTY_FIVE + (int) (Math.random() * TWENTY_SIX);
                 sb.append((char) ascii);
             }

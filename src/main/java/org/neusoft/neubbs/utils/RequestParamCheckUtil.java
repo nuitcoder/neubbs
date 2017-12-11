@@ -104,28 +104,25 @@ public final class RequestParamCheckUtil {
      * @param param 参数值
      */
     public static void check(String type, String param) {
-        //空检查
         checkNull(type, param);
 
-        //范围检查
         checkScope(type, param);
 
-        //格式检查
         checkPattern(type, param);
     }
 
     /**
      * 检查器
+     *      - 统一空检查
+     *      - 根据不同参数类型，进行相应格式检查
      *
      * @param typeParamMap 类型-参数，键值对
      */
     public static void check(Map<String, String> typeParamMap) {
-        //统一空检查
         for (Map.Entry<String, String> entry : typeParamMap.entrySet()) {
             checkNull(entry.getKey(), entry.getValue());
         }
 
-        //根据不同参数类型，进行相应格式检查
         for (Map.Entry<String, String> entry : typeParamMap.entrySet()) {
             checkScope(entry.getKey(), entry.getValue());
             checkPattern(entry.getKey(), entry.getValue());
@@ -169,6 +166,8 @@ public final class RequestParamCheckUtil {
 
     /**
      * 格式检查
+     *      - 反射执行类中方法（Class<?>-通配泛型，可代表任何类型，Class<T>在实例化的时候，T要替换成具体类）
+     *      - ethod.invoke(null, param) 静态方法不需要借助实例运行，所以为 null
      *
      * @param type 参数类型
      * @param param 参数值
@@ -180,11 +179,10 @@ public final class RequestParamCheckUtil {
         }
 
         try {
-            //反射执行类中方法（Class<?>-通配泛型，可代表任何类型，Class<T>在实例化的时候，T要替换成具体类）
             Class<?> clazz = Class.forName("org.neusoft.neubbs.utils.PatternUtil");
 
             Method method = clazz.getDeclaredMethod(pattern.methodName, String.class);
-            //静态方法不需要借助实例运行，所以为 null
+
             if (!((boolean) method.invoke(null, param))) {
                 throw new ParamsErrorException(ApiMessage.PARAM_ERROR).log(param + " （ " + type + pattern.logMessage);
             }

@@ -33,7 +33,7 @@ public final class PatternUtil {
         Pattern pattern = Pattern.compile(EXIST_NO_PURE_NUMBER);
         Matcher matcher = pattern.matcher(str);
 
-        //match.find() = true, 表示存在非数字字符
+        //ther are other characters, no is pure number
         return !matcher.find();
     }
 
@@ -63,7 +63,6 @@ public final class PatternUtil {
         Pattern pattern = Pattern.compile(MATCH_USERNAME);
         Matcher matcher = pattern.matcher(username);
 
-        //返回匹配结果（true-匹配，false-不匹配）
         return matcher.matches();
     }
 

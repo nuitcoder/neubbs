@@ -21,26 +21,25 @@ public final class ResponsePrintWriterUtil {
 
     /**
      * 输出失败 JSON 信息
+     *      - 构造 Map ,并指定初始大小
+     *      - 将 Map 转换为 JSON 格式字符串
+     *      - 设定响应类型
+     *      - 输出与关闭资源
      *
      * @param response 用户响应
      * @param failMessage 失败信息
      */
     public static void outFailJSONMessage(HttpServletResponse response, String failMessage) {
-
-        //构造 Map ,并指定初始大小
         Map<String, Object> map = new LinkedHashMap<>(SetConst.LENGTH_TWO);
             map.put("success", false);
             map.put("message", failMessage);
             map.put("model", new HashMap<>(SetConst.SIZE_ONE));
 
-        //将 Map 转换为 JSON 格式字符串
         String json = JsonUtil.toJSONStringByObject(map);
 
-        //设定相应类型
         response.setCharacterEncoding(SetConst.CHARACTER_ENCODING);
         response.setContentType(SetConst.CONTENT_TYPE);
-
-        //输出与关闭资源
+        
         PrintWriter writer = null;
         try {
             writer = response.getWriter();

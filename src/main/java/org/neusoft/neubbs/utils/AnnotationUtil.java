@@ -22,21 +22,17 @@ public final class AnnotationUtil {
      * @return boolean （true 存在，false-不存在）
      */
     public static boolean hasMethodAnnotation(Object handler, Class c) {
-         //不属于方法级跳过（默认不存在）
+         //must be at method
         if (!(handler instanceof HandlerMethod)) {
             return false;
         }
 
-        //获取注解
+        //get annotation
         HandlerMethod handlerMethod = (HandlerMethod) handler;
         Method method = handlerMethod.getMethod();
         Annotation annotation = method.getAnnotation(c);
-        if (annotation == null) {
-            return false;
-        }
 
-        //存在
-        return true;
+        return annotation != null;
     }
 
     /**

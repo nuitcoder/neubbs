@@ -36,6 +36,8 @@ public final class SecretUtil {
 
     /**
      * 加密 MD5（消息摘要算法）
+     *      - 抛出异常，即返回 null
+     *      - 如果生成数字未满 32位，需要前面补0
      *
      * @param plainText 明文（待加密的字符串）
      * @return String 密文
@@ -45,12 +47,11 @@ public final class SecretUtil {
         try {
             secretBytes = MessageDigest.getInstance("md5").digest(plainText.getBytes());
         } catch (NoSuchAlgorithmException noe) {
-            //找不到指定算法
             return null;
         }
 
         StringBuilder md5Code = new StringBuilder(new BigInteger(1, secretBytes).toString(SIXTEEN));
-        //如果生成数字未满 32位，需要前面补0
+
         for (int i = 1; i < MDT_STRING_LENGTH - md5Code.length(); i++) {
             md5Code.insert(0, "0");
         }
@@ -60,15 +61,15 @@ public final class SecretUtil {
 
     /**
      * 加密用户密码（二重 MD5 加密）
+     *      - 一次 密码 MD5 加密
+     *      - 二次 MD5 加密（初次加密密文 + salt（原密码））
      *
      * @param password 用户密码
      * @return String 密文
      */
     public static String encryptUserPassword(String password) {
-        //一次 密码 MD5 加密
         String ciphertext = encryptMD5(password);
 
-        //二次 MD5 加密（初次加密密文 + salt（原密码））
         return encryptMD5(ciphertext + password);
     }
 
@@ -107,17 +108,14 @@ public final class SecretUtil {
 
     /**
      * 获取 AES 密钥
+     *      1.密钥生成
+     *      2.设置密钥种子，每次生成固定密钥
+     *      3.生成密钥
+     *      4.获取密钥字
      *
      * @return SecretKey 密钥实例
      */
     public static SecretKey getAESKey() {
-        /*
-         * 获取密钥
-         *      1.密钥生成
-         *      2.设置密钥种子，每次生成固定密钥
-         *      3.生成密钥
-         *      4.获取密钥字
-         */
         try {
             KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
             SecureRandom random = new SecureRandom();
@@ -134,22 +132,19 @@ public final class SecretUtil {
 
     /**
      * AES 加密
+     *      1.指定算法，获取 Cipher 对象
+     *      2.初始化 Cipher，设置加密模式，传入密钥
+     *      3.更新需要加密内容
+     *      4.最终加密操作（可合并34步）cipher.doFinal(plainText.getBytes()
+     *      5.注意：加密后的 byte 是不能直接转为 String，
+     *             会报错"Input length must be multiple of 16 when decrypting with padded cipher"
+     *             根据网上的方法，加密后，byte 转为16进制，再转为 String
      *
      * @param secretKey 密钥实例
      * @param plainText 明文
      * @return 密文
      */
     public static String encryptAES(SecretKey secretKey, String plainText) {
-        /*
-         * AES 加密
-         *      1.指定算法，获取 Cipher 对象
-         *      2.初始化 Cipher，设置加密模式，传入密钥
-         *      3.更新需要加密内容
-         *      4.最终加密操作（可合并34步）cipher.doFinal(plainText.getBytes()
-         *      5.注意：加密后的 byte 是不能直接转为 String，
-         *             会报错"Input length must be multiple of 16 when decrypting with padded cipher"
-         *             根据网上的方法，加密后，byte 转为16进制，再转为 String
-         */
         String cipherText = null;
         try {
             Cipher cipher = Cipher.getInstance("AES");
@@ -170,20 +165,17 @@ public final class SecretUtil {
 
     /**
      * 解密 AES
+     *      1.指定算法，获取 Cipher 对象
+     *      2.初始化 Cipher，设置解密模式，传入密钥
+     *      3.将密文，从 16 进制转为2进制的 byte
+     *      4.解密，存入 String
+     *
      *
      * @param secretKey 密钥实例
      * @param cipherText 密文
      * @return String 明文
      */
     public static String decryptAES(SecretKey secretKey, String cipherText) {
-        /*
-         * AES 加密
-         *      1.指定算法，获取 Cipher 对象
-         *      2.初始化 Cipher，设置解密模式，传入密钥
-         *      3.将密文，从 16 进制转为2进制的 byte
-         *      4.解密，存入 String
-         */
-
        String plainText = null;
        try {
            Cipher cipher = Cipher.getInstance("AES");
