@@ -6,6 +6,7 @@ import { browserHistory } from 'react-router'
 import { FormattedMessage } from 'react-intl'
 
 import * as routes from '../constants/routes'
+import CategoryModal from '../components/CategoryModal'
 
 const NEW = 'new'
 
@@ -43,7 +44,13 @@ class CategoryNav extends Component {
   constructor(props) {
     super(props)
 
+    this.state = {
+      showModal: false,
+    }
+
     this.handleSelectCategory = this.handleSelectCategory.bind(this)
+    this.showCategoryModal = this.showCategoryModal.bind(this)
+    this.hideCategoryModal = this.hideCategoryModal.bind(this)
   }
 
   // eslint-disable-next-line
@@ -57,6 +64,14 @@ class CategoryNav extends Component {
     browserHistory.push(url)
   }
 
+  showCategoryModal() {
+    this.setState({ showModal: true })
+  }
+
+  hideCategoryModal() {
+    this.setState({ showModal: false })
+  }
+
   render() {
     const { data, selected } = this.props
 
@@ -64,12 +79,17 @@ class CategoryNav extends Component {
       <StyledNavbar>
         <Navbar.Header>
           <Navbar.Brand>
-            <Categorys>
+            <Categorys onClick={this.showCategoryModal}>
               <FormattedMessage id="topic.category.all" />
               <Glyphicon glyph="menu-right" />
             </Categorys>
+            <CategoryModal
+              data={data}
+              show={this.state.showModal}
+              onHide={this.hideCategoryModal}
+              onSelect={this.handleSelectCategory}
+            />
           </Navbar.Brand>
-          <Navbar.Toggle />
         </Navbar.Header>
         <Navbar.Collapse>
           <Nav onSelect={this.handleSelectCategory}>
