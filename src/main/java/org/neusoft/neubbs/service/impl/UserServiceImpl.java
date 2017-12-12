@@ -4,6 +4,8 @@ import org.neusoft.neubbs.constant.api.ApiMessage;
 import org.neusoft.neubbs.constant.api.ParamConst;
 import org.neusoft.neubbs.constant.api.SetConst;
 import org.neusoft.neubbs.constant.log.LogWarn;
+import org.neusoft.neubbs.dao.IUserActionDAO;
+import org.neusoft.neubbs.entity.UserActionDO;
 import org.neusoft.neubbs.exception.AccountErrorException;
 import org.neusoft.neubbs.exception.DatabaseOperationFailException;
 import org.neusoft.neubbs.exception.TokenErrorException;
@@ -31,13 +33,15 @@ import java.util.Map;
 public class UserServiceImpl implements IUserService {
 
     private final IUserDAO userDAO;
+    private final IUserActionDAO userActionDAO;
 
     /**
      * Constuctor
      */
     @Autowired
-    public UserServiceImpl(IUserDAO userDAO) {
+    public UserServiceImpl(IUserDAO userDAO, IUserActionDAO userActionDAO) {
         this.userDAO = userDAO;
+        this.userActionDAO = userActionDAO;
     }
 
     @Override
@@ -48,13 +52,20 @@ public class UserServiceImpl implements IUserService {
 
         //build user
         UserDO user = new UserDO();
-        user.setName(username);
-        user.setEmail(email);
-        user.setPassword(SecretUtil.encryptUserPassword(password));
+            user.setName(username);
+            user.setEmail(email);
+            user.setPassword(SecretUtil.encryptUserPassword(password));
 
         //register user to database
         if (userDAO.saveUser(user) == 0) {
             throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.SERVICE_01);
+        }
+
+        //insert default user action record
+        UserActionDO userAction = new UserActionDO();
+            userAction.setUserid(user.getId());
+        if (userActionDAO.saveUserAction(userAction) == 0) {
+            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.SERVICE_04);
         }
 
         //update data user image filed, set default avator image

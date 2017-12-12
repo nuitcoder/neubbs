@@ -11,6 +11,7 @@ import org.junit.runner.RunWith;
 import org.neusoft.neubbs.constant.api.ApiMessage;
 import org.neusoft.neubbs.constant.api.ParamConst;
 import org.neusoft.neubbs.constant.api.SetConst;
+import org.neusoft.neubbs.dao.IUserActionDAO;
 import org.neusoft.neubbs.exception.AccountErrorException;
 import org.neusoft.neubbs.exception.DatabaseOperationFailException;
 import org.neusoft.neubbs.exception.ParamsErrorException;
@@ -73,6 +74,9 @@ public class AccountCollectorTest {
 
     @Autowired
     private IUserDAO userDAO;
+
+    @Autowired
+    private IUserActionDAO userActionDAO;
 
     private final String API_ACCOUNT = "/api/account";
     private final String API_ACCOUNT_STATE = "/api/account/state";
@@ -445,7 +449,6 @@ public class AccountCollectorTest {
 
     /**
      * 【/api/account/register】test register user success
-     *     - u
      */
     @Test
     @Transactional
@@ -471,8 +474,12 @@ public class AccountCollectorTest {
         this.confirmMvcResultModlMapShouldHavaKeyItems(result,
                 "username", "email", "sex", "birthday", "position", "description", "avator", "state", "createtime");
 
+        //confirm forum_user_action
+        int userId = userDAO.getUserByName(username).getId();
+        Assert.assertNotNull(userActionDAO.getUserAction(userId));
+
         //becasue register will create personal directory on ftp server, so need to remove
-        int userId = userDAO.getMaxUserId();
+        userId = userDAO.getMaxUserId();
         FtpUtil.deleteDirectory("/user/" + userId + "-" + username);
 
         printSuccessPassTestMehtodMessage();

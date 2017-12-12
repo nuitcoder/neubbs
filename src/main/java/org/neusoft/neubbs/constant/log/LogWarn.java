@@ -53,6 +53,8 @@ public final class LogWarn {
     /******************************User Service*********************************/
     public static final String SERVICE_01 = "用户保存失败";
     public static final String SERVICE_02 = "用户修改失败";
+    public static final String SERVICE_03 = "用户行为保存失败";
+    public static final String SERVICE_04 = "用户行为修改失败";
 
 
     /******************************Topic Service*********************************/
