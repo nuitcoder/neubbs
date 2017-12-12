@@ -64,6 +64,8 @@ public final class ParamConst {
     public static final String TOPIC_CATEGORY_NICK = "topicCategoryNick";
     public static final String TOPIC_TITLE = "topicTitle";
 
+    public static final String CURRENT_USERT_LIKE_TOPIC  = "currentuserliketopic";
+
     /**
      * Reply
      */

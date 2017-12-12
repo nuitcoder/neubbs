@@ -5,12 +5,12 @@ import org.neusoft.neubbs.constant.api.ParamConst;
 import org.neusoft.neubbs.constant.api.SetConst;
 import org.neusoft.neubbs.constant.log.LogWarn;
 import org.neusoft.neubbs.dao.IUserActionDAO;
+import org.neusoft.neubbs.dao.IUserDAO;
 import org.neusoft.neubbs.entity.UserActionDO;
+import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.exception.AccountErrorException;
 import org.neusoft.neubbs.exception.DatabaseOperationFailException;
 import org.neusoft.neubbs.exception.TokenErrorException;
-import org.neusoft.neubbs.dao.IUserDAO;
-import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.service.IUserService;
 import org.neusoft.neubbs.utils.JsonUtil;
 import org.neusoft.neubbs.utils.MapFilterUtil;
@@ -194,6 +194,15 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
+    public boolean isUserLikeTopic(int userId, int topicId) {
+        this.getUserDONotNull(userId);
+
+        String userLikeTopicIdIntJsonArrayString = userActionDAO.getUserAction(userId).getLikeTopicidJsonArray();
+
+        return JsonUtil.isJsonArrayStringExistIntElement(userLikeTopicIdIntJsonArrayString, topicId);
+    }
+
+    @Override
     public void alterUserPasswordByName(String username, String newPassword) {
         Map<String, String> paramsMap = new LinkedHashMap<>(SetConst.SIZE_TWO);
         paramsMap.put(ParamConst.USERNAME, username);
@@ -338,6 +347,27 @@ public class UserServiceImpl implements IUserService {
      */
     private boolean isEmptyUser(UserDO user) {
         return user == null;
+    }
+
+    /*
+     * ***********************************************
+     * get method
+     * ***********************************************
+     */
+
+    /**
+     * 获取用户对象不能为空
+     *
+     * @param userId 用户id
+     * @return UserDO 用户对象
+     */
+    private UserDO getUserDONotNull(int userId) {
+        UserDO user = userDAO.getUserById(userId);
+        if (user == null) {
+            throwNoUserException();
+        }
+
+        return user;
     }
 
     /*

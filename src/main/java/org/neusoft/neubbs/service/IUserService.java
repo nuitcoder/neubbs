@@ -115,6 +115,17 @@ public interface IUserService {
      */
     boolean isUserActivatedByState(int state);
 
+
+    /**
+     * 判断用户是否喜欢话题
+     *      - 是否已经点击
+     *
+     * @param userId 用户id
+     * @param topicId 话题id
+     * @return boolean 是点击过喜欢按钮（true-喜欢，false-未点击）
+     */
+    boolean isUserLikeTopic(int userId, int topicId);
+
     /**
      * 修改用户密码
      *      - 失败直接抛出异常

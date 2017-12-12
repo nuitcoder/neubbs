@@ -66,16 +66,33 @@ public class TopicController {
 
     /**
      * 获取话题信息
+     *      - 能够获取当前用户是否点赞该文章信息（访客用户默认为 false）
      *
      * @param topicId 话题id
+     * @param request http请求
      * @return PageJsonDTO 页面JSON传输对象
      */
     @RequestMapping(value = "/topic", method = RequestMethod.GET)
     @ResponseBody
-    public PageJsonDTO topic(@RequestParam(value = "topicid", required = false) String topicId) {
+    public PageJsonDTO topic(@RequestParam(value = "topicid", required = false) String topicId,
+                             HttpServletRequest request) {
         paramCheckService.check(ParamConst.ID, topicId);
-        return new PageJsonDTO(AjaxRequestStatus.SUCCESS,
-                topicService.getTopicContentPageModelMap(Integer.parseInt(topicId)));
+
+
+        int topicIdInt = Integer.parseInt(topicId);
+        Map<String, Object> topicContentPageModelMap = topicService.getTopicContentPageModelMap(topicIdInt);
+
+        //judge current visit user whether to like this topic
+        boolean isCurrentUserLikeThisTopic = false;
+        String authentication = httpService.getCookieValue(request, ParamConst.AUTHENTICATION);
+        if (authentication != null) {
+            UserDO currentUser
+                    = secretService.jwtVerifyTokenByTokenByKey(authentication, SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY);
+            isCurrentUserLikeThisTopic = userService.isUserLikeTopic(currentUser.getId(), topicIdInt);
+        }
+
+        topicContentPageModelMap.put(ParamConst.CURRENT_USERT_LIKE_TOPIC, isCurrentUserLikeThisTopic);
+        return new PageJsonDTO(AjaxRequestStatus.SUCCESS, topicContentPageModelMap);
     }
 
     /**

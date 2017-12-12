@@ -1,5 +1,6 @@
 package test.org.neusoft.neubbs.util;
 
+import com.alibaba.fastjson.JSON;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -58,4 +59,18 @@ public class JsonUtilTest {
             System.out.println(entry.getKey() + "：" + entry.getValue());
         }
      }
+
+    /**
+     * 测试判断 JSON 数组是否存在指定 int 元素
+     */
+    @Test
+    public void testIsJsonArrayStringExistIntElement() {
+        //if {}, also pass test
+        int[] intArray = {1, 234, 28, 68, 89, 72};
+        String jsonArrayString = JSON.toJSONString(intArray);
+
+        System.out.println("test number=5 result: " + JsonUtil.isJsonArrayStringExistIntElement(jsonArrayString, 5));
+        System.out.println("test number=234 result: " + JsonUtil.isJsonArrayStringExistIntElement(jsonArrayString, 234));
+        System.out.println("test number=3121 result: " + JsonUtil.isJsonArrayStringExistIntElement(jsonArrayString, 3121));
+    }
 }

@@ -1,5 +1,7 @@
 package org.neusoft.neubbs.utils;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -67,5 +69,26 @@ public final class JsonUtil {
         } catch (IOException e) { }
 
         return map;
+    }
+
+    /**
+     * 判断 JSON 数组是否存在指定 int 元素
+     *
+     * @param jsonArrayString JSON数组字符串
+     * @param number 指定int元素
+     * @return boolean 判断结果（true-存在，false-不存在）
+     */
+    public static boolean isJsonArrayStringExistIntElement(String jsonArrayString,  int number) {
+        JSONArray jsonArray = JSON.parseArray(jsonArrayString);
+
+        boolean result = false;
+        for (int i = 0, len = jsonArray.size(); i < len; i++) {
+            if (jsonArray.getInteger(i) == number) {
+                result = true;
+                break;
+            }
+        }
+
+        return result;
     }
 }

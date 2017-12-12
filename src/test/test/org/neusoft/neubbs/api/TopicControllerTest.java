@@ -167,7 +167,7 @@ public class TopicControllerTest {
         Map modelMap = (Map) resultMap.get("model");
         this.confirmMapShouldHavaKeyItems(modelMap,
                 "title", "replies", "lastreplytime", "createtime", "topicid" ,"content",
-                "read", "like", "category", "user", "lastreplyuser", "replys");
+                "read", "like", "category", "user", "lastreplyuser", "replys", "currentuserliketopic");
 
         //judge $.model.category
         this.confirmMapShouldHavaKeyItems((Map) modelMap.get("category"), "id", "name", "description");
