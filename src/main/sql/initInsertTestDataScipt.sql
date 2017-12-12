@@ -28,6 +28,17 @@ INSERT INTO `forum_user` VALUES ('6', 'suvan', '5f1d7a84db00d2fce00b31a7fc73224f
 
 
 -- ----------------------------
+-- Records of forum_user_action
+-- ----------------------------
+INSERT INTO `forum_user_action` VALUES (1, 1, '[]');
+INSERT INTO `forum_user_action` VALUES (2, 2, '[]');
+INSERT INTO `forum_user_action` VALUES (3, 3, '[]');
+INSERT INTO `forum_user_action` VALUES (4, 4, '[]');
+INSERT INTO `forum_user_action` VALUES (5, 5, '[]');
+INSERT INTO `forum_user_action` VALUES (6, 6, '[]');
+
+
+-- ----------------------------
 -- Records of forum_topic_category
 -- ----------------------------
 INSERT INTO `forum_topic_category` VALUES ('1', 'music', '音乐', '热爱音乐，热爱生活');

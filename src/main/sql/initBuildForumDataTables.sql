@@ -45,6 +45,16 @@ CREATE TABLE `forum_user` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_bin;
 
 
+-- 论坛用户行为
+CREATE TABLE `forum_user_action` (
+  `fua_id` INT(11) NOT NULL AUTO_INCREMENT comment '操作 id',
+  `fu_id` INT(11) NOT NULL comment '用户 id',
+  `fua_liketopic_ft_id_array` JSON comment 'JSON 格式，话题 id, 喜欢话题数组',
+   PRIMARY KEY (`fua_id`),
+   CONSTRAINT `FUA_FU_ID` FOREIGN KEY (`fu_id`) REFERENCES `forum_user` (`fu_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_bin;
+
+
 -- 论坛话题
 CREATE TABLE `forum_topic` (
   `ft_id` INT(11) NOT NULL AUTO_INCREMENT comment '话题 id',
