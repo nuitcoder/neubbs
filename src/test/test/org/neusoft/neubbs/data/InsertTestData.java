@@ -6,7 +6,9 @@ import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.neusoft.neubbs.constant.api.ParamConst;
 import org.neusoft.neubbs.controller.handler.SwitchDataSourceHandler;
+import org.neusoft.neubbs.dao.IUserActionDAO;
 import org.neusoft.neubbs.dao.IUserDAO;
+import org.neusoft.neubbs.entity.UserActionDO;
 import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.service.IFtpService;
 import org.neusoft.neubbs.service.ITopicService;
@@ -32,6 +34,9 @@ public class InsertTestData {
     private IUserDAO userDAO;
 
     @Autowired
+    IUserActionDAO userActionDAO;
+
+    @Autowired
     private IUserService userService;
 
     @Autowired
@@ -51,6 +56,7 @@ public class InsertTestData {
      *      - 仅仅适用于数据库表刚构建
      *      - 数据库插入测试数据
      *          - forum_user (1 ~ 6 管理员)
+     *              - 添加 forum_user_action (1 ~ 6 管理员的用户默认行为)
      *          - forum_category(1 ~ 10 话题分类)
      *          - forum_topic, forum_topic_content（100 条话题内容）
      *          - forum_topic_reply (500 条话题回复)
@@ -86,6 +92,7 @@ public class InsertTestData {
 
         int count = 0;
         UserDO user = new UserDO();
+        UserActionDO userAction = new UserActionDO();
         for(String adminName: administratorArray){
             user.setName(adminName);
             user.setPassword(SecretUtil.encryptUserPassword(password));
@@ -108,6 +115,12 @@ public class InsertTestData {
             Assert.assertEquals(1, userDAO.updateUserAvatorByName(adminName, ParamConst.USER_DEFAULT_IMAGE));
 
             System.out.println("already add administrator: " + adminName);
+
+            //save user action (input admin user id)
+            userAction.setUserid(user.getId());
+            Assert.assertEquals(1, userActionDAO.saveUserAction(userAction));
+
+            System.out.println("alread add administrator: " + adminName + " default user action!");
         }
 
         System.out.println("*************************** success add 6 administrator! ****************************");

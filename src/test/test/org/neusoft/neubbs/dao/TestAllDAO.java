@@ -11,6 +11,7 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
         UserDAOTest.class,
+        UserActionDAOTest.class,
         TopicDAOTest.class,
         TopicContentDAOTest.class,
         TopicCategoryDAOTest.class,

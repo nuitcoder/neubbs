@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.neusoft.neubbs.dao.IUserActionDAO">
+    <resultMap id="UserActionMap" type="org.neusoft.neubbs.entity.UserActionDO">
+        <id column="fua_id" property="id" javaType="Integer" jdbcType="INTEGER" />
+        <result column="fu_id" property="userid" javaType="Integer" jdbcType="INTEGER" />
+        <result column="fua_liketopic_ft_id_array" property="likeTopicidJsonArray" javaType="String" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <insert id="saveUserAction" parameterType="org.neusoft.neubbs.entity.UserActionDO">
+        INSERT INTO forum_user_action (fu_id, fua_liketopic_ft_id_array) VALUES (#{userid, jdbcType = INTEGER}, '[]')
+    </insert>
+
+    <select id="getUserAction" parameterType="java.lang.Integer" resultMap="UserActionMap">
+        SELECT fua_id, fu_id, fua_liketopic_ft_id_array
+        FROM forum_user_action WHERE fu_id = #{param1, jdbcType = INTEGER}
+    </select>
+
+    <update id="updateLikeTopicIdJsonArray">
+        UPDATE forum_user_action SET fua_liketopic_ft_id_array = #{param2, jdbcType = VARCHAR}
+        WHERE fu_id = #{param1, jdbcType = INTEGER}
+   </update>
+    <update id="updateLikeTopicIdJsonArrayByOneTopicIdToAppendEnd">
+        UPDATE `forum_user_action`
+        SET fua_liketopic_ft_id_array = JSON_ARRAY_APPEND(fua_liketopic_ft_id_array, '$', #{param2, jdbcType = INTEGER})
+        WHERE fu_id = #{param1, jdbcType = INTEGER}
+    </update>
+</mapper>
+
