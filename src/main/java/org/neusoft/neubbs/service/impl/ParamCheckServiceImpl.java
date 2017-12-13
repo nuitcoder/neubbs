@@ -2,6 +2,7 @@ package org.neusoft.neubbs.service.impl;
 
 import org.neusoft.neubbs.constant.api.ApiMessage;
 import org.neusoft.neubbs.constant.api.ParamConst;
+import org.neusoft.neubbs.constant.log.LogWarn;
 import org.neusoft.neubbs.exception.ParamsErrorException;
 import org.neusoft.neubbs.service.IParamCheckService;
 import org.neusoft.neubbs.utils.PatternUtil;
@@ -22,6 +23,17 @@ public class ParamCheckServiceImpl implements IParamCheckService {
     }
 
     @Override
+    public void checkInstructionOfSpecifyArray(String instructionParam, String... instructionArray) {
+        for (String allowInstruction: instructionArray) {
+            if (allowInstruction.equals(instructionParam)) {
+                return;
+            }
+        }
+
+        throw new ParamsErrorException(ApiMessage.PARAM_ERROR).log(LogWarn.PARAM_CHECK_02);
+    }
+
+    @Override
     public void paramsNotNull(String... params) {
         int count = 0;
         for (String param: params) {
@@ -31,7 +43,7 @@ public class ParamCheckServiceImpl implements IParamCheckService {
         }
 
         if (count == params.length) {
-            throw new ParamsErrorException(ApiMessage.PARAM_ERROR).log("需按规定输入相应参数，不能输入空参数");
+            throw new ParamsErrorException(ApiMessage.PARAM_ERROR).log(LogWarn.PARAM_CHECK_01);
         }
     }
 

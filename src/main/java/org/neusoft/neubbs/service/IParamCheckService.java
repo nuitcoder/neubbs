@@ -17,6 +17,14 @@ public interface IParamCheckService {
     void check(String paramType, String paramValue);
 
     /**
+     * 检查指令参数，是否存在于指定指令数组
+     *
+     * @param instructionParam 指令参数(可变参数)
+     * @param instructionArray 指令数组（规定指令必须是数组以内元素）
+     */
+    void checkInstructionOfSpecifyArray(String instructionParam, String... instructionArray);
+
+    /**
      * 参数集合不能为空
      *      - 使用可变参数
      *

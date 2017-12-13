@@ -45,7 +45,9 @@ public final class SetConst {
     /**
      * 数字
      */
+    public static final int NEGATIVE_ONE = -1;
     public static final int ZERO = 0;
+    public static final int ONE = 1;
     public static final int THOUSAND = 1000;
     public static final int TWENTY_FOUR = 24;
     public static final int SIXTY = 60;
@@ -109,5 +111,13 @@ public final class SetConst {
      */
     public static final String HTTP = "http";
     public static final String FTP = "ftp";
+
+    /**
+     * 指令
+     *     - 自增 1
+     *     - 自减 1
+     */
+    public static final String INC = "inc";
+    public static final String DEC = "dec";
 
 }

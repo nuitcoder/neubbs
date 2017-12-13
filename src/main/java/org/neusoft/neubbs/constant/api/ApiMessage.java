@@ -66,6 +66,11 @@ public final class ApiMessage {
 
     public static final String NO_QUERY_TOPICS = "no query topics";
 
+    public static final String NO_REAPEAT_INC_TOPIC_LIKE = "no repeat 'inc' topic like";
+    public static final String NO_REAPEAT_DEC_TOPIC_LIKE = "no repeat 'dec' topic like";
+
+    public static final String USER_NO_LIKE_THIS_TOPIC = "user no like this like";
+
     /**
      * Ftp Service
      */

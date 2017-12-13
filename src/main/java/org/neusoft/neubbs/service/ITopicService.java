@@ -136,12 +136,17 @@ public interface ITopicService {
     void alterTopicReadAddOne(int topicId);
 
     /**
-     * 修改话题喜欢人数（+1）
+     * （通过指令）修改话题喜欢人数（+1 or -1）
+     *      - user service 从中获取用户当前用户是否已经点击过喜欢按钮
+     *      - param check service 将会检查指令是否为 'inc' or 'dec'
      *
+     * @param isCurrentUserLikeTopic 当前用户是否喜欢该话题（是否已经点赞）
      * @param topicId 话题id
+     * @param instruction 操作指令（INC-自增1，DEC-自减-）
      * @return int 当前话题点赞数
      */
-    int alterTopicLikeAddOne(int topicId);
+    int alterTopicLikeByInstruction(boolean isCurrentUserLikeTopic, int topicId, String instruction);
+
 
     /**
      * 修改话题分类描述

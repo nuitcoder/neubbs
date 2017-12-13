@@ -348,15 +348,26 @@ public class TopicServiceImpl implements ITopicService {
     }
 
     @Override
-    public int alterTopicLikeAddOne(int topicId) {
-        TopicContentDO topicContent = this.getTopicContentNotNull(topicId);
-        int beforeTopicLike = topicContent.getLike();
+    public int alterTopicLikeByInstruction(boolean isCurrentUserLikeTopic, int topicId, String instruction) {
+        //judge current user whether repeat operation(no repeat input 'inc' or 'dec')
+        boolean isIncOfInstruction = instruction.equals(SetConst.INC);
+        if (isCurrentUserLikeTopic && isIncOfInstruction) {
+            throw new TopicErrorException(ApiMessage.NO_REAPEAT_INC_TOPIC_LIKE).log(LogWarn.TOPIC_20);
+        } else if (!isCurrentUserLikeTopic && !isIncOfInstruction) {
+            throw new TopicErrorException(ApiMessage.NO_REAPEAT_DEC_TOPIC_LIKE).log(LogWarn.TOPIC_21);
+        }
 
-        if (topicContentDAO.updateLikeAddOneByTopicId(topicId) == 0) {
+        //update forum_topic_content 'like'
+        TopicContentDO topicContent = this.getTopicContentNotNull(topicId);
+        int effectRow = isIncOfInstruction
+                ? topicContentDAO.updateLikeAddOneByTopicId(topicId)
+                : topicContentDAO.updateLikeCutOneByTopicId(topicId);
+        if (effectRow == 0) {
             throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.TOPIC_07);
         }
 
-        return beforeTopicLike + 1;
+        return isIncOfInstruction
+                ? topicContent.getLike() + SetConst.ONE : topicContent.getLike() - SetConst.ONE;
     }
 
     @Override

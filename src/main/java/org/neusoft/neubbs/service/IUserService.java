@@ -165,4 +165,14 @@ public interface IUserService {
      * @param token Base64加密密文
      */
     void alterUserActivateStateByToken(String token);
+
+    /**
+     * 修改用户行为，喜欢话题 id 列表
+     *      - 指令只支持（inc-自增1，dec-自减1）
+     *
+     * @param userId 用户 id
+     * @param topicId 话题 id
+     * @param instruction 操作指令（inc-自增1，dec-自减1）
+     */
+    void alterUserActionLikeTopicIdArray(int userId, int topicId, String instruction);
 }

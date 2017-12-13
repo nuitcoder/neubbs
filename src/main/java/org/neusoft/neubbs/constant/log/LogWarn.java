@@ -84,7 +84,16 @@ public final class LogWarn {
 
     public static final String TOPIC_19 = " 修改话题分类的描述失败！";
 
+    public static final String TOPIC_20 = " 当前话题请勿重复点赞（重复输入 inc 命令）";
+    public static final String TOPIC_21 = " 当前话题请勿重复取消点赞（重复输入 dec 命令）";
+
+    public static final String TOPIC_22 = " 用户，无法取消点赞，并未点击喜欢该文章 topicid= ";
+
     /******************************Ftp Service*********************************/
     public static final String FTP_01 = "注册用户，ftp 服务器新建 个人目录，抛出 IO 异常";
     public static final String FTP_02 = "上传用户头像图片，抛出 IO 异常";
+
+    /******************************Param Check Service*********************************/
+    public static final String PARAM_CHECK_01 = " 需按规定输入相应参数，不能输入空参数";
+    public static final String PARAM_CHECK_02 = " 指令无效，请根据相应约定，输入运行范围内指令";
 }

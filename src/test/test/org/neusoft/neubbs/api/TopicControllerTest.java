@@ -1,6 +1,7 @@
 package test.org.neusoft.neubbs.api;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Before;
@@ -9,11 +10,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.neusoft.neubbs.constant.api.ApiMessage;
 import org.neusoft.neubbs.constant.api.ParamConst;
+import org.neusoft.neubbs.constant.secret.SecretInfo;
 import org.neusoft.neubbs.controller.handler.SwitchDataSourceHandler;
 import org.neusoft.neubbs.dao.ITopicCategoryDAO;
 import org.neusoft.neubbs.dao.ITopicContentDAO;
 import org.neusoft.neubbs.dao.ITopicDAO;
 import org.neusoft.neubbs.dao.ITopicReplyDAO;
+import org.neusoft.neubbs.dao.IUserActionDAO;
 import org.neusoft.neubbs.entity.TopicCategoryDO;
 import org.neusoft.neubbs.entity.TopicContentDO;
 import org.neusoft.neubbs.entity.TopicDO;
@@ -62,6 +65,9 @@ public class TopicControllerTest {
     private WebApplicationContext webApplicationContext;
 
     private MockMvc mockMvc;
+
+    @Autowired
+    private IUserActionDAO userActionDAO;
 
     @Autowired
     private ITopicDAO topicDAO;
@@ -113,7 +119,7 @@ public class TopicControllerTest {
     public Cookie getAlreadLoginUserCookie() {
         //cookie user, explain alreay login and activated
         UserDO user = new UserDO();
-            user.setId(5);
+            user.setId(6);
             user.setName("suvan");
             user.setRank("admin");
             user.setState(1);
@@ -515,7 +521,7 @@ public class TopicControllerTest {
     @Test
     public void testGetTopicCategoryListSuccess() throws Exception {
         MvcResult result = mockMvc.perform(
-                MockMvcRequestBuilders.get("/api/topic/categorys")
+                MockMvcRequestBuilders.get("/api/topics/categorys")
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
          .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
          .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
@@ -915,39 +921,81 @@ public class TopicControllerTest {
      */
 
     /**
-     * 【/api/topic/like】test update topic content like success
+     * 【/api/topic/like】test update topic content like 'inc' success
      *      - need  @LoginAuthorization @AccountActivation
      */
     @Test
     @Transactional
-    public void testUpdateTopicContentLikeSuccess() throws Exception {
+    public void testUpdateTopicContentLikeIncSuccess() throws Exception {
         int topicId = 1;
-        String requestBody = "{" + this.getJsonField("topicid", topicId) + "}";
+        String instruction = "inc";
+        String requestBody = "{" + this.getJsonField("topicid", topicId) + ", "
+                + this.getJsonField("instruction", instruction) + "}";
         System.out.println("input request-body: "  + requestBody);
 
-        TopicContentDO beforeTopicContent = topicContentDAO.getTopicContentByTopicId(topicId);
-        int beforeTopicContentLike = beforeTopicContent.getLike();
+        Cookie cookie = this.getAlreadLoginUserCookie();
+        int userId = JwtTokenUtil.verifyToken(cookie.getValue(), SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY).getId();
+        int beforeTopicContentLike = topicContentDAO.getTopicContentByTopicId(topicId).getLike();
 
         mockMvc.perform(
                 MockMvcRequestBuilders.post("/api/topic/like")
-                        .cookie(this.getAlreadLoginUserCookie())
+                        .cookie(cookie)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody)
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.model.like")
+                        .value(CoreMatchers.is(beforeTopicContentLike + 1)));
+
+        //compare database data
+        int afterTopicContentLike = topicContentDAO.getTopicContentByTopicId(topicId).getLike();
+        Assert.assertEquals(beforeTopicContentLike + 1, afterTopicContentLike);
+
+        JSONArray jsonArray = JSON.parseArray(userActionDAO.getUserAction(userId).getLikeTopicidJsonArray());
+        Assert.assertEquals(topicId, (int) jsonArray.get(jsonArray.size() - 1));
+
+        printSuccessPassTestMehtodMessage();
+    }
+
+    /**
+     * 【/api/topic/like】test update topic content like 'dec' success
+     */
+    @Test
+    @Transactional
+    public void testUpdateTopicContentLikeDecSuccess() throws Exception {
+        int topicId = 1;
+        String instruction = "dec";
+        String requestBody = "{" + this.getJsonField("topicid", topicId) + ", "
+                + this.getJsonField("instruction", instruction) + "}";
+        System.out.println("input request-body: "  + requestBody);
+
+        //set user already like, get userId from cookie user
+        Cookie cookie = this.getAlreadLoginUserCookie();
+        int userId = JwtTokenUtil.verifyToken(cookie.getValue(), SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY).getId();
+
+        Assert.assertEquals(1, topicContentDAO.updateLikeAddOneByTopicId(topicId));
+        Assert.assertEquals(1, userActionDAO.updateLikeTopicIdJsonArrayByOneTopicIdToAppendEnd(userId, topicId));
+
+        int beforeTopicContentLike = topicContentDAO.getTopicContentByTopicId(topicId).getLike();
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.post("/api/topic/like")
+                    .cookie(cookie)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(requestBody)
+        ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
          .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
          .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
-         .andExpect(MockMvcResultMatchers.jsonPath("$.model.like")
-                 .value(CoreMatchers.allOf(
-                         CoreMatchers.notNullValue(),
-                         CoreMatchers.instanceOf(Integer.class)
-                 )
-         ));
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model.like").value(CoreMatchers.is(beforeTopicContentLike - 1)));
 
         //compare database data
         TopicContentDO afterTopicContent = topicContentDAO.getTopicContentByTopicId(topicId);
-        int afterTopikcContentLike = afterTopicContent.getLike();
+        int afterTopicContentLike = afterTopicContent.getLike();
+        Assert.assertEquals(beforeTopicContentLike - 1, afterTopicContentLike);
 
-        Assert.assertEquals(beforeTopicContentLike + 1, (int) afterTopikcContentLike);
+        JSONArray jsonArray = JSON.parseArray(userActionDAO.getUserAction(userId).getLikeTopicidJsonArray());
+        Assert.assertTrue(jsonArray.indexOf(topicId) == -1);
 
         printSuccessPassTestMehtodMessage();
     }
@@ -959,9 +1007,14 @@ public class TopicControllerTest {
      *          - [ ] account no activate
      *      - request param error, no norm
      *          - [ ] null
+     *          - [ ] instruction error
      *          - [ ] param norm
      *      - database exception
      *          - [ ] no topic
      *          - [ ] alter forum_topic_content 'like' field fail
+     *          - [ ] alter forum_user_action 'fua_liketopic_ft_id_array' fail
+     *          - [ ] user already like topic, input 'inc'
+     *          - [ ] user no like topic, input 'dec'
+     *          - [ ] repeat input 'inc' or 'dec'
      */
 }

@@ -1,5 +1,6 @@
 package org.neusoft.neubbs.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import org.neusoft.neubbs.constant.api.ApiMessage;
 import org.neusoft.neubbs.constant.api.ParamConst;
 import org.neusoft.neubbs.constant.api.SetConst;
@@ -11,6 +12,7 @@ import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.exception.AccountErrorException;
 import org.neusoft.neubbs.exception.DatabaseOperationFailException;
 import org.neusoft.neubbs.exception.TokenErrorException;
+import org.neusoft.neubbs.exception.TopicErrorException;
 import org.neusoft.neubbs.service.IUserService;
 import org.neusoft.neubbs.utils.JsonUtil;
 import org.neusoft.neubbs.utils.MapFilterUtil;
@@ -266,6 +268,28 @@ public class UserServiceImpl implements IUserService {
 
         if (userDAO.updateUserStateToActivateByEmail(email) == 0) {
             throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.SERVICE_02);
+        }
+    }
+
+    @Override
+    public void alterUserActionLikeTopicIdArray(int userId, int topicId, String instruction) {
+        //input 'inc'
+        int effectRow = 0;
+        if (instruction.equals(SetConst.INC)) {
+            effectRow = userActionDAO.updateLikeTopicIdJsonArrayByOneTopicIdToAppendEnd(userId, topicId);
+        } else {
+            //input `dec`
+            String likeTopicIdArrayString = userActionDAO.getUserAction(userId).getLikeTopicidJsonArray();
+            int indexTopicId = JSON.parseArray(likeTopicIdArrayString).indexOf(topicId);
+            if (indexTopicId == SetConst.NEGATIVE_ONE) {
+                throw new TopicErrorException(ApiMessage.USER_NO_LIKE_THIS_TOPIC).log(LogWarn.TOPIC_22);
+            }
+
+            effectRow = userActionDAO.updateLikeTopicIdJsonArrayRemoveOneTopicIdByIndex(userId, indexTopicId);
+        }
+
+        if (effectRow == 0) {
+            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.SERVICE_04);
         }
     }
 

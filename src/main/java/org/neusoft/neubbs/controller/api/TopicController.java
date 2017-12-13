@@ -326,16 +326,33 @@ public class TopicController {
      * 修改话题点赞数量
      *
      * @param requestBodyParamsMap request-body内JSON数据
+     * @param request http请求
      * @return PageJsonDTO 页面传输对象
      */
    @LoginAuthorization @AccountActivation
    @RequestMapping(value = "/topic/like", method = RequestMethod.POST, consumes = "application/json")
    @ResponseBody
-   public PageJsonDTO topicLike(@RequestBody Map<String, Object> requestBodyParamsMap) {
+   public PageJsonDTO topicLike(@RequestBody Map<String, Object> requestBodyParamsMap, HttpServletRequest request) {
        Integer topicId = (Integer) requestBodyParamsMap.get(ParamConst.TOPIC_ID);
+       String instruction = (String) requestBodyParamsMap.get(ParamConst.INSTRUCTION);
 
        paramCheckService.check(ParamConst.TOPIC_ID, String.valueOf(topicId));
+       paramCheckService.checkInstructionOfSpecifyArray(instruction, SetConst.INC, SetConst.DEC);
 
-       return new PageJsonDTO(AjaxRequestStatus.SUCCESS, ParamConst.LIKE, topicService.alterTopicLikeAddOne(topicId));
+       //get cookie user id
+       String authentication = httpService.getCookieValue(request, ParamConst.AUTHENTICATION);
+       UserDO cookieUser
+               = secretService.jwtVerifyTokenByTokenByKey(authentication, SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY);
+       int userId = cookieUser.getId();
+
+       //alter topic like
+       boolean isCurrentUserLikeTopic = userService.isUserLikeTopic(userId, topicId);
+       int currentTopicLike = topicService.alterTopicLikeByInstruction(isCurrentUserLikeTopic, topicId, instruction);
+
+       //alter user action
+       userService.alterUserActionLikeTopicIdArray(userId, topicId, instruction);
+
+       //return database latest topic like
+       return new PageJsonDTO(AjaxRequestStatus.SUCCESS, ParamConst.LIKE, currentTopicLike);
    }
 }

@@ -66,6 +66,8 @@ public final class ParamConst {
 
     public static final String CURRENT_USERT_LIKE_TOPIC  = "currentuserliketopic";
 
+    public static final String INSTRUCTION = "instruction";
+
     /**
      * Reply
      */
