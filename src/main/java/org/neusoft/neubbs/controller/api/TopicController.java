@@ -334,10 +334,10 @@ public class TopicController {
    @ResponseBody
    public PageJsonDTO topicLike(@RequestBody Map<String, Object> requestBodyParamsMap, HttpServletRequest request) {
        Integer topicId = (Integer) requestBodyParamsMap.get(ParamConst.TOPIC_ID);
-       String instruction = (String) requestBodyParamsMap.get(ParamConst.INSTRUCTION);
+       String command = (String) requestBodyParamsMap.get(ParamConst.COMMAND);
 
        paramCheckService.check(ParamConst.TOPIC_ID, String.valueOf(topicId));
-       paramCheckService.checkInstructionOfSpecifyArray(instruction, SetConst.INC, SetConst.DEC);
+       paramCheckService.checkInstructionOfSpecifyArray(command, SetConst.INC, SetConst.DEC);
 
        //get cookie user id
        String authentication = httpService.getCookieValue(request, ParamConst.AUTHENTICATION);
@@ -347,10 +347,10 @@ public class TopicController {
 
        //alter topic like
        boolean isCurrentUserLikeTopic = userService.isUserLikeTopic(userId, topicId);
-       int currentTopicLike = topicService.alterTopicLikeByInstruction(isCurrentUserLikeTopic, topicId, instruction);
+       int currentTopicLike = topicService.alterTopicLikeByInstruction(isCurrentUserLikeTopic, topicId, command);
 
        //alter user action
-       userService.alterUserActionLikeTopicIdArray(userId, topicId, instruction);
+       userService.alterUserActionLikeTopicIdArray(userId, topicId, command);
 
        //return database latest topic like
        return new PageJsonDTO(AjaxRequestStatus.SUCCESS, ParamConst.LIKE, currentTopicLike);

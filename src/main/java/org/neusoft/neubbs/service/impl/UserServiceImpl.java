@@ -272,10 +272,10 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public void alterUserActionLikeTopicIdArray(int userId, int topicId, String instruction) {
+    public void alterUserActionLikeTopicIdArray(int userId, int topicId, String command) {
         //input 'inc'
-        int effectRow = 0;
-        if (instruction.equals(SetConst.INC)) {
+        int effectRow;
+        if (command.equals(SetConst.INC)) {
             effectRow = userActionDAO.updateLikeTopicIdJsonArrayByOneTopicIdToAppendEnd(userId, topicId);
         } else {
             //input `dec`

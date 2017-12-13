@@ -348,9 +348,9 @@ public class TopicServiceImpl implements ITopicService {
     }
 
     @Override
-    public int alterTopicLikeByInstruction(boolean isCurrentUserLikeTopic, int topicId, String instruction) {
+    public int alterTopicLikeByInstruction(boolean isCurrentUserLikeTopic, int topicId, String command) {
         //judge current user whether repeat operation(no repeat input 'inc' or 'dec')
-        boolean isIncOfInstruction = instruction.equals(SetConst.INC);
+        boolean isIncOfInstruction = command.equals(SetConst.INC);
         if (isCurrentUserLikeTopic && isIncOfInstruction) {
             throw new TopicErrorException(ApiMessage.NO_REAPEAT_INC_TOPIC_LIKE).log(LogWarn.TOPIC_20);
         } else if (!isCurrentUserLikeTopic && !isIncOfInstruction) {

@@ -142,10 +142,10 @@ public interface ITopicService {
      *
      * @param isCurrentUserLikeTopic 当前用户是否喜欢该话题（是否已经点赞）
      * @param topicId 话题id
-     * @param instruction 操作指令（INC-自增1，DEC-自减-）
+     * @param command 操作指令（INC-自增1，DEC-自减-）
      * @return int 当前话题点赞数
      */
-    int alterTopicLikeByInstruction(boolean isCurrentUserLikeTopic, int topicId, String instruction);
+    int alterTopicLikeByInstruction(boolean isCurrentUserLikeTopic, int topicId, String command);
 
 
     /**

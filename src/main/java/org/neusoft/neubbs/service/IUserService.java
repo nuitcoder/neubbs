@@ -172,7 +172,7 @@ public interface IUserService {
      *
      * @param userId 用户 id
      * @param topicId 话题 id
-     * @param instruction 操作指令（inc-自增1，dec-自减1）
+     * @param command 操作指令（inc-自增1，dec-自减1）
      */
-    void alterUserActionLikeTopicIdArray(int userId, int topicId, String instruction);
+    void alterUserActionLikeTopicIdArray(int userId, int topicId, String command);
 }

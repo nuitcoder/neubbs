@@ -928,9 +928,9 @@ public class TopicControllerTest {
     @Transactional
     public void testUpdateTopicContentLikeIncSuccess() throws Exception {
         int topicId = 1;
-        String instruction = "inc";
+        String command = "inc";
         String requestBody = "{" + this.getJsonField("topicid", topicId) + ", "
-                + this.getJsonField("instruction", instruction) + "}";
+                + this.getJsonField("command", command) + "}";
         System.out.println("input request-body: "  + requestBody);
 
         Cookie cookie = this.getAlreadLoginUserCookie();
@@ -965,9 +965,9 @@ public class TopicControllerTest {
     @Transactional
     public void testUpdateTopicContentLikeDecSuccess() throws Exception {
         int topicId = 1;
-        String instruction = "dec";
+        String command = "dec";
         String requestBody = "{" + this.getJsonField("topicid", topicId) + ", "
-                + this.getJsonField("instruction", instruction) + "}";
+                + this.getJsonField("command", command) + "}";
         System.out.println("input request-body: "  + requestBody);
 
         //set user already like, get userId from cookie user
