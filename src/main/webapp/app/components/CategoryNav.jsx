@@ -62,6 +62,7 @@ class CategoryNav extends Component {
       url = `${routes.TOPICS}?category=${eventKey}`
     }
     browserHistory.push(url)
+    this.hideCategoryModal()
   }
 
   showCategoryModal() {

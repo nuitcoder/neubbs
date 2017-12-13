@@ -6,7 +6,7 @@ const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPl
 
 module.exports = {
   entry: {
-    main: './app/index.jsx',
+    app: './app/index.jsx',
     vendor: [
       'babel-polyfill',
       'react',
