@@ -31,6 +31,7 @@ export default {
   'validate.password_confirmation.same': '确认密码错误',
   'validate.title.required': '标题不能为空',
   'validate.content.required': '内容不能为空',
+  'validate.category.required': '分类不能为空',
 
   // Activate
   'activate.alert.text': '你的账号尚未激活，投票、评论、关注等功能将无法使用',
@@ -58,6 +59,8 @@ export default {
   'topic.replies.text': '共收到 {number} 条评论',
   'topic.category.all': '全部分类',
   'topic.category.new': '最新',
+  'topic.category.select': '选择分类..',
+  'topic.category.text': '话题分类',
 
   // Widget
   'widgets.newtopic.text': '发布新话题',

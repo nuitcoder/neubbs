@@ -14,22 +14,39 @@ class TopicNew extends Component {
     this.onSubmit = this.onSubmit.bind(this)
   }
 
-  onSubmit({ title, content/* , category */ }) {
+  componentWillMount() {
+    this.loadCategorys()
+  }
+
+  onSubmit({ title, content, category }) {
     this.props.actions.createNewTopic({
       title,
       content,
-      category: 'school', // TODO: need to fix
+      category,
     })
+  }
+
+  loadCategorys() {
+    this.props.actions.fetchTopicsCategorys()
   }
 
   render() {
     return (
       <Row>
         <Col md={12}>
-          <TopicForm onSubmit={this.onSubmit} />
+          <TopicForm
+            categorys={this.props.categorys}
+            onSubmit={this.onSubmit}
+          />
         </Col>
       </Row>
     )
+  }
+}
+
+const mapStateToProps = (state) => {
+  return {
+    ...state.topics,
   }
 }
 
@@ -40,12 +57,14 @@ const mapDispatchToProps = (dispatch) => {
 }
 
 TopicNew.propTypes = {
+  categorys: PropTypes.array.isRequired,
   actions: PropTypes.shape({
     createNewTopic: PropTypes.func.isRequired,
+    fetchTopicsCategorys: PropTypes.func.isRequired,
   }).isRequired,
 }
 
 export default connect(
-  null,
+  mapStateToProps,
   mapDispatchToProps,
 )(TopicNew)

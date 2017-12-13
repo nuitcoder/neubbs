@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import { Modal } from 'react-bootstrap'
+import { FormattedMessage } from 'react-intl'
 
 const Category = styled.span`
   display: inline-block;
@@ -27,7 +28,7 @@ const CategoryModal = (props) => {
     <Modal show={props.show} onHide={props.onHide}>
       <Modal.Header closeButton>
         <Modal.Title>
-          话题分类
+          <FormattedMessage id="topic.category.text" />
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
