@@ -1,7 +1,9 @@
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
+import ReactHighlight from 'react-highlight'
 
 import '../assets/css/markdown.css'
+import '../assets/css/highlight.github.css'
 
 // eslint-disable-next-line
 const punctuationRe = /[~`!@#$%^&*(){}\[\];:"'<,.>?\/\\|_+=-]/g
@@ -27,6 +29,10 @@ const Heading = (props) => {
 
   return React.createElement(`h${props.level}`, { id: slug }, props.children)
 }
+
+const HighlightCode = (props) => {
+  return React.createElement(ReactHighlight, { className: props.language }, props.value)
+}
 /* eslint-enable */
 
 const Markdown = (props) => {
@@ -36,6 +42,7 @@ const Markdown = (props) => {
       escapeHtml={false}
       renderers={{
         heading: Heading,
+        code: HighlightCode,
       }}
       {...props}
     />
