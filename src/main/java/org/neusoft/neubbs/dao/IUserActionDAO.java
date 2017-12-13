@@ -51,4 +51,13 @@ public interface IUserActionDAO {
      * @return int 更新行数
      */
     int updateLikeTopicIdJsonArrayByOneTopicIdToAppendEnd(int userId, int topicId);
+
+    /**
+     * 更新用户喜欢 id 话题数组，根据索引，删除元素
+     *
+     * @param userId 用户id
+     * @param indexOfTopicId 话题id位于JSON数组内的索引位置
+     * @return int 更新行数
+     */
+    int updateLikeTopicIdJsonArrayRemoveOneTopicIdByIndex(int userId, int indexOfTopicId);
 }

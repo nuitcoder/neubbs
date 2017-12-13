@@ -19,10 +19,15 @@
     <update id="updateLikeTopicIdJsonArray">
         UPDATE forum_user_action SET fua_liketopic_ft_id_array = #{param2, jdbcType = VARCHAR}
         WHERE fu_id = #{param1, jdbcType = INTEGER}
-   </update>
+    </update>
     <update id="updateLikeTopicIdJsonArrayByOneTopicIdToAppendEnd">
         UPDATE `forum_user_action`
         SET fua_liketopic_ft_id_array = JSON_ARRAY_APPEND(fua_liketopic_ft_id_array, '$', #{param2, jdbcType = INTEGER})
+        WHERE fu_id = #{param1, jdbcType = INTEGER}
+    </update>
+    <update id="updateLikeTopicIdJsonArrayRemoveOneTopicIdByIndex">
+        UPDATE `forum_user_action`
+        SET fua_liketopic_ft_id_array = JSON_REMOVE(fua_liketopic_ft_id_array, CONCAT('$[',#{param2, jdbcType = INTEGER},']'))
         WHERE fu_id = #{param1, jdbcType = INTEGER}
     </update>
 </mapper>

@@ -123,4 +123,28 @@ public class UserActionDAOTest {
         System.out.println("update userid=" + userId
                 + " user action append end topicid=<" + topicId + "> success!");
     }
+
+    /**
+     * (根据索引，删除 JSON 数组中指定元素)测试更新用户喜欢的话题 id 数组
+     */
+    @Test
+    @Transactional
+    public void testUpdateLikeTopicIdJsonArrayRemoveOneTopicIdByIndex() {
+        UserActionDO userAction = this.saveTestUserActionDOToDatabase();
+
+        int userId = userAction.getUserid();
+        int topicId = 1;
+        Assert.assertEquals(1, userActionDAO.updateLikeTopicIdJsonArrayByOneTopicIdToAppendEnd(userId, topicId));
+
+        int indexOfTopicId = 0;
+        System.out.println("input[userid=" + userId + ", indexOfTopicId=" + topicId + "]");
+        Assert.assertEquals(1, userActionDAO.updateLikeTopicIdJsonArrayRemoveOneTopicIdByIndex(userId, indexOfTopicId));
+
+        String afterLikeTopicJsonArray = userActionDAO.getUserAction(userId).getLikeTopicidJsonArray();
+        JSONArray topicIdArray = JSON.parseArray(afterLikeTopicJsonArray);
+        Assert.assertEquals(0, topicIdArray.size());
+
+        System.out.println("update userid=" + userId
+                + "user action json array remove index=<" + indexOfTopicId + "> element success!");
+    }
 }
