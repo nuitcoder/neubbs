@@ -125,4 +125,19 @@ public class CountControllerTest {
 
         printSuccessPassTestMehtodMessage();
     }
+
+    /**
+     * 【/api/count/reply】 test count topic reply totals success
+     */
+    @Test
+    public void testCountTopicReplyTotalsSuccess() throws Exception {
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/api/count/reply")
+        ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model." + ParamConst.REPLY_TOTALS).exists());
+
+        printSuccessPassTestMehtodMessage();
+    }
 }

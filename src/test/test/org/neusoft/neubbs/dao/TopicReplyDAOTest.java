@@ -103,6 +103,15 @@ public class TopicReplyDAOTest {
     }
 
     /**
+     * 测试获取话题总数
+     */
+    @Test
+    public void testCountReply() {
+        int replyTotals = topicReplyDAO.countReply();
+        System.out.println("count topic reply totals=" + replyTotals);
+    }
+
+    /**
      * 测试获取最大的话题回复 id
      */
     @Test

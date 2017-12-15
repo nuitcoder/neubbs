@@ -19,6 +19,8 @@ import javax.servlet.http.HttpServletRequest;
  *      - 访问人数
  *      - 登录人数
  *      - 用户总数
+ *      - 话题总数
+ *      - 回复总数
  *
  * @author Suvan
  */
@@ -84,5 +86,16 @@ public class CountController {
     @ResponseBody
     public PageJsonDTO topic() {
         return new PageJsonDTO(AjaxRequestStatus.SUCCESS, ParamConst.TOPIC_TOTALS, topicService.countTopicTotals());
+    }
+
+    /**
+     * 回复总数
+     *
+     * @return PageJsonDTO 页面JSON传输对象
+     */
+    @RequestMapping(value = "/reply", method = RequestMethod.GET)
+    @ResponseBody
+    public PageJsonDTO reply() {
+        return new PageJsonDTO(AjaxRequestStatus.SUCCESS, ParamConst.REPLY_TOTALS, topicService.countReplyTotals());
     }
 }

@@ -29,6 +29,9 @@
       DELETE FROM forum_topic_reply WHERE ft_id = #{param1, jdbcType = INTEGER}
    </delete>
 
+   <select id="countReply" resultType="java.lang.Integer">
+      SELECT COUNT(ftr_id) FROM forum_topic_reply;
+   </select>
    <select id="getMaxTopicReplyId" resultType="java.lang.Integer">
       SELECT MAX(ftr_id) FROM forum_topic_reply;
    </select>

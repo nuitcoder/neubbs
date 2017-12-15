@@ -40,6 +40,13 @@ public interface ITopicReplyDAO {
     int removeTopicAllReplyByTopicId(int topicId);
 
     /**
+     * 统计回复总数
+     *
+     * @return 回复总数
+     */
+    int countReply();
+
+    /**
      * 获取最大的话题回复 id
      *      - 最新插入的回复 id
      *

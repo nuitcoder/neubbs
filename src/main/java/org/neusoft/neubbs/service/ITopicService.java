@@ -70,6 +70,13 @@ public interface ITopicService {
     int countTopicTotals();
 
     /**
+     * 统计话题回复总数
+     *
+     * @return int 回复总数
+     */
+    int countReplyTotals();
+
+    /**
      * 统计话题总页数
      *
      * @param limit 每页限制多少条
