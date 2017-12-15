@@ -15,6 +15,7 @@ import org.junit.runners.Suite;
         TopicDAOTest.class,
         TopicContentDAOTest.class,
         TopicCategoryDAOTest.class,
-        TopicReplyDAOTest.class
+        TopicReplyDAOTest.class,
+        MessageDAOTest.class
 })
 public class TestAllDAO { }
