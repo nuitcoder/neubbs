@@ -18,3 +18,4 @@ export const TOPIC_URL = `${API_PREFIX}/topic`
 export const TOPICS_PAGES_URL = `${TOPICS_URL}/pages`
 export const TOPICS_CATEGORYS_URL = `${TOPICS_URL}/categorys`
 export const TOPIC_REPLY_URL = `${TOPIC_URL}/reply`
+export const TOPIC_LIKE_URL = `${TOPIC_URL}/like`

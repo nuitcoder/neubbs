@@ -8,7 +8,7 @@ import _ from 'lodash'
 import actions from '../actions'
 
 import TopicList from '../components/TopicList'
-import Widgets from '../components/Widgets'
+import Sidebar from '../components/Sidebar'
 
 const TOPIC_LIMIT = 25
 
@@ -95,7 +95,7 @@ class Topics extends Component {
           hasMore={totalPage > page}
           loadMore={_.throttle(this.loadTopics, 1000)}
         />
-        <Widgets />
+        <Sidebar />
       </Row>
     )
   }

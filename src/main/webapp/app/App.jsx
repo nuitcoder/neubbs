@@ -26,10 +26,16 @@ injectGlobal`
   }
 
   /* fix panel heading border bottom */
-  .panel-default > .panel-heading {
+  .panel-default > .panel-heading,
+  .panel-default > .panel-footer {
     background-color: #fafafa;
     border-color: #eee;
     padding: 6px 15px;
+  }
+
+   /* fix button focus outline */
+  .btn:focus {
+    outline: none;
   }
 `
 

@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Link } from 'react-router'
 import styled from 'styled-components'
-import { Panel } from 'react-bootstrap'
+import { Panel, Glyphicon } from 'react-bootstrap'
 import { FormattedMessage, FormattedRelative } from 'react-intl'
 
 import Markdown from './Markdown'
@@ -14,6 +14,27 @@ const StyledPanel = styled(Panel)`
 
 const HeaderWrapper = styled.div`
   padding: 9px 0;
+`
+
+const FooterWrapper = styled.div`
+  margin: 0 0 -3px;
+`
+
+const Heart = styled(({ className }) => {
+  return <Glyphicon glyph="heart" className={className} />
+})`
+  font-size: 16px;
+  color: ${props => (props.active ? '#e76f3c' : '#666')};
+  transition: .3s;
+  margin-right: 5px;
+  cursor: pointer;
+`
+
+const Like = styled.span`
+  position: relative;
+  top: -1px;
+  font-size: 13px;
+  color: #666;
 `
 
 const Left = styled.div`
@@ -67,7 +88,8 @@ const Avator = styled.img`
   border-radius: 50%;
 `
 
-const TopicDetail = ({ topic }) => {
+const TopicDetail = (props) => {
+  const { topic } = props
   const categoryUrl = `${routes.TOPICS}?category=${topic.category.id}`
   const userUrl = routes.ACCOUNT.replace(':username', topic.user.username)
   const lastReplyUserUrl = routes.ACCOUNT.replace(':username', topic.lastreplyuser.username)
@@ -102,7 +124,7 @@ const TopicDetail = ({ topic }) => {
             <FormattedMessage
               id="topic.read.text"
               values={{
-                count: topic.read,
+                number: topic.read,
               }}
             />
           </Info>
@@ -116,8 +138,33 @@ const TopicDetail = ({ topic }) => {
     )
   }
 
+  const Footer = () => {
+    return (
+      <FooterWrapper>
+        <Left>
+          <Heart
+            active={topic.currentuserliketopic}
+            onClick={props.likeTopic}
+          />
+          {topic.like !== 0 &&
+            <Like>
+              <FormattedMessage
+                id="topic.like.text"
+                values={{
+                  number: topic.like,
+                }}
+              />
+            </Like>}
+        </Left>
+      </FooterWrapper>
+    )
+  }
+
   return (
-    <StyledPanel header={<Header />}>
+    <StyledPanel
+      header={<Header />}
+      footer={<Footer />}
+    >
       <Markdown source={topic.content} />
     </StyledPanel>
   )
@@ -125,6 +172,7 @@ const TopicDetail = ({ topic }) => {
 
 TopicDetail.propTypes = {
   topic: PropTypes.object.isRequired,
+  likeTopic: PropTypes.func.isRequired,
 }
 
 export default TopicDetail

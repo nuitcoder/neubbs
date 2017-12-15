@@ -10,6 +10,7 @@ import Loader from '../components/Loader'
 import TopicDetail from '../components/TopicDetail'
 import TopicReplies from '../components/TopicReplies'
 import ReplyForm from '../components/ReplyForm'
+import TopicSidebar from '../components/TopicSidebar'
 
 class Topic extends Component {
   constructor(props) {
@@ -22,6 +23,7 @@ class Topic extends Component {
     this.addReceiver = this.addReceiver.bind(this)
     this.updateReceiver = this.updateReceiver.bind(this)
     this.onSubmitReply = this.onSubmitReply.bind(this)
+    this.likeTopic = this.likeTopic.bind(this)
   }
 
   componentWillMount() {
@@ -46,6 +48,15 @@ class Topic extends Component {
     this.setState({ receiver })
   }
 
+  likeTopic() {
+    const { topic } = this.props
+    const { topicid } = topic
+    this.props.actions.likeTopic({
+      topicid,
+      isLike: !topic.currentuserliketopic,
+    })
+  }
+
   render() {
     const { topic } = this.props
 
@@ -60,8 +71,11 @@ class Topic extends Component {
     return (
       <Row>
         <Col md={9}>
-          <TopicDetail topic={topic} />
-          {topic.replies != 0 &&
+          <TopicDetail
+            topic={topic}
+            likeTopic={this.likeTopic}
+          />
+          {topic.replies !== 0 &&
             <TopicReplies
               replies={topic.replys}
               onClickReply={this.addReceiver}
@@ -72,6 +86,10 @@ class Topic extends Component {
             onSubmit={this.onSubmitReply}
           />
         </Col>
+        <TopicSidebar
+          data={topic}
+          likeTopic={this.likeTopic}
+        />
       </Row>
     )
   }
@@ -98,6 +116,7 @@ Topic.propTypes = {
   actions: PropTypes.shape({
     fetchTopicDetail: PropTypes.func.isRequired,
     replyTopic: PropTypes.func.isRequired,
+    likeTopic: PropTypes.func.isRequired,
   }).isRequired,
   topic: PropTypes.object.isRequired,
 }

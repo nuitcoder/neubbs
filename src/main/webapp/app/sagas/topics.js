@@ -109,3 +109,20 @@ export function* replyTopicSaga(action) {
     yield call(handleError, action, err)
   }
 }
+
+export function* likeTopicSaga(action) {
+  const { payload = {} } = action
+  const { topicid, isLike } = payload
+
+  const { data } = yield call(api.topics.likeTopic, { topicid, isLike })
+  try {
+    if (data.success) {
+      yield put({ type: types.LIKE_TOPIC_SUCCESS })
+      yield put({ type: types.FETCH_TOPIC_DEDAIL_REQUEST, payload: { id: topicid } })
+    } else {
+      yield call(handleError, action, data)
+    }
+  } catch (err) {
+    yield call(handleError, action, err)
+  }
+}

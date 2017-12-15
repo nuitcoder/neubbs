@@ -23,6 +23,7 @@ function* rootSagas() {
     takeLatest(types.CREATE_NEW_TOPIC_REQUEST, topics.createNewTopicSaga),
     takeLatest(types.FETCH_TOPIC_DEDAIL_REQUEST, topics.fetchTopicDetailSaga),
     takeLatest(types.REPLY_TOPIC_REQUEST, topics.replyTopicSaga),
+    takeLatest(types.LIKE_TOPIC_REQUEST, topics.likeTopicSaga),
   ]
 }
 

@@ -5,6 +5,7 @@ import {
   TOPICS_CATEGORYS_URL,
   TOPIC_URL,
   TOPIC_REPLY_URL,
+  TOPIC_LIKE_URL,
 } from '../constants/api'
 
 const topics = {
@@ -12,7 +13,7 @@ const topics = {
   /**
    * fetch topic list
    *
-   * @returns {object}
+   * @returns {Promise}
    */
   fetchTopics({ page = 1, limit = 25, category = '', username = '' }) {
     const params = { page, limit }
@@ -33,7 +34,7 @@ const topics = {
   /**
    * fetch topics categorys
    *
-   * @returns {object}
+   * @returns {Promise}
    */
   fetchTopicsCategorys() {
     return axios.get(TOPICS_CATEGORYS_URL)
@@ -42,7 +43,7 @@ const topics = {
   /**
    * fetch topic list total page
    *
-   * @returns {object}
+   * @returns {Promise}
    */
   fetchTopicsPages({ limit = 25, category = '', username = '' }) {
     const params = { limit }
@@ -63,7 +64,7 @@ const topics = {
   /**
    * create new topic
    *
-   * @returns {object}
+   * @returns {Promise}
    */
   createNewTopic({ title, content, category }) {
     return axios.post(TOPIC_URL, {
@@ -76,7 +77,7 @@ const topics = {
   /**
    * fetch topic detail
    *
-   * @returns {object}
+   * @returns {Promise}
    */
   fetchTopicDetail({ id }) {
     const params = { topicid: id }
@@ -88,12 +89,24 @@ const topics = {
   /**
    * reply topic by topicid
    *
-   * @returns {object}
+   * @returns {Promise}
    */
   replyTopic({ topicid, content }) {
     return axios.post(TOPIC_REPLY_URL, {
       topicid,
       content,
+    })
+  },
+
+  /**
+   * like topic
+   *
+   * @returns {Promise}
+   */
+  likeTopic({ topicid, isLike }) {
+    return axios.post(TOPIC_LIKE_URL, {
+      topicid,
+      command: isLike ? 'inc' : 'dec',
     })
   },
 }

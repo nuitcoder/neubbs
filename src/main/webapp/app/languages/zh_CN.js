@@ -52,7 +52,7 @@ export default {
   // Topic
   'topic.createtime.text': ' · 发布于 {time}',
   'topic.lastreply.text': ' · 最后由 {username} 回复于 {time}',
-  'topic.read.text': ' · 阅读量 {count}',
+  'topic.read.text': ' · 阅读量 {number}',
   'topic.new.header': '发布新主题',
   'topic.new.title': '主题标题',
   'topic.new.submit': '发布主题',
@@ -61,6 +61,7 @@ export default {
   'topic.category.new': '最新',
   'topic.category.select': '选择分类..',
   'topic.category.text': '话题分类',
+  'topic.like.text': '{number} 个赞',
 
   // Widget
   'widgets.newtopic.text': '发布新话题',
