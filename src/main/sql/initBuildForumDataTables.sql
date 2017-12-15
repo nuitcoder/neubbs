@@ -145,9 +145,9 @@ CREATE TABLE `forum_message` (
   `fm_sender_id` INT(11) NOT NULL comment '发送人 id',
   `fm_send_time` DATETIME DEFAULT CURRENT_TIMESTAMP comment '发送时间（默认为创建时间）',
   `fm_content` VARCHAR(500) NOT NULL comment '消息内容',
-  `fm_recevier_id` INT(11) NOT NULL comment '接收人 id',
+  `fm_receiver_id` INT(11) NOT NULL comment '接收人 id',
   `fm_receive_time` DATETIME DEFAULT NULL comment '接收时间（默认空）',
   PRIMARY KEY (`fm_id`),
   CONSTRAINT `FM_S_FU_ID` FOREIGN KEY (`fm_sender_id`) REFERENCES `forum_user` (`fu_id`),
-  CONSTRAINT `FM_R_FU_ID` FOREIGN KEY (`fm_recevier_id`) REFERENCES `forum_user` (`fu_id`)
+  CONSTRAINT `FM_R_FU_ID` FOREIGN KEY (`fm_receiver_id`) REFERENCES `forum_user` (`fu_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_bin;
