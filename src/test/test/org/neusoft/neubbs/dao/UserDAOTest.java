@@ -82,6 +82,15 @@ public class UserDAOTest {
     }
 
     /**
+     * 测试获取用户总数
+     */
+    @Test
+    public void testCountUser() {
+        int totalUsers = userDAO.countUser();
+        System.out.println("count user totals = " + totalUsers);
+    }
+
+    /**
      * 测试获取最大用户 id
      *      - 最新插入用户 id
      */

@@ -78,6 +78,7 @@ public final class ParamConst {
     /**
      * Count
      */
-    public static final String COUNT_VISIT_USER = "countvisituser";
-    public static final String COUNT_LOGIN_USER = "countloginuser";
+    public static final String VISIT_USER = "visitUser";
+    public static final String LOGIN_USER = "loginUser";
+    public static final String USER_TOTALS = "userTotals";
 }

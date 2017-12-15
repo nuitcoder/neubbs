@@ -32,6 +32,13 @@ public interface IUserDAO {
     int removeUserById(int userId);
 
     /**
+     * 获取用户总数
+     *
+     * @return int 用户总数
+     */
+    int countUser();
+
+    /**
      * 获取最大值用户 id
      *      - 最新插入用户 id
      *

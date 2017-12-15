@@ -18,8 +18,8 @@ public class ApiSessionListener implements HttpSessionListener {
         ServletContext context = httpSessionEvent.getSession().getServletContext();
 
         //在线访问人数 +1
-        int onlineVisitUser = (int) context.getAttribute(ParamConst.COUNT_VISIT_USER);
-        context.setAttribute(ParamConst.COUNT_VISIT_USER, ++onlineVisitUser);
+        int onlineVisitUser = (int) context.getAttribute(ParamConst.VISIT_USER);
+        context.setAttribute(ParamConst.VISIT_USER, ++onlineVisitUser);
     }
 
     @Override
@@ -27,7 +27,7 @@ public class ApiSessionListener implements HttpSessionListener {
         ServletContext context = httpSessionEvent.getSession().getServletContext();
 
         //在线访问人数 -1
-        int onlineVisitUser = (int) context.getAttribute(ParamConst.COUNT_VISIT_USER);
-        context.setAttribute(ParamConst.COUNT_VISIT_USER, --onlineVisitUser);
+        int onlineVisitUser = (int) context.getAttribute(ParamConst.VISIT_USER);
+        context.setAttribute(ParamConst.VISIT_USER, --onlineVisitUser);
     }
 }

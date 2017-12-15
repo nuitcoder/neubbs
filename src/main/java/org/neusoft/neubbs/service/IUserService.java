@@ -50,6 +50,13 @@ public interface IUserService {
     void confirmUserMatchCookieUser(String inputUsername, UserDO cookieUser);
 
     /**
+     * 统计用户总数
+     *
+     * @return int 用户总数
+     */
+    int countUserTotals();
+
+    /**
      * 获取用户信息（已经登录状态）
      *
      * @param username 用户名

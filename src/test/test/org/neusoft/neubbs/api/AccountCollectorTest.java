@@ -329,7 +329,7 @@ public class AccountCollectorTest {
     @Test
     public void testLoginSuccess() throws Exception {
         //设置 ServletContext，统计登录人数
-        this.webApplicationContext.getServletContext().setAttribute(ParamConst.COUNT_LOGIN_USER, 0);
+        this.webApplicationContext.getServletContext().setAttribute(ParamConst.LOGIN_USER, 0);
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
 
         //输入参数
@@ -362,7 +362,7 @@ public class AccountCollectorTest {
      */
     @Test
     public void testLoginThrowException() throws Exception {
-        this.webApplicationContext.getServletContext().setAttribute(ParamConst.COUNT_LOGIN_USER, 0);
+        this.webApplicationContext.getServletContext().setAttribute(ParamConst.LOGIN_USER, 0);
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
 
         String[][] params = {{null, null}
@@ -405,7 +405,7 @@ public class AccountCollectorTest {
      */
     @Test
     public void testLogoutSuccess() throws Exception {
-        this.webApplicationContext.getServletContext().setAttribute(ParamConst.COUNT_LOGIN_USER, 0);
+        this.webApplicationContext.getServletContext().setAttribute(ParamConst.LOGIN_USER, 0);
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
 
         UserDO user = new UserDO();

@@ -55,23 +55,23 @@ public class HttpServiceImpl implements IHttpService {
     @Override
     public void addOnlineLoginUserNumber(HttpServletRequest request) {
         ServletContext context = request.getServletContext();
-        context.setAttribute(ParamConst.COUNT_LOGIN_USER, this.getOnlineLoginUserNumber(request) + 1);
+        context.setAttribute(ParamConst.LOGIN_USER, this.getOnlineLoginUserNumber(request) + 1);
     }
 
     @Override
     public void cutOnlineLoginUserNumber(HttpServletRequest request) {
         ServletContext context = request.getServletContext();
-        context.setAttribute(ParamConst.COUNT_LOGIN_USER, this.getOnlineLoginUserNumber(request) - 1);
+        context.setAttribute(ParamConst.LOGIN_USER, this.getOnlineLoginUserNumber(request) - 1);
     }
 
     @Override
     public int getOnlineLoginUserNumber(HttpServletRequest request) {
-        return (int) request.getServletContext().getAttribute(ParamConst.COUNT_LOGIN_USER);
+        return (int) request.getServletContext().getAttribute(ParamConst.LOGIN_USER);
     }
 
     @Override
     public int getOnlineVisitUserNumber(HttpServletRequest request) {
-        return (int) request.getServletContext().getAttribute(ParamConst.COUNT_VISIT_USER);
+        return (int) request.getServletContext().getAttribute(ParamConst.VISIT_USER);
     }
 
     @Override

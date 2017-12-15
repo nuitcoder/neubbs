@@ -33,6 +33,9 @@
         DELETE FROM forum_user WHERE fu_id = #{param1, jdbcType = INTEGER}
     </delete>
 
+    <select id="countUser" resultType="java.lang.Integer">
+        SELECT COUNT(fu_id) FROM forum_user;
+    </select>
     <select id="getMaxUserId" resultType="java.lang.Integer">
         SELECT MAX(fu_id) FROM forum_user;
     </select>

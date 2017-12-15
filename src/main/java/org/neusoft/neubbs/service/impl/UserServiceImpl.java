@@ -118,6 +118,11 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
+    public int countUserTotals() {
+       return userDAO.countUser();
+    }
+
+    @Override
     public Map<String, Object> getUserInfoToPageModelMap(String username, String email) {
         //get user information
         UserDO user = username != null

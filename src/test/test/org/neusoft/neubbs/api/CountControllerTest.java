@@ -13,6 +13,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -59,8 +60,8 @@ public class CountControllerTest {
     public void setup() {
         //set servlet context online visit user and loin user
         ServletContext context = webApplicationContext.getServletContext();
-            context.setAttribute(ParamConst.COUNT_VISIT_USER, 21);
-            context.setAttribute(ParamConst.COUNT_LOGIN_USER, 50);
+            context.setAttribute(ParamConst.VISIT_USER, 21);
+            context.setAttribute(ParamConst.LOGIN_USER, 50);
 
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     }
@@ -75,7 +76,7 @@ public class CountControllerTest {
        ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
         .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
         .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
-        .andExpect(MockMvcResultMatchers.jsonPath("$.model." + ParamConst.COUNT_VISIT_USER).value(21));
+        .andExpect(MockMvcResultMatchers.jsonPath("$.model." + ParamConst.VISIT_USER).value(21));
 
        printSuccessPassTestMehtodMessage();
     }
@@ -90,7 +91,22 @@ public class CountControllerTest {
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
          .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
          .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
-         .andExpect(MockMvcResultMatchers.jsonPath("$.model." + ParamConst.COUNT_LOGIN_USER).value(50));
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model." + ParamConst.LOGIN_USER).value(50));
+
+        printSuccessPassTestMehtodMessage();
+    }
+
+    /**
+     * 【/api/count/user】 test count user totals success
+     */
+    @Test
+    public void testCountUserTotalsSuccess() throws Exception {
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/api/count/user")
+        ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model." + ParamConst.USER_TOTALS).exists()).andDo(MockMvcResultHandlers.print());
 
         printSuccessPassTestMehtodMessage();
     }

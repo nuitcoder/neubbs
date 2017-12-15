@@ -19,10 +19,10 @@ public class ApiContextListener implements ServletContextListener {
         ServletContext context = servletContextEvent.getServletContext();
 
         //在线访问人数
-        context.setAttribute(ParamConst.COUNT_VISIT_USER, 0);
+        context.setAttribute(ParamConst.VISIT_USER, 0);
 
         //已登录人数
-        context.setAttribute(ParamConst.COUNT_LOGIN_USER, 0);
+        context.setAttribute(ParamConst.LOGIN_USER, 0);
     }
 
     @Override
