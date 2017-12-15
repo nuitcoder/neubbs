@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.neusoft.neubbs.dao.IMessageDAO">
+    <resultMap id="MessageMap" type="org.neusoft.neubbs.entity.MessageDO">
+        <id column="fm_id" property="id" javaType="Integer" jdbcType="INTEGER" />
+        <result column="fm_source" property="source" javaType="String" jdbcType="INTEGER" />
+        <result column="fm_sender_id" property="senderId" javaType="Integer" jdbcType="INTEGER" />
+        <result column="fm_send_time" property="sendTime" javaType="java.util.Date" jdbcType="TIMESTAMP" />
+        <result column="fm_content" property="content" javaType="String" jdbcType="VARCHAR" />
+        <result column="fm_receiver_id" property="receiverId" javaType="Integer" jdbcType="INTEGER" />
+        <result column="fm_receive_time" property="receiveTime" javaType="java.util.Date" jdbcType="TIMESTAMP" />
+    </resultMap>
+    
+    <insert id="saveMessage" parameterType="org.neusoft.neubbs.entity.MessageDO"
+            useGeneratedKeys="true" keyProperty="fm_id">
+        INSERT INTO forum_message (fm_source, fm_sender_id, fm_content, fm_receiver_id)
+        VALUES (#{source, jdbcType = VARCHAR}, #{senderId, jdbcType = VARCHAR},
+                #{content, jdbcType = VARCHAR}, #{receiverId, jdbcType = INTEGER})
+        <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+            SELECT LAST_INSERT_ID() AS fm_id
+        </selectKey>
+    </insert>
+
+    <select id="getMessage" parameterType="java.lang.Integer" resultMap="MessageMap">
+        SELECT fm_id, fm_source, fm_sender_id, fm_send_time, fm_content, fm_receiver_id, fm_receive_time
+        FROM forum_message WHERE fm_id = #{param1, jdbcType = INTEGER}
+    </select>
+
+    <update id="updateMessageReceiveTime">
+        UPDATE forum_message
+        SET fm_receive_time = CURRENT_TIMESTAMP()
+        WHERE fm_id = #{param1, jdbcType = INTEGER}
+    </update>
+
+</mapper>
+
