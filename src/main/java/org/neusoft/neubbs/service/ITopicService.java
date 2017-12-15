@@ -63,6 +63,13 @@ public interface ITopicService {
     void removeCategory(String categoryNick);
 
     /**
+     * 统计话题总数
+     *
+     * @return int 话题总数
+     */
+    int countTopicTotals();
+
+    /**
      * 统计话题总页数
      *
      * @param limit 每页限制多少条

@@ -177,6 +177,11 @@ public class TopicServiceImpl implements ITopicService {
     }
 
     @Override
+    public int countTopicTotals() {
+        return topicDAO.countTopic();
+    }
+
+    @Override
     public int countTopicTotalPages(int limit, String categoryNick, String username) {
         if (limit == SetConst.ZERO) {
             limit = neubbsConfig.getTopicsApiRequestParamLimitDefault();

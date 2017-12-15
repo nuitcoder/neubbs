@@ -4,6 +4,7 @@ import org.neusoft.neubbs.constant.ajax.AjaxRequestStatus;
 import org.neusoft.neubbs.constant.api.ParamConst;
 import org.neusoft.neubbs.dto.PageJsonDTO;
 import org.neusoft.neubbs.service.IHttpService;
+import org.neusoft.neubbs.service.ITopicService;
 import org.neusoft.neubbs.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -27,11 +28,14 @@ public class CountController {
 
     private final IHttpService httpService;
     private final IUserService userService;
+    private final ITopicService topicService;
 
     @Autowired
-    public CountController(IHttpService httpService, IUserService userService) {
+    public CountController(IHttpService httpService, IUserService userService,
+                           ITopicService topicService) {
         this.httpService = httpService;
         this.userService = userService;
+        this.topicService = topicService;
     }
 
     /**
@@ -63,11 +67,22 @@ public class CountController {
     /**
      * 用户总数
      *
-     * @return PageJsonDTO
+     * @return PageJsonDTO 页面JSON传输对象
      */
     @RequestMapping(value = "/user", method = RequestMethod.GET)
     @ResponseBody
     public PageJsonDTO user() {
         return new PageJsonDTO(AjaxRequestStatus.SUCCESS, ParamConst.USER_TOTALS, userService.countUserTotals());
+    }
+
+    /**
+     * 话题总数
+     *
+     * @return PageJsonDTO 页面JSON传输对象
+     */
+    @RequestMapping(value = "/topic", method = RequestMethod.GET)
+    @ResponseBody
+    public PageJsonDTO topic() {
+        return new PageJsonDTO(AjaxRequestStatus.SUCCESS, ParamConst.TOPIC_TOTALS, topicService.countTopicTotals());
     }
 }
