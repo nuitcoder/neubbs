@@ -69,18 +69,32 @@ public class TopicController {
      *      - 能够获取当前用户是否点赞该文章信息（访客用户默认为 false）
      *
      * @param topicId 话题id
+     * @param hadRead 阅读数是否增加（0-不增加，1-增加）
      * @param request http请求
      * @return PageJsonDTO 页面JSON传输对象
      */
     @RequestMapping(value = "/topic", method = RequestMethod.GET)
     @ResponseBody
     public PageJsonDTO topic(@RequestParam(value = "topicid", required = false) String topicId,
+                             @RequestParam(value = "hadread", required = false) String hadRead,
                              HttpServletRequest request) {
+
         paramCheckService.check(ParamConst.ID, topicId);
 
+        boolean isAddTopicRead = false;
+        if (hadRead != null) {
+            //0-false, 1-true
+            paramCheckService.checkInstructionOfSpecifyArray(hadRead, "0", "1");
+            isAddTopicRead = SetConst.ONE_S.equals(hadRead);
+        }
 
         int topicIdInt = Integer.parseInt(topicId);
         Map<String, Object> topicContentPageModelMap = topicService.getTopicContentPageModelMap(topicIdInt);
+
+        //read + 1 (default no add)
+        if (isAddTopicRead) {
+            topicService.alterTopicReadAddOne(topicIdInt);
+        }
 
         //judge current visit user whether to like this topic
         boolean isCurrentUserLikeThisTopic = false;

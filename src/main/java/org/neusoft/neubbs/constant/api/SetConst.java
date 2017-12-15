@@ -116,8 +116,12 @@ public final class SetConst {
      * 指令
      *     - 自增 1
      *     - 自减 1
+     *     - 0-false
+     *     - 1-true
      */
     public static final String INC = "inc";
     public static final String DEC = "dec";
+    public static final String ZERO_S = "0";
+    public static final String ONE_S = "1";
 
 }

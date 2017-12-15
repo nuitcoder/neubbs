@@ -243,11 +243,6 @@ public class TopicServiceImpl implements ITopicService {
         topicInfoMap.put(ParamConst.LAST_REPLY_USER, lastReplyUserMap);
         topicInfoMap.put(ParamConst.REPLYS, listReplyInfoMap);
 
-        //topic read + 1
-        if (topicContentDAO.updateReadAddOneByTopicId(topicId) == 0) {
-            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.TOPIC_07);
-        }
-
         return topicInfoMap;
     }
 

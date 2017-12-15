@@ -161,7 +161,8 @@ public class TopicControllerTest {
         String topicId = "1";
 
         MvcResult result = mockMvc.perform(
-                MockMvcRequestBuilders.get("/api/topic").param("topicid", topicId)
+                MockMvcRequestBuilders.get("/api/topic")
+                        .param("topicid", topicId)
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
          .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
          .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
@@ -200,10 +201,59 @@ public class TopicControllerTest {
     }
 
     /**
+     * 【/api/topic (http get)】 test get topic information read no add success
+     *      - if no request param hadread, default no add read
+     */
+    @Test
+    public void testGetTopicInformationReadNoAddSuccess() throws Exception {
+        String topicId = "1";
+        int beforeTopicRead = topicContentDAO.getTopicContentByTopicId(Integer.parseInt(topicId)).getRead();
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/api/topic")
+                        .param("topicid", topicId)
+                        .param("hadread", "0")
+        ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
+
+        int afterTopicRead = topicContentDAO.getTopicContentByTopicId(Integer.parseInt(topicId)).getRead();
+        Assert.assertEquals(beforeTopicRead, afterTopicRead);
+
+        printSuccessPassTestMehtodMessage();
+    }
+
+    /**
+     * 【/api/topic (http get)】 test get topic information read add success
+     *      - add read (+1)
+     */
+    @Test
+    public void testGetTopicInformationReadAddSuccess() throws Exception {
+        String topicId = "1";
+        int beforeTopicRead = topicContentDAO.getTopicContentByTopicId(Integer.parseInt(topicId)).getRead();
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/api/topic")
+                        .param("topicid", topicId)
+                        .param("hadread", "1")
+        ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
+
+        int afterTopicRead = topicContentDAO.getTopicContentByTopicId(Integer.parseInt(topicId)).getRead();
+        Assert.assertEquals(beforeTopicRead + 1, afterTopicRead);
+
+        printSuccessPassTestMehtodMessage();
+    }
+
+    /**
      * 【/api/topic (http get)】 test get topic information throw exception
-     *      - request param error, no norm
+     *      - request param error
+     *          - [✔] null exception
+     *          - [✔] topicid norm error
+     *          - [ ] hadread norm error
      *      - database exception
-     *          - no topic
+     *          - [✔] no topic
      */
     @Test
     public void testGetTopicInformationThrowException() throws Exception{
@@ -215,7 +265,8 @@ public class TopicControllerTest {
         for (String param: params) {
             try {
                 mockMvc.perform(
-                        MockMvcRequestBuilders.get("/api/topic").param("topicid", param)
+                        MockMvcRequestBuilders.get("/api/topic")
+                                .param("topicid", param)
                 ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
                  .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists())
                  .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
