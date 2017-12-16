@@ -37,6 +37,12 @@ injectGlobal`
   .btn:focus {
     outline: none;
   }
+
+  @media (max-width: 768px) {
+    .panel.panel-default {
+      margin-bottom: 5px;
+    }
+  }
 `
 
 const StyledAlert = styled(Alert)`
@@ -48,8 +54,12 @@ const StyledGridP = styled(Grid)`
 `
 
 const StyledGrid = styled(Grid)`
-  padding-top: 20px;
-  padding-bottom: 20px;
+  padding-top: 0;
+
+  @media (min-width: 768px) {
+    padding-top: 20px;
+    padding-bottom: 20px;
+  }
 `
 
 class App extends Component {

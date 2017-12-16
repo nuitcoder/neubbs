@@ -15,6 +15,13 @@ const Wrapper = styled.div`
   border-radius: 3px;
 `
 
+const StyledCol = styled(Col)`
+  @media (max-width: 768px) {
+    padding-left: 0;
+    padding-right: 0;
+  }
+`
+
 const TopicList = (props) => {
   if (props.data.length === 0) {
     return (
@@ -26,7 +33,7 @@ const TopicList = (props) => {
 
   const topics = _.uniqBy(props.data, 'topicid')
   return (
-    <Col md={9}>
+    <StyledCol md={9}>
       <Wrapper>
         <InfiniteScroll
           hasMore={props.hasMore}
@@ -40,7 +47,7 @@ const TopicList = (props) => {
           })}
         </InfiniteScroll>
       </Wrapper>
-    </Col>
+    </StyledCol>
   )
 }
 

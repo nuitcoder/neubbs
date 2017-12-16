@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { Alert } from 'react-bootstrap'
+import { Alert, Row } from 'react-bootstrap'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl'
@@ -44,13 +44,15 @@ class Login extends Component {
     const alertMsg = message && formatMessage({ id: message })
 
     return (
-      <FormWrapper title={titleMsg}>
-        {message &&
-          <Alert bsStyle="danger" onDismiss={this.handleAlertDismiss}>
-            {alertMsg}
-          </Alert>}
-        <LoginForm onSubmit={this.handleSubmit} />
-      </FormWrapper>
+      <Row>
+        <FormWrapper title={titleMsg}>
+          {message &&
+            <Alert bsStyle="danger" onDismiss={this.handleAlertDismiss}>
+              {alertMsg}
+            </Alert>}
+          <LoginForm onSubmit={this.handleSubmit} />
+        </FormWrapper>
+      </Row>
     )
   }
 }

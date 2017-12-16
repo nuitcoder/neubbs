@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Alert } from 'react-bootstrap'
+import { Alert, Row } from 'react-bootstrap'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl'
@@ -43,13 +43,15 @@ class Register extends Component {
     const alertMsg = message && formatMessage({ id: message })
 
     return (
-      <FormWrapper title={titleMsg}>
-        {message !== '' &&
-          <Alert bsStyle="danger" onDismiss={this.handleAlertDismiss}>
-            {alertMsg}
-          </Alert>}
-        <RegisterForm onSubmit={this.handleSubmit} />
-      </FormWrapper>
+      <Row>
+        <FormWrapper title={titleMsg}>
+          {message !== '' &&
+            <Alert bsStyle="danger" onDismiss={this.handleAlertDismiss}>
+              {alertMsg}
+            </Alert>}
+          <RegisterForm onSubmit={this.handleSubmit} />
+        </FormWrapper>
+      </Row>
     )
   }
 }

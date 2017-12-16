@@ -13,6 +13,13 @@ const Wrapper = styled(({ className, children }) => (
   </Col>
 ))`
   padding: 0;
+  display: none;
+
+  @media (min-width: 992px) {
+    & {
+      display: block;
+    }
+  }
 `
 const List = styled.ul`
   list-style: none;

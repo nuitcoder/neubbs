@@ -4,12 +4,20 @@ import styled from 'styled-components'
 import { Col } from 'react-bootstrap'
 
 const Wrapper = styled(({ className, children }) => (
-  <Col md={8} lg={6} className={className}>
+  <Col xs={12} md={8} lg={6} className={className}>
     {children}
   </Col>
 ))`
   float: none;
   margin: 10px auto 0;
+
+  @media (max-width: 768px) {
+    & {
+      margin-top: 0;
+      padding-left: 0;
+      padding-right: 0;
+    }
+  }
 `
 
 const FormHeader = styled.div`

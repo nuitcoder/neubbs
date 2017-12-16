@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { Row, Col } from 'react-bootstrap'
+import styled from 'styled-components'
 import _ from 'lodash'
 
 import actions from '../actions'
@@ -11,6 +12,13 @@ import TopicDetail from '../components/TopicDetail'
 import TopicReplies from '../components/TopicReplies'
 import ReplyForm from '../components/ReplyForm'
 import TopicSidebar from '../components/TopicSidebar'
+
+const StyledCol = styled(Col)`
+  @media (max-width: 768px) {
+    padding-left: 0;
+    padding-right: 0;
+  }
+`
 
 class Topic extends Component {
   constructor(props) {
@@ -70,7 +78,7 @@ class Topic extends Component {
 
     return (
       <Row>
-        <Col md={9}>
+        <StyledCol md={9}>
           <TopicDetail
             topic={topic}
             likeTopic={this.likeTopic}
@@ -85,7 +93,7 @@ class Topic extends Component {
             updateReceiver={this.updateReceiver}
             onSubmit={this.onSubmitReply}
           />
-        </Col>
+        </StyledCol>
         <TopicSidebar
           data={topic}
           likeTopic={this.likeTopic}
