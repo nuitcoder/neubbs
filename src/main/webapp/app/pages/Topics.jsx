@@ -78,7 +78,7 @@ class Topics extends Component {
   }
 
   render() {
-    const { topics, totalPage, categorys } = this.props
+    const { topics, totalPage, categorys, count } = this.props
     const { page, category } = this.state
 
     const categoryData = {
@@ -95,7 +95,7 @@ class Topics extends Component {
           hasMore={totalPage > page}
           loadMore={_.throttle(this.loadTopics, 1000)}
         />
-        <Sidebar />
+        <Sidebar count={count} />
       </Row>
     )
   }
@@ -104,6 +104,7 @@ class Topics extends Component {
 const mapStateToProps = (state) => {
   return {
     ...state.topics,
+    count: state.count,
   }
 }
 
@@ -120,6 +121,7 @@ Topics.propTypes = {
   topics: PropTypes.arrayOf(Object).isRequired,
   totalPage: PropTypes.number.isRequired,
   categorys: PropTypes.array.isRequired,
+  count: PropTypes.object.isRequired,
   actions: PropTypes.shape({
     clearTopics: PropTypes.func.isRequired,
     fetchTopics: PropTypes.func.isRequired,

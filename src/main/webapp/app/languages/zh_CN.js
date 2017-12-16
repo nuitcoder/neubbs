@@ -63,8 +63,14 @@ export default {
   'topic.category.text': '话题分类',
   'topic.like.text': '{number} 个赞',
 
-  // Widget
-  'widgets.newtopic.text': '发布新话题',
+  // Sidebar
+  'sidebar.newtopic.text': '发布新话题',
+  'sidebar.count.text': '论坛统计',
+  'sidebar.count.user': '注册会员: {number} 人',
+  'sidebar.count.login': '在线会员: {number} 人',
+  'sidebar.count.visit': '在线访客: {number} 人',
+  'sidebar.count.topic': '帖子数: {number} 个',
+  'sidebar.count.reply': '回复数: {number} 条',
 
   // Message
   'username or password is incorrect': '用户名或密码错误',
