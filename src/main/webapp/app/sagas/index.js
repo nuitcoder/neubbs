@@ -2,6 +2,7 @@ import { takeLatest } from 'redux-saga'
 
 import * as account from './account'
 import * as topics from './topics'
+import * as count from './count'
 import * as types from '../constants/actionTypes'
 
 function* rootSagas() {
@@ -24,6 +25,14 @@ function* rootSagas() {
     takeLatest(types.FETCH_TOPIC_DEDAIL_REQUEST, topics.fetchTopicDetailSaga),
     takeLatest(types.REPLY_TOPIC_REQUEST, topics.replyTopicSaga),
     takeLatest(types.LIKE_TOPIC_REQUEST, topics.likeTopicSaga),
+
+    // count
+    takeLatest(types.COUNT_ALL_REQUEST, count.fetchAllCount),
+    takeLatest(types.COUNT_USER_REQUEST, count.fetchUserCount),
+    takeLatest(types.COUNT_LOGIN_REQUEST, count.fetchLoginCount),
+    takeLatest(types.COUNT_VISIT_REQUEST, count.fetchVisitCount),
+    takeLatest(types.COUNT_TOPIC_REQUEST, count.fetchTopicCount),
+    takeLatest(types.COUNT_REPLY_REQUEST, count.fetchReplyCount),
   ]
 }
 

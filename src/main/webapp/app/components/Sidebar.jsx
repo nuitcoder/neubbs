@@ -25,6 +25,10 @@ const Sidebar = () => {
           <FormattedMessage id="widgets.newtopic.text" />
         </Link>
       </Panel>
+
+      <Panel>
+
+      </Panel>
     </Wrapper>
   )
 }

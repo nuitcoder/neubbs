@@ -19,3 +19,11 @@ export const TOPICS_PAGES_URL = `${TOPICS_URL}/pages`
 export const TOPICS_CATEGORYS_URL = `${TOPICS_URL}/categorys`
 export const TOPIC_REPLY_URL = `${TOPIC_URL}/reply`
 export const TOPIC_LIKE_URL = `${TOPIC_URL}/like`
+
+// count
+export const COUNT_URL = `${API_PREFIX}/count`
+export const COUNT_VISIT_URL = `${COUNT_URL}/visit`
+export const COUNT_LOGIN_URL = `${COUNT_URL}/login`
+export const COUNT_USER_URL = `${COUNT_URL}/user`
+export const COUNT_TOPIC_URL = `${COUNT_URL}/topic`
+export const COUNT_REPLY_URL = `${COUNT_URL}/reply`
