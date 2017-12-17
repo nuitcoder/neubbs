@@ -81,6 +81,6 @@ public final class ParamConst {
     public static final String VISIT_USER = "visitUser";
     public static final String LOGIN_USER = "loginUser";
     public static final String USER_TOTALS = "userTotals";
-    public static final String TOPIC_TOTALS = "topicTatals";
-    public static final String REPLY_TOTALS = "totalTotals";
+    public static final String TOPIC_TOTALS = "topicTotals";
+    public static final String REPLY_TOTALS = "replyTotals";
 }

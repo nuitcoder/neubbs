@@ -91,7 +91,7 @@ public class CountControllerTest {
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
          .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
          .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
-         .andExpect(MockMvcResultMatchers.jsonPath("$.model." + ParamConst.LOGIN_USER).value(50));
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model.loginUser").value(50));
 
         printSuccessPassTestMehtodMessage();
     }
@@ -106,7 +106,7 @@ public class CountControllerTest {
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
          .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
          .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
-         .andExpect(MockMvcResultMatchers.jsonPath("$.model." + ParamConst.USER_TOTALS).exists()).andDo(MockMvcResultHandlers.print());
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model.userTotals").exists()).andDo(MockMvcResultHandlers.print());
 
         printSuccessPassTestMehtodMessage();
     }
@@ -121,7 +121,7 @@ public class CountControllerTest {
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
          .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
          .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
-         .andExpect(MockMvcResultMatchers.jsonPath("$.model." + ParamConst.TOPIC_TOTALS).exists());
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model.topicTotals").exists());
 
         printSuccessPassTestMehtodMessage();
     }
@@ -136,7 +136,7 @@ public class CountControllerTest {
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
          .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
          .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
-         .andExpect(MockMvcResultMatchers.jsonPath("$.model." + ParamConst.REPLY_TOTALS).exists());
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model.replyTotals").exists());
 
         printSuccessPassTestMehtodMessage();
     }
