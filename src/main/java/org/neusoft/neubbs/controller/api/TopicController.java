@@ -105,7 +105,7 @@ public class TopicController {
             isCurrentUserLikeThisTopic = userService.isUserLikeTopic(currentUser.getId(), topicIdInt);
         }
 
-        topicContentPageModelMap.put(ParamConst.CURRENT_USERT_LIKE_TOPIC, isCurrentUserLikeThisTopic);
+        topicContentPageModelMap.put(ParamConst.IS_LIKE_TOPIC, isCurrentUserLikeThisTopic);
         return new PageJsonDTO(AjaxRequestStatus.SUCCESS, topicContentPageModelMap);
     }
 

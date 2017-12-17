@@ -54,7 +54,7 @@ public final class ParamConst {
 
     public static final String USER = "user";
     public static final String LAST_REPLY_USER = "lastreplyuser";
-    public static final String REPLYS = "replys";
+    public static final String REPLY_LIST = "replylist";
 
     public static final String CATEGORY_ID = "categoryid";
     public static final String NICK = "nick";
@@ -64,7 +64,7 @@ public final class ParamConst {
     public static final String TOPIC_CATEGORY_NICK = "topicCategoryNick";
     public static final String TOPIC_TITLE = "topicTitle";
 
-    public static final String CURRENT_USERT_LIKE_TOPIC  = "currentuserliketopic";
+    public static final String IS_LIKE_TOPIC  = "isliketopic";
 
     public static final String INSTRUCTION = "instruction";
     public static final String COMMAND = "command";

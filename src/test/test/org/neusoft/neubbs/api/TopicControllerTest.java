@@ -174,7 +174,7 @@ public class TopicControllerTest {
         Map modelMap = (Map) resultMap.get("model");
         this.confirmMapShouldHavaKeyItems(modelMap,
                 "title", "replies", "lastreplytime", "createtime", "topicid" ,"content",
-                "read", "like", "category", "user", "lastreplyuser", "replys", "currentuserliketopic");
+                "read", "like", "category", "user", "lastreplyuser", "replylist", "isliketopic");
 
         //judge $.model.category
         this.confirmMapShouldHavaKeyItems((Map) modelMap.get("category"), "id", "name", "description");
@@ -186,7 +186,7 @@ public class TopicControllerTest {
         this.confirmMapShouldHavaKeyItems((Map) modelMap.get("lastreplyuser"), "username", "avator");
 
         //judge $.model.replys
-        List modelReplysList = (List) modelMap.get("replys");
+        List modelReplysList = (List) modelMap.get("replylist");
         if (modelReplysList.size() > 0) {
             //get first reply map
             Map firstReplyMap = (Map) modelReplysList.get(0);

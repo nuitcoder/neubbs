@@ -241,7 +241,7 @@ public class TopicServiceImpl implements ITopicService {
         topicInfoMap.put(ParamConst.CATEGORY, topicCategoryInfoMap);
         topicInfoMap.put(ParamConst.USER, authorUserInfoMap);
         topicInfoMap.put(ParamConst.LAST_REPLY_USER, lastReplyUserMap);
-        topicInfoMap.put(ParamConst.REPLYS, listReplyInfoMap);
+        topicInfoMap.put(ParamConst.REPLY_LIST, listReplyInfoMap);
 
         return topicInfoMap;
     }
