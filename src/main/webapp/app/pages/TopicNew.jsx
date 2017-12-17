@@ -2,10 +2,21 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { Row, Col } from 'react-bootstrap'
 import { connect } from 'react-redux'
+import styled from 'styled-components'
 import { bindActionCreators } from 'redux'
 
 import actions from '../actions'
 import TopicForm from '../components/TopicForm'
+
+const StyledCol = styled(Col)`
+  @media (max-width: 768px) {
+    & {
+      margin-top: 0;
+      padding-left: 0;
+      padding-right: 0;
+    }
+  }
+`
 
 class TopicNew extends Component {
   constructor(props) {
@@ -33,12 +44,12 @@ class TopicNew extends Component {
   render() {
     return (
       <Row>
-        <Col md={12}>
+        <StyledCol md={12}>
           <TopicForm
             categorys={this.props.categorys}
             onSubmit={this.onSubmit}
           />
-        </Col>
+        </StyledCol>
       </Row>
     )
   }
