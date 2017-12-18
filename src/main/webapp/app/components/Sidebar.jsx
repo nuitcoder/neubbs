@@ -60,22 +60,22 @@ const Sidebar = (props) => {
               }}
             />
           </ListItem>
-          <ListItem>
-            <FormattedMessage
-              id="sidebar.count.visit"
-              values={{
-                number: props.count.visitUser,
-              }}
-            />
-          </ListItem>
-          <ListItem>
-            <FormattedMessage
-              id="sidebar.count.login"
-              values={{
-                number: props.count.loginUser,
-              }}
-            />
-          </ListItem>
+          {/* <ListItem> */}
+            {/* <FormattedMessage */}
+              {/* id="sidebar.count.visit" */}
+              {/* values={{ */}
+                {/* number: props.count.visitUser, */}
+              {/* }} */}
+            {/* /> */}
+          {/* </ListItem> */}
+          {/* <ListItem> */}
+            {/* <FormattedMessage */}
+              {/* id="sidebar.count.login" */}
+              {/* values={{ */}
+                {/* number: props.count.loginUser, */}
+              {/* }} */}
+            {/* /> */}
+          {/* </ListItem> */}
           <ListItem>
             <FormattedMessage
               id="sidebar.count.topic"

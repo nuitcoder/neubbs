@@ -143,7 +143,7 @@ const TopicDetail = (props) => {
       <FooterWrapper>
         <Left>
           <Heart
-            active={topic.currentuserliketopic}
+            active={topic.isliketopic}
             onClick={props.likeTopic}
           />
           {topic.like !== 0 &&

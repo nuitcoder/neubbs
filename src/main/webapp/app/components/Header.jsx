@@ -123,7 +123,7 @@ class Header extends Component {
   }
 
   renderRightNavbar() {
-    const { isLogin, intl } = this.props
+    const { loggedIn, intl } = this.props
     const { formatMessage } = intl
 
     const loginMsg = formatMessage({ id: 'header.login.text' })
@@ -131,7 +131,7 @@ class Header extends Component {
     const logoutMsg = formatMessage({ id: 'header.logout.text' })
     const accountMsg = formatMessage({ id: 'header.account.text' })
 
-    if (isLogin) {
+    if (loggedIn) {
       const { profile: { username, avator } } = this.props.account
 
       return (
@@ -187,7 +187,7 @@ class Header extends Component {
 }
 
 Header.propTypes = {
-  isLogin: PropTypes.bool.isRequired,
+  loggedIn: PropTypes.bool.isRequired,
   router: PropTypes.object.isRequired,
   intl: PropTypes.object.isRequired,
   account: PropTypes.shape({

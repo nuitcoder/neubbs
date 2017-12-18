@@ -66,14 +66,14 @@ class App extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      isLogin: auth.checkAuth(),
+      loggedIn: auth.checkAuth(),
     }
 
     this.onAuthChange = this.onAuthChange.bind(this)
   }
 
   componentWillMount() {
-    if (this.state.isLogin) {
+    if (this.state.loggedIn) {
       const username = localStorage.getItem('username')
       this.props.actions.profile({ username })
     }
@@ -88,14 +88,14 @@ class App extends Component {
   }
 
   onAuthChange() {
-    const isLogin = auth.checkAuth()
-    this.setState({ isLogin })
+    const loggedIn = auth.checkAuth()
+    this.setState({ loggedIn })
   }
 
   renderActivate() {
     const isValidatePage = this.props.location.pathname === routes.ACCOUNT_VALIDATE
 
-    if (this.state.isLogin && !isValidatePage) {
+    if (this.state.loggedIn && !isValidatePage) {
       return (
         <Activate
           {...this.props.account}
@@ -122,15 +122,15 @@ class App extends Component {
   }
 
   render() {
-    const { isLogin } = this.state
+    const { loggedIn } = this.state
     const { children, router } = this.props
 
     return (
       <div className="app">
-        <Header router={router} isLogin={isLogin} />
+        <Header router={router} loggedIn={loggedIn} />
         {this.renderValidateSuccess() || this.renderActivate()}
         <StyledGrid id="main">
-          {children}
+          {React.cloneElement(children, { loggedIn })}
         </StyledGrid>
       </div>
     )
