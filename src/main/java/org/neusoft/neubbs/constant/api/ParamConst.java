@@ -36,6 +36,7 @@ public final class ParamConst {
     /**
      * Topic
      */
+    public static final String TOPIC = "topic";
     public static final String TOPIC_ID = "topicid";
     public static final String CATEGORY = "category";
     public static final String TITLE = "title";
@@ -72,6 +73,7 @@ public final class ParamConst {
     /**
      * Reply
      */
+    public static final String REPLY = "reply";
     public static final String REPLY_ID = "replyid";
     public static final String REPLY_CONTENT = "replyContent";
 
