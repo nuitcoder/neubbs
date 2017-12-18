@@ -13,7 +13,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -67,6 +66,26 @@ public class CountControllerTest {
     }
 
     /**
+     * 【/api/count】 test count totals success
+     *      - user totals
+     *      - topic totals
+     *      - reply totals
+     */
+    @Test
+    public void testCountTotalsSuccess() throws Exception {
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/api/count")
+        ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model.user").exists())
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model.topic").exists())
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model.reply").exists());
+
+        printSuccessPassTestMehtodMessage();
+    }
+
+    /**
      * 【/api/count/visit】test count online visit users
      */
     @Test
@@ -96,48 +115,5 @@ public class CountControllerTest {
         printSuccessPassTestMehtodMessage();
     }
 
-    /**
-     * 【/api/count/user】 test count user totals success
-     */
-    @Test
-    public void testCountUserTotalsSuccess() throws Exception {
-        mockMvc.perform(
-                MockMvcRequestBuilders.get("/api/count/user")
-        ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
-         .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
-         .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
-         .andExpect(MockMvcResultMatchers.jsonPath("$.model.userTotals").exists()).andDo(MockMvcResultHandlers.print());
 
-        printSuccessPassTestMehtodMessage();
-    }
-
-    /**
-     * 【/api/count/topic】 test count topic totals success
-     */
-    @Test
-    public void testCountTopicTotalsSuccess() throws Exception {
-        mockMvc.perform(
-                MockMvcRequestBuilders.get("/api/count/topic")
-        ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
-         .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
-         .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
-         .andExpect(MockMvcResultMatchers.jsonPath("$.model.topicTotals").exists());
-
-        printSuccessPassTestMehtodMessage();
-    }
-
-    /**
-     * 【/api/count/reply】 test count topic reply totals success
-     */
-    @Test
-    public void testCountTopicReplyTotalsSuccess() throws Exception {
-        mockMvc.perform(
-                MockMvcRequestBuilders.get("/api/count/reply")
-        ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
-         .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
-         .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
-         .andExpect(MockMvcResultMatchers.jsonPath("$.model.replyTotals").exists());
-
-        printSuccessPassTestMehtodMessage();
-    }
 }
