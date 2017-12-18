@@ -19,6 +19,9 @@
   "dependencies": {
     "axios": "^0.16.2",
     "codemirror": "^5.32.0",
+    "es6-shim": "^0.35.3",
+    "intl": "^1.2.5",
+    "intl-locales-supported": "^1.0.0",
     "link-to-inbox": "^1.2.0",
     "lodash": "^4.17.4",
     "prop-types": "^15.6.0",

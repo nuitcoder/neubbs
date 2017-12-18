@@ -1,10 +1,9 @@
 /* eslint-disable max-len */
 import React from 'react'
 import { Provider } from 'react-redux'
-import { IntlProvider, addLocaleData } from 'react-intl'
+import { IntlProvider } from 'react-intl'
 import { Router, Route, IndexRedirect, browserHistory } from 'react-router'
 import { syncHistoryWithStore } from 'react-router-redux'
-import zh from 'react-intl/locale-data/zh'
 
 import App from './App'
 import LoginPage from './pages/Login'
@@ -18,10 +17,7 @@ import TopicNewPage from './pages/TopicNew'
 import auth from './auth'
 import * as routes from './constants/routes'
 import configureStore from './store/configureStore'
-import { setLocale } from './utils/intl'
-
-addLocaleData([...zh])
-const language = 'zh-CN'
+import { loadLocale } from './utils/intl'
 
 const store = configureStore()
 const history = syncHistoryWithStore(browserHistory, store)
@@ -64,9 +60,11 @@ const hashLinkScroll = () => {
   }
 }
 
+const locale = 'zh'
+
 const Routers = () => (
   <Provider store={store}>
-    <IntlProvider locale={language} messages={setLocale(language)}>
+    <IntlProvider locale={locale} messages={loadLocale(locale)}>
       <Router history={history} onUpdate={hashLinkScroll}>
         <Route path={routes.ROOT} component={App}>
           <IndexRedirect to={routes.TOPICS} />

@@ -9,6 +9,7 @@ module.exports = {
     app: './app/index.jsx',
     vendor: [
       'babel-polyfill',
+      'intl',
       'react',
       'react-dom',
       'lodash',
