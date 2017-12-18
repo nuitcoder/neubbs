@@ -61,7 +61,7 @@ class Topic extends Component {
     const { topicid } = topic
     this.props.actions.likeTopic({
       topicid,
-      isLike: !topic.currentuserliketopic,
+      isLike: !topic.isliketopic,
     })
   }
 
@@ -85,7 +85,7 @@ class Topic extends Component {
           />
           {topic.replies !== 0 &&
             <TopicReplies
-              replies={topic.replys}
+              replies={topic.replylist}
               onClickReply={this.addReceiver}
             />}
           <ReplyForm

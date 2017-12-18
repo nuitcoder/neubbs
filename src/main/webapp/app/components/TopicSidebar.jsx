@@ -84,7 +84,7 @@ const TopicSidebar = (props) => {
         </Button>
         <Block>
           <Heart
-            active={props.data.currentuserliketopic}
+            active={props.data.isliketopic}
             onClick={props.likeTopic}
           />
           <Like>
