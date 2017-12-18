@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import { Navbar, Nav, NavItem, NavDropdown, MenuItem, Glyphicon } from 'react-bootstrap'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import { injectIntl } from 'react-intl'
+import { injectIntl, FormattedMessage } from 'react-intl'
 
 import actions from '../actions'
 import * as routes from '../constants/routes'
@@ -23,6 +23,12 @@ const StyledNavbar = styled(Navbar)`
 `
 
 const StyledNavDropdown = styled(NavDropdown)`
+  @media (max-width: 768px) {
+    & {
+      display: none !important;
+    }
+  }
+
   & > .dropdown-menu {
     border: 1px solid #dfe0e4;
     box-shadow: 0px 1px 2px rgba(0,0,0,0.15);
@@ -34,22 +40,45 @@ const StyledNavDropdown = styled(NavDropdown)`
   }
 `
 
-const StyledLogo = styled.span`
+const StyledGlyphicon = styled(Glyphicon)`
+  position: relative;
+  top: 5px;
+`
+
+const Logo = styled.span`
   color: #dd4c4f !important;
   font-size: 18px;
   font-weight: bold;
   cursor: pointer;
 `
 
-const StyledGlyphicon = styled(Glyphicon)`
-  position: relative;
-  top: 5px;
-`
-
 const Avator = styled.img`
   display: inline-block;
   width: 24px;
   height: 24px;
+`
+
+const MobileHint = styled.span`
+  display: none;
+  margin-left: 10px;
+  position: relative;
+  top: 4px;
+
+  @media (max-width: 768px) {
+    & {
+      display: inline;
+    }
+  }
+`
+
+const MobileNavItem = styled(NavItem)`
+  display: none !important;
+
+  @media (max-width: 768px) {
+    & {
+      display: block !important;
+    }
+  }
 `
 
 class Header extends Component {
@@ -63,6 +92,17 @@ class Header extends Component {
     this.handleClickLogo = this.handleClickLogo.bind(this)
     this.handleLoginOrRegister = this.handleLoginOrRegister.bind(this)
     this.handleAccount = this.handleAccount.bind(this)
+
+    const autoCloseNavbar = (e) => {
+      const navbar = document.querySelector('#navbar')
+
+      if (!navbar.contains(e.target)) {
+        this.setNavExpanded(false)
+      }
+    }
+
+    window.addEventListener('click', autoCloseNavbar)
+    window.addEventListener('touchstart', autoCloseNavbar)
   }
 
   setNavExpanded(expanded) {
@@ -81,6 +121,7 @@ class Header extends Component {
     } else {
       router.push(routes.TOPICS)
     }
+    this.setNavExpanded(false)
   }
 
   refreshHomePage() {
@@ -120,16 +161,12 @@ class Header extends Component {
         break
       default:
     }
+    this.setNavExpanded(false)
   }
 
   renderRightNavbar() {
     const { loggedIn, intl } = this.props
     const { formatMessage } = intl
-
-    const loginMsg = formatMessage({ id: 'header.login.text' })
-    const registerMsg = formatMessage({ id: 'header.register.text' })
-    const logoutMsg = formatMessage({ id: 'header.logout.text' })
-    const accountMsg = formatMessage({ id: 'header.account.text' })
 
     if (loggedIn) {
       const { profile: { username, avator } } = this.props.account
@@ -138,6 +175,9 @@ class Header extends Component {
         <Nav onSelect={this.handleAccount} pullRight>
           <NavItem eventKey={CREATE}>
             <StyledGlyphicon glyph="plus" />
+            <MobileHint>
+              <FormattedMessage id="topic.new.header"/>
+            </MobileHint>
           </NavItem>
           <StyledNavDropdown
             id="account"
@@ -145,10 +185,28 @@ class Header extends Component {
               <Avator src={avator} title={username} />
             }
           >
-            <MenuItem eventKey={ACCOUNT}>{accountMsg}</MenuItem>
+            <MenuItem eventKey={ACCOUNT}>
+              <FormattedMessage id="header.account.text"/>
+            </MenuItem>
             <MenuItem divider />
-            <MenuItem eventKey={LOGOUT}>{logoutMsg}</MenuItem>
+            <MenuItem eventKey={LOGOUT}>
+              <FormattedMessage id="header.logout.text"/>
+            </MenuItem>
           </StyledNavDropdown>
+
+          {/* Just display in mobile (max-width: 768px) */}
+          <MobileNavItem eventKey={ACCOUNT}>
+            <StyledGlyphicon glyph="user" />
+            <MobileHint>
+              <FormattedMessage id="header.account.text"/>
+            </MobileHint>
+          </MobileNavItem>
+          <MobileNavItem eventKey={LOGOUT}>
+            <StyledGlyphicon glyph="log-out" />
+            <MobileHint>
+              <FormattedMessage id="header.logout.text"/>
+            </MobileHint>
+          </MobileNavItem>
         </Nav>
       )
     }
@@ -156,10 +214,10 @@ class Header extends Component {
     return (
       <Nav onSelect={this.handleLoginOrRegister} pullRight>
         <NavItem eventKey={REGISTER}>
-          {registerMsg}
+          <FormattedMessage id="header.register.text"/>
         </NavItem>
         <NavItem eventKey={LOGIN}>
-          {loginMsg}
+          <FormattedMessage id="header.login.text"/>
         </NavItem>
       </Nav>
     )
@@ -169,12 +227,14 @@ class Header extends Component {
     return (
       <StyledNavbar
         fixedTop
+        collapseOnSelect
+        id="navbar"
         expanded={this.state.navExpanded}
         onToggle={this.setNavExpanded}
       >
         <Navbar.Header>
           <Navbar.Brand>
-            <StyledLogo onClick={this.handleClickLogo}>Neubbs</StyledLogo>
+            <Logo onClick={this.handleClickLogo}>Neubbs</Logo>
           </Navbar.Brand>
           <Navbar.Toggle />
         </Navbar.Header>

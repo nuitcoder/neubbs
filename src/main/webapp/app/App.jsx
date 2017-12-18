@@ -33,6 +33,10 @@ injectGlobal`
     padding: 6px 15px;
   }
 
+  .navbar-default .navbar-toggle:focus {
+    background-color: transparent;
+  }
+
    /* fix button focus outline */
   .btn:focus {
     outline: none;
