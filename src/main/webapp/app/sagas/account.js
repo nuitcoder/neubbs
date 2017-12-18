@@ -36,7 +36,7 @@ export function* loginSaga(action) {
       yield put({ type: types.LOGIN_SUCCESS, payload: { username } })
       yield put({ type: types.GET_PROFILE_REQUEST, payload: { username } })
 
-      browserHistory.push(routes.ROOT)
+      browserHistory.goBack()
     } else {
       yield call(handleError, action, data)
     }

@@ -66,7 +66,7 @@ class Topic extends Component {
   }
 
   render() {
-    const { topic } = this.props
+    const { topic, loggedIn } = this.props
 
     if (_.isEmpty(topic)) {
       return (
@@ -89,6 +89,7 @@ class Topic extends Component {
               onClickReply={this.addReceiver}
             />}
           <ReplyForm
+            loggedIn={loggedIn}
             receiver={this.state.receiver}
             updateReceiver={this.updateReceiver}
             onSubmit={this.onSubmitReply}

@@ -13,8 +13,8 @@ function* handleError(action, error) {
 
 export function* fetchAllCount() {
   yield put({ type: types.COUNT_USER_REQUEST })
-  yield put({ type: types.COUNT_LOGIN_REQUEST })
-  yield put({ type: types.COUNT_VISIT_REQUEST })
+  // yield put({ type: types.COUNT_LOGIN_REQUEST })
+  // yield put({ type: types.COUNT_VISIT_REQUEST })
   yield put({ type: types.COUNT_TOPIC_REQUEST })
   yield put({ type: types.COUNT_REPLY_REQUEST })
 }

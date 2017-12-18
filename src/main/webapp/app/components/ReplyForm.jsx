@@ -1,8 +1,21 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { Panel, FormGroup, Button } from 'react-bootstrap'
+import { FormattedMessage } from 'react-intl'
+import styled from 'styled-components'
+import { browserHistory } from 'react-router'
 
+import * as routes from '../constants/routes'
 import Editor from './Editor'
+
+const HintWrapper = styled.div`
+  padding: 10px 0;
+  text-align: center;
+`
+
+const Hint = styled.span`
+  font-size: 14px;
+`
 
 class ReplyForm extends Component {
   constructor(props) {
@@ -15,6 +28,7 @@ class ReplyForm extends Component {
     this.onSubmit = this.onSubmit.bind(this)
     this.changeContent = this.changeContent.bind(this)
     this.changeReceiver = this.changeReceiver.bind(this)
+    this.handleLogin = this.handleLogin.bind(this)
   }
 
   componentWillReceiveProps(nextProps) {
@@ -60,22 +74,45 @@ class ReplyForm extends Component {
     // this.props.updateReceiver(newReceiver)
   }
 
+  handleLogin() {
+    browserHistory.push(routes.ACCOUNT_LOGIN)
+  }
+
   render() {
+    const { loggedIn } = this.props
+
     return (
-      <Panel id="reply" header="发表评论">
-        <form onSubmit={this.onSubmit}>
-          <FormGroup controlId="content">
-            <Editor
-              minHeight={100}
-              content={this.state.content}
-              onBeforeChange={this.changeContent}
-              onChange={this.changeReceiver}
-            />
-          </FormGroup>
-          <Button type="submit" bsStyle="primary">
-            发表
-          </Button>
-        </form>
+      <Panel id="reply" header={<FormattedMessage id="topic.reply.header" />}>
+        {loggedIn ?
+          <form onSubmit={this.onSubmit}>
+            <FormGroup controlId="content">
+              <Editor
+                minHeight={100}
+                content={this.state.content}
+                onBeforeChange={this.changeContent}
+                onChange={this.changeReceiver}
+              />
+            </FormGroup>
+            <Button type="submit" bsStyle="primary">
+              <FormattedMessage id="topic.reply.submit" />
+            </Button>
+          </form>
+          :
+          <HintWrapper>
+            <Hint>
+              <FormattedMessage
+                id="topic.reply.notLogin"
+                values={{
+                  button: (
+                    <Button bsStyle="primary" bsSize="xsmall" onClick={this.handleLogin}>
+                      <FormattedMessage id="header.login.text" />
+                    </Button>
+                  )
+                }}
+              />
+            </Hint>
+          </HintWrapper>
+        }
       </Panel>
     )
   }
