@@ -85,13 +85,15 @@ public interface ITopicDAO {
 
 
     /**
-     * （降序，仅输入 count）获取话题列表
-     *      - 最新发布
+     * 获取话题列表
+     *      - 先根据天数分组，再根据话题回复数分组
+     *          - 创建时间（天为单位，降序，天数从现在 -> 之前）
+     *          - 话题回复数（降序，数量从高 -> 低）
+     *      - 默认限制十条
      *
-     * @param count 指定显示数量
      * @return List 话题集合
      */
-    List<TopicDO> listTopicDESCByCount(int count);
+    List<TopicDO> listTopicOrderByCreatetimeDESCByRepliesDESCLimitTen();
 
     /**
      * （降序）获取话题列表

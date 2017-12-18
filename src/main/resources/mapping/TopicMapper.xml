@@ -49,9 +49,10 @@
       FROM forum_topic WHERE ft_id = #{id, jdbcType = INTEGER}
    </select>
 
-   <select id="listTopicDESCByCount"  parameterType="java.lang.Integer" resultMap="TopicMap">
+   <select id="listTopicOrderByCreatetimeDESCByRepliesDESCLimitTen" resultMap="TopicMap">
       SELECT ft_id, fu_id, ftcg_id, ft_title, ft_replies, ft_lastreplyuserid, ft_lastreplytime, ft_createtime
-      FROM forum_topic ORDER BY ft_createtime DESC LIMIT #{param1, jdbcType = INTEGER};
+      FROM forum_topic
+      ORDER BY TO_DAYS(ft_createtime) DESC, ft_replies DESC LIMIT 10;
    </select>
    <select id="listTopicDESCByStartRowByCount" resultMap="TopicMap">
       SELECT ft_id, fu_id, ftcg_id, ft_title, ft_replies, ft_lastreplyuserid, ft_lastreplytime, ft_createtime

@@ -348,6 +348,36 @@ public class TopicControllerTest {
     }
 
     /**
+     * 【/api/topics/hot】 test get hot talk topic list success
+     */
+    @Test
+    public void testGetHotTalkTopicListSuccess() throws Exception {
+        MvcResult result = mockMvc.perform(
+                MockMvcRequestBuilders.get("/api/topics/hot")
+        ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model").value(CoreMatchers.notNullValue()))
+                .andReturn();
+
+        Map resultMap = (Map) JSON.parse(result.getResponse().getContentAsString());
+        List modelList = (List) resultMap.get("model");
+        Assert.assertEquals(10, modelList.size());
+        Map firstModelListMap = (Map) modelList.get(0);
+
+        this.confirmMapShouldHavaKeyItems(firstModelListMap,
+                "title", "replies", "lastreplytime", "createtime", "topicid", "category", "user", "lastreplyuser");
+
+        //judge $.mode.category
+        this.confirmMapShouldHavaKeyItems((Map) firstModelListMap.get("category"), "id", "name", "description");
+
+        //judge $.model.user
+        this.confirmMapShouldHavaKeyItems((Map) firstModelListMap.get("user"), "username", "avator");
+
+        //$judge $.model.lastreplyuser
+        this.confirmMapShouldHavaKeyItems((Map) firstModelListMap.get("lastreplyuser"), "username", "avator");
+    }
+
+    /**
      * 【/api/topics】test get topic list basic information by filter params success
      *      - get topic list (pass params: limit, page, category, username)
      *      - if no input limit param, neubbs.properties hava default value

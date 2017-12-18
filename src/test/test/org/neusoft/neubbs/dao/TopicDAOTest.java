@@ -180,10 +180,10 @@ public class TopicDAOTest {
      */
     @Test
     @Transactional
-    public void testListTopicDESCByCount() {
+    public void testListTopicOrderByCreatetimeDESCByRepliesDESCLimitTen() {
         this.saveTestTopicToDB();
 
-        List<TopicDO> listTopic = topicDAO.listTopicDESCByCount(10);
+        List<TopicDO> listTopic = topicDAO.listTopicOrderByCreatetimeDESCByRepliesDESCLimitTen();
         Assert.assertTrue(listTopic.size() >= 1);
 
         for(TopicDO topic: listTopic){

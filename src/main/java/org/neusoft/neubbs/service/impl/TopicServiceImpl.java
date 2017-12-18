@@ -262,6 +262,25 @@ public class TopicServiceImpl implements ITopicService {
     }
 
     @Override
+    public List<Map<String, Object>> listHotTalkTopics() {
+        List<TopicDO> topicList = topicDAO.listTopicOrderByCreatetimeDESCByRepliesDESCLimitTen();
+        List<Map<String, Object>> resultTopicMapList = new ArrayList<>(topicList.size());
+
+        for (TopicDO topic: topicList) {
+            Map<String, Object> itemTopicMap = this.getTopicInfoMap(topic);
+                itemTopicMap.put(ParamConst.CATEGORY,
+                        this.getTopicCategoryInfoMap(this.getTopicCategory(topic.getCategoryid())));
+                itemTopicMap.put(ParamConst.USER, this.getTopicUserInfoMap(this.getUser(topic.getUserid())));
+                itemTopicMap.put(ParamConst.LAST_REPLY_USER,
+                        this.getTopicUserInfoMap(this.getUser(topic.getLastreplyuserid())));
+
+                resultTopicMapList.add(itemTopicMap);
+        }
+
+        return resultTopicMapList;
+    }
+
+    @Override
     public List<Map<String, Object>> listTopics(int limit, int page, String categoryNick, String username) {
         //if limit = 0, explain no input limit, use neubbs.properties default param
         if (limit == SetConst.ZERO) {

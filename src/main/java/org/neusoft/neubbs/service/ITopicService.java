@@ -104,6 +104,15 @@ public interface ITopicService {
     Map<String, Object> getReplyPageModelMap(int replyId);
 
     /**
+     * 获取热门话题
+     *      - 每天回复数最高
+     *      - 默认 10 条（不足 10 条，则补充前一天热议话题）
+     *
+     * @return List<Map> 话题列表
+     */
+    List<Map<String, Object>> listHotTalkTopics();
+
+    /**
      * 获取话题列表
      *      - 包含话题基本信息，内容
      *      - 话题用户信息

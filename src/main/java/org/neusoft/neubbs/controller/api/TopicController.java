@@ -30,6 +30,7 @@ import java.util.Map;
  * Topic api
  *      获取话题信息
  *      获取回复信息
+ *      获取热议话题列表
  *      获取话题列表（分页，指定数量）
  *      获取话题总页数
  *      获取话题分类信息
@@ -121,6 +122,17 @@ public class TopicController {
         paramCheckService.check(ParamConst.ID, replyId);
         return new PageJsonDTO(AjaxRequestStatus.SUCCESS,
                 topicService.getReplyPageModelMap(Integer.parseInt(replyId)));
+    }
+
+    /**
+     * 获取热议话题列表
+     *
+     * @return PageJsonListDTO 页面JSON列表传输对象
+     */
+    @RequestMapping(value = "/topics/hot", method = RequestMethod.GET)
+    @ResponseBody
+    public PageJsonListDTO topicsHot() {
+        return new PageJsonListDTO(AjaxRequestStatus.SUCCESS, topicService.listHotTalkTopics());
     }
 
     /**
