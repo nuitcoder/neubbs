@@ -54,6 +54,11 @@ public final class MapFilterUtil {
     */
    public static void filterTopicInfo(Map<String, Object> topicInfoMap) {
       topicInfoMap.put(ParamConst.TOPIC_ID, topicInfoMap.get(ParamConst.ID));
+      Object topicLastReplyTime = topicInfoMap.get(ParamConst.LAST_REPLY_TIME);
+
+      if (topicLastReplyTime == null) {
+         topicInfoMap.put(ParamConst.LAST_REPLY_TIME, 0);
+      }
 
       removeKeys(topicInfoMap, new String[] {ParamConst.ID, ParamConst.USER_ID,
               ParamConst.CATEGORY_ID, ParamConst.LAST_REPLY_USER_ID});
