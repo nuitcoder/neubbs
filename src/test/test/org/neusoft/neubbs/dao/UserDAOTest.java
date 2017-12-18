@@ -148,6 +148,41 @@ public class UserDAOTest {
     }
 
     /**
+     * 测试更新用户个人资料
+     */
+    @Test
+    @Transactional
+    public void testUpdateUser() {
+        UserDO user = this.getTestUserDO();
+        Assert.assertEquals(1, userDAO.saveUser(user));
+        System.out.println("old user information: " +
+                JsonUtil.toJSONStringByObject(userDAO.getUserByName(user.getName())));
+
+        String username = user.getName();
+        int sex = 1;
+        String birthday = "2012-12-8";
+        String position = "Guangdong province, Shengzhen city";
+        String description = "Nothing is impossible";
+
+        UserDO newUser = new UserDO();
+            newUser.setName(username);
+            newUser.setSex(sex);
+            newUser.setPosition(position);
+            newUser.setBirthday(birthday);
+            newUser.setDescription(description);
+        Assert.assertEquals(1, userDAO.updateUser(newUser));
+
+        UserDO reSelectUser = userDAO.getUserByName(username);
+        Assert.assertEquals(sex, (int) reSelectUser.getSex());
+        Assert.assertEquals(birthday, reSelectUser.getBirthday());
+        Assert.assertEquals(position, reSelectUser.getPosition());
+        Assert.assertEquals(description, reSelectUser.getDescription());
+
+        System.out.println("new user information: " + JsonUtil.toJSONStringByObject(reSelectUser));
+        System.out.println("update name=" + username + " user information success!");
+    }
+
+    /**
      * 测试更新用户密码
      */
     @Test

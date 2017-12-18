@@ -40,18 +40,28 @@
         SELECT MAX(fu_id) FROM forum_user;
     </select>
     <select id="getUserById" parameterType="java.lang.Integer" resultMap="UserMap">
-        SELECT fu_id,fu_name,fu_password,fu_email,fu_sex,fu_birthday,fu_position,fu_description,fu_avator,fu_rank,fu_state,fu_createtime
+        SELECT fu_id, fu_name, fu_password, fu_email, fu_sex, fu_birthday, fu_position, fu_description, fu_avator, fu_rank, fu_state, fu_createtime
         FROM forum_user WHERE fu_id = #{param1, jdbcType = INTEGER};
     </select>
     <select id="getUserByName" parameterType="java.lang.String" resultMap="UserMap">
-        SELECT fu_id,fu_name,fu_password,fu_email,fu_sex,fu_birthday,fu_position,fu_description,fu_avator,fu_rank,fu_state,fu_createtime
+        SELECT fu_id, fu_name, fu_password, fu_email, fu_sex, fu_birthday, fu_position, fu_description, fu_avator, fu_rank, fu_state, fu_createtime
         FROM forum_user WHERE fu_name = #{param1, jdbcType = VARCHAR};
     </select>
     <select id="getUserByEmail" parameterType="java.lang.String" resultMap="UserMap">
-        SELECT fu_id,fu_name,fu_password,fu_email,fu_sex,fu_birthday,fu_position,fu_description,fu_avator,fu_rank,fu_state,fu_createtime
+        SELECT fu_id, fu_name, fu_password, fu_email, fu_sex, fu_birthday, fu_position, fu_description, fu_avator, fu_rank, fu_state, fu_createtime
         FROM forum_user WHERE fu_email = #{param1, jdbcType = VARCHAR};
     </select>
 
+    <update id="updateUser" parameterType="org.neusoft.neubbs.entity.UserDO">
+        UPDATE forum_user
+        <set>
+            <if test="sex != null"> fu_sex = #{sex, jdbcType = INTEGER}, </if>
+            <if test="birthday != null"> fu_birthday = #{birthday, jdbcType = VARCHAR}, </if>
+            <if test="position != null"> fu_position = #{position, jdbcType = VARCHAR}, </if>
+            <if test="description != null"> fu_description = #{description, jdbcType = VARCHAR}, </if>
+        </set>
+        WHERE fu_name = #{name, jdbcType = VARCHAR}
+    </update>
     <update id="updateUserPasswordByName">
         UPDATE forum_user SET fu_password = #{param2, jdbcType = VARCHAR}
         WHERE fu_name = #{param1, jdbcType = VARCHAR}

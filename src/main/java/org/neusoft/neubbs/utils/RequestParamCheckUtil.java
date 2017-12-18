@@ -8,7 +8,9 @@ import org.neusoft.neubbs.exception.ParamsErrorException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Request 请求参数检查 工具类
@@ -22,6 +24,7 @@ public final class RequestParamCheckUtil {
 
     private RequestParamCheckUtil() { }
 
+    private static final int ZERO = 0;
     private static final Integer ONE = 1;
     private static final Integer THREE = 3;
     private static final Integer FIVE = 5;
@@ -33,13 +36,14 @@ public final class RequestParamCheckUtil {
     private static final Integer TWENTY = 20;
     private static final Integer FIFTY = 50;
     private static final Integer ONE_HUNDRED_FIFTY = 150;
+    private static final Integer TWO_HUNDRED_FIFTY_FIVE = 255;
     private static final Integer FIVE_HUNDRED = 500;
     private static final Integer TEN_THOUSAND = 10000;
     private static final Integer ONE_HUNDRED_THOUSAND = 100000;
 
     private static final String NULL = "null";
 
-
+    private static Set<String> allowEmptyTypeSet = new HashSet<>();
     private static Map<String, Scope> typeScopeMap = new HashMap<>();
     private static Map<String, Pattern> typePatternMap = new HashMap<>();
 
@@ -72,14 +76,24 @@ public final class RequestParamCheckUtil {
     static {
         /*
          * 静态代码块
+         *      - 运行空类型集合（不进行空检查）
          *      - 注册需 “范围检查” 的类型
          *      - 注册需 “格式检查” 的类型
          *
          * 注意：
          *      - int 类型长度最大 10 位数 （-2147483648 to 2147483648）
          */
+
+        allowEmptyTypeSet.add(ParamConst.BIRTHDAY);
+        allowEmptyTypeSet.add(ParamConst.POSITION);
+        allowEmptyTypeSet.add(ParamConst.DESCRIPTION);
+
         typeScopeMap.put(ParamConst.USERNAME, new Scope(THREE, FIFTEEN));
         typeScopeMap.put(ParamConst.PASSWORD, new Scope(SIX, SIXTEEN));
+        typeScopeMap.put(ParamConst.SEX, new Scope(ONE, ONE));
+        typeScopeMap.put(ParamConst.BIRTHDAY, new Scope(ZERO, TWENTY));
+        typeScopeMap.put(ParamConst.POSITION, new Scope(ZERO, TWO_HUNDRED_FIFTY_FIVE));
+        typeScopeMap.put(ParamConst.DESCRIPTION, new Scope(ZERO, TWO_HUNDRED_FIFTY_FIVE));
         typeScopeMap.put(ParamConst.CAPTCHA, new Scope(FIVE, FIVE));
         typeScopeMap.put(ParamConst.ID, new Scope(ONE, TEN));
         typeScopeMap.put(ParamConst.NUMBER, new Scope(ONE, TEN));
@@ -104,7 +118,9 @@ public final class RequestParamCheckUtil {
      * @param param 参数值
      */
     public static void check(String type, String param) {
-        checkNull(type, param);
+        if (!allowEmptyTypeSet.contains(type)) {
+            checkNull(type, param);
+        }
 
         checkScope(type, param);
 

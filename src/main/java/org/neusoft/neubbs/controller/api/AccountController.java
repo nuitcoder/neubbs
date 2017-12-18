@@ -40,6 +40,7 @@ import java.util.Map;
  *      + 登录
  *      + 注销
  *      + 注册
+ *      + 修改用户基本信息
  *      + 修改密码
  *      + 修改邮箱
  *      + 账户激活（发送激活 email）
@@ -205,6 +206,41 @@ public final class AccountController {
     }
 
     /**
+     * 修改用户基本信息
+     *      - sex 不能为空，且只能为 0 or 1
+     *      - birthday, position, description 允许 "",但是不能为 null
+     *
+     * @param requestBodyParamsMap request-body内JSON数据
+     * @param request http 请求
+     * @return PageJsonDTO 页面JSON传输对象
+     */
+    @LoginAuthorization @AccountActivation
+    @RequestMapping(value = "/update-profile", method = RequestMethod.POST, consumes = "application/json")
+    @ResponseBody
+    public PageJsonDTO updateProfile(@RequestBody Map<String, Object> requestBodyParamsMap,
+                                     HttpServletRequest request) {
+        Integer newSex = (Integer) requestBodyParamsMap.get(ParamConst.SEX);
+        String newBirthday = (String) requestBodyParamsMap.get(ParamConst.BIRTHDAY);
+        String newPosition = (String) requestBodyParamsMap.get(ParamConst.POSITION);
+        String newDescription = (String) requestBodyParamsMap.get(ParamConst.DESCRIPTION);
+
+        //param check
+        paramCheckService.checkInstructionOfSpecifyArray(String.valueOf(newSex), "0", "1");
+        paramCheckService.paramsNotNull(newBirthday, newPosition, newDescription);
+        paramCheckService.check(ParamConst.BIRTHDAY, newBirthday);
+        paramCheckService.check(ParamConst.POSITION, newPosition);
+        paramCheckService.check(ParamConst.DESCRIPTION, newDescription);
+
+        //alter user profile
+        UserDO user = secretService.jwtVerifyTokenByTokenByKey(
+                httpService.getCookieValue(request, ParamConst.AUTHENTICATION), SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY
+        );
+
+        return new PageJsonDTO(AjaxRequestStatus.SUCCESS,
+                userService.alterUserProfile(user.getName(), newSex, newBirthday, newPosition, newDescription));
+    }
+
+    /**
      * 修改密码
      *
      * @param requestBodyParamsMap request-body内JSON数据
@@ -215,7 +251,7 @@ public final class AccountController {
     @RequestMapping(value = "/update-password", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
     public PageJsonDTO updatePassword(@RequestBody Map<String, Object> requestBodyParamsMap,
-                                          HttpServletRequest request) {
+                                      HttpServletRequest request) {
         String username = (String) requestBodyParamsMap.get(ParamConst.USERNAME);
         String newPassword = (String) requestBodyParamsMap.get(ParamConst.PASSWORD);
 

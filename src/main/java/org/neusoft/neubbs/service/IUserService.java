@@ -134,6 +134,20 @@ public interface IUserService {
     boolean isUserLikeTopic(int userId, int topicId);
 
     /**
+     * 修改用户个人信息
+     *      - 返回修改成功，重新查询的用户信息
+     *
+     * @param username 用户名
+     * @param sex 性别（0-女，1-男）
+     * @param birthday 出生日期
+     * @param position 所在地
+     * @param description 个人描述
+     * @return Map 用户
+     */
+    Map<String, Object> alterUserProfile(String username, int sex, String birthday,
+                                         String position, String description);
+
+    /**
      * 修改用户密码
      *      - 失败直接抛出异常
      *

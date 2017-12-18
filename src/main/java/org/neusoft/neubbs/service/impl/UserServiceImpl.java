@@ -210,6 +210,22 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
+    public Map<String, Object> alterUserProfile(String username, int sex, String birthday, String position, String description) {
+        UserDO updateUser = new UserDO();
+            updateUser.setName(username);
+            updateUser.setSex(sex);
+            updateUser.setBirthday(birthday);
+            updateUser.setPosition(position);
+            updateUser.setDescription(description);
+
+        if (userDAO.updateUser(updateUser) == 0) {
+            throw new AccountErrorException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.SERVICE_02);
+        }
+
+        return this.getUserInfoMapByUser(userDAO.getUserByName(username));
+    }
+
+    @Override
     public void alterUserPasswordByName(String username, String newPassword) {
         Map<String, String> paramsMap = new LinkedHashMap<>(SetConst.SIZE_TWO);
         paramsMap.put(ParamConst.USERNAME, username);

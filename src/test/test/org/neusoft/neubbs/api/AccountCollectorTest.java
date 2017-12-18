@@ -11,14 +11,14 @@ import org.junit.runner.RunWith;
 import org.neusoft.neubbs.constant.api.ApiMessage;
 import org.neusoft.neubbs.constant.api.ParamConst;
 import org.neusoft.neubbs.constant.api.SetConst;
+import org.neusoft.neubbs.controller.handler.SwitchDataSourceHandler;
 import org.neusoft.neubbs.dao.IUserActionDAO;
+import org.neusoft.neubbs.dao.IUserDAO;
+import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.exception.AccountErrorException;
 import org.neusoft.neubbs.exception.DatabaseOperationFailException;
 import org.neusoft.neubbs.exception.ParamsErrorException;
 import org.neusoft.neubbs.exception.TokenErrorException;
-import org.neusoft.neubbs.controller.handler.SwitchDataSourceHandler;
-import org.neusoft.neubbs.dao.IUserDAO;
-import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.service.ICaptchaService;
 import org.neusoft.neubbs.service.IRedisService;
 import org.neusoft.neubbs.service.IUserService;
@@ -115,13 +115,44 @@ public class AccountCollectorTest {
     }
 
     /**
+     * 获取已经登陆用户 Cookie
+     *
+     * @return Cookie 已经登录用户Cookie
+     */
+    public Cookie getAlreadLoginUserCookie() {
+        UserDO user = new UserDO();
+            user.setId(6);
+            user.setName("suvan");
+            user.setRank("admin");
+            user.setState(1);
+
+        return new Cookie(ParamConst.AUTHENTICATION, JwtTokenUtil.createToken(user));
+    }
+
+    /**
+     * 生成 JSON 字段
+     *
+     * @param key 字符串键
+     * @param value Object值
+     * @return String JSON字段
+     */
+    public String getJsonField(String key, Object value) {
+        if (value == null) {
+            value = null;
+        } else if (value instanceof String) {
+            value = "\"" + value + "\"";
+        }
+        return "\"" + key + "\":" + value;
+    }
+
+    /**
      * 确认结果集 Model Map 应该拥有以下 Key 选项
      *
      * @param result MvcResult 结果集
      * @param keyItems key选项
      * @throws Exception 所有异常
      */
-    private void confirmMvcResultModlMapShouldHavaKeyItems(MvcResult result, String... keyItems) throws Exception {
+    private void confirmMvcResultModelMapShouldHavaKeyItems(MvcResult result, String... keyItems) throws Exception {
         Map resultMap = (Map) JSON.parse(result.getResponse().getContentAsString());
         Map modelMap = (Map) resultMap.get("model");
 
@@ -129,6 +160,7 @@ public class AccountCollectorTest {
         Assert.assertEquals(keyItems.length, modelMap.size());
         Assert.assertThat((Set<String>) modelMap.keySet(), CoreMatchers.hasItems(keyItems));
     }
+
 
     @BeforeClass
     public static void init() {
@@ -205,7 +237,7 @@ public class AccountCollectorTest {
              .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists())
                     .andReturn();
 
-            this.confirmMvcResultModlMapShouldHavaKeyItems(result,
+            this.confirmMvcResultModelMapShouldHavaKeyItems(result,
                     "email", "sex", "birthday", "position", "description",
                     "createtime", "username", "avator", "state");
         }
@@ -350,7 +382,7 @@ public class AccountCollectorTest {
          .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
             .andReturn();
 
-        this.confirmMvcResultModlMapShouldHavaKeyItems(result, "state", "authentication");
+        this.confirmMvcResultModelMapShouldHavaKeyItems(result, "state", "authentication");
 
         printSuccessPassTestMehtodMessage();
     }
@@ -471,7 +503,7 @@ public class AccountCollectorTest {
          .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
                 .andReturn();
 
-        this.confirmMvcResultModlMapShouldHavaKeyItems(result,
+        this.confirmMvcResultModelMapShouldHavaKeyItems(result,
                 "username", "email", "sex", "birthday", "position", "description", "avator", "state", "createtime");
 
         //confirm forum_user_action
@@ -531,6 +563,51 @@ public class AccountCollectorTest {
 
         printSuccessPassTestMehtodMessage();
     }
+
+    /**
+     * 【/api/account/update-profile】 test user update personal profile success
+     *      - @LoginAuthorization @AccountActivation
+     */
+    @Test
+    @Transactional
+    public void testUserUpdatePersonalProfileSuccess() throws Exception {
+        Integer newSex = 1;
+        String newBirthday = "1996-09-25";
+        String newPosition = "Neusoft School";
+        String newDescription = "hello neubbs";
+        String requestBody = "{" + this.getJsonField("sex", newSex) + ", "
+                + this.getJsonField("birthday", newBirthday) + ", "
+                + this.getJsonField("position", newPosition) + ", "
+                + this.getJsonField("description", newDescription) + "}";
+        System.out.println("input request-body information: " + requestBody);
+
+        MvcResult result = mockMvc.perform(
+                MockMvcRequestBuilders.post("/api/account/update-profile")
+                    .cookie(this.getAlreadLoginUserCookie())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(requestBody)
+        ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
+                .andReturn();
+
+        //judge $.model
+        this.confirmMvcResultModelMapShouldHavaKeyItems(result,
+                "email", "sex", "birthday", "position", "description",
+                "avator", "state", "createtime", "username");
+
+        //check database data
+        Map resultMap = (Map) JSON.parse(result.getResponse().getContentAsString());
+        Map modelMap = (Map) resultMap.get("model");
+        UserDO updatedUser = userDAO.getUserByName((String) modelMap.get("username"));
+        Assert.assertEquals(newSex, updatedUser.getSex());
+        Assert.assertEquals(newBirthday, updatedUser.getBirthday());
+        Assert.assertEquals(newPosition, updatedUser.getPosition());
+        Assert.assertEquals(newDescription, updatedUser.getDescription());
+
+        printSuccessPassTestMehtodMessage();
+    }
+
 
     /**
      * 【/api/account/update-password】 test user update password success

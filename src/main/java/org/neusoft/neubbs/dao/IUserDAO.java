@@ -71,6 +71,18 @@ public interface IUserDAO {
     UserDO getUserByEmail(String email);
 
     /**
+     * 更新用户个人资料
+     *      - 需具备
+     *          - sex 性别（0-女，1-男）
+     *          - birthday, 出生年月日
+     *          - position, 所在地方
+     *
+     * @param user 用户对象
+     * @return int 更新行数
+     */
+    int updateUser(UserDO user);
+
+    /**
      * （用户名）更新用户密码
      *
      * @param username 用户名
