@@ -42,7 +42,7 @@ CREATE TABLE `forum_user` (
   `fu_avator` VARCHAR(100) comment '用户头像图片名',
   `fu_rank` VARCHAR(10) DEFAULT 'user' comment '用户级别',
   `fu_state` INT(1) NOT NULL DEFAULT 0 comment '激活状态（0-未激活，1-已激活）',
-  `fu_createtime` datetime DEFAULT CURRENT_TIMESTAMP comment '用户创建时间',
+  `fu_createtime` DATETIME DEFAULT CURRENT_TIMESTAMP comment '用户创建时间',
    PRIMARY KEY (`fu_id`),
    UNIQUE KEY `fu_name` (`fu_name`),
    UNIQUE KEY `fu_email` (`fu_email`)
@@ -52,7 +52,11 @@ CREATE TABLE `forum_user` (
 CREATE TABLE `forum_user_action` (
   `fua_id` INT(11) NOT NULL AUTO_INCREMENT comment '用户操作 id',
   `fu_id` INT(11) NOT NULL comment '用户 id',
-  `fua_liketopic_ft_id_array` JSON comment '用户喜欢所有话题 id 数组（JSON int）',
+  `fua_like_ft_id_array` JSON comment '用户喜欢所有话题 id 数组（JSON int）',
+  `fua_collect_ft_id_array` JSON comment '用户收藏话题 id 数组（JSON int）',
+  `fua_attention_ft_id_array` JSON comment '用户关注话题 id 数组（JSON int）',
+  `fua_following_fu_id_array` JSON comment '[主动]用户主动关注的用户 id 数组（JSON int）',
+  `fua_followed_fu_id_array` JSON comment '[被动]关注该用户的用户 id 数组（JSON int）',
    PRIMARY KEY (`fua_id`),
    CONSTRAINT `FUA_FU_ID` FOREIGN KEY (`fu_id`) REFERENCES `forum_user` (`fu_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_bin;
@@ -61,7 +65,7 @@ CREATE TABLE `forum_user_action` (
 CREATE TABLE `forum_user_dynamic` (
   `fud_id` INT(11) NOT NULL AUTO_INCREMENT comment '用户动态 id',
   `fu_id` INT(11) NOT NULL comment '用户 id',
-  `fud_information` JSON comment '用户动态信息（JSON{{"发布时间","消息"},{ ... }}）',
+  `fud_information` JSON comment '用户动态信息,用户发布的所有消息（JSON: {{"发布时间", "消息", "可见性限制"},{ ... }}）',
   PRIMARY KEY (`fud_id`),
   CONSTRAINT `FUD_FU_ID` FOREIGN KEY (`fu_id`) REFERENCES `forum_user` (`fu_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_bin;
@@ -113,8 +117,10 @@ CREATE TABLE `forum_topic_content` (
 CREATE TABLE `forum_topic_action` (
   `fta_id` INT(11) NOT NULL AUTO_INCREMENT comment '话题行为 id',
   `ft_id` INT(11) NOT NULL UNIQUE comment '话题 id',
-  `fta_replys_fu_id_array` JSON comment '话题所有回复人 id 数组（JSON int）',
-  `fta_liketopic_fu_id_array` JSON comment '所有喜欢话题用户 id 数组（JSON int）',
+  `fta_replys_fu_id_array` JSON comment '所有话题用户 id 数组（JSON int）',
+  `fta_like_fu_id_array` JSON comment '所有喜欢话题用户 id 数组（JSON int）',
+  `fta_collect_fu_id_array` JSON comment '所有收藏话题用户 id 数组（JSON int）',
+  `fta_attention_fu_id_array` JSON comment '所有关注话题用户 id 数组（JSON int）',
   PRIMARY KEY (`fta_id`),
   CONSTRAINT `FTA_FT_ID` FOREIGN KEY (`ft_id`) REFERENCES `forum_topic` (`ft_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_bin;
