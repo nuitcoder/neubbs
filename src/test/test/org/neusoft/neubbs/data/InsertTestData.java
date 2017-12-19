@@ -117,7 +117,7 @@ public class InsertTestData {
             System.out.println("already add administrator: " + adminName);
 
             //save user action (input admin user id)
-            userAction.setUserid(user.getId());
+            userAction.setUserId(user.getId());
             Assert.assertEquals(1, userActionDAO.saveUserAction(userAction));
 
             System.out.println("alread add administrator: " + adminName + " default user action!");

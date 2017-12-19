@@ -3,31 +3,90 @@
 <mapper namespace="org.neusoft.neubbs.dao.IUserActionDAO">
     <resultMap id="UserActionMap" type="org.neusoft.neubbs.entity.UserActionDO">
         <id column="fua_id" property="id" javaType="Integer" jdbcType="INTEGER" />
-        <result column="fu_id" property="userid" javaType="Integer" jdbcType="INTEGER" />
-        <result column="fua_liketopic_ft_id_array" property="likeTopicidJsonArray" javaType="String" jdbcType="VARCHAR" />
+        <result column="fu_id" property="userId" javaType="Integer" jdbcType="INTEGER" />
+        <result column="fua_like_ft_id_array" property="likeTopicIdJsonArray" javaType="String" jdbcType="VARCHAR" />
+        <result column="fua_collect_ft_id_array" property="collectTopicIdJsonArray" javaType="String" jdbcType="VARCHAR" />
+        <result column="fua_attention_ft_id_array" property="attentionTopicIdJsonArray" javaType="String" jdbcType="VARCHAR" />
+        <result column="fua_following_fu_id_array" property="followingUserIdJsonArray" javaType="String" jdbcType="VARCHAR" />
+        <result column="fua_followed_fu_id_array" property="followedUserIdJsonArray" javaType="String" jdbcType="VARCHAR" />
     </resultMap>
 
     <insert id="saveUserAction" parameterType="org.neusoft.neubbs.entity.UserActionDO">
-        INSERT INTO forum_user_action (fu_id, fua_liketopic_ft_id_array) VALUES (#{userid, jdbcType = INTEGER}, '[]')
+        INSERT INTO forum_user_action (fu_id, fua_like_ft_id_array, fua_collect_ft_id_array,
+                                       fua_attention_ft_id_array, fua_following_fu_id_array, fua_followed_fu_id_array)
+        VALUES (#{userId, jdbcType = INTEGER}, '[]', '[]', '[]', '[]', '[]')
     </insert>
 
     <select id="getUserAction" parameterType="java.lang.Integer" resultMap="UserActionMap">
-        SELECT fua_id, fu_id, fua_liketopic_ft_id_array
+        SELECT fua_id, fu_id, fua_like_ft_id_array, fua_collect_ft_id_array,
+               fua_attention_ft_id_array, fua_following_fu_id_array, fua_followed_fu_id_array
         FROM forum_user_action WHERE fu_id = #{param1, jdbcType = INTEGER}
     </select>
+    <select id="getUserActionLikeTopicIdJsonArray" parameterType="java.lang.Integer" resultMap="UserActionMap">
+        SELECT fu_id, fua_like_ft_id_array FROM forum_user_action WHERE fu_id = #{param1, jdbcType = INTEGER}
+    </select>
+    <select id="getUserActionCollectTopicIdJsonArray" parameterType="java.lang.Integer" resultMap="UserActionMap">
+        SELECT fu_id, fua_collect_ft_id_array FROM forum_user_action WHERE fu_id = #{param1, jdbcType = INTEGER}
+    </select>
+    <select id="getUserActionAttentionTopicIdJsonArray" parameterType="java.lang.Integer" resultMap="UserActionMap">
+        SELECT fu_id, fua_attention_ft_id_array FROM forum_user_action WHERE fu_id = #{param1, jdbcType = INTEGER}
+    </select>
+    <select id="getUserActionFollowingUserIdJsonArray" parameterType="java.lang.Integer" resultMap="UserActionMap">
+        SELECT fu_id, fua_following_fu_id_array FROM forum_user_action WHERE fu_id = #{param1, jdbcType = INTEGER}
+    </select>
+    <select id="getUserActionFollowedUserIdJsonArray" parameterType="java.lang.Integer" resultMap="UserActionMap">
+        SELECT fu_id, fua_followed_fu_id_array FROM forum_user_action WHERE fu_id = #{param1, jdbcType = INTEGER}
+    </select>
 
-    <update id="updateLikeTopicIdJsonArray">
-        UPDATE forum_user_action SET fua_liketopic_ft_id_array = #{param2, jdbcType = VARCHAR}
-        WHERE fu_id = #{param1, jdbcType = INTEGER}
-    </update>
     <update id="updateLikeTopicIdJsonArrayByOneTopicIdToAppendEnd">
         UPDATE `forum_user_action`
-        SET fua_liketopic_ft_id_array = JSON_ARRAY_APPEND(fua_liketopic_ft_id_array, '$', #{param2, jdbcType = INTEGER})
+        SET fua_like_ft_id_array = JSON_ARRAY_APPEND(fua_like_ft_id_array, '$', #{param2, jdbcType = INTEGER})
         WHERE fu_id = #{param1, jdbcType = INTEGER}
     </update>
-    <update id="updateLikeTopicIdJsonArrayRemoveOneTopicIdByIndex">
+    <update id="updateCollectTopicIdJsonArrayByOneTopicIdToAppendEnd">
         UPDATE `forum_user_action`
-        SET fua_liketopic_ft_id_array = JSON_REMOVE(fua_liketopic_ft_id_array, CONCAT('$[',#{param2, jdbcType = INTEGER},']'))
+        SET fua_collect_ft_id_array = JSON_ARRAY_APPEND(fua_collect_ft_id_array, '$', #{param2, jdbcType = INTEGER})
+        WHERE fu_id = #{param1, jdbcType = INTEGER}
+    </update>
+    <update id="updateAttentionTopicIdJsonArrayByOneTopicIdToAppendEnd">
+        UPDATE `forum_user_action`
+        SET fua_attention_ft_id_array = JSON_ARRAY_APPEND(fua_attention_ft_id_array, '$', #{param2, jdbcType = INTEGER})
+        WHERE fu_id = #{param1, jdbcType = INTEGER}
+    </update>
+    <update id="updateFollowingUserIdJsonArrayByOneUserIdToAppendEnd">
+        UPDATE `forum_user_action`
+        SET fua_following_fu_id_array = JSON_ARRAY_APPEND(fua_following_fu_id_array, '$', #{param2, jdbcType = INTEGER})
+        WHERE fu_id = #{param1, jdbcType = INTEGER}
+    </update>
+    <update id="updateFollowedUserIdJsonArrayByOneUserIdToAppendEnd">
+        UPDATE `forum_user_action`
+        SET fua_followed_fu_id_array = JSON_ARRAY_APPEND(fua_followed_fu_id_array, '$', #{param2, jdbcType = INTEGER})
+        WHERE fu_id = #{param1, jdbcType = INTEGER}
+    </update>
+
+    <update id="updateLikeTopicIdJsonArrayByIndexToRemoveOneTopicId">
+        UPDATE `forum_user_action`
+        SET fua_like_ft_id_array = JSON_REMOVE(fua_like_ft_id_array, CONCAT('$[',#{param2, jdbcType = INTEGER},']'))
+        WHERE fu_id = #{param1, jdbcType = INTEGER}
+    </update>
+    <update id="updateCollectTopicIdJsonArrayByIndexToRemoveOneTopicId">
+        UPDATE `forum_user_action`
+        SET fua_collect_ft_id_array = JSON_REMOVE(fua_collect_ft_id_array, CONCAT('$[',#{param2, jdbcType = INTEGER},']'))
+        WHERE fu_id = #{param1, jdbcType = INTEGER}
+    </update>
+    <update id="updateAttentionTopicIdJsonArrayByIndexToRemoveOneTopicId">
+        UPDATE `forum_user_action`
+        SET fua_attention_ft_id_array = JSON_REMOVE(fua_attention_ft_id_array, CONCAT('$[',#{param2, jdbcType = INTEGER},']'))
+        WHERE fu_id = #{param1, jdbcType = INTEGER}
+    </update>
+    <update id="updateFollowingUserIdJsonArrayByIndexToRemoveOneUserId">
+        UPDATE `forum_user_action`
+        SET fua_following_fu_id_array = JSON_REMOVE(fua_following_fu_id_array, CONCAT('$[',#{param2, jdbcType = INTEGER},']'))
+        WHERE fu_id = #{param1, jdbcType = INTEGER}
+    </update>
+    <update id="updateFollowedUserIdJsonArrayByIndexToRemoveOneUserId">
+        UPDATE `forum_user_action`
+        SET fua_followed_fu_id_array = JSON_REMOVE(fua_followed_fu_id_array, CONCAT('$[',#{param2, jdbcType = INTEGER},']'))
         WHERE fu_id = #{param1, jdbcType = INTEGER}
     </update>
 </mapper>

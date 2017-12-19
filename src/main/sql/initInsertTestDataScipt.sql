@@ -30,12 +30,23 @@ INSERT INTO `forum_user` VALUES ('6', 'suvan', '5f1d7a84db00d2fce00b31a7fc73224f
 -- ----------------------------
 -- Records of forum_user_action
 -- ----------------------------
-INSERT INTO `forum_user_action` VALUES (1, 1, '[]');
-INSERT INTO `forum_user_action` VALUES (2, 2, '[]');
-INSERT INTO `forum_user_action` VALUES (3, 3, '[]');
-INSERT INTO `forum_user_action` VALUES (4, 4, '[]');
-INSERT INTO `forum_user_action` VALUES (5, 5, '[]');
-INSERT INTO `forum_user_action` VALUES (6, 6, '[]');
+INSERT INTO `forum_user_action` VALUES (1, 1, '[]', '[]', '[]', '[]', '[]');
+INSERT INTO `forum_user_action` VALUES (2, 2, '[]', '[]', '[]', '[]', '[]');
+INSERT INTO `forum_user_action` VALUES (3, 3, '[]', '[]', '[]', '[]', '[]');
+INSERT INTO `forum_user_action` VALUES (4, 4, '[]', '[]', '[]', '[]', '[]');
+INSERT INTO `forum_user_action` VALUES (5, 5, '[]', '[]', '[]', '[]', '[]');
+INSERT INTO `forum_user_action` VALUES (6, 6, '[]', '[]', '[]', '[]', '[]');
+
+
+-- ----------------------------
+-- Records of forum_user_dynamic
+-- ----------------------------
+INSERT INTO `forum_user_dynamic` VALUES(1, 1, '[]');
+INSERT INTO `forum_user_dynamic` VALUES(2, 2, '[]');
+INSERT INTO `forum_user_dynamic` VALUES(3, 3, '[]');
+INSERT INTO `forum_user_dynamic` VALUES(4, 4, '[]');
+INSERT INTO `forum_user_dynamic` VALUES(5, 5, '[]');
+INSERT INTO `forum_user_dynamic` VALUES(6, 6, '[]');
 
 
 -- ----------------------------
@@ -261,6 +272,11 @@ INSERT INTO `forum_topic_content` VALUES ('97', '97', 0x6E6575736F667420746F7069
 INSERT INTO `forum_topic_content` VALUES ('98', '98', 0x7265637275697420746F70696320636F6E74656E74, '0', '0');
 INSERT INTO `forum_topic_content` VALUES ('99', '99', 0x7363686F6F6C20746F70696320636F6E74656E74, '0', '0');
 INSERT INTO `forum_topic_content` VALUES ('100', '100', 0x67616D6520746F70696320636F6E74656E74, '0', '0');
+
+
+-- ----------------------------
+-- Records of forum_topic_reply
+-- ----------------------------
 
 
 -- ----------------------------

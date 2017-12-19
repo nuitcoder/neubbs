@@ -8,9 +8,13 @@ package org.neusoft.neubbs.entity;
 public class UserActionDO {
 
     private Integer id;
-    private Integer userid;
+    private Integer userId;
 
-    private String likeTopicidJsonArray;
+    private String likeTopicIdJsonArray;
+    private String collectTopicIdJsonArray;
+    private String attentionTopicIdJsonArray;
+    private String followingUserIdJsonArray;
+    private String followedUserIdJsonArray;
 
     /**
      * Setter
@@ -18,11 +22,23 @@ public class UserActionDO {
     public void setId(Integer id) {
         this.id = id;
     }
-    public void setUserid(Integer userid) {
-        this.userid = userid;
+    public void setUserId(Integer userId) {
+        this.userId = userId;
     }
-    public void setLikeTopicidJsonArray(String likeTopicidJsonArray) {
-        this.likeTopicidJsonArray = likeTopicidJsonArray;
+    public void setLikeTopicIdJsonArray(String likeTopicIdJsonArray) {
+        this.likeTopicIdJsonArray = likeTopicIdJsonArray;
+    }
+    public void setCollectTopicIdJsonArray(String collectTopicIdJsonArray) {
+        this.collectTopicIdJsonArray = collectTopicIdJsonArray;
+    }
+    public void setAttentionTopicIdJsonArray(String attentionTopicIdJsonArray) {
+        this.attentionTopicIdJsonArray = attentionTopicIdJsonArray;
+    }
+    public void setFollowingUserIdJsonArray(String followingUserIdJsonArray) {
+        this.followingUserIdJsonArray = followingUserIdJsonArray;
+    }
+    public void setFollowedUserIdJsonArray(String followedUserIdJsonArray) {
+        this.followedUserIdJsonArray = followedUserIdJsonArray;
     }
 
     /**
@@ -31,11 +47,23 @@ public class UserActionDO {
     public Integer getId() {
         return id;
     }
-    public Integer getUserid() {
-        return userid;
+    public Integer getUserId() {
+        return userId;
     }
-    public String getLikeTopicidJsonArray() {
-        return likeTopicidJsonArray;
+    public String getLikeTopicIdJsonArray() {
+        return likeTopicIdJsonArray;
+    }
+    public String getCollectTopicIdJsonArray() {
+        return collectTopicIdJsonArray;
+    }
+    public String getAttentionTopicIdJsonArray() {
+        return attentionTopicIdJsonArray;
+    }
+    public String getFollowingUserIdJsonArray() {
+        return followingUserIdJsonArray;
+    }
+    public String getFollowedUserIdJsonArray() {
+        return followedUserIdJsonArray;
     }
 
     @Override
@@ -43,10 +71,18 @@ public class UserActionDO {
         final StringBuilder sb = new StringBuilder("{");
         sb.append("\"id\":")
                 .append(id);
-        sb.append(",\"userid\":")
-                .append(userid);
-        sb.append(",\"likeTopicidJsonArray\":\"")
-                .append(likeTopicidJsonArray).append('\"');
+        sb.append(",\"userId\":")
+                .append(userId);
+        sb.append(",\"likeTopicIdJsonArray\":\"")
+                .append(likeTopicIdJsonArray).append('\"');
+        sb.append(",\"collectTopicIdJsonArray\":\"")
+                .append(collectTopicIdJsonArray).append('\"');
+        sb.append(",\"attentionTopicIdJsonArray\":\"")
+                .append(attentionTopicIdJsonArray).append('\"');
+        sb.append(",\"followingUserIdJsonArray\":\"")
+                .append(followingUserIdJsonArray).append('\"');
+        sb.append(",\"followedUserIdJsonArray\":\"")
+                .append(followedUserIdJsonArray).append('\"');
         sb.append('}');
         return sb.toString();
     }

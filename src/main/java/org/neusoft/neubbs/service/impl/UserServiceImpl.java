@@ -65,7 +65,7 @@ public class UserServiceImpl implements IUserService {
 
         //insert default user action record
         UserActionDO userAction = new UserActionDO();
-            userAction.setUserid(user.getId());
+            userAction.setUserId(user.getId());
         if (userActionDAO.saveUserAction(userAction) == 0) {
             throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.SERVICE_04);
         }
@@ -204,13 +204,14 @@ public class UserServiceImpl implements IUserService {
     public boolean isUserLikeTopic(int userId, int topicId) {
         this.getUserDONotNull(userId);
 
-        String userLikeTopicIdIntJsonArrayString = userActionDAO.getUserAction(userId).getLikeTopicidJsonArray();
+        String userLikeTopicIdIntJsonArrayString = userActionDAO.getUserAction(userId).getLikeTopicIdJsonArray();
 
         return JsonUtil.isJsonArrayStringExistIntElement(userLikeTopicIdIntJsonArrayString, topicId);
     }
 
     @Override
-    public Map<String, Object> alterUserProfile(String username, int sex, String birthday, String position, String description) {
+    public Map<String, Object> alterUserProfile(String username, int sex, String birthday,
+                                                String position, String description) {
         UserDO updateUser = new UserDO();
             updateUser.setName(username);
             updateUser.setSex(sex);
@@ -300,13 +301,13 @@ public class UserServiceImpl implements IUserService {
             effectRow = userActionDAO.updateLikeTopicIdJsonArrayByOneTopicIdToAppendEnd(userId, topicId);
         } else {
             //input `dec`
-            String likeTopicIdArrayString = userActionDAO.getUserAction(userId).getLikeTopicidJsonArray();
+            String likeTopicIdArrayString = userActionDAO.getUserAction(userId).getLikeTopicIdJsonArray();
             int indexTopicId = JSON.parseArray(likeTopicIdArrayString).indexOf(topicId);
             if (indexTopicId == SetConst.NEGATIVE_ONE) {
                 throw new TopicErrorException(ApiMessage.USER_NO_LIKE_THIS_TOPIC).log(LogWarn.TOPIC_22);
             }
 
-            effectRow = userActionDAO.updateLikeTopicIdJsonArrayRemoveOneTopicIdByIndex(userId, indexTopicId);
+            effectRow = userActionDAO.updateLikeTopicIdJsonArrayByIndexToRemoveOneTopicId(userId, indexTopicId);
         }
 
         if (effectRow == 0) {

@@ -1033,7 +1033,7 @@ public class TopicControllerTest {
         int afterTopicContentLike = topicContentDAO.getTopicContentByTopicId(topicId).getLike();
         Assert.assertEquals(beforeTopicContentLike + 1, afterTopicContentLike);
 
-        JSONArray jsonArray = JSON.parseArray(userActionDAO.getUserAction(userId).getLikeTopicidJsonArray());
+        JSONArray jsonArray = JSON.parseArray(userActionDAO.getUserAction(userId).getLikeTopicIdJsonArray());
         Assert.assertEquals(topicId, (int) jsonArray.get(jsonArray.size() - 1));
 
         printSuccessPassTestMehtodMessage();
@@ -1075,7 +1075,7 @@ public class TopicControllerTest {
         int afterTopicContentLike = afterTopicContent.getLike();
         Assert.assertEquals(beforeTopicContentLike - 1, afterTopicContentLike);
 
-        JSONArray jsonArray = JSON.parseArray(userActionDAO.getUserAction(userId).getLikeTopicidJsonArray());
+        JSONArray jsonArray = JSON.parseArray(userActionDAO.getUserAction(userId).getLikeTopicIdJsonArray());
         Assert.assertTrue(jsonArray.indexOf(topicId) == -1);
 
         printSuccessPassTestMehtodMessage();
