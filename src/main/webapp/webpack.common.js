@@ -6,15 +6,12 @@ const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPl
 
 module.exports = {
   entry: {
-    app: './app/index.jsx',
+    app: './src/index.js',
     vendor: [
       'babel-polyfill',
-      'intl',
+      'dva',
       'react',
       'react-dom',
-      'lodash',
-      'codemirror',
-      'highlight.js',
     ]
   },
   output: {
@@ -52,10 +49,10 @@ module.exports = {
       name: 'vendor',
       filename: 'vendor.js',
     }),
-    new BundleAnalyzerPlugin({
-      analyzerMode: 'static',
-      reportFilename: path.resolve(__dirname, 'report.html'),
-      openAnalyzer: false,
-    }),
+    // new BundleAnalyzerPlugin({
+      // analyzerMode: 'static',
+      // reportFilename: path.resolve(__dirname, 'report.html'),
+      // openAnalyzer: false,
+    // }),
   ],
 }
