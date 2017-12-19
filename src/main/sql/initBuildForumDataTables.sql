@@ -58,6 +58,7 @@ CREATE TABLE `forum_user_action` (
   `fua_following_fu_id_array` JSON comment '[主动]用户主动关注的用户 id 数组（JSON int）',
   `fua_followed_fu_id_array` JSON comment '[被动]关注该用户的用户 id 数组（JSON int）',
    PRIMARY KEY (`fua_id`),
+   UNIQUE KEY `fu_id` (`fu_id`),
    CONSTRAINT `FUA_FU_ID` FOREIGN KEY (`fu_id`) REFERENCES `forum_user` (`fu_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_bin;
 
@@ -116,12 +117,13 @@ CREATE TABLE `forum_topic_content` (
 -- 话题行为
 CREATE TABLE `forum_topic_action` (
   `fta_id` INT(11) NOT NULL AUTO_INCREMENT comment '话题行为 id',
-  `ft_id` INT(11) NOT NULL UNIQUE comment '话题 id',
+  `ft_id` INT(11) NOT NULL comment '话题 id',
   `fta_replys_fu_id_array` JSON comment '所有话题用户 id 数组（JSON int）',
   `fta_like_fu_id_array` JSON comment '所有喜欢话题用户 id 数组（JSON int）',
   `fta_collect_fu_id_array` JSON comment '所有收藏话题用户 id 数组（JSON int）',
   `fta_attention_fu_id_array` JSON comment '所有关注话题用户 id 数组（JSON int）',
   PRIMARY KEY (`fta_id`),
+  UNIQUE KEY `ft_id` (`ft_id`),
   CONSTRAINT `FTA_FT_ID` FOREIGN KEY (`ft_id`) REFERENCES `forum_topic` (`ft_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_bin;
 
