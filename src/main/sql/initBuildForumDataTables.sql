@@ -118,7 +118,7 @@ CREATE TABLE `forum_topic_content` (
 CREATE TABLE `forum_topic_action` (
   `fta_id` INT(11) NOT NULL AUTO_INCREMENT comment '话题行为 id',
   `ft_id` INT(11) NOT NULL comment '话题 id',
-  `fta_replys_fu_id_array` JSON comment '所有话题用户 id 数组（JSON int）',
+  `fta_reply_fu_id_array` JSON comment '所有话题用户 id 数组（JSON int）',
   `fta_like_fu_id_array` JSON comment '所有喜欢话题用户 id 数组（JSON int）',
   `fta_collect_fu_id_array` JSON comment '所有收藏话题用户 id 数组（JSON int）',
   `fta_attention_fu_id_array` JSON comment '所有关注话题用户 id 数组（JSON int）',
