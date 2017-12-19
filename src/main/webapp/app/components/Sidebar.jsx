@@ -56,31 +56,15 @@ const Sidebar = (props) => {
             <FormattedMessage
               id="sidebar.count.user"
               values={{
-                number: props.count.userTotals,
+                number: props.count.user,
               }}
             />
           </ListItem>
-          {/* <ListItem> */}
-            {/* <FormattedMessage */}
-              {/* id="sidebar.count.visit" */}
-              {/* values={{ */}
-                {/* number: props.count.visitUser, */}
-              {/* }} */}
-            {/* /> */}
-          {/* </ListItem> */}
-          {/* <ListItem> */}
-            {/* <FormattedMessage */}
-              {/* id="sidebar.count.login" */}
-              {/* values={{ */}
-                {/* number: props.count.loginUser, */}
-              {/* }} */}
-            {/* /> */}
-          {/* </ListItem> */}
           <ListItem>
             <FormattedMessage
               id="sidebar.count.topic"
               values={{
-                number: props.count.topicTotals,
+                number: props.count.topic,
               }}
             />
           </ListItem>
@@ -88,7 +72,7 @@ const Sidebar = (props) => {
             <FormattedMessage
               id="sidebar.count.reply"
               values={{
-                number: props.count.replyTotals,
+                number: props.count.reply,
               }}
             />
           </ListItem>

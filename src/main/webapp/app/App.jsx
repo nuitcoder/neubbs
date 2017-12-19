@@ -81,10 +81,7 @@ class App extends Component {
       const username = localStorage.getItem('username')
       this.props.actions.profile({ username })
     }
-    this.props.actions.fetchAllCount()
-    setInterval(() => {
-      this.props.actions.fetchAllCount()
-    }, 60 * 1000)
+    this.props.actions.fetchBasicCount()
   }
 
   componentDidMount() {
@@ -150,7 +147,7 @@ App.propTypes = {
   }).isRequired,
   actions: PropTypes.shape({
     profile: PropTypes.func.isRequired,
-    fetchAllCount: PropTypes.func.isRequired,
+    fetchBasicCount: PropTypes.func.isRequired,
   }).isRequired,
   account: PropTypes.object.isRequired,
 }

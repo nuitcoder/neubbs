@@ -55,20 +55,13 @@ export const LIKE_TOPIC_REQUEST = '@@topic/LIKE_TOPIC_REQUEST'
 export const LIKE_TOPIC_SUCCESS = '@@topic/LIKE_TOPIC_SUCCESS'
 
 // count
-export const COUNT_ALL_REQUEST = '@@count/COUNT_ALL_REQUEST'
 export const COUNT_REQUEST_ERROR = '@@count/COUNT_REQUEST_ERROR'
 
-export const COUNT_USER_SUCCESS = '@@count/COUNT_USER_SUCCESS'
-export const COUNT_USER_REQUEST = '@@count/COUNT_USER_REQUEST'
+export const COUNT_BASIC_SUCCESS = '@@count/COUNT_USER_SUCCESS'
+export const COUNT_BASIC_REQUEST = '@@count/COUNT_USER_REQUEST'
 
 export const COUNT_LOGIN_SUCCESS = '@@count/COUNT_LOGIN_SUCCESS'
 export const COUNT_LOGIN_REQUEST = '@@count/COUNT_LOGIN_REQUEST'
 
 export const COUNT_VISIT_SUCCESS = '@@count/COUNT_VISIT_SUCCESS'
 export const COUNT_VISIT_REQUEST = '@@count/COUNT_VISIT_REQUEST'
-
-export const COUNT_TOPIC_SUCCESS = '@@count/COUNT_TOPIC_SUCCESS'
-export const COUNT_TOPIC_REQUEST = '@@count/COUNT_TOPIC_REQUEST'
-
-export const COUNT_REPLY_SUCCESS = '@@count/COUNT_REPLY_SUCCESS'
-export const COUNT_REPLY_REQUEST = '@@count/COUNT_REPLY_REQUEST'

@@ -11,19 +11,11 @@ function* handleError(action, error) {
   })
 }
 
-export function* fetchAllCount() {
-  yield put({ type: types.COUNT_USER_REQUEST })
-  // yield put({ type: types.COUNT_LOGIN_REQUEST })
-  // yield put({ type: types.COUNT_VISIT_REQUEST })
-  yield put({ type: types.COUNT_TOPIC_REQUEST })
-  yield put({ type: types.COUNT_REPLY_REQUEST })
-}
-
-export function* fetchUserCount(action) {
-  const { data } = yield call(api.count.fetchUserCount)
+export function* fetchBasicCount(action) {
+  const { data } = yield call(api.count.fetchBasicCount)
   try {
     if (data.success) {
-      yield put({ type: types.COUNT_USER_SUCCESS, payload: data.model })
+      yield put({ type: types.COUNT_BASIC_SUCCESS, payload: data.model })
     } else {
       yield call(handleError, action, data)
     }
@@ -58,28 +50,3 @@ export function* fetchVisitCount(action) {
   }
 }
 
-export function* fetchTopicCount(action) {
-  const { data } = yield call(api.count.fetchTopicCount)
-  try {
-    if (data.success) {
-      yield put({ type: types.COUNT_TOPIC_SUCCESS, payload: data.model })
-    } else {
-      yield call(handleError, action, data)
-    }
-  } catch (err) {
-    yield call(handleError, action, err)
-  }
-}
-
-export function* fetchReplyCount(action) {
-  const { data } = yield call(api.count.fetchReplyCount)
-  try {
-    if (data.success) {
-      yield put({ type: types.COUNT_REPLY_SUCCESS, payload: data.model })
-    } else {
-      yield call(handleError, action, data)
-    }
-  } catch (err) {
-    yield call(handleError, action, err)
-  }
-}
