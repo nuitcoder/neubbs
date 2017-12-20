@@ -44,65 +44,71 @@ const Activate = (props) => {
     props.dispatch({ type: 'app/toggleActivateModal' })
   }
 
-  const submitEmail = ({ email }) => {
-    const { username, email: oldEmail } = props.current
-    if (email !== oldEmail) {
+  const submitEmail = ({ newEmail }) => {
+    const { username } = props.current
+    if (newEmail !== email) {
       props.dispatch({
         type: 'account/updateEmail',
-        payload: { username, email },
+        payload: {
+          username,
+          email,
+        },
       })
     } else {
       props.dispatch({ type: 'app/toggleEmailInput' })
     }
   }
 
-  const sendActivateEmail = (email) => {
-    props.dispatch({
-      type: 'account/sendActivateEmail',
-    })
+  if (email) {
+    return (
+      <div>
+        <StyledAlert bsStyle="warning">
+          <StyledGrid componentClass="p">
+            <FormattedMessage id="activate.alert.text" />
+            <StyledButton
+              bsStyle="warning"
+              bsSize="xsmall"
+              onClick={toggleActivateModal}
+            >
+              <FormattedMessage id="activate.alert.button" />
+            </StyledButton>
+          </StyledGrid>
+        </StyledAlert>
+
+        <Modal show={props.showActivateModal} onHide={toggleActivateModal}>
+          <Modal.Header closeButton>
+            <Modal.Title>
+              <FormattedMessage id="activate.modal.title" />
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Alert bsStyle="warning">
+              <FormattedMessage id="activate.modal.alert" />
+            </Alert>
+            <EmailForm onSubmit={submitEmail} />
+          </Modal.Body>
+          <Modal.Footer>
+            <Button>
+              <StyledLink to={inbox} target="_blank">
+                <FormattedMessage id="activate.modal.go_inbox" />
+              </StyledLink>
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      </div>
+    )
   }
-
-  return (
-    <div>
-      <StyledAlert bsStyle="warning">
-        <StyledGrid componentClass="p">
-          <FormattedMessage id="activate.alert.text" />
-          <StyledButton
-            bsStyle="warning"
-            bsSize="xsmall"
-            onClick={toggleActivateModal}
-          >
-            <FormattedMessage id="activate.alert.button" />
-          </StyledButton>
-        </StyledGrid>
-      </StyledAlert>
-
-      <Modal show={props.showActivateModal} onHide={toggleActivateModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>
-            <FormattedMessage id="activate.modal.title" />
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Alert bsStyle="warning">
-            <FormattedMessage id="activate.modal.alert" />
-          </Alert>
-          {email && <EmailForm onSubmit={submitEmail} />}
-        </Modal.Body>
-        <Modal.Footer>
-          <Button>
-            <StyledLink to={inbox} target="_blank">
-              <FormattedMessage id="activate.modal.go_inbox" />
-            </StyledLink>
-          </Button>
-        </Modal.Footer>
-      </Modal>
-    </div>
-  )
+  return null
 }
 
-const mapStatetoProps = (state) => {
-  const { showActivateModal, emailForm } = state.app
+Activate.propTypes = {
+  showActivateModal: PropTypes.bool.isRequired,
+  current: PropTypes.object.isRequired,
+  dispatch: PropTypes.func.isRequired,
+}
+
+const mapStateToProps = (state) => {
+  const { showActivateModal } = state.app
   const { current } = state.account
   return {
     current,
@@ -110,4 +116,4 @@ const mapStatetoProps = (state) => {
   }
 }
 
-export default connect(mapStatetoProps)(Activate)
+export default connect(mapStateToProps)(Activate)

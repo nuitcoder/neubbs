@@ -4,13 +4,14 @@ export default {
   state: {
     navExpanded: false,
     showActivateModal: true,
+    showCategoryModal: false,
     countdown: {
       activate: 0,
     },
     emailForm: {
       email: '',
       showEmailInput: false,
-    }
+    },
   },
 
   subscriptions: {
@@ -50,7 +51,7 @@ export default {
         emailForm: {
           ...state.emailForm,
           email,
-        }
+        },
       }
     },
 
@@ -62,6 +63,6 @@ export default {
           [type]: start,
         },
       }
-    }
+    },
   },
 }

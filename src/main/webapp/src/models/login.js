@@ -38,7 +38,7 @@ export default {
         if (data.success) {
           yield put({ type: 'logoutSuccess' })
         } else {
-          throw data
+          throw data.message
         }
       } catch (err) {
         throw err
@@ -58,7 +58,7 @@ export default {
       } catch (err) {
         throw err
       }
-    }
+    },
   },
 
   reducers: {

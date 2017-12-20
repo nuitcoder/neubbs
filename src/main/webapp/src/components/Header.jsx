@@ -1,7 +1,7 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import { connect } from 'dva'
 import { withRouter } from 'dva/router'
-import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import { FormattedMessage } from 'react-intl'
 import { Navbar, Nav, NavItem, NavDropdown, MenuItem, Glyphicon } from 'react-bootstrap'
@@ -87,7 +87,7 @@ const Header = (props) => {
   }
 
   const handleClickLogo = () => {
-    porps.history.push(routes.ROOT)
+    props.history.push(routes.ROOT)
   }
 
   const selectNavItem = (eventKey) => {
@@ -100,13 +100,15 @@ const Header = (props) => {
         break
       case EVENT.LOGOUT:
         props.dispatch({ type: 'login/logout' })
+        break;
       default:
     }
   }
 
   const renderRightNavbar = () => {
-    if (props.loggedIn) {
-      const { avator, username } = props.current
+    const { loggedIn, current } = props
+    if (loggedIn) {
+      const { avator, username } = current
       return (
         <Nav onSelect={selectNavItem} pullRight>
           <NavItem eventKey={EVENT.CREATE}>
@@ -180,7 +182,15 @@ const Header = (props) => {
   )
 }
 
-const mapStatetoProps = (state) => {
+Header.propTypes = {
+  navExpanded: PropTypes.bool.isRequired,
+  history: PropTypes.object.isRequired,
+  dispatch: PropTypes.func.isRequired,
+  loggedIn: PropTypes.bool.isRequired,
+  current: PropTypes.object.isRequired,
+}
+
+const mapStateToProps = (state) => {
   const { navExpanded } = state.app
   const { loggedIn } = state.login
   const { current } = state.account
@@ -191,4 +201,4 @@ const mapStatetoProps = (state) => {
   }
 }
 
-export default withRouter(connect(mapStatetoProps)(Header))
+export default withRouter(connect(mapStateToProps)(Header))

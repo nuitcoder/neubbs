@@ -1,7 +1,9 @@
 import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 import { connect } from 'dva'
 import styled, { injectGlobal } from 'styled-components'
-import { Grid } from 'react-bootstrap'
+import { Grid, Alert } from 'react-bootstrap'
+import { FormattedMessage } from 'react-intl'
 
 import Header from './components/Header'
 import Activate from './components/Activate'
@@ -64,6 +66,8 @@ class App extends Component {
         },
       })
     }
+
+    this.props.dispatch({ type: 'topics/categorys' })
   }
 
   renderActivate() {
@@ -85,6 +89,14 @@ class App extends Component {
       </div>
     )
   }
+}
+
+App.propTypes = {
+  loggedIn: PropTypes.bool.isRequired,
+  username: PropTypes.string.isRequired,
+  current: PropTypes.object.isRequired,
+  dispatch: PropTypes.func.isRequired,
+  children: PropTypes.any.isRequired,
 }
 
 const mapStatetoProps = (state) => {

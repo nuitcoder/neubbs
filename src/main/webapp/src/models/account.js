@@ -1,5 +1,4 @@
 import account from '../services/account'
-import auth from '../auth'
 
 export default {
   namespace: 'account',
@@ -39,7 +38,7 @@ export default {
           yield put({ type: 'updateEmailSuccess', payload: { username, email } })
           yield put({ type: 'app/toggleEmailInput' })
         } else {
-          throw data
+          throw data.message
         }
       } catch (err) {
         throw err
@@ -71,7 +70,7 @@ export default {
       } catch (err) {
         throw err
       }
-    }
+    },
   },
 
   reducers: {
