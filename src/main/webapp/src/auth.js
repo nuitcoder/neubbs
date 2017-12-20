@@ -1,6 +1,6 @@
 import account from './services/account'
 
-export default {
+const auth = {
   authenticated: false,
 
   checkAuth() {
@@ -81,4 +81,6 @@ export default {
     auth.onChange = listener
   },
 }
+
+export default auth
 

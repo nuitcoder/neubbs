@@ -51,6 +51,7 @@ const FieldInput = (props) => {
 
 FieldInput.defaultProps = {
   inline: false,
+  placeholder: '',
   autoFocus: false,
   className: '',
 }
@@ -58,9 +59,9 @@ FieldInput.defaultProps = {
 FieldInput.propTypes = {
   input: PropTypes.object.isRequired,
   type: PropTypes.string.isRequired,
-  placeholder: PropTypes.string.isRequired,
   meta: PropTypes.object.isRequired,
   className: PropTypes.string,
+  placeholder: PropTypes.string,
   autoFocus: PropTypes.bool,
   inline: PropTypes.bool,
 }

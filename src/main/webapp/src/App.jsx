@@ -1,8 +1,10 @@
-import React from 'react'
+import React, { Component } from 'react'
+import { connect } from 'dva'
 import styled, { injectGlobal } from 'styled-components'
 import { Grid } from 'react-bootstrap'
 
 import Header from './components/Header'
+import Activate from './components/Activate'
 
 // eslint-disable-next-line no-unused-expressions
 injectGlobal`
@@ -50,15 +52,49 @@ const StyledGrid = styled(Grid)`
   }
 `
 
-const App = ({ children }) => {
-  return (
-    <div className="app">
-      <Header />
-      <StyledGrid>
-        {children}
-      </StyledGrid>
-    </div>
-  )
+class App extends Component {
+  componentWillMount() {
+    if (this.props.loggedIn) {
+      const { username } = this.props
+      this.props.dispatch({
+        type: 'account/query',
+        payload: {
+          username,
+          isCurrent: true,
+        },
+      })
+    }
+  }
+
+  renderActivate() {
+    const { loggedIn, current } = this.props
+    if (loggedIn && !current.state) {
+      return <Activate />
+    }
+    return null
+  }
+
+  render() {
+    return (
+      <div className="app">
+        <Header />
+        {this.renderActivate()}
+        <StyledGrid>
+          {this.props.children}
+        </StyledGrid>
+      </div>
+    )
+  }
 }
 
-export default App
+const mapStatetoProps = (state) => {
+  const { loggedIn, username } = state.login
+  const { current } = state.account
+  return {
+    loggedIn,
+    username,
+    current,
+  }
+}
+
+export default connect(mapStatetoProps)(App)

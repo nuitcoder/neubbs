@@ -8,7 +8,7 @@ import {
   SEND_ACTIVATE_EMAIL_URL,
   VALIDATE_ACCOUNT_URL,
   ACCOUNT_URL,
-} from '../constants/api'
+} from '../config/api'
 
 export default {
   /**
@@ -86,11 +86,11 @@ export default {
   },
 
   /**
-   * get account infomation
+   * query account infomation
    *
    * @returns {Promise}
    */
-  info(username) {
+  query(username) {
     return axios.get(ACCOUNT_URL, {
       params: {
         username,

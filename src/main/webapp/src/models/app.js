@@ -3,6 +3,14 @@ export default {
 
   state: {
     navExpanded: false,
+    showActivateModal: true,
+    countdown: {
+      activate: 0,
+    },
+    emailForm: {
+      email: '',
+      showEmailInput: false,
+    }
   },
 
   subscriptions: {
@@ -18,5 +26,42 @@ export default {
         navExpanded,
       }
     },
+
+    toggleActivateModal(state) {
+      return {
+        ...state,
+        showActivateModal: !state.showActivateModal,
+      }
+    },
+
+    toggleEmailInput(state) {
+      return {
+        ...state,
+        emailForm: {
+          ...state.emailForm,
+          showEmailInput: !state.emailForm.showEmailInput,
+        },
+      }
+    },
+
+    changeEmailText(state, { payload: { email } }) {
+      return {
+        ...state,
+        emailForm: {
+          ...state.emailForm,
+          email,
+        }
+      }
+    },
+
+    setCountdown(state, { payload: { type, start } }) {
+      return {
+        ...state,
+        countdown: {
+          ...state.countdown,
+          [type]: start,
+        },
+      }
+    }
   },
 }

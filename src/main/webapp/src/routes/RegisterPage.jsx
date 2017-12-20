@@ -4,35 +4,35 @@ import { Alert, Row } from 'react-bootstrap'
 import { FormattedMessage } from 'react-intl'
 
 import FormWrapper from '../components/FormWrapper'
-import LoginForm from '../components/LoginForm'
+import RegisterForm from '../components/RegisterForm'
 
-const LoginPage = (props) => {
-  const handleSubmit = ({ username, password }) => {
+const RegisterPage = (props) => {
+  const handleSubmit = ({ username, email, password }) => {
     props.dispatch({
-      type: 'login/login',
-      payload: { username, password },
+      type: 'login/register',
+      payload: { username, email, password },
     })
   }
 
   return (
     <Row>
-      <FormWrapper title={<FormattedMessage id="form.title.login" />}>
+      <FormWrapper title={<FormattedMessage id="form.title.register" />}>
         {props.message &&
           <Alert bsStyle="danger">
             <FormattedMessage id={props.message} />
           </Alert>
         }
-        <LoginForm onSubmit={handleSubmit} />
+        <RegisterForm onSubmit={handleSubmit} />
       </FormWrapper>
     </Row>
   )
 }
 
 const mapStatetoProps = (state) => {
-  const { loginMessage } = state.login
+  const { logoutMessage } = state.login
   return {
-    message: loginMessage,
+    message: logoutMessage,
   }
 }
 
-export default connect(mapStatetoProps)(LoginPage)
+export default connect(mapStatetoProps)(RegisterPage)
