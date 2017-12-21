@@ -9,7 +9,6 @@ import org.neusoft.neubbs.dao.ITopicContentDAO;
 import org.neusoft.neubbs.dao.ITopicDAO;
 import org.neusoft.neubbs.entity.TopicContentDO;
 import org.neusoft.neubbs.entity.TopicDO;
-import org.neusoft.neubbs.utils.JsonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -71,7 +70,7 @@ public class TopicContentDAOTest {
     public void testSaveTopiContent() {
         TopicContentDO topicContent = this.savaTestTopicContentDOToDatabase();
         System.out.println("insert topic content information: "
-                + JsonUtil.toJSONStringByObject(topicContentDAO.getTopicContentByTopicId(topicContent.getTopicid())));
+                + topicContentDAO.getTopicContentByTopicId(topicContent.getTopicid()));
     }
 
     /**
@@ -99,8 +98,7 @@ public class TopicContentDAOTest {
        TopicContentDO selectTopicContent = topicContentDAO.getTopicContentByTopicId(topicContent.getTopicid());
        Assert.assertNotNull(selectTopicContent);
 
-       System.out.println("get topic content information： "
-               + JsonUtil.toJSONStringByObject(selectTopicContent));
+       System.out.println("get topic content information：" + selectTopicContent);
     }
 
     /**

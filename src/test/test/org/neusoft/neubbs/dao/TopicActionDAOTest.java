@@ -9,7 +9,6 @@ import org.neusoft.neubbs.dao.ITopicActionDAO;
 import org.neusoft.neubbs.dao.ITopicDAO;
 import org.neusoft.neubbs.entity.TopicActionDO;
 import org.neusoft.neubbs.entity.TopicDO;
-import org.neusoft.neubbs.utils.JsonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -23,7 +22,7 @@ import javax.transaction.Transactional;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:spring-context.xml"})
-public class TestActionDAOTest {
+public class TopicActionDAOTest {
 
     @Autowired
     private ITopicDAO topicDAO;
@@ -68,7 +67,7 @@ public class TestActionDAOTest {
     @Transactional
     public void testSaveTopicAction() {
         TopicActionDO topicAction = this.saveTestTopicActionDOToDatabase();
-        System.out.println("success insert topic action information: " + JsonUtil.toJSONStringByObject(topicAction));
+        System.out.println("success insert topic action information: " + topicAction);
     }
 
     /**
@@ -149,5 +148,7 @@ public class TestActionDAOTest {
                 topicActionDAO.updateAttentionUserIdJsonArrayByIndexToRemoveOneUserId(topicId, indexOfRemoveUserId)
         );
         System.out.println("after remove: " + topicActionDAO.getTopicAction(topicId));
+
+        System.out.println("success pass update topic action to remove reply, like, collect, attention userId!");
     }
 }

@@ -7,7 +7,6 @@ import org.junit.runner.RunWith;
 import org.neusoft.neubbs.controller.handler.SwitchDataSourceHandler;
 import org.neusoft.neubbs.dao.IMessageDAO;
 import org.neusoft.neubbs.entity.MessageDO;
-import org.neusoft.neubbs.utils.JsonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -57,7 +56,7 @@ public class MessageDAOTest {
     @Transactional
     public void testSaveMessage() {
         MessageDO message = this.saveTestMessageDOToDatabase();
-        System.out.println("success save message: " + JsonUtil.toJSONStringByObject(message));
+        System.out.println("success save message: " + message);
     }
 
     /**
@@ -67,7 +66,7 @@ public class MessageDAOTest {
     @Transactional
     public void testGetMessage() {
         MessageDO message = this.saveTestMessageDOToDatabase();
-        System.out.println("get message information: " + JsonUtil.toJSONStringByObject(message));
+        System.out.println("get message information: " + message);
     }
 
     /**

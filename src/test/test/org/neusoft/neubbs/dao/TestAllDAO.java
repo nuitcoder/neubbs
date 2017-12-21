@@ -12,8 +12,10 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
         UserDAOTest.class,
         UserActionDAOTest.class,
+        UserDynamicDAOTest.class,
         TopicDAOTest.class,
         TopicContentDAOTest.class,
+        TopicActionDAOTest.class,
         TopicCategoryDAOTest.class,
         TopicReplyDAOTest.class,
         MessageDAOTest.class

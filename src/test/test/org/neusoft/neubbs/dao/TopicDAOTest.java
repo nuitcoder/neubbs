@@ -7,7 +7,6 @@ import org.junit.runner.RunWith;
 import org.neusoft.neubbs.controller.handler.SwitchDataSourceHandler;
 import org.neusoft.neubbs.dao.ITopicDAO;
 import org.neusoft.neubbs.entity.TopicDO;
-import org.neusoft.neubbs.utils.JsonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -71,8 +70,7 @@ public class TopicDAOTest {
         Assert.assertTrue(topic.getId() > 0);
         Assert.assertNotNull(topicDAO.getTopicById(topic.getId()));
 
-        System.out.println("insert topic informatioin : "
-                + JsonUtil.toJSONStringByObject(topicDAO.getTopicById(topic.getId())));
+        System.out.println("insert topic informatioin : " + topicDAO.getTopicById(topic.getId()));
     }
 
     /**
@@ -171,8 +169,7 @@ public class TopicDAOTest {
         TopicDO selectTopic = topicDAO.getTopicById(topic.getId());
         Assert.assertNotNull(selectTopic);
 
-        System.out.println("get id=" + topic.getId() + " topic information: "
-                + JsonUtil.toJSONStringByObject(selectTopic));
+        System.out.println("get id=" + topic.getId() + " topic information: " + selectTopic);
     }
 
     /**
@@ -180,14 +177,14 @@ public class TopicDAOTest {
      */
     @Test
     @Transactional
-    public void testListTopicOrderByCreatetimeDESCByRepliesDESCLimitTen() {
+    public void testListTopicOrderByCreateTimeDESCByRepliesDESCLimitTen() {
         this.saveTestTopicToDB();
 
         List<TopicDO> listTopic = topicDAO.listTopicOrderByCreatetimeDESCByRepliesDESCLimitTen();
         Assert.assertTrue(listTopic.size() >= 1);
 
         for(TopicDO topic: listTopic){
-            System.out.println("output topic information：" + JsonUtil.toJSONStringByObject(topic));
+            System.out.println("output topic information：" + topic);
         }
     }
 
@@ -208,8 +205,7 @@ public class TopicDAOTest {
         //foreach list
         int recordCount = 1;
         for(TopicDO topic: listTopic){
-            System.out.println("output topic information (No." + (recordCount++) + " recoders): "
-                    + JsonUtil.toJSONStringByObject(topic));
+            System.out.println("output topic information (No." + (recordCount++) + " recoders): " + topic);
         }
     }
 
@@ -231,9 +227,8 @@ public class TopicDAOTest {
         //foreach list
         int recordCount = 1;
         for(TopicDO topic: listTopic){
-            System.out.println("output categoryid=" + categoryId
-                    + " topic information (No." + (recordCount++) + " recoders): "
-                    + JsonUtil.toJSONStringByObject(topic));
+            System.out.println("output categoryid=" + categoryId + " topic information (No."
+                    + (recordCount++) + " recoders): " + topic);
         }
     }
 
@@ -254,9 +249,8 @@ public class TopicDAOTest {
         //foreach list
         int recordCount = 1;
         for(TopicDO topic: listTopic){
-            System.out.println("output userid=" + userId
-                    + " topic information (No." + (recordCount++) + " recoders): "
-                    + JsonUtil.toJSONStringByObject(topic));
+            System.out.println("output userid=" + userId + " topic information (No."
+                    + (recordCount++) + " recoders): " + topic);
         }
     }
 
@@ -280,8 +274,7 @@ public class TopicDAOTest {
         int recordCount = 1;
         for(TopicDO topic: listTopic){
             System.out.println("output categoryid=" + ccategoryId +" and userid=" + userId
-                    + " topic information (No." + (recordCount++) + " recoders): "
-                    + JsonUtil.toJSONStringByObject(topic));
+                    + " topic information (No." + (recordCount++) + " recoders): " + topic);
         }
     }
 
@@ -363,8 +356,8 @@ public class TopicDAOTest {
         Assert.assertNotEquals(topic.getLastreplyuserid(),
                 topicDAO.getTopicById(topic.getId()).getLastreplyuserid());
 
-        System.out.println("update topicId=" + topic.getId()
-                + " topic lastreplyuserid=<" + newLastReplyUserId+ "> success!");
+        System.out.println("update topicId=" + topic.getId() + " topic lastreplyuserid=<"
+                + newLastReplyUserId+ "> success!");
     }
 
     /**

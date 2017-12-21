@@ -9,7 +9,6 @@ import org.neusoft.neubbs.dao.IUserActionDAO;
 import org.neusoft.neubbs.dao.IUserDAO;
 import org.neusoft.neubbs.entity.UserActionDO;
 import org.neusoft.neubbs.entity.UserDO;
-import org.neusoft.neubbs.utils.JsonUtil;
 import org.neusoft.neubbs.utils.SecretUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -69,7 +68,7 @@ public class UserActionDAOTest {
     @Transactional
     public void testSaveAction() {
         UserActionDO userAction = this.saveTestUserActionDOToDatabase();
-        System.out.println("insert user action information: " + JsonUtil.toJSONStringByObject(userAction));
+        System.out.println("insert user action information: " + userAction);
     }
 
     /**
@@ -79,8 +78,7 @@ public class UserActionDAOTest {
     @Transactional
     public void testGetUserAction() {
         UserActionDO userAction = this.saveTestUserActionDOToDatabase();
-        System.out.println("get userid=" + userAction.getId()
-                + " user action information:" + JsonUtil.toJSONStringByObject(userAction));
+        System.out.println("get userid=" + userAction.getId() + " user action information:" + userAction);
     }
 
     /**

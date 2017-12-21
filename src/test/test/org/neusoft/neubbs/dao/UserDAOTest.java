@@ -64,8 +64,7 @@ public class UserDAOTest {
         Assert.assertTrue(user.getId() > 0);
         Assert.assertNotNull(userDAO.getUserById(user.getId()));
 
-        System.out.println("insert user information: "
-                + JsonUtil.toJSONStringByObject(userDAO.getUserById(user.getId())));
+        System.out.println("insert user information: " + userDAO.getUserById(user.getId()));
     }
 
     /**
@@ -115,8 +114,7 @@ public class UserDAOTest {
         Assert.assertEquals(1, userDAO.saveUser(user));
         Assert.assertNotNull(userDAO.getUserById(user.getId()));
 
-        System.out.println("get id=" + user.getId() + " user information: "
-                + JsonUtil.toJSONStringByObject(user));
+        System.out.println("get id=" + user.getId() + " user information: " + user);
     }
 
     /**
@@ -129,8 +127,7 @@ public class UserDAOTest {
         Assert.assertEquals(1, userDAO.saveUser(user));
         Assert.assertNotNull(userDAO.getUserByName(user.getName()));
 
-        System.out.println("get name=" + user.getName() + " user information:"
-                + JsonUtil.toJSONStringByObject(user));
+        System.out.println("get name=" + user.getName() + " user information:" + user);
     }
 
     /**
@@ -143,8 +140,7 @@ public class UserDAOTest {
         Assert.assertEquals(1, userDAO.saveUser(user));
         Assert.assertNotNull(userDAO.getUserByEmail(user.getEmail()));
 
-        System.out.println("get email=" + user.getEmail() + " user information: "
-                + JsonUtil.toJSONStringByObject(user));
+        System.out.println("get email=" + user.getEmail() + " user information: " + user);
     }
 
     /**
@@ -178,7 +174,7 @@ public class UserDAOTest {
         Assert.assertEquals(position, reSelectUser.getPosition());
         Assert.assertEquals(description, reSelectUser.getDescription());
 
-        System.out.println("new user information: " + JsonUtil.toJSONStringByObject(reSelectUser));
+        System.out.println("new user information: " + reSelectUser);
         System.out.println("update name=" + username + " user information success!");
     }
 

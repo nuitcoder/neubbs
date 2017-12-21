@@ -70,7 +70,7 @@ public class TopicReplyDAOTest {
     @Transactional
     public void testSaveTopicReply() {
         TopicReplyDO reply = this.saveTestReplyToDatabase();
-        System.out.println("insert reply information：" + JsonUtil.toJSONStringByObject(reply));
+        System.out.println("insert reply information：" + reply);
     }
 
     /**
@@ -85,7 +85,7 @@ public class TopicReplyDAOTest {
         Assert.assertEquals(1, topicReplyDAO.removeTopicReplyById(replyId));
         Assert.assertNull(topicReplyDAO.getTopicReplyById(replyId));
 
-        System.out.println("delete replyid=" + reply.getId() + " reply");
+        System.out.println("delete replyId=" + reply.getId() + " reply");
     }
 
     /**
@@ -133,8 +133,7 @@ public class TopicReplyDAOTest {
         TopicReplyDO reply = this.saveTestReplyToDatabase();
 
         int replyId = reply.getId();
-        System.out.println("get reply information："
-                + JsonUtil.toJSONStringByObject(topicReplyDAO.getTopicReplyById(replyId)));
+        System.out.println("get reply information：" + topicReplyDAO.getTopicReplyById(replyId));
     }
 
     /**

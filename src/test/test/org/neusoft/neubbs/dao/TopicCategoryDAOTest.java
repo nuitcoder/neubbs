@@ -55,7 +55,7 @@ public class TopicCategoryDAOTest {
     @Transactional
     public void testSaveTopicCategory() {
         TopicCategoryDO category = this.savaTestTopicCategoryDOToDatabase();
-        System.out.println("insert topic category information: " + JsonUtil.toJSONStringByObject(category));
+        System.out.println("insert topic category information: " + category);
     }
 
     /**
