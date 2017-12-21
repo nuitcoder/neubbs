@@ -66,7 +66,7 @@ CREATE TABLE `forum_user_action` (
 CREATE TABLE `forum_user_dynamic` (
   `fud_id` INT(11) NOT NULL AUTO_INCREMENT comment '用户动态 id',
   `fu_id` INT(11) NOT NULL comment '用户 id',
-  `fud_information` JSON comment '用户动态信息,用户发布的所有消息（JSON: {{"发布时间", "消息", "可见性限制"},{ ... }}）',
+  `fud_public_info_array` JSON comment '用户动态信息,用户发布的所有消息（JSON: {{"发布时间", "消息", "可见性限制"},{ ... }}）',
   PRIMARY KEY (`fud_id`),
   CONSTRAINT `FUD_FU_ID` FOREIGN KEY (`fu_id`) REFERENCES `forum_user` (`fu_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_bin;
