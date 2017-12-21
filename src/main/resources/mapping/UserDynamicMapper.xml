@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.neusoft.neubbs.dao.IUserDynamicDAO">
+   <resultMap id="UserDynamicMap" type="org.neusoft.neubbs.entity.UserDynamicDO">
+      <id column="fud_id" property="id" javaType="Integer" jdbcType="INTEGER" />
+      <result column="fu_id" property="userId" javaType="Integer" jdbcType="INTEGER" />
+      <result column="fud_public_info_array" property="publicInfoJsonArray" javaType="String" jdbcType="VARCHAR" />
+   </resultMap>
+
+   <insert id="saveUserDynamic" parameterType="org.neusoft.neubbs.entity.UserDynamicDO">
+      INSERT INTO forum_user_dynamic (fu_id, fud_public_info_array)
+      VALUES (#{userId, jdbcType = INTEGER}, '[]')
+   </insert>
+
+   <select id="getUserDynamic" parameterType="java.lang.Integer" resultMap="UserDynamicMap">
+      SELECT fud_id, fu_id, fud_public_info_array
+      FROM forum_user_dynamic WHERE fu_id = #{param1, jdbcType = INTEGER}
+   </select>
+
+   <update id="updatePublicInfoJsonArrayByOneDynamicInfoToAppendEnd">
+      UPDATE forum_user_dynamic
+      SET fud_public_info_array = JSON_ARRAY_APPEND(fud_public_info_array, '$', CAST(#{param2, jdbcType = VARCHAR} as JSON) )
+      WHERE fu_id = #{param1, jdbcType = INTEGER}
+   </update>
+
+   <update id="updatePublicInfoJsonArrayByIndexToRemoveOneDynamicInfo">
+      UPDATE forum_user_dynamic
+      SET fud_public_info_array = JSON_REMOVE(fud_public_info_array, CONCAT('$[', #{param2, jdbcType = INTEGER}, ']'))
+      WHERE fu_id = #{param1, jdbcType = INTEGER}
+   </update>
+</mapper>
+
