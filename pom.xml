@@ -314,6 +314,13 @@
       <version>3.6</version>
     </dependency>
 
+    <!-- 提供 StringEscapeUtils 工具类 -->
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+      <version>2.6</version>
+    </dependency>
+
   </dependencies>
 
 </project>
