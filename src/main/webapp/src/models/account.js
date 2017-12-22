@@ -1,4 +1,8 @@
+import { parse } from 'qs'
+import { routerRedux } from 'dva/router'
+
 import account from '../services/account'
+import * as routes from '../config/routes'
 
 export default {
   namespace: 'account',
@@ -10,6 +14,14 @@ export default {
   },
 
   subscriptions: {
+    setup({ dispatch, history }) {
+      history.listen(({ pathname, search }) => {
+        if (pathname === routes.ACCOUNT_VALIDATE) {
+          const { token } = parse(search.substr(1))
+          dispatch({ type: 'validate', payload: { token } })
+        }
+      })
+    },
   },
 
   effects: {
@@ -24,6 +36,18 @@ export default {
             meta: { username, isCurrent },
           })
           yield put({ type: 'app/changeEmailText', payload: data.model })
+        }
+      } catch (err) {
+        throw err
+      }
+    },
+
+    * validate(action, { put, call }) {
+      const { token } = action.payload
+      const { data } = yield call(account.validate, token)
+      try {
+        if (data.success) {
+          yield put(routerRedux.push(`${routes.ROOT}?ref=validate_success`))
         }
       } catch (err) {
         throw err

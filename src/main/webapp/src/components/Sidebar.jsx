@@ -1,8 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'dva'
-import { Link } from 'dva/router'
-import { Col, Panel } from 'react-bootstrap'
+import { withRouter } from 'dva/router'
+import { Col, Panel, Button } from 'react-bootstrap'
 import styled from 'styled-components'
 import { FormattedMessage } from 'react-intl'
 
@@ -38,15 +38,24 @@ const ListItem = styled.li`
 `
 
 const Sidebar = (props) => {
+  const clickNewTopic = () => {
+    if (props.loggedIn) {
+      props.history.push(routes.TOPIC_NEW)
+    } else {
+      props.history.push(routes.LOGIN)
+    }
+  }
+
   return (
     <Wrapper>
       <Panel>
-        <Link
-          to={routes.TOPIC_NEW}
-          className="btn btn-primary btn-block"
+        <Button
+          block
+          bsStyle="primary"
+          onClick={clickNewTopic}
         >
           <FormattedMessage id="sidebar.newtopic.text" />
-        </Link>
+        </Button>
       </Panel>
 
       <Panel
@@ -85,13 +94,17 @@ const Sidebar = (props) => {
 
 Sidebar.propTypes = {
   count: PropTypes.object.isRequired,
+  loggedIn: PropTypes.bool.isRequired,
+  history: PropTypes.object.isRequired,
 }
 
 const mapStateToProps = (state) => {
   const { count } = state.app
+  const { loggedIn } = state.login
   return {
     count,
+    loggedIn,
   }
 }
 
-export default connect(mapStateToProps)(Sidebar)
+export default withRouter(connect(mapStateToProps)(Sidebar))

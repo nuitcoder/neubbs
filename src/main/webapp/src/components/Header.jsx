@@ -23,7 +23,7 @@ const StyledNavDropdown = styled(NavDropdown)`
 
   & > .dropdown-menu {
     border: 1px solid #dfe0e4;
-    box-shadow: 0px 1px 2px rgba(0,0,0,0.15);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
   }
 
   /* fix dropdown menu background color when hover it */
@@ -111,6 +111,7 @@ class Header extends Component {
   }
 
   selectNavItem(eventKey) {
+    const { username } = this.props.current
     switch (eventKey) {
       case EVENT.LOGIN:
         this.props.history.push(routes.LOGIN)
@@ -120,6 +121,12 @@ class Header extends Component {
         break
       case EVENT.LOGOUT:
         this.props.dispatch({ type: 'login/logout' })
+        break;
+      case EVENT.CREATE:
+        this.props.history.push(routes.TOPIC_NEW)
+        break;
+      case EVENT.ACCOUNT:
+        this.props.history.push(routes.ACCOUNT_HOME.replace(':username', username))
         break;
       default:
     }

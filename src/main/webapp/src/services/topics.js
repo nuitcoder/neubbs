@@ -56,8 +56,8 @@ export default {
     })
   },
 
-  detail({ id }) {
-    const params = { topicid: id }
+  detail({ topicid }) {
+    const params = { topicid }
     return axios.get(TOPIC_URL, {
       params,
     })

@@ -35,7 +35,6 @@ const StyledNavbar = styled(Navbar)`
     color: #dd4c4f;
     background-color: #f8f8f8;
   }
-
 `
 
 const Categorys = styled.span`
@@ -80,7 +79,7 @@ const CategoryNavbar = (props) => {
         <Nav onSelect={selectCategory}>
           {/* display all topic by default */}
           <NavItem
-            href={routes.TOPICS}
+            href={routes.ROOT}
             eventKey={EVENT.ALL}
             active={selected === ''}
           >

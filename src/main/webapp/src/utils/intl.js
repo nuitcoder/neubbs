@@ -12,7 +12,7 @@ const locales = [
 ]
 
 export const polyfill = () => {
-  const context = typeof window !== 'undefined' && window || global
+  const context = (typeof window !== 'undefined' && window) || global
 
   if (!context.Intl || !areIntlLocalesSupported(locales)) {
     if (!context.Intl) {
@@ -25,10 +25,11 @@ export const polyfill = () => {
 }
 
 export const loadLocale = (locale) => {
-  switch( locale ) {
+  switch (locale) {
     case 'zh':
       addLocaleData([...zhLocale])
       return zh
     default:
+      return {}
   }
 }

@@ -2,13 +2,12 @@ export const ROOT = '/'
 
 export const LOGIN = '/login'
 export const REGISTER = '/register'
-export const VALIDATE = '/validate'
 
 // account
-export const ACCOUNT = '/account/:username'
+export const ACCOUNT_VALIDATE = '/account/validate'
+export const ACCOUNT_HOME = '/account/:username'
 
 // topic
-export const TOPICS = '/topics'
-export const TOPIC_NEW = '/topics/new'
-export const TOPIC_DETAIL = '/topics/:id'
+export const TOPIC_NEW = '/topic/new'
+export const TOPIC_DETAIL = '/topic/:id'
 

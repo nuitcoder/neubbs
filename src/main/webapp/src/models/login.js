@@ -1,5 +1,3 @@
-import { routerRedux } from 'dva/router'
-
 import auth from '../auth'
 
 export default {
@@ -8,7 +6,8 @@ export default {
   state: {
     loggedIn: auth.checkAuth(),
     username: auth.getUsername(),
-    alertMessage: '',
+    loginMessage: '',
+    registerMessage: '',
   },
 
   subscriptions: {
@@ -22,8 +21,6 @@ export default {
         if (data.success) {
           yield put({ type: 'loginSuccess', payload: { username } })
           yield put({ type: 'account/query', payload: { username, isCurrent: true } })
-
-          routerRedux.goBack()
         } else {
           yield put({ type: 'loginError', payload: data })
         }
@@ -83,15 +80,6 @@ export default {
         ...state,
         username: '',
         loggedIn: false,
-      }
-    },
-
-    loginSuccess(state, { payload: { username } }) {
-      return {
-        ...state,
-        username,
-        loggedIn: true,
-        registerMessage: '',
       }
     },
 

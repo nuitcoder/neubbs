@@ -1,4 +1,5 @@
 import { routerRedux } from 'dva/router'
+import pathToRegexp from 'path-to-regexp'
 import { parse } from 'qs'
 import _ from 'lodash'
 
@@ -13,6 +14,7 @@ export default {
   namespace: 'topics',
 
   state: {
+    topic: {},
     topicList: {
       all: [],
       categorys: {},
@@ -28,32 +30,31 @@ export default {
     setup({ dispatch, history }) {
       history.listen(({ pathname, search }) => {
         if (pathname === routes.ROOT) {
-          const query = parse(search.substr(1))
-          const { category } = query
+          const { category } = parse(search.substr(1))
+          dispatch({ type: 'refresh', payload: { category } })
+        }
 
-          dispatch({ type: 'resetPage' })
-          dispatch({
-            type: 'pages',
-            payload: {
-              limit: 25,
-              category,
-            },
-          })
-          dispatch({
-            type: 'query',
-            payload: {
-              page: 1,
-              limit: 25,
-              category,
-            },
-          })
+        const topicRe = pathToRegexp(routes.TOPIC_DETAIL)
+        if (topicRe.test(pathname)) {
+          const topicid = Number(topicRe.exec(pathname)[1])
+          if (!_.isNaN(topicid)) {
+            dispatch({ type: 'detail', payload: { topicid } })
+          }
         }
       })
     },
   },
 
   effects: {
-    * create(action, { call }) {
+    * refresh(action, { put }) {
+      const { category } = action.payload
+
+      yield put({ type: 'resetTopics', payload: { category } })
+      yield put({ type: 'pages', payload: { limit: 25, category } })
+      yield put({ type: 'query', payload: { page: 1, limit: 25, category } })
+    },
+
+    * create(action, { put, call }) {
       const { payload = {} } = action
       const { title, content, category } = payload
 
@@ -64,7 +65,23 @@ export default {
       try {
         if (data.success) {
           const { topicid } = data.model
-          routerRedux.push(routes.TOPIC_DETAIL.replace(':id', topicid))
+          yield put(routerRedux.push(routes.TOPIC_DETAIL.replace(':id', topicid)))
+        } else {
+          throw data.message
+        }
+      } catch (err) {
+        throw err
+      }
+    },
+
+    * detail(action, { put, call }) {
+      const { payload = {} } = action
+      const { topicid } = payload
+
+      const { data } = yield call(topics.detail, { topicid })
+      try {
+        if (data.success) {
+          yield put({ type: 'setTopicDetail', payload: data.model })
         } else {
           throw data.message
         }
@@ -121,6 +138,35 @@ export default {
           yield put({ type: 'setCategorys', payload: data.model })
         } else {
           throw data.message
+        }
+      } catch (err) {
+        throw err
+      }
+    },
+
+    * reply(action, { put, call }) {
+      const { topicid, content } = action.payload
+      const { data } = yield call(topics.reply, { topicid, content })
+      try {
+        if (data.success) {
+          yield put({ type: 'detail', payload: { topicid } })
+        } else {
+          throw data.messgae
+        }
+      } catch (err) {
+        throw err
+      }
+    },
+
+    * like(action, { put, call }) {
+      const { topicid, isLike } = action.payload
+      const { data } = yield call(topics.like, { topicid, isLike })
+      try {
+        if (data.success) {
+          yield put({
+            type: 'detail',
+            payload: { topicid },
+          })
         }
       } catch (err) {
         throw err
@@ -193,10 +239,44 @@ export default {
       }
     },
 
-    resetPage(state) {
+    setTopicDetail(state, action) {
+      const { topicid } = action.payload
+      return {
+        ...state,
+        topic: {
+          ...state.topic,
+          [topicid]: action.payload,
+        },
+      }
+    },
+
+    resetTopics(state, action) {
+      const { category } = action.payload
+      const { all, categorys } = state.topicList
+
+      let topicList = {
+        all: all.slice(0, 25),
+      }
+
+      // category topics
+      if (category) {
+        const old = categorys[category] || []
+        topicList = {
+          categorys: {
+            ...categorys,
+            [category]: old.slice(0, 25),
+          },
+        }
+      }
+
+
       return {
         ...state,
         page: 0,
+        topicList: {
+          ...state.topicList,
+          ...topicList,
+        },
       }
     },
 

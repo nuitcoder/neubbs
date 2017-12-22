@@ -85,11 +85,11 @@ const Count = styled(Link)`
 const TopicItem = (props) => {
   const { topic } = props
 
-  const userUrl = routes.ACCOUNT.replace(':username', topic.user.username)
-  const lastReplyUserUrl = routes.ACCOUNT.replace(':username', topic.lastreplyuser.username)
+  const userUrl = routes.ACCOUNT_HOME.replace(':username', topic.user.username)
+  const lastReplyUserUrl = routes.ACCOUNT_HOME.replace(':username', topic.lastreplyuser.username)
   const topicUrl = routes.TOPIC_DETAIL.replace(':id', topic.topicid)
   const replyUrl = `${topicUrl}#replies`
-  const categoryUrl = `${routes.TOPICS}?category=${topic.category.id}`
+  const categoryUrl = `${routes.ROOT}?category=${topic.category.id}`
 
   return (
     <Wrapper>
