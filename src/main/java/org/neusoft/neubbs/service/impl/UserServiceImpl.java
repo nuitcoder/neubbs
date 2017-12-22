@@ -269,7 +269,7 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public void alterUserActivateStateByToken(String token) {
+    public UserDO alterUserActivateStateByToken(String token) {
         //解析 token
         String plainText = SecretUtil.decryptBase64(token);
         String[] array = plainText.split("-");
@@ -291,6 +291,8 @@ public class UserServiceImpl implements IUserService {
         if (userDAO.updateUserStateToActivateByEmail(email) == 0) {
             throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.SERVICE_02);
         }
+
+        return userDAO.getUserByEmail(email);
     }
 
     @Override

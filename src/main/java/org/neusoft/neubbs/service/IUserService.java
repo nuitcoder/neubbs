@@ -184,8 +184,9 @@ public interface IUserService {
      * (Base64 加密 token)修改用户激活状态
      *
      * @param token Base64加密密文
+     * @return UserDO 激活完用户重新返回用户数据
      */
-    void alterUserActivateStateByToken(String token);
+    UserDO alterUserActivateStateByToken(String token);
 
     /**
      * 修改用户行为，喜欢话题 id 列表

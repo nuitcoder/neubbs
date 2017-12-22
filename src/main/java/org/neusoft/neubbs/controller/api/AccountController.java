@@ -341,14 +341,21 @@ public final class AccountController {
 
     /**
      * 激活账户（ 验证 token ）
+     *      - 数据库激活用户
+     *      - 修改客户端 cookie (重新保存用户信息)
      *
      * @param token 传入的 token
      * @return PageJsonDTO 页面JSON传输对象
      */
     @RequestMapping(value = "/validate", method = RequestMethod.GET)
     @ResponseBody
-    public PageJsonDTO validate(@RequestParam(value = "token", required = false) String token) {
-        userService.alterUserActivateStateByToken(token);
+    public PageJsonDTO validate(@RequestParam(value = "token", required = false) String token,
+                                HttpServletResponse response) {
+        UserDO activatedUser = userService.alterUserActivateStateByToken(token);
+
+        String authentication = secretService.jwtCreateTokenByUser(activatedUser);
+        httpService.saveCookie(response, ParamConst.AUTHENTICATION, authentication, null);
+
         return new PageJsonDTO(AjaxRequestStatus.SUCCESS);
     }
 
