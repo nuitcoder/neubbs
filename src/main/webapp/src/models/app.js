@@ -1,9 +1,10 @@
+import count from '../services/count'
+import * as routes from '../config/routes'
+
 export default {
   namespace: 'app',
 
   state: {
-    navExpanded: false,
-    showActivateModal: true,
     showCategoryModal: false,
     countdown: {
       activate: 0,
@@ -12,26 +13,43 @@ export default {
       email: '',
       showEmailInput: false,
     },
+    count: {
+      user: 0,
+      topic: 0,
+      reply: 0,
+    },
   },
 
   subscriptions: {
+    setup({ dispatch, history }) {
+      history.listen(({ pathname }) => {
+        if (pathname === routes.ROOT) {
+          dispatch({ type: 'count' })
+        }
+      })
+    },
   },
 
   effects: {
+    * count(action, { put, call }) {
+      const { data } = yield call(count.baisc)
+      try {
+        if (data.success) {
+          yield put({ type: 'setAppCount', payload: data.model })
+        } else {
+          throw data.message
+        }
+      } catch (err) {
+        throw err
+      }
+    },
   },
 
   reducers: {
-    setNavExpanded(state, { payload: navExpanded }) {
+    toggleCategoryModal(state) {
       return {
         ...state,
-        navExpanded,
-      }
-    },
-
-    toggleActivateModal(state) {
-      return {
-        ...state,
-        showActivateModal: !state.showActivateModal,
+        showCategoryModal: !state.showCategoryModal,
       }
     },
 
@@ -61,6 +79,18 @@ export default {
         countdown: {
           ...state.countdown,
           [type]: start,
+        },
+      }
+    },
+
+    setAppCount(state, { payload: { user, topic, reply } }) {
+      return {
+        ...state,
+        count: {
+          ...state.count,
+          user,
+          topic,
+          reply,
         },
       }
     },

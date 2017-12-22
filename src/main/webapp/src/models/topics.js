@@ -1,3 +1,4 @@
+import { routerRedux } from 'dva/router'
 import { parse } from 'qs'
 import _ from 'lodash'
 
@@ -34,7 +35,6 @@ export default {
           dispatch({
             type: 'pages',
             payload: {
-              page: 1,
               limit: 25,
               category,
             },
@@ -53,6 +53,26 @@ export default {
   },
 
   effects: {
+    * create(action, { call }) {
+      const { payload = {} } = action
+      const { title, content, category } = payload
+
+      const { data } = yield call(topics.create, {
+        title, content, category,
+      })
+
+      try {
+        if (data.success) {
+          const { topicid } = data.model
+          routerRedux.push(routes.TOPIC_DETAIL.replace(':id', topicid))
+        } else {
+          throw data.message
+        }
+      } catch (err) {
+        throw err
+      }
+    },
+
     * query(action, { put, call }) {
       const { payload = {} } = action
       const {
@@ -67,7 +87,7 @@ export default {
       try {
         if (data.success) {
           yield put({
-            type: 'querySuccess',
+            type: 'setTopics',
             payload: data.model,
             meta: { category, username, page },
           })
@@ -85,7 +105,7 @@ export default {
 
       try {
         if (data.success) {
-          yield put({ type: 'pagesSuccess', payload: data.model })
+          yield put({ type: 'setPageTotal', payload: data.model })
         } else {
           throw data.message
         }
@@ -98,7 +118,7 @@ export default {
       const { data } = yield call(topics.categorys)
       try {
         if (data.success) {
-          yield put({ type: 'categorysSuccess', payload: data.model })
+          yield put({ type: 'setCategorys', payload: data.model })
         } else {
           throw data.message
         }
@@ -116,7 +136,7 @@ export default {
       }
     },
 
-    querySuccess(state, action) {
+    setTopics(state, action) {
       const { payload, meta } = action
       const { category, username, page } = meta
       const { all, categorys, users } = state.topicList
@@ -158,7 +178,7 @@ export default {
       }
     },
 
-    pagesSuccess(state, action) {
+    setPageTotal(state, action) {
       const { totalpages } = action.payload
       return {
         ...state,
@@ -166,7 +186,7 @@ export default {
       }
     },
 
-    categorysSuccess(state, action) {
+    setCategorys(state, action) {
       return {
         ...state,
         categorys: action.payload,
@@ -179,5 +199,6 @@ export default {
         page: 0,
       }
     },
+
   },
 }

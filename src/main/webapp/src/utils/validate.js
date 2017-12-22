@@ -10,7 +10,7 @@ import account from '../services/account'
  * @param {Object} props component props, for fetch intl
  * @returns {Object} validate result
  */
-export const login = (values, props) => {
+export const validateLogin = (values, props) => {
   const { intl: { formatMessage } } = props
 
   const rules = {
@@ -42,7 +42,7 @@ export const login = (values, props) => {
  * @param {Object} props component props, for fetch intl
  * @returns {Object} validate result
  */
-export const register = (values, props) => {
+export const validateRegister = (values, props) => {
   const { intl: { formatMessage } } = props
 
   const rules = {
@@ -75,13 +75,13 @@ export const register = (values, props) => {
 }
 
 /**
- * activate form field(just email) validate checker
+ * email form field validate checker
  *
- * @param {Object} values activate form field values(email)
+ * @param {Object} values email form field values({ email })
  * @param {Object} props component props, for fetch intl
  * @returns {Object} validate result
  */
-export const activate = (values, props) => {
+export const validateEmail = (values, props) => {
   const { intl: { formatMessage } } = props
 
   const rules = {
@@ -121,8 +121,8 @@ export const uniqueAsync = (values, dispatch, props) => {
     }
 
     const uniqueEmail = () => {
-      // skip validate when activate some email
-      if (props.form === 'activate-email' && email === props.email) {
+      // skip validate when activate same email
+      if (props.form === 'activate-email' && email === props.current.email) {
         return Promise.resolve(false)
       }
       if (email !== '') {

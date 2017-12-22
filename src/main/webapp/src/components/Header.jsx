@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'dva'
 import { withRouter } from 'dva/router'
@@ -81,36 +81,61 @@ const EVENT = {
   CREATE: 'CREATE',
 }
 
-const Header = (props) => {
-  const setNavExpanded = (expanded) => {
-    props.dispatch({ type: 'app/setNavExpanded', payload: expanded })
+class Header extends Component {
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      navExpanded: false,
+    }
+
+    this.setNavExpanded = this.setNavExpanded.bind(this)
+    this.selectNavItem = this.selectNavItem.bind(this)
+    this.handleClickLogo = this.handleClickLogo.bind(this)
+
+    /* auto close navar expand when click of touch */
+    const autoCloseNavbar = (e) => {
+      const navbar = document.querySelector('#navbar')
+
+      if (!navbar.contains(e.target)) {
+        this.setNavExpanded(false)
+      }
+    }
+
+    window.addEventListener('click', autoCloseNavbar)
+    window.addEventListener('touchstart', autoCloseNavbar)
   }
 
-  const handleClickLogo = () => {
-    props.history.push(routes.ROOT)
+  setNavExpanded(expanded) {
+    this.setState({ navExpanded: expanded })
   }
 
-  const selectNavItem = (eventKey) => {
+  selectNavItem(eventKey) {
     switch (eventKey) {
       case EVENT.LOGIN:
-        props.history.push(routes.LOGIN)
+        this.props.history.push(routes.LOGIN)
         break
       case EVENT.REGISTER:
-        props.history.push(routes.REGISTER)
+        this.props.history.push(routes.REGISTER)
         break
       case EVENT.LOGOUT:
-        props.dispatch({ type: 'login/logout' })
+        this.props.dispatch({ type: 'login/logout' })
         break;
       default:
     }
   }
 
-  const renderRightNavbar = () => {
-    const { loggedIn, current } = props
+  handleClickLogo() {
+    this.props.history.push(routes.ROOT)
+  }
+
+  renderRightNavbar() {
+    const { loggedIn, current } = this.props
+
     if (loggedIn) {
       const { avator, username } = current
       return (
-        <Nav onSelect={selectNavItem} pullRight>
+        <Nav onSelect={this.selectNavItem} pullRight>
           <NavItem eventKey={EVENT.CREATE}>
             <StyledGlyphicon glyph="plus" />
             <MobileHint>
@@ -150,7 +175,7 @@ const Header = (props) => {
     }
 
     return (
-      <Nav onSelect={selectNavItem} pullRight>
+      <Nav onSelect={this.selectNavItem} pullRight>
         <NavItem eventKey={EVENT.REGISTER}>
           <FormattedMessage id="header.register.text" />
         </NavItem>
@@ -161,41 +186,40 @@ const Header = (props) => {
     )
   }
 
-  return (
-    <StyledNavbar
-      fixedTop
-      collapseOnSelect
-      id="navbar"
-      expanded={props.navExpanded}
-      onToggle={setNavExpanded}
-    >
-      <Navbar.Header>
-        <Navbar.Brand>
-          <Logo onClick={handleClickLogo}>Neubbs</Logo>
-        </Navbar.Brand>
-        <Navbar.Toggle />
-      </Navbar.Header>
-      <Navbar.Collapse>
-        {renderRightNavbar()}
-      </Navbar.Collapse>
-    </StyledNavbar>
-  )
+  render() {
+    return (
+      <StyledNavbar
+        fixedTop
+        collapseOnSelect
+        id="navbar"
+        expanded={this.state.navExpanded}
+        onToggle={this.setNavExpanded}
+      >
+        <Navbar.Header>
+          <Navbar.Brand>
+            <Logo onClick={this.handleClickLogo}>Neubbs</Logo>
+          </Navbar.Brand>
+          <Navbar.Toggle />
+        </Navbar.Header>
+        <Navbar.Collapse>
+          {this.renderRightNavbar()}
+        </Navbar.Collapse>
+      </StyledNavbar>
+    )
+  }
 }
 
 Header.propTypes = {
-  navExpanded: PropTypes.bool.isRequired,
-  history: PropTypes.object.isRequired,
-  dispatch: PropTypes.func.isRequired,
   loggedIn: PropTypes.bool.isRequired,
   current: PropTypes.object.isRequired,
+  history: PropTypes.object.isRequired,
+  dispatch: PropTypes.func.isRequired,
 }
 
 const mapStateToProps = (state) => {
-  const { navExpanded } = state.app
   const { loggedIn } = state.login
   const { current } = state.account
   return {
-    navExpanded,
     loggedIn,
     current,
   }

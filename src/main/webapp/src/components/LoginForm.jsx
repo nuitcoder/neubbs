@@ -5,7 +5,7 @@ import { Button } from 'react-bootstrap'
 import { injectIntl } from 'react-intl'
 
 import FieldInput from './FieldInput'
-import { login } from '../utils/validate'
+import { validateLogin } from '../utils/validate'
 
 const LoginForm = (props) => {
   const { handleSubmit, intl: { formatMessage } } = props
@@ -30,5 +30,5 @@ LoginForm.propTypes = {
 
 export default injectIntl(reduxForm({
   form: 'login',
-  validate: login,
+  validate: validateLogin,
 })(LoginForm))

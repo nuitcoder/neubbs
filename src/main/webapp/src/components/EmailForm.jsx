@@ -5,7 +5,7 @@ import styled from 'styled-components'
 import { FormattedMessage, injectIntl } from 'react-intl'
 import { Form, Field, reduxForm } from 'redux-form'
 
-import { activate, uniqueAsync } from '../utils/validate'
+import { validateEmail, uniqueAsync } from '../utils/validate'
 import FieldInput from './FieldInput'
 import Countdown from './Countdown'
 
@@ -47,36 +47,57 @@ const LinkDisable = styled.span`
   margin-left: 10px;
 `
 
-const EmailForm = (props) => {
-  const changeEmailText = (event) => {
-    const email = event.target.value
-    props.dispatch({ type: 'app/changeEmailText', payload: { email } })
-    props.change('email', email)
+class EmailForm extends Component {
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      email: props.current.email,
+      showInput: false,
+    }
+
+    this.onSubmit = this.onSubmit.bind(this)
+    this.toggleInput = this.toggleInput.bind(this)
+    this.changeEmail = this.changeEmail.bind(this)
+    this.putCursorAtEnd = this.putCursorAtEnd.bind(this)
+    this.sendActivateEmail = this.sendActivateEmail.bind(this)
+  }
+
+  onSubmit() {
+    this.toggleInput()
+  }
+
+  toggleInput() {
+    this.setState({
+      showInput: !this.state.showInput,
+    })
   }
 
   // hack! put cursor at end of text when focus input
   // https://coderwall.com/p/0iz_zq/how-to-put-focus-at-the-end-of-an-input-with-react-js
-  const putCursorAtEnd = (event) => {
+  putCursorAtEnd(event) {
     /* eslint-disable no-param-reassign */
     event.target.value = ''
-    event.target.value = props.email
+    event.target.value = this.state.email
     /* eslint-enable */
-    props.change('email', props.email)
+    this.props.change('email', this.state.email)
   }
 
-  const toggleEmailInput = () => {
-    props.dispatch({ type: 'app/toggleEmailInput' })
+  changeEmail(event) {
+    const email = event.target.value
+    this.setState({ email })
+    this.props.change('email', email)
   }
 
-  const sendActivateEmail = () => {
-    const { email } = props.current
-    props.dispatch({
+  sendActivateEmail() {
+    const { email } = this.props.current
+    this.props.dispatch({
       type: 'account/sendActivateEmail',
       payload: { email },
     })
   }
 
-  const renderCountdown = (count) => {
+  renderCountdown(count) {
     if (count > 0) {
       return (
         <LinkDisable>
@@ -85,57 +106,62 @@ const EmailForm = (props) => {
       )
     }
     return (
-      <Link onClick={sendActivateEmail}>
+      <Link onClick={this.sendActivateEmail}>
         <FormattedMessage id="activate.modal.retry" />
       </Link>
     )
   }
 
-  return (
-    <Form onSubmit={props.handleSubmit}>
-      <Label>
-        <FormattedMessage id="activate.modal.email" />
-        {props.showEmailInput ?
-          <Field
-            inline
-            autoFocus
-            component={StyledFieldInput}
-            name="email"
-            type="text"
-            input={{
-              value: props.email,
-              onChange: changeEmailText,
-              onFocus: putCursorAtEnd,
-            }}
-          /> :
-          <span>
-            <EmailText>{props.email}</EmailText>
-            <Link onClick={toggleEmailInput}>
-              <FormattedMessage id="activate.modal.change_email" />
-            </Link>
-          </span>}
-      </Label>
-      <Tips>
+  render() {
+    return (
+      <Form onSubmit={this.props.handleSubmit(this.onSubmit)}>
         <Label>
-          <FormattedMessage id="activate.modal.tips" />
+          <FormattedMessage id="activate.modal.email" />
+          {this.state.showInput ?
+            <Field
+              inline
+              autoFocus
+              component={StyledFieldInput}
+              name="email"
+              type="text"
+              input={{
+                value: this.state.email,
+                onChange: this.changeEmail,
+                onFocus: this.putCursorAtEnd,
+              }}
+            /> :
+            <span>
+              <EmailText>{this.state.email}</EmailText>
+              <Link onClick={this.toggleInput}>
+                <FormattedMessage id="activate.modal.change_email" />
+              </Link>
+            </span>}
         </Label>
-        <Label>
-          <FormattedMessage id="activate.modal.unrevd" />
-          <Countdown
-            type="activate"
-            duration={60}
-            start={props.start}
-            onMount={sendActivateEmail}
-            render={(count) => renderCountdown(count)}
-          />
-        </Label>
-      </Tips>
-    </Form>
-  )
+        <Tips>
+          <Label>
+            <FormattedMessage id="activate.modal.tips" />
+          </Label>
+          <Label>
+            <FormattedMessage id="activate.modal.unrevd" />
+            <Countdown
+              type="activate"
+              duration={60}
+              start={this.props.start}
+              onMount={this.sendActivateEmail}
+              render={(count) => this.renderCountdown(count)}
+            />
+          </Label>
+        </Tips>
+      </Form>
+    )
+  }
 }
 
 EmailForm.propTypes = {
-  email: PropTypes.string.isRequired,
+  start: PropTypes.number.isRequired,
+  current: PropTypes.object.isRequired,
+  dispatch: PropTypes.func.isRequired,
+
   // from redux-form
   change: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
@@ -143,17 +169,16 @@ EmailForm.propTypes = {
 
 const mapStateToProps = (state) => {
   const { current } = state.account
-  const { emailForm, countdown } = state.app
+  const { countdown } = state.app
   return {
-    ...emailForm,
-    start: countdown['activate'],
+    start: countdown.activate,
     current,
   }
 }
 
 export default connect(mapStateToProps)(injectIntl(reduxForm({
   form: 'activate-email',
-  validate: activate,
+  validate: validateEmail,
   asyncValidate: uniqueAsync,
   asyncBlurFields: ['email'],
 })(EmailForm)))

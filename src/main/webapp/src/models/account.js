@@ -19,7 +19,7 @@ export default {
       try {
         if (data.success) {
           yield put({
-            type: 'querySuccess',
+            type: 'setAccount',
             payload: data.model,
             meta: { username, isCurrent },
           })
@@ -35,7 +35,7 @@ export default {
       const { data } = yield call(account.updateEmail, username, email)
       try {
         if (data.success) {
-          yield put({ type: 'updateEmailSuccess', payload: { username, email } })
+          yield put({ type: 'changeEmail', payload: { username, email } })
           yield put({ type: 'app/toggleEmailInput' })
         } else {
           throw data.message
@@ -74,7 +74,7 @@ export default {
   },
 
   reducers: {
-    querySuccess(state, action) {
+    setAccount(state, action) {
       const { username, isCurrent } = action.meta
       return {
         ...state,
@@ -86,7 +86,7 @@ export default {
       }
     },
 
-    updateEmailSuccess(state, action) {
+    changeEmail(state, action) {
       const { username, email } = action.payload
       const current = {
         ...state.current,

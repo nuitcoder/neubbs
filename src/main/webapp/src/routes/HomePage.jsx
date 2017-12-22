@@ -6,6 +6,7 @@ import _ from 'lodash'
 import { parse } from 'qs'
 
 import TopicList from '../components/TopicList'
+import Sidebar from '../components/Sidebar'
 
 const HomePage = (props) => {
   const {
@@ -39,6 +40,7 @@ const HomePage = (props) => {
         hasMore={pageTotal > page}
         loadMore={_.throttle(loadMoreTopics, 1000)}
       />
+      <Sidebar />
     </Row>
   )
 }

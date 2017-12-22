@@ -7,7 +7,7 @@ import styled from 'styled-components'
 import { FormattedMessage } from 'react-intl'
 
 import * as routes from '../config/routes'
-// import CategoryModal from '../components/CategoryModal'
+import CategoryModal from '../components/CategoryModal'
 
 const EVENT = {
   ALL: 'ALL',
@@ -44,11 +44,19 @@ const Categorys = styled.span`
 `
 
 const CategoryNavbar = (props) => {
-  const { data, selected } = props
+  const { data, selected, showCategoryModal } = props
+
+  const toggleCategoryModal = () => {
+    props.dispatch({ type: 'app/toggleCategoryModal' })
+  }
 
   const selectCategory = (eventKey) => {
     const isAll = eventKey === EVENT.ALL
     const url = isAll ? routes.ROOT : `${routes.ROOT}?category=${eventKey}`
+
+    if (showCategoryModal) {
+      toggleCategoryModal()
+    }
     props.history.push(url)
   }
 
@@ -56,16 +64,16 @@ const CategoryNavbar = (props) => {
     <StyledNavbar>
       <Navbar.Header>
         <Navbar.Brand>
-          <Categorys onClick={() => {}}>
+          <Categorys onClick={toggleCategoryModal}>
             <FormattedMessage id="topic.category.all" />
             <Glyphicon glyph="menu-right" />
           </Categorys>
-          {/* <CategoryModal */}
-            {/* data={data} */}
-            {/* show={this.state.showModal} */}
-            {/* onHide={this.hideCategoryModal} */}
-            {/* onSelect={this.handleSelectCategory} */}
-          {/* /> */}
+          <CategoryModal
+            data={data}
+            show={showCategoryModal}
+            onHide={toggleCategoryModal}
+            onSelect={selectCategory}
+          />
         </Navbar.Brand>
       </Navbar.Header>
       <Navbar.Collapse>
@@ -102,9 +110,17 @@ const CategoryNavbar = (props) => {
 CategoryNavbar.propTypes = {
   selected: PropTypes.string.isRequired,
   data: PropTypes.array.isRequired,
+  showCategoryModal: PropTypes.bool.isRequired,
   history: PropTypes.object.isRequired,
   dispatch: PropTypes.func.isRequired,
 }
 
-export default withRouter(connect()(CategoryNavbar))
+const mapStateToProps = (state) => {
+  const { showCategoryModal } = state.app
+  return {
+    showCategoryModal,
+  }
+}
+
+export default withRouter(connect(mapStateToProps)(CategoryNavbar))
 

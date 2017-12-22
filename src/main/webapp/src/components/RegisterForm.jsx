@@ -5,7 +5,7 @@ import { Button } from 'react-bootstrap'
 import { injectIntl } from 'react-intl'
 
 import FieldInput from './FieldInput'
-import { register, uniqueAsync } from '../utils/validate'
+import { validateRegister, uniqueAsync } from '../utils/validate'
 
 const RegisterForm = (props) => {
   const { handleSubmit, intl: { formatMessage } } = props
@@ -34,7 +34,7 @@ RegisterForm.propTypes = {
 
 export default injectIntl(reduxForm({
   form: 'register',
-  validate: register,
+  validate: validateRegister,
   asyncValidate: uniqueAsync,
   asyncBlurFields: ['username', 'email'],
 })(RegisterForm))
