@@ -48,6 +48,7 @@ public final class MapFilterUtil {
    /**
     * 过滤话题基本信息 Map
     *    - 修改 id -> topicid
+    *    - 如果最后回复时间为 null（无人回复，默认是发布时间）
     *    - 删除 id, userid , categoryid, lastreplyuserid
     *
     * @param topicInfoMap 话题基本信息 Map
@@ -57,7 +58,7 @@ public final class MapFilterUtil {
       Object topicLastReplyTime = topicInfoMap.get(ParamConst.LAST_REPLY_TIME);
 
       if (topicLastReplyTime == null) {
-         topicInfoMap.put(ParamConst.LAST_REPLY_TIME, 0);
+         topicInfoMap.put(ParamConst.LAST_REPLY_TIME, ParamConst.CREATETIME);
       }
 
       removeKeys(topicInfoMap, new String[] {ParamConst.ID, ParamConst.USER_ID,
