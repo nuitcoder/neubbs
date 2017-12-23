@@ -21,7 +21,7 @@ const auth = {
     return localStorage.getItem('username') || ''
   },
 
-  login(username, password) {
+  login({ username, password }) {
     return account.login(
       username,
       password,
@@ -41,7 +41,7 @@ const auth = {
     })
   },
 
-  activate(username) {
+  activate({ username }) {
     return account.activate(username)
       .then((response) => {
         return response
@@ -63,7 +63,7 @@ const auth = {
       })
   },
 
-  resgister(username, email, password) {
+  resgister({ username, email, password }) {
     return account.register(
       username,
       email,

@@ -16,7 +16,7 @@ export default {
   effects: {
     * login(action, { put, call }) {
       const { username, password } = action.payload
-      const { data } = yield call(auth.login, username, password)
+      const { data } = yield call(auth.login, { username, password })
       try {
         if (data.success) {
           yield put({ type: 'loginSuccess', payload: { username } })
@@ -44,7 +44,7 @@ export default {
 
     * register(action, { put, call }) {
       const { username, email, password } = action.payload
-      const { data } = yield call(auth.resgister, username, email, password)
+      const { data } = yield call(auth.resgister, { username, email, password })
       try {
         if (data.success) {
           yield put({ type: 'registerSuccess', payload: { username } })
