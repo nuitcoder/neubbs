@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'dva'
+import { withRouter } from 'dva/router'
 import styled, { injectGlobal } from 'styled-components'
 import { Grid, Alert } from 'react-bootstrap'
 import { FormattedMessage } from 'react-intl'
@@ -138,4 +139,4 @@ const mapStatetoProps = (state) => {
   }
 }
 
-export default connect(mapStatetoProps)(App)
+export default withRouter(connect(mapStatetoProps)(App))

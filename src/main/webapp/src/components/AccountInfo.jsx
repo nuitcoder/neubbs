@@ -13,6 +13,12 @@ const StyledPanel = styled(Panel)`
   & .panel-body {
     padding: 0;
   }
+
+  @media (max-width: 768px) {
+    & {
+      padding-bottom: 15px;
+    }
+  }
 `
 
 const Cover = styled.div`
@@ -41,6 +47,14 @@ const Avator = styled.img`
   top: -50px;
   margin: 15px 30px;
   border: 2px solid #fafafa;
+
+  @media (max-width: 768px) {
+    & {
+      width: 100px;
+      height: 100px;
+      margin: 15px;
+    }
+  }
 `
 
 const Title = styled.h1`

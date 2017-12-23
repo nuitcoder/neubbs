@@ -56,8 +56,8 @@ const AppRouter = ({ history }) => {
   return (
     <IntlProvider locale={locale} messages={loadLocale(locale)}>
       <Router history={history}>
-        <Switch>
-          <App>
+        <App>
+          <Switch>
             <Route exact path={routes.ROOT} component={HomePage} />
 
             <NotLoggedRoute path={routes.LOGIN} component={LoginPage} />
@@ -68,8 +68,8 @@ const AppRouter = ({ history }) => {
 
             <Route path={routes.ACCOUNT_VALIDATE} component={ValidatePage} />
             <Route path={routes.ACCOUNT_HOME} component={AccountPage} />
-          </App>
-        </Switch>
+          </Switch>
+        </App>
       </Router>
     </IntlProvider>
   )
