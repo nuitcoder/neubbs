@@ -106,10 +106,9 @@ public final class AccountController {
             paramCheckService.check(ParamConst.EMAIL, email);
         }
 
-        boolean isUserExistState = userService.isUserExist(username, email);
-        return httpService.isLoggedInUser(request)
-                ? new PageJsonDTO(isUserExistState, userService.getUserInfoToPageModelMap(username, email))
-                : new PageJsonDTO(isUserExistState);
+        return userService.isUserExist(username, email)
+                ? new PageJsonDTO(AjaxRequestStatus.SUCCESS, userService.getUserInfoToPageModelMap(username, email))
+                : new PageJsonDTO(AjaxRequestStatus.FAIL);
     }
 
     /**
