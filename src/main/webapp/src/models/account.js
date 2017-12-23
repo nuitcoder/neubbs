@@ -9,7 +9,7 @@ export default {
   namespace: 'account',
 
   state: {
-    infos: {},
+    users: {},
     current: {},
     activate: true,
   },
@@ -109,8 +109,8 @@ export default {
       const { username, isCurrent } = action.meta
       return {
         ...state,
-        infos: {
-          ...state.infos,
+        users: {
+          ...state.users,
           [username]: action.payload,
         },
         current: isCurrent ? action.payload : state.current,
@@ -125,8 +125,8 @@ export default {
       }
       return {
         ...state,
-        infos: {
-          ...state.infos,
+        users: {
+          ...state.users,
           [username]: current,
         },
         current,

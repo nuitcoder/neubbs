@@ -75,6 +75,13 @@ export default {
   'sidebar.count.topic': '帖子数: {number} 个',
   'sidebar.count.reply': '回复数: {number} 条',
 
+  // account
+  'account.info.unknow': '未知',
+  'account.info.sex': '性别',
+  'account.info.sex.male': '男',
+  'account.info.sex.female': '女',
+  'account.info.position': '居住地',
+
   // Message
   'username or password is incorrect': '用户名或密码错误',
 }
