@@ -29,6 +29,9 @@ import java.util.Properties;
  *      - 删除文件
  *      - 删除目录（及内部子文件夹,文件）
  *
+ * 注意：
+ *      每次使用连接都要断开，否则线程会一直保持 ftp 连接，其余用户无法使用
+ *
  * @author Suvan
  */
 public final class FtpUtil {
@@ -122,7 +125,7 @@ public final class FtpUtil {
      *
      * @throws IOException IO异常
      */
-    public static void destory() throws IOException {
+    private static void destory() throws IOException {
         if (ftpClient != null) {
             ftpClient.logout();
             ftpClient.disconnect();
@@ -143,7 +146,6 @@ public final class FtpUtil {
             if ("".equals(path)) {
                 continue;
             }
-
             //already exist directory, return false,
             ftpClient.makeDirectory(path);
 
@@ -153,6 +155,8 @@ public final class FtpUtil {
 
         //return root path
         ftpClient.changeWorkingDirectory("/");
+
+        destory();
     }
 
     /**
@@ -173,6 +177,8 @@ public final class FtpUtil {
                 fileNameList.add(file.getName());
             }
         }
+
+        destory();
 
         return fileNameList;
     }
@@ -195,6 +201,7 @@ public final class FtpUtil {
         ftpClient.storeFile(serverFileName, uploadFileInputStream);
 
         uploadFileInputStream.close();
+        destory();
     }
 
     /**
@@ -214,6 +221,8 @@ public final class FtpUtil {
             return;
         }
         ftpClient.deleteFile(serverDirectoryPath + "/" + serverFileName);
+
+        destory();
     }
 
     /**
@@ -248,5 +257,7 @@ public final class FtpUtil {
 
         ftpClient.changeWorkingDirectory(path.substring(0, path.lastIndexOf("/")));
         ftpClient.removeDirectory(path);
+
+        destory();
     }
 }
