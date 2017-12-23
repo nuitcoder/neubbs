@@ -106,12 +106,10 @@ public final class AccountController {
             paramCheckService.check(ParamConst.EMAIL, email);
         }
 
-        //get user information（if no login, only return [success:true]）
-        boolean noLoginState = httpService.getCookieValue(request, ParamConst.AUTHENTICATION) == null;
         boolean isUserExistState = userService.isUserExist(username, email);
-        return noLoginState
-                ? new PageJsonDTO(isUserExistState)
-                : new PageJsonDTO(isUserExistState, userService.getUserInfoToPageModelMap(username, email));
+        return httpService.isLoggedInUser(request)
+                ? new PageJsonDTO(isUserExistState, userService.getUserInfoToPageModelMap(username, email))
+                : new PageJsonDTO(isUserExistState);
     }
 
     /**
@@ -148,9 +146,9 @@ public final class AccountController {
         //database login authenticate
         UserDO user = userService.loginAuthenticate(username, password);
 
-        //cookie save user jwt token(if cookieMaxTime, default user neubbs.properties settings)
+        //jwt secret user information, save authentication to cookie
         String authentication = secretService.jwtCreateTokenByUser(user);
-        httpService.saveCookie(response, ParamConst.AUTHENTICATION, authentication, null);
+        httpService.saveAuthenticationCookie(response, authentication);
 
         //online login user number + 1
         httpService.addOnlineLoginUserNumber(request);
@@ -199,7 +197,7 @@ public final class AccountController {
         //database register user
         UserDO newRegisterUser = userService.registerUser(username, password, email);
 
-        //ftp service, craete user person directory
+        //craete user person directory on cloud ftp server
         ftpService.registerUserCreatePersonDirectory(newRegisterUser);
 
         return new PageJsonDTO(AjaxRequestStatus.SUCCESS, userService.getUserInfoMapByUser(newRegisterUser));
@@ -224,16 +222,15 @@ public final class AccountController {
         String newPosition = (String) requestBodyParamsMap.get(ParamConst.POSITION);
         String newDescription = (String) requestBodyParamsMap.get(ParamConst.DESCRIPTION);
 
-        //param check
         paramCheckService.checkInstructionOfSpecifyArray(String.valueOf(newSex), "0", "1");
         paramCheckService.paramsNotNull(newBirthday, newPosition, newDescription);
         paramCheckService.check(ParamConst.BIRTHDAY, newBirthday);
         paramCheckService.check(ParamConst.POSITION, newPosition);
         paramCheckService.check(ParamConst.DESCRIPTION, newDescription);
 
-        //alter user profile
+        //get user information in client cookie
         UserDO user = secretService.jwtVerifyTokenByTokenByKey(
-                httpService.getCookieValue(request, ParamConst.AUTHENTICATION), SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY
+               httpService.getAuthenticationCookieValue(request), SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY
         );
 
         return new PageJsonDTO(AjaxRequestStatus.SUCCESS,
@@ -258,15 +255,13 @@ public final class AccountController {
         paramCheckService.check(ParamConst.USERNAME, username);
         paramCheckService.check(ParamConst.PASSWORD, newPassword);
 
-        //confirm input user match cookieuser
-        String authentication = httpService.getCookieValue(request, ParamConst.AUTHENTICATION);
-        UserDO cookieUser
-                = secretService.jwtVerifyTokenByTokenByKey(authentication, SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY);
+        //confirm input username match logged in user
+        UserDO cookieUser = secretService.jwtVerifyTokenByTokenByKey(
+                httpService.getAuthenticationCookieValue(request), SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY
+        );
         userService.confirmUserMatchCookieUser(username, cookieUser);
 
-        //alter user password
         userService.alterUserPasswordByName(username, newPassword);
-
 
         return new PageJsonDTO(AjaxRequestStatus.SUCCESS);
     }
@@ -276,27 +271,24 @@ public final class AccountController {
      *
      * @param requestBodyParamsMap request-body内JSON数据
      * @param request http请求
-     * @param response http响应
      * @return PageJsonDTO 页面JSON传输对象
      */
     @LoginAuthorization
     @RequestMapping(value = "/update-email", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
     public PageJsonDTO updateEmail(@RequestBody Map<String, Object> requestBodyParamsMap,
-                                       HttpServletRequest request, HttpServletResponse response) {
+                                       HttpServletRequest request) {
         String username = (String) requestBodyParamsMap.get(ParamConst.USERNAME);
         String newEmail = (String) requestBodyParamsMap.get(ParamConst.EMAIL);
 
         paramCheckService.check(ParamConst.USERNAME, username);
         paramCheckService.check(ParamConst.EMAIL, newEmail);
 
-        //confirm input user match cookieuser
-        String authentication = httpService.getCookieValue(request, ParamConst.AUTHENTICATION);
-        UserDO cookieUser
-                = secretService.jwtVerifyTokenByTokenByKey(authentication, SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY);
+        UserDO cookieUser = secretService.jwtVerifyTokenByTokenByKey(
+                httpService.getAuthenticationCookieValue(request), SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY
+        );
         userService.confirmUserMatchCookieUser(username, cookieUser);
 
-        //alter user email
         userService.alterUserEmail(username, newEmail);
 
         return new PageJsonDTO(AjaxRequestStatus.SUCCESS);
@@ -315,17 +307,16 @@ public final class AccountController {
 
         paramCheckService.check(ParamConst.EMAIL, email);
 
-        //confirm user activated
         userService.confirmUserActivatedByEmail(email);
 
         //60s send email interval
-        long sendEmailRemainInterval = redisService.getExpireTime(email);
-        if (sendEmailRemainInterval != SetConst.REDIS_EXPIRED) {
+        long remainAllowSendEmailInterval = redisService.getExpireTime(email);
+        if (remainAllowSendEmailInterval != SetConst.REDIS_EXPIRED) {
             return new PageJsonDTO(AjaxRequestStatus.FAIL, ApiMessage.WATI_TIMER,
-                    SetConst.EMAIL_TIMER, sendEmailRemainInterval / SetConst.THOUSAND);
+                    SetConst.EMAIL_TIMER, remainAllowSendEmailInterval / SetConst.THOUSAND);
         }
 
-        //another thread to send mail
+        //start another thread to send mail
         String token = secretService.getEmailActivateToken(email);
 
         //get email content(if param activateUrl = null, default use neubbs.properties settings)
@@ -351,10 +342,12 @@ public final class AccountController {
     @ResponseBody
     public PageJsonDTO validate(@RequestParam(value = "token", required = false) String token,
                                 HttpServletResponse response) {
+        paramCheckService.check(ParamConst.TOKEN, token);
+
         UserDO activatedUser = userService.alterUserActivateStateByToken(token);
 
         String authentication = secretService.jwtCreateTokenByUser(activatedUser);
-        httpService.saveCookie(response, ParamConst.AUTHENTICATION, authentication, null);
+        httpService.saveAuthenticationCookie(response, authentication);
 
         return new PageJsonDTO(AjaxRequestStatus.SUCCESS);
     }
@@ -394,13 +387,12 @@ public final class AccountController {
     @ResponseBody
     public PageJsonDTO checkCaptcha(@RequestParam(value = "captcha", required = false)String captcha,
                                         HttpServletRequest request) {
-        //check input captcha param norm
         paramCheckService.check(ParamConst.CAPTCHA, captcha);
 
         //get session captcha
         String sessionCaptcha = httpService.getSessionCaptchaText(request);
 
-        //compare user input captcha and session captcha
+        //compare user input captcha match session captcha
         captchaService.judgeInputCaptchaWhetherSessionCaptcha(captcha, sessionCaptcha);
 
         return new PageJsonDTO(AjaxRequestStatus.SUCCESS);
@@ -424,8 +416,10 @@ public final class AccountController {
         userService.alterUserPasswordByEmail(email, randomPassword);
 
         String emailContent = emailService.getEmailContentToWarnUserGeneratedRandomPassword(email, randomPassword);
-        emailService.sendEmail(SetConst.EMAIL_SENDER_NAME, email,
-                SetConst.EMAIL_SUBJECT_TEMPORARY_PASSWORD, emailContent);
+        emailService.sendEmail(
+                SetConst.EMAIL_SENDER_NAME, email,
+                SetConst.EMAIL_SUBJECT_TEMPORARY_PASSWORD, emailContent
+        );
 
         return new PageJsonDTO(AjaxRequestStatus.SUCCESS);
     }

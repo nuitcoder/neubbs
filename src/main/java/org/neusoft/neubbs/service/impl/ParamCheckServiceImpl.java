@@ -2,6 +2,7 @@ package org.neusoft.neubbs.service.impl;
 
 import org.neusoft.neubbs.constant.api.ApiMessage;
 import org.neusoft.neubbs.constant.api.ParamConst;
+import org.neusoft.neubbs.constant.api.SetConst;
 import org.neusoft.neubbs.constant.log.LogWarn;
 import org.neusoft.neubbs.exception.ParamsErrorException;
 import org.neusoft.neubbs.service.IParamCheckService;
@@ -31,6 +32,26 @@ public class ParamCheckServiceImpl implements IParamCheckService {
         }
 
         throw new ParamsErrorException(ApiMessage.PARAM_ERROR).log(LogWarn.PARAM_CHECK_02);
+    }
+
+    @Override
+    public void checkNotNullParamsKeyValue(String... params) {
+        int len = params.length;
+        if (len == SetConst.ZERO || len % SetConst.TWO != 0) {
+            throw new ParamsErrorException(ApiMessage.PARAM_ERROR).log(LogWarn.ACCOUNT_05);
+        }
+
+        int i = SetConst.ONE;
+        while (i < len) {
+            String type = params[i - SetConst.ONE];
+            String value = params[i];
+
+            if (value != null) {
+                this.check(type, value);
+            }
+
+            i += SetConst.TWO;
+        }
     }
 
     @Override

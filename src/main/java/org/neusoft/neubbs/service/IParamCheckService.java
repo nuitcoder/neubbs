@@ -25,6 +25,15 @@ public interface IParamCheckService {
     void checkInstructionOfSpecifyArray(String instructionParam, String... instructionArray);
 
     /**
+     * 检查不为空参数集
+     *      - 统一类型 String
+     *      - 格式 Key1, value1, key2, value2, key3, value3 ...
+     *
+     * @param params 可变参数key-value组合集
+     */
+    void checkNotNullParamsKeyValue(String... params);
+
+    /**
      * 参数集合不能为空
      *      - 使用可变参数
      *

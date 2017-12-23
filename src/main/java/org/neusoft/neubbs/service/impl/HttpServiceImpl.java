@@ -35,11 +35,6 @@ public class HttpServiceImpl implements IHttpService {
     }
 
     @Override
-    public String getCookieValue(HttpServletRequest request, String cookieName) {
-        return CookieUtil.getCookieValue(request, ParamConst.AUTHENTICATION);
-    }
-
-    @Override
     public void saveCookie(HttpServletResponse response, String cookieName, String cookieValue, Integer cookieMaxTime) {
         if (cookieMaxTime == null) {
             cookieMaxTime = neubbsConfig.getCookieAutoLoginMaxAgeDay();
@@ -48,8 +43,28 @@ public class HttpServiceImpl implements IHttpService {
     }
 
     @Override
+    public void saveAuthenticationCookie(HttpServletResponse response, String authentication) {
+       this.saveCookie(response, ParamConst.AUTHENTICATION, authentication, null);
+    }
+
+    @Override
     public void removeCookie(HttpServletRequest request, HttpServletResponse response, String cookieName) {
         CookieUtil.removeCookie(request, response, cookieName);
+    }
+
+    @Override
+    public String getCookieValue(HttpServletRequest request, String cookieName) {
+        return CookieUtil.getCookieValue(request, cookieName);
+    }
+
+    @Override
+    public String getAuthenticationCookieValue(HttpServletRequest request) {
+        return CookieUtil.getCookieValue(request, ParamConst.AUTHENTICATION);
+    }
+
+    @Override
+    public boolean isLoggedInUser(HttpServletRequest request) {
+        return this.getAuthenticationCookieValue(request) != null;
     }
 
     @Override

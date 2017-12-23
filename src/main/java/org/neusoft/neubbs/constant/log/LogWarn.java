@@ -96,4 +96,6 @@ public final class LogWarn {
     /******************************Param Check Service*********************************/
     public static final String PARAM_CHECK_01 = " 需按规定输入相应参数，不能输入空参数";
     public static final String PARAM_CHECK_02 = " 指令无效，请根据相应约定，输入运行范围内指令";
+    public static final String PARAM_CHECK_03 = " 多参数检查（只检查不为空参数），格式错误，"
+            + "请程序猿按照（key1, value1, key2, value2...） 修正";
 }

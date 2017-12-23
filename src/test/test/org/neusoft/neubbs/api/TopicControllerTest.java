@@ -43,7 +43,6 @@ import org.springframework.web.util.NestedServletException;
 
 import javax.servlet.http.Cookie;
 import javax.transaction.Transactional;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -759,9 +758,6 @@ public class TopicControllerTest {
         //before publish reply
         TopicDO beforeTopic = topicDAO.getTopicById(topicId);
         Assert.assertNotNull(beforeTopic);
-        Integer beforeTopicReplies = beforeTopic.getReplies();
-        Integer beforeTopicLastUserId = beforeTopic.getLastreplyuserid();
-        Date beforeTopicLastReplyTime = beforeTopic.getLastreplytime();
 
         MvcResult result = mockMvc.perform(
                 MockMvcRequestBuilders.post("/api/topic/reply")
@@ -779,22 +775,21 @@ public class TopicControllerTest {
         Map modelMap = (Map) resultMap.get("model");
         int replyId = (Integer) modelMap.get("replyid");
 
-        //copare databse reply information
+        //compare database reply information
         TopicReplyDO reply = topicReplyDAO.getTopicReplyById(replyId);
 
         Assert.assertEquals(topicId, (int) reply.getTopicid());
         Assert.assertEquals(content, reply.getContent());
 
         TopicDO afterTopic = topicDAO.getTopicById(reply.getTopicid());
-        Integer afterReplies = afterTopic.getReplies();
-        Integer afterLastReplyUserId = afterTopic.getLastreplyuserid();
-        Date afterLastReplyTime = afterTopic.getLastreplytime();
+        Assert.assertNotNull(afterTopic);
 
-        Assert.assertEquals(beforeTopicReplies + 1, (int) afterReplies);
-        Assert.assertNotEquals(beforeTopicLastUserId, afterLastReplyUserId);
-        Assert.assertNotEquals(beforeTopicLastReplyTime, afterLastReplyTime);
+        //compare insert reply before and after
+        Assert.assertEquals(beforeTopic.getReplies() + 1, (int) afterTopic.getReplies());
+        Assert.assertNotNull(afterTopic.getLastreplyuserid());
+        Assert.assertNotEquals(beforeTopic.getLastreplytime(), afterTopic.getLastreplytime());
 
-        Assert.assertEquals(reply.getCreatetime(), afterLastReplyTime);
+        Assert.assertEquals(reply.getCreatetime(), afterTopic.getLastreplytime());
 
         printSuccessPassTestMehtodMessage();
     }

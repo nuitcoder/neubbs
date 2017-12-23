@@ -84,7 +84,6 @@ public class TopicController {
 
         boolean isAddTopicRead = false;
         if (hadRead != null) {
-            //0-false, 1-true
             paramCheckService.checkInstructionOfSpecifyArray(hadRead, "0", "1");
             isAddTopicRead = SetConst.ONE_S.equals(hadRead);
         }
@@ -97,12 +96,12 @@ public class TopicController {
             topicService.alterTopicReadAddOne(topicIdInt);
         }
 
-        //judge current visit user whether to like this topic
+        //judge current user like topic state(visit user default value of false)
         boolean isCurrentUserLikeThisTopic = false;
-        String authentication = httpService.getCookieValue(request, ParamConst.AUTHENTICATION);
-        if (authentication != null) {
-            UserDO currentUser
-                    = secretService.jwtVerifyTokenByTokenByKey(authentication, SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY);
+        if (httpService.isLoggedInUser(request)) {
+            UserDO currentUser = secretService.jwtVerifyTokenByTokenByKey(
+                    httpService.getAuthenticationCookieValue(request), SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY
+            );
             isCurrentUserLikeThisTopic = userService.isUserLikeTopic(currentUser.getId(), topicIdInt);
         }
 
@@ -120,8 +119,7 @@ public class TopicController {
     @ResponseBody
     public PageJsonDTO topicReply(@RequestParam(value = "replyid", required = false) String replyId) {
         paramCheckService.check(ParamConst.ID, replyId);
-        return new PageJsonDTO(AjaxRequestStatus.SUCCESS,
-                topicService.getReplyPageModelMap(Integer.parseInt(replyId)));
+        return new PageJsonDTO(AjaxRequestStatus.SUCCESS, topicService.getReplyPageModelMap(Integer.parseInt(replyId)));
     }
 
     /**
@@ -151,19 +149,14 @@ public class TopicController {
                                   @RequestParam(value = "username", required = false) String username) {
         paramCheckService.check(ParamConst.NUMBER, page);
 
-        //judge whether input limit param
-        int inputLimit = SetConst.ZERO;
-        if (limit != null) {
-            paramCheckService.check(ParamConst.NUMBER, limit);
-            inputLimit = Integer.parseInt(limit);
-        }
-        if (category != null) {
-            paramCheckService.check(ParamConst.TOPIC_CATEGORY_NICK, category);
-        }
-        if (username != null) {
-            paramCheckService.check(ParamConst.USERNAME, username);
-        }
+        //judge input param(limit, category, username), if no input, user the default value
+        paramCheckService.checkNotNullParamsKeyValue(
+                ParamConst.NUMBER, limit,
+                ParamConst.TOPIC_CATEGORY_NICK, category,
+                ParamConst.USERNAME, username
+        );
 
+        int inputLimit = limit != null ? Integer.parseInt(limit) : SetConst.ZERO;
         return new PageJsonListDTO(AjaxRequestStatus.SUCCESS,
                 topicService.listTopics(inputLimit, Integer.parseInt(page), category, username));
     }
@@ -180,19 +173,13 @@ public class TopicController {
     public PageJsonDTO topicsPages(@RequestParam(value = "limit", required = false) String limit,
                                    @RequestParam(value = "category", required = false) String category,
                                    @RequestParam(value = "username", required = false) String username) {
-        //judge whether input limit param
-        int inputLimit = SetConst.ZERO;
-        if (limit != null) {
-            paramCheckService.check(ParamConst.NUMBER, limit);
-            inputLimit = Integer.parseInt(limit);
-        }
-        if (category != null) {
-            paramCheckService.check(ParamConst.TOPIC_CATEGORY_NICK, category);
-        }
-        if (username != null) {
-            paramCheckService.check(ParamConst.USERNAME, username);
-        }
+        paramCheckService.checkNotNullParamsKeyValue(
+                ParamConst.NUMBER, limit,
+                ParamConst.TOPIC_CATEGORY_NICK, category,
+                ParamConst.USERNAME, username
+        );
 
+        int inputLimit = limit != null ? Integer.parseInt(limit) : SetConst.ZERO;
         return new PageJsonDTO(AjaxRequestStatus.SUCCESS,
                 ParamConst.TOTAL_PAGES, topicService.countTopicTotalPages(inputLimit, category, username));
     }
@@ -200,11 +187,11 @@ public class TopicController {
     /**
      * 获取话题分类信息
      *
-     * @return ResposneJsonDTO 页面JSON传输数据
+     * @return PageJsonListDTO 页面JSON传输数据
      */
     @RequestMapping(value = "/topics/categorys", method = RequestMethod.GET)
     @ResponseBody
-    public PageJsonListDTO topicCategorys() {
+    public PageJsonListDTO topicCategories() {
         return new PageJsonListDTO(AjaxRequestStatus.SUCCESS,  topicService.listAllTopicCategorys());
     }
 
@@ -227,39 +214,36 @@ public class TopicController {
         paramCheckService.check(ParamConst.TOPIC_TITLE, title);
         paramCheckService.check(ParamConst.TOPIC_CONTENT, topicContent);
 
-        //cookie get userid
-        String authentication = httpService.getCookieValue(request, ParamConst.AUTHENTICATION);
-        UserDO cookieUser
-                = secretService.jwtVerifyTokenByTokenByKey(authentication, SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY);
+        UserDO cookieUser = secretService.jwtVerifyTokenByTokenByKey(
+                httpService.getAuthenticationCookieValue(request), SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY
+        );
 
-        //database execute insert topic
         int topicId = topicService.saveTopic(cookieUser.getId(), category, title, topicContent);
+
         return new PageJsonDTO(AjaxRequestStatus.SUCCESS, ParamConst.TOPIC_ID, topicId);
     }
 
     /**
      * 发布回复
      *
-     * @param requetBodyParamsMap request-body内JSON数据
+     * @param requestBodyParamsMap request-body内JSON数据
      * @param request http请求
      * @return PageJsonDTO 页面JSON传输对象
      */
     @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/topic/reply", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
-    public PageJsonDTO saveReply(@RequestBody Map<String, Object> requetBodyParamsMap, HttpServletRequest request) {
-        Integer topicId = (Integer) requetBodyParamsMap.get(ParamConst.TOPIC_ID);
-        String replyContent = (String) requetBodyParamsMap.get(ParamConst.CONTENT);
+    public PageJsonDTO saveReply(@RequestBody Map<String, Object> requestBodyParamsMap, HttpServletRequest request) {
+        Integer topicId = (Integer) requestBodyParamsMap.get(ParamConst.TOPIC_ID);
+        String replyContent = (String) requestBodyParamsMap.get(ParamConst.CONTENT);
 
         paramCheckService.check(ParamConst.ID, String.valueOf(topicId));
         paramCheckService.check(ParamConst.REPLY_CONTENT, replyContent);
 
-        //cookie get userid
-        String authentication = httpService.getCookieValue(request, ParamConst.AUTHENTICATION);
-        UserDO cookieUser
-                = secretService.jwtVerifyTokenByTokenByKey(authentication, SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY);
+        UserDO cookieUser = secretService.jwtVerifyTokenByTokenByKey(
+                httpService.getAuthenticationCookieValue(request), SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY
+        );
 
-        //database execute insert topic
         int replyId = topicService.saveReply(cookieUser.getId(), topicId, replyContent);
         return new PageJsonDTO(AjaxRequestStatus.SUCCESS, ParamConst.REPLY_ID, replyId);
     }
@@ -293,7 +277,7 @@ public class TopicController {
     @RequestMapping(value = "/topic/reply-remove", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
     public PageJsonDTO topicReplyRemove(@RequestBody Map<String, Object> requestBodyParamsMap) {
-        int replyId = (Integer) requestBodyParamsMap.get(ParamConst.REPLY_ID);
+        Integer replyId = (Integer) requestBodyParamsMap.get(ParamConst.REPLY_ID);
 
         paramCheckService.check(ParamConst.ID, String.valueOf(replyId));
 
@@ -365,20 +349,17 @@ public class TopicController {
        paramCheckService.check(ParamConst.TOPIC_ID, String.valueOf(topicId));
        paramCheckService.checkInstructionOfSpecifyArray(command, SetConst.INC, SetConst.DEC);
 
-       //get cookie user id
-       String authentication = httpService.getCookieValue(request, ParamConst.AUTHENTICATION);
-       UserDO cookieUser
-               = secretService.jwtVerifyTokenByTokenByKey(authentication, SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY);
-       int userId = cookieUser.getId();
+       UserDO cookieUser = secretService.jwtVerifyTokenByTokenByKey(
+               httpService.getAuthenticationCookieValue(request), SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY
+       );
 
-       //alter topic like
-       boolean isCurrentUserLikeTopic = userService.isUserLikeTopic(userId, topicId);
+       //judge cuurent user like topic, according the command('inc', 'dec'), alter like of topic
+       boolean isCurrentUserLikeTopic = userService.isUserLikeTopic(cookieUser.getId(), topicId);
        int currentTopicLike = topicService.alterTopicLikeByInstruction(isCurrentUserLikeTopic, topicId, command);
 
-       //alter user action
-       userService.alterUserActionLikeTopicIdArray(userId, topicId, command);
+       //record user like topic id array of user action
+       userService.alterUserActionLikeTopicIdArray(cookieUser.getId(), topicId, command);
 
-       //return database latest topic like
        return new PageJsonDTO(AjaxRequestStatus.SUCCESS, ParamConst.LIKE, currentTopicLike);
    }
 }
