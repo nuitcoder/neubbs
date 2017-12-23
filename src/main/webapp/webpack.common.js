@@ -12,6 +12,9 @@ module.exports = {
       'dva',
       'react',
       'react-dom',
+      'highlight.js',
+      'codemirror',
+      'lodash',
     ]
   },
   output: {
@@ -49,10 +52,10 @@ module.exports = {
       name: 'vendor',
       filename: 'vendor.js',
     }),
-    new BundleAnalyzerPlugin({
-      analyzerMode: 'static',
-      reportFilename: path.resolve(__dirname, 'report.html'),
-      openAnalyzer: false,
-    }),
+    // new BundleAnalyzerPlugin({
+      // analyzerMode: 'static',
+      // reportFilename: path.resolve(__dirname, 'report.html'),
+      // openAnalyzer: false,
+    // }),
   ],
 }

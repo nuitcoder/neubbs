@@ -6,7 +6,6 @@ import { FormattedMessage } from 'react-intl'
 
 import FormWrapper from '../components/FormWrapper'
 import RegisterForm from '../components/RegisterForm'
-import * as routes from '../config/routes'
 
 const RegisterPage = (props) => {
   const handleSubmit = ({ username, email, password }) => {
@@ -14,10 +13,6 @@ const RegisterPage = (props) => {
       type: 'login/register',
       payload: { username, email, password },
     })
-  }
-
-  if (props.loggedIn) {
-    props.history.push(routes.ROOT)
   }
 
   return (
@@ -35,16 +30,13 @@ const RegisterPage = (props) => {
 }
 
 RegisterPage.propTypes = {
-  loggedIn: PropTypes.bool.isRequired,
   message: PropTypes.string.isRequired,
   dispatch: PropTypes.func.isRequired,
-  history: PropTypes.object.isRequired,
 }
 
 const mapStatetoProps = (state) => {
-  const { loggedIn, registerMessage } = state.login
+  const { registerMessage } = state.login
   return {
-    loggedIn,
     message: registerMessage,
   }
 }

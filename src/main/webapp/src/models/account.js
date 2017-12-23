@@ -1,4 +1,5 @@
 import { parse } from 'qs'
+import pathToRegexp from 'path-to-regexp'
 import { routerRedux } from 'dva/router'
 
 import account from '../services/account'
@@ -19,6 +20,12 @@ export default {
         if (pathname === routes.ACCOUNT_VALIDATE) {
           const { token } = parse(search.substr(1))
           dispatch({ type: 'validate', payload: { token } })
+        } else {
+          const accountRe = pathToRegexp(routes.ACCOUNT_HOME)
+          if (accountRe.test(pathname)) {
+            const username = accountRe.exec(pathname)[1]
+            dispatch({ type: 'query', payload: { username } })
+          }
         }
       })
     },
@@ -26,7 +33,7 @@ export default {
 
   effects: {
     * query(action, { put, call }) {
-      const { username, isCurrent } = action.payload
+      const { username, isCurrent = false } = action.payload
       const { data } = yield call(account.query, { username })
       try {
         if (data.success) {

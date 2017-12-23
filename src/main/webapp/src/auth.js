@@ -22,10 +22,7 @@ const auth = {
   },
 
   login({ username, password }) {
-    return account.login(
-      username,
-      password,
-    ).then((response) => {
+    return account.login({ username, password }).then((response) => {
       const rdata = response.data
 
       if (rdata.success) {
@@ -42,7 +39,7 @@ const auth = {
   },
 
   activate({ username }) {
-    return account.activate(username)
+    return account.activate({ username })
       .then((response) => {
         return response
       })
@@ -64,11 +61,11 @@ const auth = {
   },
 
   resgister({ username, email, password }) {
-    return account.register(
+    return account.register({
       username,
       email,
       password,
-    ).then((response) => {
+    }).then((response) => {
       const rdata = response.data
       if (rdata.success) {
         return auth.login({ username, password })

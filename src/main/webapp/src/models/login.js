@@ -1,4 +1,7 @@
+import { routerRedux } from 'dva/router'
+
 import auth from '../auth'
+import * as routes from '../config/routes'
 
 export default {
   namespace: 'login',
@@ -11,6 +14,14 @@ export default {
   },
 
   subscriptions: {
+    setup({ dispatch, history }) {
+      history.listen(({ pathname }) => {
+        if (pathname === routes.LOGIN ||
+            pathname === routes.REGISTER) {
+          dispatch({ type: 'clearError' })
+        }
+      })
+    },
   },
 
   effects: {
@@ -87,6 +98,14 @@ export default {
       return {
         ...state,
         registerMessage: message,
+      }
+    },
+
+    clearError(state) {
+      return {
+        ...state,
+        loginMessage: '',
+        registerMessage: '',
       }
     },
   },
