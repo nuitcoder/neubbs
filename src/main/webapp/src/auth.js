@@ -66,10 +66,6 @@ const auth = {
       email,
       password,
     }).then((response) => {
-      const rdata = response.data
-      if (rdata.success) {
-        return auth.login({ username, password })
-      }
       return response
     })
   },

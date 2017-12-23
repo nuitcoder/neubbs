@@ -59,6 +59,7 @@ export default {
       try {
         if (data.success) {
           yield put({ type: 'registerSuccess', payload: { username } })
+          yield put({ type: 'login', payload: { username, password } })
           yield put({ type: 'account/query', payload: { username, isCurrent: true } })
         } else {
           yield put({ type: 'registerError', payload: data })

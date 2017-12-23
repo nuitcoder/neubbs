@@ -9,5 +9,10 @@
     "react",
     "stage-1"
   ],
+  "env": {
+    "production": {
+      "presets": ["react-optimize"]
+    }
+  },
   "plugins": ["babel-plugin-styled-components"]
 }
