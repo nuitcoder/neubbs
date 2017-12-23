@@ -1,5 +1,7 @@
 package org.neusoft.neubbs.entity;
 
+import org.neusoft.neubbs.constant.api.SetConst;
+
 import java.util.Date;
 
 /**
@@ -28,6 +30,16 @@ public class UserDO {
     private Integer state;
 
     private Date createtime;
+
+    /**
+     * Constructor
+     */
+    public UserDO() {
+        this.sex = SetConst.NEGATIVE_ONE;
+        this.birthday = "";
+        this.position = "";
+        this.description = "";
+    }
 
     /**
      * Getter
