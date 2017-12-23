@@ -18,7 +18,7 @@ export default {
    * @param {String} password
    * @returns {Promise}
    */
-  login(username, password) {
+  login({ username, password }) {
     return axios.post(LOGIN_URL, { username, password })
   },
 
@@ -36,7 +36,7 @@ export default {
    *
    * @returns {Promise}
    */
-  register(username, email, password) {
+  register({ username, email, password }) {
     return axios.post(REGISTER_URL, {
       username,
       email,
@@ -50,7 +50,7 @@ export default {
    * @param {String} username
    * @returns {Promise}
    */
-  uniqueByName(username) {
+  uniqueByName({ username }) {
     return axios.get(ACCOUNT_URL, {
       params: {
         username,
@@ -64,7 +64,7 @@ export default {
    * @param {String} email
    * @returns {Promise}
    */
-  uniqueByEmail(email) {
+  uniqueByEmail({ email }) {
     return axios.get(ACCOUNT_URL, {
       params: {
         email,
@@ -77,7 +77,7 @@ export default {
    *
    * @returns {Promise}
    */
-  activate(username) {
+  activate({ username }) {
     return axios.get(ACTIVATE_STATE_URL, {
       params: {
         username,
@@ -90,7 +90,7 @@ export default {
    *
    * @returns {Promise}
    */
-  query(username) {
+  query({ username }) {
     return axios.get(ACCOUNT_URL, {
       params: {
         username,
@@ -105,7 +105,7 @@ export default {
    * @param {String} email
    * @returns {Promise}
    */
-  updateEmail(username, email) {
+  updateEmail({ username, email }) {
     return axios.post(UPDATE_EMAIL_URL, { username, email })
   },
 
@@ -115,7 +115,7 @@ export default {
    * @param {String} email
    * @returns {Promise}
    */
-  sendActivateEmail(email) {
+  sendActivateEmail({ email }) {
     return axios.post(SEND_ACTIVATE_EMAIL_URL, { email })
   },
 
@@ -125,7 +125,7 @@ export default {
    * @param {String} token
    * @returns {Promise}
    */
-  validate(token) {
+  validate({ token }) {
     return axios.get(VALIDATE_ACCOUNT_URL, {
       params: {
         token,

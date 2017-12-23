@@ -27,7 +27,7 @@ export default {
   effects: {
     * query(action, { put, call }) {
       const { username, isCurrent } = action.payload
-      const { data } = yield call(account.query, username)
+      const { data } = yield call(account.query, { username })
       try {
         if (data.success) {
           yield put({
@@ -44,7 +44,7 @@ export default {
 
     * validate(action, { put, call }) {
       const { token } = action.payload
-      const { data } = yield call(account.validate, token)
+      const { data } = yield call(account.validate, { token })
       try {
         if (data.success) {
           yield put(routerRedux.push(`${routes.ROOT}?ref=validate_success`))
@@ -56,7 +56,7 @@ export default {
 
     * updateEmail(action, { put, call }) {
       const { username, email } = action.payload
-      const { data } = yield call(account.updateEmail, username, email)
+      const { data } = yield call(account.updateEmail, { username, email })
       try {
         if (data.success) {
           yield put({ type: 'changeEmail', payload: { username, email } })
@@ -71,7 +71,7 @@ export default {
 
     * sendActivateEmail(action, { put, call }) {
       const { email } = action.payload
-      const { data } = yield call(account.sendActivateEmail, email)
+      const { data } = yield call(account.sendActivateEmail, { email })
       try {
         if (data.success) {
           yield put({

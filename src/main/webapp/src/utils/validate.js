@@ -115,7 +115,7 @@ export const uniqueAsync = (values, dispatch, props) => {
   return new Promise((resolve, reject) => {
     const uniqueUsername = () => {
       if (username !== '') {
-        return account.uniqueByName(username)
+        return account.uniqueByName({ username })
       }
       return Promise.resolve(false)
     }
@@ -126,7 +126,7 @@ export const uniqueAsync = (values, dispatch, props) => {
         return Promise.resolve(false)
       }
       if (email !== '') {
-        return account.uniqueByEmail(email)
+        return account.uniqueByEmail({ email })
       }
       return Promise.resolve(false)
     }
