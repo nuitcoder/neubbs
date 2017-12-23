@@ -1,8 +1,11 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
-import { Panel } from 'react-bootstrap'
-import { FormattedMessage } from 'react-intl'
+import { Col, Panel } from 'react-bootstrap'
+import { FormattedMessage, FormattedRelative } from 'react-intl'
+import _ from 'lodash'
+
+import Loader from './Loader'
 
 const StyledPanel = styled(Panel)`
   padding: 0;
@@ -65,10 +68,17 @@ const DetailItem = styled.div`
 const DetailLabel = styled.span`
   width: 60px;
   margin-right: 30px;
+  font-weight: 600;
 `
 
 const DetailValue = styled.span`
   font-weight: 400;
+`
+
+const JoinTime = styled.div`
+  margin: 10px 0;
+  color: #999;
+  font-size: 14px;
 `
 
 const AccountInfo = (props) => {
@@ -83,6 +93,14 @@ const AccountInfo = (props) => {
 
     const messageId = user.sex ? 'account.info.sex.male' : 'account.info.sex.female'
     return <FormattedMessage id={messageId} />
+  }
+
+  if (_.isEmpty(user)) {
+    return (
+      <Col md={12}>
+        <Loader size={10} />
+      </Col>
+    )
   }
 
   return (
@@ -112,6 +130,14 @@ const AccountInfo = (props) => {
             {user.position || unknowValue}
           </DetailValue>
         </DetailItem>
+        <JoinTime>
+          <FormattedMessage
+            id="account.info.createtime"
+            values={{
+              time: <FormattedRelative value={user.createtime} />,
+            }}
+          />
+        </JoinTime>
       </Right>
     </StyledPanel>
   )
