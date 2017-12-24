@@ -75,7 +75,9 @@ public final class ParamConst {
     public static final String INSTRUCTION = "instruction";
     public static final String COMMAND = "command";
 
+    public static final String USER_LIKE_TOPIC_ID = "userLikeTopicId";
     public static final String USER_COLLECT_TOPIC_ID = "userCollectTopicId";
+    public static final String USER_ATTENTION_TOPIC_ID = "userAttentionTopicId";
 
     /**
      * Reply

@@ -220,6 +220,12 @@ public class TopicServiceImpl implements ITopicService {
     }
 
     @Override
+    public int countTopicContentLike(int topicId) {
+        TopicContentDO topicContent = this.getTopicContentNotNull(topicId);
+        return topicContent.getLike();
+    }
+
+    @Override
     public Map<String, Object> getTopicContentPageModelMap(int topicId) {
         TopicDO topic = this.getTopicNotNull(topicId);
         TopicContentDO topicContent = this.getTopicContentNotNull(topicId);
@@ -419,9 +425,17 @@ public class TopicServiceImpl implements ITopicService {
     }
 
     @Override
+    public boolean isLikeTopic(int userId, int topicId) {
+        this.confirmUserAndTopicNotNull(userId, topicId);
+
+        return JsonUtil.isJsonArrayStringExistIntElement(
+                this.getUserLikeTopicIdJsonArrayStringByUserId(userId), topicId
+        );
+    }
+
+    @Override
     public boolean isCollectTopic(int userId, int topicId) {
-        this.getUserNotNullById(userId);
-        this.getTopicNotNull(topicId);
+        this.confirmUserAndTopicNotNull(userId, topicId);
 
         return JsonUtil.isJsonArrayStringExistIntElement(
                 this.getUserCollectTopicIdJsonArrayStringByUserId(userId), topicId
@@ -429,37 +443,55 @@ public class TopicServiceImpl implements ITopicService {
     }
 
     @Override
+    public boolean isAttentionTopic(int userId, int topicId) {
+        this.confirmUserAndTopicNotNull(userId, topicId);
+
+        return JsonUtil.isJsonArrayStringExistIntElement(
+                this.getUserAttentionTopicIdJsonArrayStringByUserId(userId), topicId
+        );
+    }
+
+    @Override
+    public List<Integer> operateLikeTopic(int userId, int topicId) {
+        // isLikeTopic() already checked 'userId' and 'topicId'
+
+        //true -> do 'dec', false -> do 'inc'
+        if (this.isLikeTopic(userId, topicId)) {
+            this.decUserLikeTopicToUpdateDatabase(userId, topicId);
+        } else {
+            this.incUserLikeTopicToUpdateDatabase(userId, topicId);
+        }
+
+        return JsonUtil.changeJsonArrayStringToIntegerList(this.getUserLikeTopicIdJsonArrayStringByUserId(userId));
+    }
+
+    @Override
     public List<Integer> operateCollectTopic(int userId, int topicId) {
         //isCollectTopic() already checked 'userId' and 'topicId'
 
-        //true -> do 'inc' , false -> do 'dec'
+        //true -> do 'dec' , false -> do 'inc'
         if (this.isCollectTopic(userId, topicId)) {
-            //alter forum_user_action （userId ~ topicId）
-            String userCollectJsonArrayString = this.getUserCollectTopicIdJsonArrayStringByUserId(userId);
-            int topicIdIndex = JsonUtil.getJsonArrayStringForIntElementIndex(userCollectJsonArrayString, topicId);
-            if (userActionDAO.updateCollectTopicIdJsonArrayByIndexToRemoveOneTopicId(userId, topicIdIndex) == 0) {
-                throwUserOperateTopicFailException(SetConst.COLLECT_DEC);
-            }
-
-            //forum_topic_action cut (topicId ~ userId)
-            String topicCollectJsonArrayString = this.getTopicCollectUserIdJsonArrayStringByTopicId(topicId);
-            int userIdIndex = JsonUtil.getJsonArrayStringForIntElementIndex(topicCollectJsonArrayString, userId);
-            if (topicActionDAO.updateCollectUserIdJsonArrayByIndexToRemoveOneUserId(topicId, userIdIndex) == 0) {
-                throwTopicOperateFailException(SetConst.COLLECT_USER_DEC);
-            }
+            this.decUserCollectTopicToUpdateDatabase(userId, topicId);
         } else {
-            if (userActionDAO.updateCollectTopicIdJsonArrayByOneTopicIdToAppendEnd(userId, topicId) == 0) {
-                throwUserOperateTopicFailException(SetConst.COLLECT_INC);
-            }
-
-            if (topicActionDAO.updateCollectUserIdJsonArrayByOneUserIdToAppendEnd(topicId, userId) == 0) {
-                throwTopicOperateFailException(SetConst.COLLECT_USER_INC);
-            }
+            this.incUserCollectTopicToUpdateDatabase(userId, topicId);
         }
 
-        return JsonUtil.changeJsonArrayStringToIntegerList(
-                userActionDAO.getUserActionCollectTopicIdJsonArray(userId).getCollectTopicIdJsonArray()
-        );
+        return JsonUtil.changeJsonArrayStringToIntegerList(this.getUserCollectTopicIdJsonArrayStringByUserId(userId));
+    }
+
+    @Override
+    public List<Integer> operateAttentionTopic(int userId, int topicId) {
+        // isAttentionTopic() already checked 'userId' and 'topicId'
+
+        //true -> do 'dec', false -> do 'inc'
+        if (this.isAttentionTopic(userId, topicId)) {
+            this.decUserAttentionTopicToUpdateDatabase(userId, topicId);
+        } else {
+            this.incUseAttentionTopicToUpdateDatabase(userId, topicId);
+
+        }
+
+        return JsonUtil.changeJsonArrayStringToIntegerList(this.getUserAttentionTopicIdJsonArrayStringByUserId(userId));
     }
 
     /*
@@ -467,6 +499,138 @@ public class TopicServiceImpl implements ITopicService {
      * private method
      * ***********************************************
      */
+
+    /*
+     * ***********************************************
+     * database operate method (update forum_user_action and forum_topic_action)
+     *      - user like topic
+     *      - user collect topic
+     *      - user attention topic
+     * ***********************************************
+     */
+
+    /**
+     * inc 用户喜欢话题
+     *
+     * @param userId 用户id
+     * @param topicId 话题id
+     */
+    private void incUserLikeTopicToUpdateDatabase(int userId, int topicId) {
+        //alter forum_user_action
+        if (userActionDAO.updateLikeTopicIdJsonArrayByOneTopicIdToAppendEnd(userId, topicId) == 0) {
+            this.throwUserOperateTopicFailException(SetConst.LIKE_INC);
+        }
+
+        //alter forum_topic_action
+        if (topicActionDAO.updateLikeUserIdJsonArrayByOneUserIdToAppendEnd(topicId, userId) == 0) {
+            this.throwTopicOperateFailException(SetConst.LIKE_USER_INC);
+        }
+
+        //alter forum_topic_content like +1
+        if (topicContentDAO.updateLikeAddOneByTopicId(topicId) == 0) {
+            this.throwNoTopicContentException(topicId);
+        }
+    }
+
+    /**
+     * dec 用户喜欢话题
+     *
+     * @param userId 用户id
+     * @param topicId 话题id
+     */
+    private void decUserLikeTopicToUpdateDatabase(int userId, int topicId) {
+        //alter forum_user_action
+        String likeTopicJsonArrayString = this.getUserLikeTopicIdJsonArrayStringByUserId(userId);
+        int topicIdInex = JsonUtil.getJsonArrayStringForIntElementIndex(likeTopicJsonArrayString, topicId);
+        if (userActionDAO.updateLikeTopicIdJsonArrayByIndexToRemoveOneTopicId(userId, topicIdInex) == 0) {
+            this.throwUserOperateTopicFailException(SetConst.LIKE_DEC);
+        }
+
+        //alter forum_topic_action
+        String likedUserJsonArrayString = this.getTopicLikeUserIdJsonArrayStringByTopicId(topicId);
+        int userIdIndex = JsonUtil.getJsonArrayStringForIntElementIndex(likedUserJsonArrayString, userId);
+        if (topicActionDAO.updateLikeUserIdJsonArrayByIndexToRemoveOneUserId(topicId, userIdIndex) == 0) {
+            this.throwTopicOperateFailException(SetConst.LIKE_USER_DEC);
+        }
+
+        //alter forum_topic_content like -1
+        if (topicContentDAO.updateLikeCutOneByTopicId(topicId) == 0) {
+            this.throwNoTopicContentException(topicId);
+        }
+    }
+
+    /**
+     * inc 用户收藏话题
+     *
+     * @param userId 用户id
+     * @param topicId 话题id
+     */
+    private void incUserCollectTopicToUpdateDatabase(int userId, int topicId) {
+        if (userActionDAO.updateCollectTopicIdJsonArrayByOneTopicIdToAppendEnd(userId, topicId) == 0) {
+            throwUserOperateTopicFailException(SetConst.COLLECT_INC);
+        }
+
+        if (topicActionDAO.updateCollectUserIdJsonArrayByOneUserIdToAppendEnd(topicId, userId) == 0) {
+            throwTopicOperateFailException(SetConst.COLLECT_USER_INC);
+        }
+    }
+
+    /**
+     * dec 用户收藏话题
+     *
+     * @param userId 用户id
+     * @param topicId 话题id
+     */
+    private void decUserCollectTopicToUpdateDatabase(int userId, int topicId) {
+        String userCollectJsonArrayString = this.getUserCollectTopicIdJsonArrayStringByUserId(userId);
+        int topicIdIndex = JsonUtil.getJsonArrayStringForIntElementIndex(userCollectJsonArrayString, topicId);
+        if (userActionDAO.updateCollectTopicIdJsonArrayByIndexToRemoveOneTopicId(userId, topicIdIndex) == 0) {
+            this.throwUserOperateTopicFailException(SetConst.COLLECT_DEC);
+        }
+
+        String topicCollectJsonArrayString = this.getTopicCollectUserIdJsonArrayStringByTopicId(topicId);
+        int userIdIndex = JsonUtil.getJsonArrayStringForIntElementIndex(topicCollectJsonArrayString, userId);
+        if (topicActionDAO.updateCollectUserIdJsonArrayByIndexToRemoveOneUserId(topicId, userIdIndex) == 0) {
+            this.throwTopicOperateFailException(SetConst.COLLECT_USER_DEC);
+        }
+    }
+
+    /**
+     * inc 用户关注话题
+     *
+     * @param userId 用户id
+     * @param topicId 话题id
+     */
+    private void incUseAttentionTopicToUpdateDatabase(int userId, int topicId) {
+        if (userActionDAO.updateAttentionTopicIdJsonArrayByOneTopicIdToAppendEnd(userId, topicId) == 0) {
+            this.throwUserOperateTopicFailException(SetConst.ATTENTION_INC);
+        }
+
+        if (topicActionDAO.updateAttentionUserIdJsonArrayByOneUserIdToAppendEnd(topicId, userId) == 0) {
+            this.throwTopicOperateFailException(SetConst.ATTENTION_INC);
+        }
+    }
+
+    /**
+     * dec 用户关注话题
+     *
+     * @param userId 用户id
+     * @param topicId 话题id
+     */
+    private void decUserAttentionTopicToUpdateDatabase(int userId, int topicId) {
+        String attentionTopicJsonArrayString = this.getUserAttentionTopicIdJsonArrayStringByUserId(userId);
+        int topicIdIndex = JsonUtil.getJsonArrayStringForIntElementIndex(attentionTopicJsonArrayString, topicId);
+        if (userActionDAO.updateAttentionTopicIdJsonArrayByIndexToRemoveOneTopicId(userId, topicIdIndex) == 0) {
+            this.throwUserOperateTopicFailException(SetConst.ATTENTION_DEC);
+        }
+
+        String attentionedUserJsonArrayString = this.getTopicAttentionUserIdJsonArrayStringByTopicId(topicId);
+        int userIdIndex = JsonUtil.getJsonArrayStringForIntElementIndex(attentionedUserJsonArrayString, userId);
+        if (topicActionDAO.updateAttentionUserIdJsonArrayByIndexToRemoveOneUserId(topicId, userIdIndex) == 0) {
+            this.throwTopicOperateFailException(SetConst.ATTENTION_USER_DEC);
+        }
+    }
+
 
     /*
      * ***********************************************
@@ -549,6 +713,17 @@ public class TopicServiceImpl implements ITopicService {
         if (topicNumber == SetConst.ZERO) {
             throw new TopicErrorException(ApiMessage.NO_QUERY_TOPICS).log(LogWarn.TOPIC_18);
         }
+    }
+
+    /**
+     * 确认用户和话题不能未空
+     *
+     * @param userId 用户id
+     * @param topicId 话题id
+     */
+    private void confirmUserAndTopicNotNull(int userId, int topicId) {
+        this.getUserNotNullById(userId);
+        this.getTopicNotNull(topicId);
     }
 
     /*
@@ -768,6 +943,16 @@ public class TopicServiceImpl implements ITopicService {
     }
 
     /**
+     * 获取用户喜欢话题 id JSON 数组字符串
+     *
+     * @param userId 用户id
+     * @return String 用户喜欢话题idJSON数组字符串
+     */
+    private String getUserLikeTopicIdJsonArrayStringByUserId(int userId) {
+        return userActionDAO.getUserActionLikeTopicIdJsonArray(userId).getLikeTopicIdJsonArray();
+    }
+
+    /**
      * 获取用户收藏话题 id JSON 数组字符串
      *
      * @param userId 用户id
@@ -778,6 +963,26 @@ public class TopicServiceImpl implements ITopicService {
     }
 
     /**
+     * 获取用户关注话题 id JSON 数组字符串
+     *
+     * @param userId 用户id
+     * @return String 用户关注话题idJSON数组字符串
+     */
+    private String getUserAttentionTopicIdJsonArrayStringByUserId(int userId) {
+        return userActionDAO.getUserActionAttentionTopicIdJsonArray(userId).getAttentionTopicIdJsonArray();
+    }
+
+    /**
+     * 获取话题被喜欢用户 id JSON 数组字符串
+     *
+     * @param topicId 话题id
+     * @return String 话题被喜欢用户idJSON数组字符串
+     */
+    private String getTopicLikeUserIdJsonArrayStringByTopicId(int topicId) {
+        return topicActionDAO.getTopicActionLikeUserIdJsonArray(topicId).getLikeUserIdJsonArray();
+    }
+
+    /**
      * 获取话题被收藏用户 id JSON 数组字符串
      *
      * @param topicId 话题id
@@ -785,6 +990,16 @@ public class TopicServiceImpl implements ITopicService {
      */
     private String getTopicCollectUserIdJsonArrayStringByTopicId(int topicId) {
         return topicActionDAO.getTopicActionCollectUserIdJsonArray(topicId).getCollectUserIdJsonArray();
+    }
+
+    /**
+     * 获取话题被关注用户 id JSON 数组字符串
+     *
+     * @param topicId 话题id
+     * @return String 话题被关注用户idJSON数组字符串
+     */
+    private String getTopicAttentionUserIdJsonArrayStringByTopicId(int topicId) {
+        return topicActionDAO.getTopicActionAttentionUserIdJsonArray(topicId).getAttentionUserIdJsonArray();
     }
 
     /*

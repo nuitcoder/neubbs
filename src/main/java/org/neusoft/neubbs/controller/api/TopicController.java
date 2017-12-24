@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -41,7 +42,9 @@ import java.util.Map;
  *      修改话题内容
  *      修改回复内容
  *      话题点赞
+ *      话题点赞（新接口）
  *      话题收藏
+ *      话题关注
  *
  *
  * @author Suvan
@@ -369,6 +372,31 @@ public class TopicController {
    }
 
     /**
+     * 点赞话题（新接口）
+     *
+     * @param requestBodyParamsMap rquest-body内JSON数据
+     * @param request http请求
+     * @return PageJsonDTO 页面JSON传输对象
+     */
+    @LoginAuthorization @AccountActivation
+    @RequestMapping(value = "/topic/newlike", method = RequestMethod.POST, consumes = "application/json")
+    @ResponseBody
+    public PageJsonDTO like(@RequestBody Map<String, Object> requestBodyParamsMap, HttpServletRequest request) {
+        Integer topicId = (Integer) requestBodyParamsMap.get(ParamConst.TOPIC_ID);
+
+        paramCheckService.check(ParamConst.TOPIC_ID, String.valueOf(topicId));
+
+        UserDO cookieUser = secretService.jwtVerifyTokenByTokenByKey(
+                httpService.getAuthenticationCookieValue(request), SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY
+        );
+
+        Map<String, Object> resultMap = new LinkedHashMap<>(SetConst.SIZE_TWO);
+            resultMap.put(ParamConst.USER_LIKE_TOPIC_ID, topicService.operateLikeTopic(cookieUser.getId(), topicId));
+            resultMap.put(ParamConst.LIKE, topicService.countTopicContentLike(topicId));
+        return new PageJsonDTO(AjaxRequestStatus.SUCCESS, resultMap);
+    }
+
+    /**
      * 收藏话题
      *
      * @param requestBodyParamsMap request-body内JSON数据
@@ -389,5 +417,28 @@ public class TopicController {
 
         return new PageJsonDTO(AjaxRequestStatus.SUCCESS,
                 ParamConst.USER_COLLECT_TOPIC_ID, topicService.operateCollectTopic(cookieUser.getId(), topicId));
+    }
+
+    /**
+     * 关注话题
+     *
+     * @param requestBodyParamsMap request-body内JSON数据
+     * @param request http请求
+     * @return PageJsonDTO 页面JSON传输对象
+     */
+    @LoginAuthorization @AccountActivation
+    @RequestMapping(value = "/topic/attention", method = RequestMethod.POST, consumes = "application/json")
+    @ResponseBody
+    public PageJsonDTO attention(@RequestBody Map<String, Object> requestBodyParamsMap, HttpServletRequest request) {
+        Integer topicId = (Integer) requestBodyParamsMap.get(ParamConst.TOPIC_ID);
+
+        paramCheckService.check(ParamConst.TOPIC_ID, String.valueOf(topicId));
+
+        UserDO cookieUser = secretService.jwtVerifyTokenByTokenByKey(
+                httpService.getAuthenticationCookieValue(request), SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY
+        );
+
+        return new PageJsonDTO(AjaxRequestStatus.SUCCESS,
+                ParamConst.USER_ATTENTION_TOPIC_ID, topicService.operateAttentionTopic(cookieUser.getId(), topicId));
     }
 }

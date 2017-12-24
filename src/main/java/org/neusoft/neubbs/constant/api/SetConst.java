@@ -127,18 +127,35 @@ public final class SetConst {
 
     /**
      * 用户行为
+     *      - 喜欢 +1
+     *      - 喜欢 -1
      *      - 收藏 +1
      *      - 收藏 -1
+     *      - 关注 +1
+     *      - 关注 -1
      */
+    public static final String LIKE_INC = "like inc";
+    public static final String LIKE_DEC = "like dec";
     public static final String COLLECT_INC = "collect inc";
     public static final String COLLECT_DEC = "collect dec";
+    public static final String ATTENTION_INC = "attention inc";
+    public static final String ATTENTION_DEC = "attention dec";
 
     /**
      * 话题行为
+     *      - 被喜欢用户 +1
+     *      - 被喜欢用户 -1
      *      - 被收藏用户 +1
      *      - 被收藏用户 -1
+     *      - 被关注用户 +1
+     *      - 被关注用户 -1
+     *
      */
+    public static final String LIKE_USER_INC = "like user inc";
+    public static final String LIKE_USER_DEC = "like user dec";
     public static final String COLLECT_USER_INC = "collect user inc";
     public static final String COLLECT_USER_DEC = "collect user dec";
+    public static final String ATTENTION_USER_INC = "attention user inc";
+    public static final String ATTENTION_USER_DEC = "attention user dec";
 
 }

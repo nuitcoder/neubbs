@@ -87,6 +87,14 @@ public interface ITopicService {
     int countTopicTotalPages(int limit, String categoryNick, String username);
 
     /**
+     * 获取话题内容点赞数
+     *
+     * @param topicId 话题id
+     * @return int 当前话题点赞数量
+     */
+    int countTopicContentLike(int topicId);
+
+    /**
      * 获取话题内容页面 Map
      *
      * @param topicId 话题id
@@ -179,13 +187,41 @@ public interface ITopicService {
     void alterTopicCategoryDescription(String categoryNick, String newDescription);
 
     /**
+     * 是否喜欢话题
+     *
+     * @param userId 用户id
+     * @param topicId 话题id
+     * @return boolean 判断结果（true-已喜欢，false-未喜欢）
+     */
+    boolean isLikeTopic(int userId, int topicId);
+
+    /**
      * 判断用户是否收藏话题
      *
      * @param userId 用户id
      * @param topicId 话题id
-     * @return boolean 判断结果（true-已收藏，false-未收场）
+     * @return boolean 判断结果（true-已收藏，false-未关注）
      */
     boolean isCollectTopic(int userId, int topicId);
+
+    /**
+     * 判断用户是否关注话题
+     *
+     * @param userId 用户id
+     * @param topicId 话题id
+     * @return boolean 判断结果（true-已关注，false-未关注）
+     */
+    boolean isAttentionTopic(int userId, int topicId);
+
+    /**
+     * 操作喜欢话题
+     *      - 操作取反（已喜欢 -> 未喜欢，未喜欢 -> 已喜欢）
+     *
+     * @param userId　用户id
+     * @param topicId 话题id
+     * @return List 用户目前喜欢话题id列表
+     */
+    List<Integer> operateLikeTopic(int userId, int topicId);
 
     /**
      * 操作收藏话题
@@ -196,4 +232,14 @@ public interface ITopicService {
      * @return List 用户目前收藏话题id列表
      */
     List<Integer> operateCollectTopic(int userId, int topicId);
+
+    /**
+     * 操作关注话题
+     *      - 操作取反（已关注 -> 未关注， 未关注 -> 已关注）
+     *
+     * @param userId 用户id
+     * @param topicId 话题id
+     * @return List 用户目前关注话题id列表
+     */
+    List<Integer> operateAttentionTopic(int userId, int topicId);
 }
