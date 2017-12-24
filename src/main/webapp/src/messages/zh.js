@@ -53,9 +53,9 @@ export default {
   'topic.createtime.text': ' · 发布于 {time}',
   'topic.lastreply.text': ' · 最后由 {username} 回复于 {time}',
   'topic.read.text': ' · 阅读量 {number}',
-  'topic.new.header': '发布新主题',
-  'topic.new.title': '主题标题',
-  'topic.new.submit': '发布主题',
+  'topic.new.header': '发布新话题',
+  'topic.new.title': '话题标题',
+  'topic.new.submit': '发布话题',
   'topic.replies.text': '共收到 {number} 条评论',
   'topic.reply.header': '发表评论',
   'topic.reply.submit': '发表',
@@ -74,6 +74,7 @@ export default {
   'sidebar.count.visit': '在线访客: {number} 人',
   'sidebar.count.topic': '帖子数: {number} 个',
   'sidebar.count.reply': '回复数: {number} 条',
+  'sidebar.hot.text': '热议话题',
 
   // account
   'account.info.unknow': '未知',

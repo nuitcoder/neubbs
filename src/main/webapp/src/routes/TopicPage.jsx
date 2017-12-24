@@ -1,10 +1,12 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'dva'
+import { withRouter } from 'dva/router'
 import { Row, Col } from 'react-bootstrap'
 import styled from 'styled-components'
 import _ from 'lodash'
 
+import * as routes from '../config/routes'
 import Loader from '../components/Loader'
 import TopicDetail from '../components/TopicDetail'
 import TopicReplies from '../components/TopicReplies'
@@ -56,15 +58,20 @@ class TopicPage extends Component {
   }
 
   likeTopic() {
-    const { topic } = this.props
+    const { topic, loggedIn } = this.props
     const { topicid } = topic
-    this.props.dispatch({
-      type: 'topics/like',
-      payload: {
-        topicid,
-        isLike: !topic.isliketopic,
-      },
-    })
+
+    if (!loggedIn) {
+      this.props.history.push(routes.LOGIN)
+    } else {
+      this.props.dispatch({
+        type: 'topics/like',
+        payload: {
+          topicid,
+          isLike: !topic.isliketopic,
+        },
+      })
+    }
   }
 
   render() {
@@ -110,6 +117,7 @@ TopicPage.propTypes = {
   topic: PropTypes.object.isRequired,
   loggedIn: PropTypes.bool.isRequired,
   dispatch: PropTypes.func.isRequired,
+  history: PropTypes.object.isRequired,
 }
 
 const mapStateToProps = (state, props) => {
@@ -122,4 +130,4 @@ const mapStateToProps = (state, props) => {
   }
 }
 
-export default connect(mapStateToProps)(TopicPage)
+export default withRouter(connect(mapStateToProps)(TopicPage))

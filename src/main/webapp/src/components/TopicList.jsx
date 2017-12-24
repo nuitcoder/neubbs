@@ -3,7 +3,6 @@ import PropTypes from 'prop-types'
 import { Col } from 'react-bootstrap'
 import styled from 'styled-components'
 import InfiniteScroll from 'react-infinite-scroller'
-import _ from 'lodash'
 
 import Loader from './Loader'
 import TopicItem from './TopicItem'
@@ -31,7 +30,6 @@ const TopicList = (props) => {
     )
   }
 
-  const topics = _.sortBy(_.uniqBy(props.data, 'topicid'), 'createtime').reverse()
   const { all, selected } = props.categorys
 
   return (
@@ -44,7 +42,7 @@ const TopicList = (props) => {
           loader={<Loader size={10} />}
         >
           <CategoryNavbar data={all} selected={selected} />
-          {topics.map(topic => {
+          {props.data.map(topic => {
             return <TopicItem key={topic.topicid} topic={topic} />
           })}
         </InfiniteScroll>

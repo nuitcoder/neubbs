@@ -2,7 +2,6 @@
 const path = require('path')
 const webpack = require('webpack')
 const NyanProgressPlugin = require('nyan-progress-webpack-plugin')
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 
 module.exports = {
   entry: {
@@ -52,11 +51,6 @@ module.exports = {
     new webpack.optimize.CommonsChunkPlugin({
       name: 'vendor',
       filename: 'vendor.js',
-    }),
-    new BundleAnalyzerPlugin({
-      analyzerMode: 'static',
-      reportFilename: path.resolve(__dirname, 'report.html'),
-      openAnalyzer: false,
     }),
   ],
 }

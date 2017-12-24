@@ -15,6 +15,7 @@ export const VALIDATE_ACCOUNT_URL = `${ACCOUNT_URL}/validate`
 // topics
 export const TOPICS_URL = `${API_PREFIX}/topics`
 export const TOPIC_URL = `${API_PREFIX}/topic`
+export const TOPICS_HOT_URL = `${TOPICS_URL}/hot`
 export const TOPICS_PAGES_URL = `${TOPICS_URL}/pages`
 export const TOPICS_CATEGORYS_URL = `${TOPICS_URL}/categorys`
 export const TOPIC_REPLY_URL = `${TOPIC_URL}/reply`

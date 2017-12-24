@@ -7,7 +7,7 @@ import topics from '../services/topics'
 import * as routes from '../config/routes'
 
 function filterTopics(data) {
-  return _.sortBy(_.uniqBy(data, 'topicid'), 'createtime').reverse()
+  return _.sortBy(_.uniqBy(data, 'topicid'), 'lastreplytime').reverse()
 }
 
 export default {
@@ -17,6 +17,7 @@ export default {
     topic: {},
     topicList: {
       all: [],
+      hot: [],
       categorys: {},
       users: {},
     },
@@ -38,7 +39,13 @@ export default {
         if (topicRe.test(pathname)) {
           const topicid = Number(topicRe.exec(pathname)[1])
           if (!_.isNaN(topicid)) {
-            dispatch({ type: 'detail', payload: { topicid } })
+            dispatch({
+              type: 'detail',
+              payload: {
+                topicid,
+                hadread: 1,
+              },
+            })
           }
         }
       })
@@ -52,6 +59,7 @@ export default {
       yield put({ type: 'resetTopics', payload: { category } })
       yield put({ type: 'pages', payload: { limit: 25, category } })
       yield put({ type: 'query', payload: { page: 1, limit: 25, category } })
+      yield put({ type: 'hot' })
     },
 
     * create(action, { put, call }) {
@@ -76,12 +84,16 @@ export default {
 
     * detail(action, { put, call }) {
       const { payload = {} } = action
-      const { topicid } = payload
+      const { topicid, hadread = 0 } = payload
 
-      const { data } = yield call(topics.detail, { topicid })
+      const { data } = yield call(topics.detail, { topicid, hadread })
       try {
         if (data.success) {
-          yield put({ type: 'setTopicDetail', payload: data.model })
+          yield put({
+            type: 'setTopicDetail',
+            payload: data.model,
+            meta: { hadread },
+          })
         } else {
           throw data.message
         }
@@ -107,6 +119,22 @@ export default {
             type: 'setTopics',
             payload: data.model,
             meta: { category, username, page },
+          })
+        } else {
+          throw data.message
+        }
+      } catch (err) {
+        throw err
+      }
+    },
+
+    * hot(action, { put, call }) {
+      const { data } = yield call(topics.hot)
+      try {
+        if (data.success) {
+          yield put({
+            type: 'setHotTopics',
+            payload: data.model,
           })
         } else {
           throw data.message
@@ -224,6 +252,16 @@ export default {
       }
     },
 
+    setHotTopics(state, action) {
+      return {
+        ...state,
+        topicList: {
+          ...state.topicList,
+          hot: action.payload,
+        },
+      }
+    },
+
     setPageTotal(state, action) {
       const { totalpages } = action.payload
       return {
@@ -240,7 +278,14 @@ export default {
     },
 
     setTopicDetail(state, action) {
-      const { topicid } = action.payload
+      const { payload, meta } = action
+      const { topicid } = payload
+      const { hadread } = meta
+
+      if (hadread) {
+        payload.read += 1
+      }
+
       return {
         ...state,
         topic: {

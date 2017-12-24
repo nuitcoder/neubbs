@@ -7,6 +7,8 @@ import styled from 'styled-components'
 import { FormattedMessage } from 'react-intl'
 
 import * as routes from '../config/routes'
+import SidebarHot from './SidebarHot'
+import SidebarCount from './SidebarCount'
 
 const Wrapper = styled(({ className, children }) => (
   <Col md={3} className={className}>
@@ -20,20 +22,6 @@ const Wrapper = styled(({ className, children }) => (
     & {
       display: block;
     }
-  }
-`
-const List = styled.ul`
-  list-style: none;
-  font-size: 14px;
-  padding: 0;
-  margin: -15px;
-`
-
-const ListItem = styled.li`
-  padding: 10px 15px;
-
-  & + & {
-    border-top: 1px solid #eee;
   }
 `
 
@@ -58,36 +46,8 @@ const Sidebar = (props) => {
         </Button>
       </Panel>
 
-      <Panel
-        header={<FormattedMessage id="sidebar.count.text" />}
-      >
-        <List>
-          <ListItem>
-            <FormattedMessage
-              id="sidebar.count.user"
-              values={{
-                number: props.count.user,
-              }}
-            />
-          </ListItem>
-          <ListItem>
-            <FormattedMessage
-              id="sidebar.count.topic"
-              values={{
-                number: props.count.topic,
-              }}
-            />
-          </ListItem>
-          <ListItem>
-            <FormattedMessage
-              id="sidebar.count.reply"
-              values={{
-                number: props.count.reply,
-              }}
-            />
-          </ListItem>
-        </List>
-      </Panel>
+      <SidebarHot data={props.hotTopics} />
+      <SidebarCount data={props.count} />
     </Wrapper>
   )
 }
@@ -101,9 +61,11 @@ Sidebar.propTypes = {
 const mapStateToProps = (state) => {
   const { count } = state.app
   const { loggedIn } = state.login
+  const { topicList } = state.topics
   return {
     count,
     loggedIn,
+    hotTopics: topicList.hot,
   }
 }
 

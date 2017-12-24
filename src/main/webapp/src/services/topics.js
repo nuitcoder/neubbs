@@ -1,6 +1,7 @@
 import axios from 'axios'
 import {
   TOPICS_URL,
+  TOPICS_HOT_URL,
   TOPICS_PAGES_URL,
   TOPICS_CATEGORYS_URL,
   TOPIC_URL,
@@ -26,6 +27,10 @@ export default {
     return axios.get(TOPICS_URL, {
       params,
     })
+  },
+
+  hot() {
+    return axios.get(TOPICS_HOT_URL)
   },
 
   categorys() {
@@ -56,10 +61,11 @@ export default {
     })
   },
 
-  detail({ topicid }) {
-    const params = { topicid }
+  detail({ topicid, hadread = 0 }) {
+    const params = { topicid, hadread }
     return axios.get(TOPIC_URL, {
       params,
+      hadread,
     })
   },
 
