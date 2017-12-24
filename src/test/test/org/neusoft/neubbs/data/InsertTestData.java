@@ -8,8 +8,10 @@ import org.neusoft.neubbs.constant.api.ParamConst;
 import org.neusoft.neubbs.controller.handler.SwitchDataSourceHandler;
 import org.neusoft.neubbs.dao.IUserActionDAO;
 import org.neusoft.neubbs.dao.IUserDAO;
+import org.neusoft.neubbs.dao.IUserDynamicDAO;
 import org.neusoft.neubbs.entity.UserActionDO;
 import org.neusoft.neubbs.entity.UserDO;
+import org.neusoft.neubbs.entity.UserDynamicDO;
 import org.neusoft.neubbs.service.IFtpService;
 import org.neusoft.neubbs.service.ITopicService;
 import org.neusoft.neubbs.service.IUserService;
@@ -34,7 +36,10 @@ public class InsertTestData {
     private IUserDAO userDAO;
 
     @Autowired
-    IUserActionDAO userActionDAO;
+    private IUserActionDAO userActionDAO;
+
+    @Autowired
+    private IUserDynamicDAO userDynamicDAO;
 
     @Autowired
     private IUserService userService;
@@ -59,7 +64,7 @@ public class InsertTestData {
      *              - 添加 forum_user_action (1 ~ 6 管理员的用户默认行为)
      *          - forum_category(1 ~ 10 话题分类)
      *          - forum_topic, forum_topic_content（100 条话题内容）
-     *          - forum_topic_reply (500 条话题回复)
+     *          - forum_topic_reply (2000 条话题回复)
      *      - ftp 服务
      *          - 新建用户自定义个人文件夹（本地数据库不创建）
      *
@@ -93,6 +98,7 @@ public class InsertTestData {
         int count = 0;
         UserDO user = new UserDO();
         UserActionDO userAction = new UserActionDO();
+        UserDynamicDO userDynamic = new UserDynamicDO();
         for(String adminName: administratorArray){
             user.setName(adminName);
             user.setPassword(SecretUtil.encryptUserPassword(password));
@@ -119,6 +125,10 @@ public class InsertTestData {
             //save user action (input admin user id)
             userAction.setUserId(user.getId());
             Assert.assertEquals(1, userActionDAO.saveUserAction(userAction));
+
+            //save user dynamic（input admin user id ）
+            userDynamic.setUserId(user.getId());
+            Assert.assertEquals(1, userDynamicDAO.saveUserDynamic(userDynamic));
 
             System.out.println("alread add administrator: " + adminName + " default user action!");
         }
@@ -191,6 +201,7 @@ public class InsertTestData {
             String content = categoryNick + topicContent;
 
             topicService.saveTopic(userId, categoryNick, title, content);
+            this.separateCreateTime();
 
             System.out.println("add topic(userid=" + userId + ", category=" + categoryNick
                     + ", title=" + title + ", content=" + content);
@@ -205,17 +216,30 @@ public class InsertTestData {
      *      - 随机 100 条话题 id
      */
     private void addFiveThousandTopicReply() {
-        for (int i = 1; i <= 1000; i++) {
+        for (int i = 1; i <= 2000; i++) {
             int userId = 1 + (int) (Math.random() * 6);
             int topicId = 1 + (int) (Math.random() * 100);
             String replyContent = "No." + i + " casual reply content";
 
             topicService.saveReply(userId, topicId, replyContent);
+            this.separateCreateTime();
 
             System.out.println("add reply(userid=" + userId + ", topicid=" + topicId
                     + ", content=" + replyContent +")");
         }
 
         System.out.println("*************************** success add 1000 topic reply! ****************************");
+    }
+
+    /**
+     * 分离创建时间（保证创建日期不会同时）
+     *      - 间隔 1s ~ 10s
+     */
+    private void separateCreateTime() {
+        try {
+            Thread.sleep(1000 + (int)(Math.random() * 10000));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }
