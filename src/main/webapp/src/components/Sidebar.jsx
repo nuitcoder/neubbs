@@ -15,13 +15,10 @@ const Wrapper = styled(({ className, children }) => (
     {children}
   </Col>
 ))`
-  padding: 0;
-  display: none;
+  display: block;
 
-  @media (min-width: 992px) {
-    & {
-      display: block;
-    }
+  @media (max-width: 768px) {
+    padding: 0;
   }
 `
 

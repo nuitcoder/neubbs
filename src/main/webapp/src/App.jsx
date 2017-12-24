@@ -8,6 +8,7 @@ import { FormattedMessage } from 'react-intl'
 import { parse } from 'qs'
 
 import Header from './components/Header'
+import Footer from './components/Footer'
 import Activate from './components/Activate'
 
 import * as routes from './config/routes'
@@ -44,7 +45,7 @@ injectGlobal`
 
   @media (max-width: 768px) {
     .panel.panel-default {
-      margin-bottom: 5px;
+      margin-bottom: 15px;
     }
   }
 `
@@ -54,7 +55,7 @@ const StyledGrid = styled(Grid)`
 
   @media (min-width: 768px) {
     padding-top: 20px;
-    padding-bottom: 20px;
+    padding-bottom: 10px;
   }
 `
 
@@ -79,6 +80,7 @@ class App extends Component {
       })
     }
 
+    this.props.dispatch({ type: 'topics/hot' })
     this.props.dispatch({ type: 'topics/categorys' })
   }
 
@@ -115,6 +117,7 @@ class App extends Component {
         <StyledGrid>
           {this.props.children}
         </StyledGrid>
+        <Footer />
       </div>
     )
   }

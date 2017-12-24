@@ -5,6 +5,9 @@ export default {
   'header.logout.text': '注销',
   'header.account.text': '我的主页',
 
+  // Footer
+  'footer.copyright.text': '本站使用 {link} 构建，基于 Spring MVC 与 React 开发',
+
   // Form
   'form.title.login': '用户登陆',
   'form.title.register': '用户注册',

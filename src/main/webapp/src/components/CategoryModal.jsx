@@ -24,7 +24,7 @@ const Category = styled(props => {
 
 const CategoryModal = (props) => {
   const handleClick = (evt) => {
-    const id = evt.target.getAttribute('id')
+    const id = evt.currentTarget.getAttribute('id')
     props.onSelect(id)
   }
 
@@ -37,6 +37,12 @@ const CategoryModal = (props) => {
       </Modal.Header>
       <Modal.Body>
         <Row>
+          <Category
+            id="ALL"
+            onClick={handleClick}
+          >
+            <FormattedMessage id="topic.category.new" />
+          </Category>
           {props.data.map(category => {
             return (
               <Category

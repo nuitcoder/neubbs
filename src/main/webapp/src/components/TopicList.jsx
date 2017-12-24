@@ -18,6 +18,7 @@ const StyledCol = styled(Col)`
   @media (max-width: 768px) {
     padding-left: 0;
     padding-right: 0;
+    padding-bottom: 15px;
   }
 `
 

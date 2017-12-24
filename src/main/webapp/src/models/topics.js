@@ -57,9 +57,8 @@ export default {
       const { category } = action.payload
 
       yield put({ type: 'resetTopics', payload: { category } })
-      yield put({ type: 'pages', payload: { limit: 25, category } })
       yield put({ type: 'query', payload: { page: 1, limit: 25, category } })
-      yield put({ type: 'hot' })
+      yield put({ type: 'pages', payload: { limit: 25, category } })
     },
 
     * create(action, { put, call }) {
