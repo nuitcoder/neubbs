@@ -12,6 +12,7 @@ import org.neusoft.neubbs.constant.api.ApiMessage;
 import org.neusoft.neubbs.constant.api.ParamConst;
 import org.neusoft.neubbs.constant.secret.SecretInfo;
 import org.neusoft.neubbs.controller.handler.SwitchDataSourceHandler;
+import org.neusoft.neubbs.dao.ITopicActionDAO;
 import org.neusoft.neubbs.dao.ITopicCategoryDAO;
 import org.neusoft.neubbs.dao.ITopicContentDAO;
 import org.neusoft.neubbs.dao.ITopicDAO;
@@ -67,6 +68,9 @@ public class TopicControllerTest {
 
     @Autowired
     private IUserActionDAO userActionDAO;
+
+    @Autowired
+    private ITopicActionDAO topicActionDAO;
 
     @Autowired
     private ITopicDAO topicDAO;
@@ -1092,5 +1096,52 @@ public class TopicControllerTest {
      *          - [ ] user already like topic, input 'inc'
      *          - [ ] user no like topic, input 'dec'
      *          - [ ] repeat input 'inc' or 'dec'
+     */
+
+    /**
+     * 【/api/topic/collect】 test user collect topic success
+     *      - [✔] (forum_user_action)collect topic 'inc' and (forum_topic_action) collect user 'inc'
+     *      - [ ] (forum_user_action) collect topic dec  abd (forum_topic_action) collect user 'dec'
+     */
+    @Test
+    @Transactional
+    public void testUserCollectTopicSuccess() throws Exception {
+        // cookie userId = 6
+        int topicId = 5;
+        String requestBody = "{" + this.getJsonField("topicid", topicId) + "}";
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.post("/api/topic/collect")
+                    .cookie(this.getAlreadLoginUserCookie())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(requestBody)
+        ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model.userCollectTopicId").value(CoreMatchers.hasItem(topicId)));
+
+        //database
+        int cookieUserId = 6;
+        String userCollectTopicIdJsonArrayString = userActionDAO.getUserActionCollectTopicIdJsonArray(cookieUserId).getCollectTopicIdJsonArray();
+        String topicCollectUserIdJsonArrayString = topicActionDAO.getTopicActionCollectUserIdJsonArray(topicId).getCollectUserIdJsonArray();
+
+        Assert.assertNotEquals(-1 , JSON.parseArray(userCollectTopicIdJsonArrayString).indexOf(topicId));
+        Assert.assertNotEquals(-1, JSON.parseArray(topicCollectUserIdJsonArrayString).indexOf(cookieUserId));
+
+        printSuccessPassTestMehtodMessage();
+    }
+
+    /**
+     * 【/api/topic/collect】test update topic content like throw exception
+     *      - permission exception
+     *          - [ ] no login
+     *          - [ ] account no activate
+     *      - request param error, no norm
+     *          - [ ] null
+     *          - [ ] param norm
+     *      - database exception
+     *          - [ ] no topic
+     *          - [ ] alter forum_user_action  'fua_collect_ft_id_array' field fail
+     *          - [ ] alter forum_topic_action 'fta_collect_fu_id_array' field fail
      */
 }

@@ -40,6 +40,9 @@ import java.util.Map;
  *      删除回复
  *      修改话题内容
  *      修改回复内容
+ *      话题点赞
+ *      话题收藏
+ *
  *
  * @author Suvan
  */
@@ -91,11 +94,6 @@ public class TopicController {
         int topicIdInt = Integer.parseInt(topicId);
         Map<String, Object> topicContentPageModelMap = topicService.getTopicContentPageModelMap(topicIdInt);
 
-        //read + 1 (default no add)
-        if (isAddTopicRead) {
-            topicService.alterTopicReadAddOne(topicIdInt);
-        }
-
         //judge current user like topic state(visit user default value of false)
         boolean isCurrentUserLikeThisTopic = false;
         if (httpService.isLoggedInUser(request)) {
@@ -103,6 +101,13 @@ public class TopicController {
                     httpService.getAuthenticationCookieValue(request), SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY
             );
             isCurrentUserLikeThisTopic = userService.isUserLikeTopic(currentUser.getId(), topicIdInt);
+        }
+
+        //read + 1 (default no add)
+        if (isAddTopicRead) {
+            topicService.alterTopicReadAddOne(topicIdInt);
+            topicContentPageModelMap.put(ParamConst.READ,
+                    (int) topicContentPageModelMap.get(ParamConst.READ) + SetConst.ONE);
         }
 
         topicContentPageModelMap.put(ParamConst.IS_LIKE_TOPIC, isCurrentUserLikeThisTopic);
@@ -333,11 +338,11 @@ public class TopicController {
    }
 
     /**
-     * 修改话题点赞数量
+     * 点赞话题
      *
      * @param requestBodyParamsMap request-body内JSON数据
      * @param request http请求
-     * @return PageJsonDTO 页面传输对象
+     * @return PageJsonDTO 页面JSON传输对象
      */
    @LoginAuthorization @AccountActivation
    @RequestMapping(value = "/topic/like", method = RequestMethod.POST, consumes = "application/json")
@@ -362,4 +367,27 @@ public class TopicController {
 
        return new PageJsonDTO(AjaxRequestStatus.SUCCESS, ParamConst.LIKE, currentTopicLike);
    }
+
+    /**
+     * 收藏话题
+     *
+     * @param requestBodyParamsMap request-body内JSON数据
+     * @param request http请求
+     * @return PageJsonDTO　页面JSON传输对象
+     */
+    @LoginAuthorization @AccountActivation
+    @RequestMapping(value = "/topic/collect", method = RequestMethod.POST, consumes = "application/json")
+    @ResponseBody
+    public PageJsonDTO collect(@RequestBody Map<String, Object> requestBodyParamsMap, HttpServletRequest request) {
+        Integer topicId = (Integer) requestBodyParamsMap.get(ParamConst.TOPIC_ID);
+
+        paramCheckService.check(ParamConst.TOPIC_ID, String.valueOf(topicId));
+
+        UserDO cookieUser = secretService.jwtVerifyTokenByTokenByKey(
+                httpService.getAuthenticationCookieValue(request), SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY
+        );
+
+        return new PageJsonDTO(AjaxRequestStatus.SUCCESS,
+                ParamConst.USER_COLLECT_TOPIC_ID, topicService.operateCollectTopic(cookieUser.getId(), topicId));
+    }
 }

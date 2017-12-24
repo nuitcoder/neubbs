@@ -125,4 +125,20 @@ public final class SetConst {
     public static final String ZERO_S = "0";
     public static final String ONE_S = "1";
 
+    /**
+     * 用户行为
+     *      - 收藏 +1
+     *      - 收藏 -1
+     */
+    public static final String COLLECT_INC = "collect inc";
+    public static final String COLLECT_DEC = "collect dec";
+
+    /**
+     * 话题行为
+     *      - 被收藏用户 +1
+     *      - 被收藏用户 -1
+     */
+    public static final String COLLECT_USER_INC = "collect user inc";
+    public static final String COLLECT_USER_DEC = "collect user dec";
+
 }

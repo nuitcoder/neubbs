@@ -38,7 +38,7 @@ public class UserServiceImpl implements IUserService {
     private final IUserActionDAO userActionDAO;
 
     /**
-     * Constuctor
+     * Constructor
      */
     @Autowired
     public UserServiceImpl(IUserDAO userDAO, IUserActionDAO userActionDAO) {

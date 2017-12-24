@@ -50,6 +50,7 @@ public final class ParamConst {
 
     public static final String CONTENT = "content";
     public static final String LIKE = "like";
+    public static final String READ = "read";
 
     public static final String NUMBER = "number";
 
@@ -73,6 +74,8 @@ public final class ParamConst {
 
     public static final String INSTRUCTION = "instruction";
     public static final String COMMAND = "command";
+
+    public static final String USER_COLLECT_TOPIC_ID = "userCollectTopicId";
 
     /**
      * Reply

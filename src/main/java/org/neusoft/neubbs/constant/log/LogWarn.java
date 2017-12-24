@@ -88,6 +88,11 @@ public final class LogWarn {
     public static final String TOPIC_21 = " 当前话题请勿重复取消点赞（重复输入 dec 命令）";
 
     public static final String TOPIC_22 = " 用户，无法取消点赞，并未点击喜欢该文章 topicid= ";
+    public static final String TOPIC_23 = " （用户）行为失败";
+    public static final String TOPIC_24 = " （话题）记录行为失败";
+
+    public static final String TOPIC_35 = " 话题行为保存失败";
+    public static final String TOPIC_36 = " 话题行为更新失败";
 
     /******************************Ftp Service*********************************/
     public static final String FTP_01 = "注册用户，ftp 服务器新建 个人目录，抛出 IO 异常";

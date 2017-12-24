@@ -5,11 +5,14 @@ import org.neusoft.neubbs.constant.api.ApiMessage;
 import org.neusoft.neubbs.constant.api.ParamConst;
 import org.neusoft.neubbs.constant.api.SetConst;
 import org.neusoft.neubbs.constant.log.LogWarn;
+import org.neusoft.neubbs.dao.ITopicActionDAO;
 import org.neusoft.neubbs.dao.ITopicCategoryDAO;
 import org.neusoft.neubbs.dao.ITopicContentDAO;
 import org.neusoft.neubbs.dao.ITopicDAO;
 import org.neusoft.neubbs.dao.ITopicReplyDAO;
+import org.neusoft.neubbs.dao.IUserActionDAO;
 import org.neusoft.neubbs.dao.IUserDAO;
+import org.neusoft.neubbs.entity.TopicActionDO;
 import org.neusoft.neubbs.entity.TopicCategoryDO;
 import org.neusoft.neubbs.entity.TopicContentDO;
 import org.neusoft.neubbs.entity.TopicDO;
@@ -47,19 +50,24 @@ public class TopicServiceImpl implements ITopicService {
     private final ITopicCategoryDAO topicCategoryDAO;
     private final ITopicReplyDAO topicReplyDAO;
     private final IUserDAO userDAO;
+    private final IUserActionDAO userActionDAO;
+    private final ITopicActionDAO topicActionDAO;
 
     private final NeubbsConfigDO neubbsConfig;
 
     @Autowired
     public TopicServiceImpl(ITopicDAO topicDAO, ITopicContentDAO topicContentDAO,
                             ITopicReplyDAO topicReplyDAO, ITopicCategoryDAO topicCategoryDAO,
-                            IUserDAO userDAO, NeubbsConfigDO neubbsConfig) {
+                            IUserDAO userDAO, NeubbsConfigDO neubbsConfig,
+                            IUserActionDAO userActionDAO, ITopicActionDAO topicActionDAO) {
         this.topicDAO = topicDAO;
         this.topicContentDAO = topicContentDAO;
         this.topicReplyDAO = topicReplyDAO;
         this.topicCategoryDAO = topicCategoryDAO;
         this.userDAO = userDAO;
         this.neubbsConfig = neubbsConfig;
+        this.userActionDAO = userActionDAO;
+        this.topicActionDAO = topicActionDAO;
     }
 
     @Override
@@ -81,9 +89,15 @@ public class TopicServiceImpl implements ITopicService {
         TopicContentDO topicContentDO = new TopicContentDO();
             topicContentDO.setTopicid(topic.getId());
             topicContentDO.setContent(topicContent);
-
         if (topicContentDAO.saveTopicContent(topicContentDO) == 0) {
             throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.TOPIC_02);
+        }
+
+        //insert forum_topic_action
+        TopicActionDO topicAction = new TopicActionDO();
+            topicAction.setTopicId(topic.getId());
+        if (topicActionDAO.saveTopicAction(topicAction) == 0) {
+            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.TOPIC_35);
         }
 
         return topic.getId();
@@ -404,6 +418,50 @@ public class TopicServiceImpl implements ITopicService {
         }
     }
 
+    @Override
+    public boolean isCollectTopic(int userId, int topicId) {
+        this.getUserNotNullById(userId);
+        this.getTopicNotNull(topicId);
+
+        return JsonUtil.isJsonArrayStringExistIntElement(
+                this.getUserCollectTopicIdJsonArrayStringByUserId(userId), topicId
+        );
+    }
+
+    @Override
+    public List<Integer> operateCollectTopic(int userId, int topicId) {
+        //isCollectTopic() already checked 'userId' and 'topicId'
+
+        //true -> do 'inc' , false -> do 'dec'
+        if (this.isCollectTopic(userId, topicId)) {
+            //alter forum_user_action （userId ~ topicId）
+            String userCollectJsonArrayString = this.getUserCollectTopicIdJsonArrayStringByUserId(userId);
+            int topicIdIndex = JsonUtil.getJsonArrayStringForIntElementIndex(userCollectJsonArrayString, topicId);
+            if (userActionDAO.updateCollectTopicIdJsonArrayByIndexToRemoveOneTopicId(userId, topicIdIndex) == 0) {
+                throwUserOperateTopicFailException(SetConst.COLLECT_DEC);
+            }
+
+            //forum_topic_action cut (topicId ~ userId)
+            String topicCollectJsonArrayString = this.getTopicCollectUserIdJsonArrayStringByTopicId(topicId);
+            int userIdIndex = JsonUtil.getJsonArrayStringForIntElementIndex(topicCollectJsonArrayString, userId);
+            if (topicActionDAO.updateCollectUserIdJsonArrayByIndexToRemoveOneUserId(topicId, userIdIndex) == 0) {
+                throwTopicOperateFailException(SetConst.COLLECT_USER_DEC);
+            }
+        } else {
+            if (userActionDAO.updateCollectTopicIdJsonArrayByOneTopicIdToAppendEnd(userId, topicId) == 0) {
+                throwUserOperateTopicFailException(SetConst.COLLECT_INC);
+            }
+
+            if (topicActionDAO.updateCollectUserIdJsonArrayByOneUserIdToAppendEnd(topicId, userId) == 0) {
+                throwTopicOperateFailException(SetConst.COLLECT_USER_INC);
+            }
+        }
+
+        return JsonUtil.changeJsonArrayStringToIntegerList(
+                userActionDAO.getUserActionCollectTopicIdJsonArray(userId).getCollectTopicIdJsonArray()
+        );
+    }
+
     /*
      * ***********************************************
      * private method
@@ -709,6 +767,26 @@ public class TopicServiceImpl implements ITopicService {
         return user;
     }
 
+    /**
+     * 获取用户收藏话题 id JSON 数组字符串
+     *
+     * @param userId 用户id
+     * @return String 用户收藏话题idJSON数组字符串
+     */
+    private String getUserCollectTopicIdJsonArrayStringByUserId(int userId) {
+        return userActionDAO.getUserActionCollectTopicIdJsonArray(userId).getCollectTopicIdJsonArray();
+    }
+
+    /**
+     * 获取话题被收藏用户 id JSON 数组字符串
+     *
+     * @param topicId 话题id
+     * @return String 话题被收藏用户idJSON数组字符串
+     */
+    private String getTopicCollectUserIdJsonArrayStringByTopicId(int topicId) {
+        return topicActionDAO.getTopicActionCollectUserIdJsonArray(topicId).getCollectUserIdJsonArray();
+    }
+
     /*
      * ***********************************************
      * filter information map (use util/MapFilter.java)
@@ -870,5 +948,23 @@ public class TopicServiceImpl implements ITopicService {
     private void throwNoReplyException(int replyId) {
         throw new TopicErrorException(ApiMessage.NO_REPLY)
                 .log("replyId=" + replyId + LogWarn.TOPIC_11);
+    }
+
+    /**
+     * 抛出用户操作话题失败异常
+     *
+     * @param userOperate 用户操作
+     */
+    private void throwUserOperateTopicFailException(String userOperate) {
+        throw new TopicErrorException(ApiMessage.USER_OPERATE_TOPIC_FAIL).log(userOperate + LogWarn.TOPIC_23);
+    }
+
+    /**
+     * 抛出话题操作失败异常
+     *
+     * @param topicOperate 话题操作
+     */
+    private void throwTopicOperateFailException(String topicOperate) {
+        throw new TopicErrorException(ApiMessage.TOPIC_RECORD_OPERATE_FAIL).log(topicOperate + LogWarn.TOPIC_24);
     }
 }

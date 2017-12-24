@@ -170,7 +170,6 @@ public interface ITopicService {
      */
     int alterTopicLikeByInstruction(boolean isCurrentUserLikeTopic, int topicId, String command);
 
-
     /**
      * 修改话题分类描述
      *
@@ -178,4 +177,23 @@ public interface ITopicService {
      * @param newDescription 新的话题分类描述
      */
     void alterTopicCategoryDescription(String categoryNick, String newDescription);
+
+    /**
+     * 判断用户是否收藏话题
+     *
+     * @param userId 用户id
+     * @param topicId 话题id
+     * @return boolean 判断结果（true-已收藏，false-未收场）
+     */
+    boolean isCollectTopic(int userId, int topicId);
+
+    /**
+     * 操作收藏话题
+     *      - 操作取反（已收藏 -> 未收藏，未收藏 -> 已收藏）
+     *
+     * @param userId 用户id
+     * @param topicId 话题id
+     * @return List 用户目前收藏话题id列表
+     */
+    List<Integer> operateCollectTopic(int userId, int topicId);
 }

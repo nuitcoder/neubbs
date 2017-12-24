@@ -71,6 +71,9 @@ public final class ApiMessage {
 
     public static final String USER_NO_LIKE_THIS_TOPIC = "user no like this like";
 
+    public static final String USER_OPERATE_TOPIC_FAIL = "user operate topic fail";
+    public static final String TOPIC_RECORD_OPERATE_FAIL = "topic record operate fail";
+
     /**
      * Ftp Service
      */

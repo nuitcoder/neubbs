@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -75,20 +76,43 @@ public final class JsonUtil {
      * 判断 JSON 数组是否存在指定 int 元素
      *
      * @param jsonArrayString JSON数组字符串
-     * @param number 指定int元素
+     * @param intElement 指定int元素
      * @return boolean 判断结果（true-存在，false-不存在）
      */
-    public static boolean isJsonArrayStringExistIntElement(String jsonArrayString,  int number) {
+    public static boolean isJsonArrayStringExistIntElement(String jsonArrayString,  int intElement) {
         JSONArray jsonArray = JSON.parseArray(jsonArrayString);
 
         boolean result = false;
         for (int i = 0, len = jsonArray.size(); i < len; i++) {
-            if (jsonArray.getInteger(i) == number) {
+            if (jsonArray.getInteger(i) == intElement) {
                 result = true;
                 break;
             }
         }
 
         return result;
+    }
+
+    /**
+     * 获取 JSON 数组 int 元素的 索引
+     *
+     * @param jsonArrayString JSON数组字符串
+     * @param intElement int元素
+     * @return int int元素索引值（若未找到则为 -1）
+     */
+    public static int getJsonArrayStringForIntElementIndex(String jsonArrayString, int intElement) {
+        JSONArray jsonArray = JSON.parseArray(jsonArrayString);
+
+        return jsonArray.indexOf(intElement);
+    }
+
+    /**
+     * 转换 JSON 数组字符串，变为 Integer List
+     *
+     * @param jsonArrayString JSON数组字符串
+     * @return List Integer类型列表
+     */
+    public static List<Integer> changeJsonArrayStringToIntegerList(String jsonArrayString) {
+        return JSON.parseArray(jsonArrayString, Integer.class);
     }
 }
