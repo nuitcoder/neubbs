@@ -25,7 +25,7 @@ const Image = styled.img`
 const Footer = () => {
   return (
     <StyledGrid>
-      <Col md={9}>
+      <Col md={12}>
         <CopyRight>
           <a href="https://github.com/nuitcoder">
             <Image src="/resources/images/nuitcoder.png" />
