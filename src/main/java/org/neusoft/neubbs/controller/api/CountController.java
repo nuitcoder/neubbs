@@ -19,11 +19,13 @@ import java.util.Map;
 
 /**
  * 统计 api
- *      - 访问人数
- *      - 登录人数
- *      - 用户总数
- *      - 话题总数
- *      - 回复总数
+ *      - 数据库统计
+ *          - 用户总数
+ *          - 话题总数
+ *          - 回复总数
+ *      - 在线统计
+ *          - 在线访问人数
+ *          - 在线登陆人数
  *
  * @author Suvan
  */
@@ -44,7 +46,7 @@ public class CountController {
     }
 
     /**
-     * 获取统计信息（CountController 默认访问）
+     * 数据库统计（CountController 默认访问）
      *      - 用户总数
      *      - 话题总数
      *      - 回复总数
@@ -63,28 +65,19 @@ public class CountController {
     }
 
     /**
-     * 访问人数
+     * 在线统计
+     *      - 在线访问人数
+     *      - 在线登陆人数
      *
      * @param request http请求
      * @return PageJsonDTO 页面JSON传输对象
      */
-    @RequestMapping(value = "/visit")
-    @ResponseBody
-    public PageJsonDTO visit(HttpServletRequest request) {
-        return new PageJsonDTO(AjaxRequestStatus.SUCCESS,
-                ParamConst.VISIT_USER, httpService.getOnlineVisitUserNumber(request));
-    }
-
-    /**
-     * 登录人数
-     *
-     * @param request http请求
-     * @return PageJsonDTO 页面JSON传输对象
-     */
-    @RequestMapping(value = "/login")
+    @RequestMapping(value = "/online", method = RequestMethod.GET)
     @ResponseBody
     public PageJsonDTO login(HttpServletRequest request) {
-        return new PageJsonDTO(AjaxRequestStatus.SUCCESS,
-                ParamConst.LOGIN_USER, httpService.getOnlineLoginUserNumber(request));
+        Map<String, Object> onlineCountMap = new LinkedHashMap<>(SetConst.SIZE_TWO);
+            onlineCountMap.put(ParamConst.VISIT_USER, httpService.getOnlineVisitUserNumber(request));
+            onlineCountMap.put(ParamConst.LOGIN_USER, httpService.getOnlineLoginUserNumber(request));
+        return new PageJsonDTO(AjaxRequestStatus.SUCCESS, onlineCountMap);
     }
 }

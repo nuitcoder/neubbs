@@ -86,34 +86,20 @@ public class CountControllerTest {
     }
 
     /**
-     * 【/api/count/visit】test count online visit users
+     * 【/api/count/visit】test count online count success
+     *      - visit user
+     *      - login user
      */
     @Test
-    public void testCountOnlineVisitUsers() throws Exception {
+    public void testCountOnlineCountSuccess() throws Exception {
        mockMvc.perform(
-               MockMvcRequestBuilders.get("/api/count/visit")
+               MockMvcRequestBuilders.get("/api/count/online")
        ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
         .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
         .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
-        .andExpect(MockMvcResultMatchers.jsonPath("$.model." + ParamConst.VISIT_USER).value(21));
+        .andExpect(MockMvcResultMatchers.jsonPath("$.model." + ParamConst.VISIT_USER).value(21))
+        .andExpect(MockMvcResultMatchers.jsonPath("$.model." + ParamConst.LOGIN_USER).value(50));
 
        printSuccessPassTestMehtodMessage();
     }
-
-    /**
-     * 【/api/count/login】 test count online login users
-     */
-    @Test
-    public void testCountOnlineLoginUsers() throws Exception {
-        mockMvc.perform(
-                MockMvcRequestBuilders.get("/api/count/login")
-        ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
-         .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
-         .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
-         .andExpect(MockMvcResultMatchers.jsonPath("$.model.loginUser").value(50));
-
-        printSuccessPassTestMehtodMessage();
-    }
-
-
 }

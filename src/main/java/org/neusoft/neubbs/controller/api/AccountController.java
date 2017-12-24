@@ -149,8 +149,8 @@ public final class AccountController {
         String authentication = secretService.jwtCreateTokenByUser(user);
         httpService.saveAuthenticationCookie(response, authentication);
 
-        //online login user number + 1
-        httpService.addOnlineLoginUserNumber(request);
+        //re-count login user
+        request.getSession().invalidate();
 
         //response model -> include authentication and state
         Map<String, Object> modelJsonMap = new LinkedHashMap<>(SetConst.LENGTH_TWO);
@@ -171,7 +171,9 @@ public final class AccountController {
     @ResponseBody
     public PageJsonDTO logout(HttpServletRequest request, HttpServletResponse response) {
         httpService.removeCookie(request, response, ParamConst.AUTHENTICATION);
-        httpService.cutOnlineLoginUserNumber(request);
+
+        //re-count login user
+        request.getSession().invalidate();
 
         return new PageJsonDTO(AjaxRequestStatus.SUCCESS);
     }

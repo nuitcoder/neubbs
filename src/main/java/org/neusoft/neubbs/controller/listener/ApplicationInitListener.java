@@ -8,12 +8,13 @@ import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
 /**
- * Api 上下文（全局）监听器
+ * 应用初始化监听器
+ *      - ServletContext
  *
  * @author Suvan
  */
 @WebListener
-public class ApiContextListener implements ServletContextListener {
+public class ApplicationInitListener implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
         ServletContext context = servletContextEvent.getServletContext();
