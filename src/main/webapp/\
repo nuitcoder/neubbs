@@ -31,12 +31,6 @@ class TopicNewPage extends Component {
     }
   }
 
-  componentWillUpdate(nextProps) {
-    if (!nextProps.loggedIn) {
-      this.props.history.push(routes.ROOT)
-    }
-  }
-
   onSubmit({ title, content, category }) {
     this.props.dispatch({
       type: 'topics/create',

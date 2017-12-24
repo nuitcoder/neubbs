@@ -5,6 +5,7 @@ import { Panel, Glyphicon } from 'react-bootstrap'
 import styled from 'styled-components'
 import { FormattedMessage, FormattedRelative } from 'react-intl'
 
+import * as routes from '../config/routes'
 import Markdown from './Markdown'
 
 const StyledPanel = styled(Panel)`
@@ -99,17 +100,18 @@ const TopicReplies = (props) => {
             replyid, createtime, content, user,
           } = reply
           const { avator, username } = user
+          const userUrl = routes.ACCOUNT_HOME.replace(':username', username)
 
           return (
             <ReplyWrapper key={replyid}>
               <div className="avator">
-                <Link to="#">
+                <Link to={userUrl}>
                   <Avator src={avator} />
                 </Link>
               </div>
               <div className="infos">
                 <Info>
-                  <Username to="#">{username}</Username>
+                  <Username to={userUrl}>{username}</Username>
                   <Floor>#{i + 1}</Floor>
                   <FormattedRelative value={createtime} />
                   <Options>
