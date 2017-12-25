@@ -5,6 +5,7 @@ import org.neusoft.neubbs.constant.api.ApiMessage;
 import org.neusoft.neubbs.constant.api.ParamConst;
 import org.neusoft.neubbs.constant.api.SetConst;
 import org.neusoft.neubbs.constant.log.LogWarn;
+import org.neusoft.neubbs.dao.ITopicDAO;
 import org.neusoft.neubbs.dao.IUserActionDAO;
 import org.neusoft.neubbs.dao.IUserDAO;
 import org.neusoft.neubbs.entity.UserActionDO;
@@ -38,14 +39,17 @@ public class UserServiceImpl implements IUserService {
 
     private final IUserDAO userDAO;
     private final IUserActionDAO userActionDAO;
+    private final ITopicDAO topicDAO;
 
     /**
      * Constructor
      */
     @Autowired
-    public UserServiceImpl(IUserDAO userDAO, IUserActionDAO userActionDAO) {
+    public UserServiceImpl(IUserDAO userDAO, IUserActionDAO userActionDAO,
+                           ITopicDAO topicDAO) {
         this.userDAO = userDAO;
         this.userActionDAO = userActionDAO;
+        this.topicDAO = topicDAO;
     }
 
     @Override
@@ -125,6 +129,12 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
+    public int countUserTopicTotals(int userId) {
+        this.getUserDONotNull(userId);
+        return topicDAO.countTopicByUserId(userId);
+    }
+
+    @Override
     public int countUserLikeTopicTotals(int userId) {
         UserActionDO userAction = this.getUserActionDONotNull(userId);
         return JsonUtil.countArrayLengthByJsonArrayString(userAction.getLikeTopicIdJsonArray());
@@ -167,6 +177,7 @@ public class UserServiceImpl implements IUserService {
             userInfoMap.put(ParamConst.LIKE, this.countUserLikeTopicTotals(user.getId()));
             userInfoMap.put(ParamConst.COLLECT, this.countUserCollectTopicTotals(user.getId()));
             userInfoMap.put(ParamConst.ATTENTION, this.countUserAttentionTopicTotals(user.getId()));
+            userInfoMap.put(ParamConst.TOPIC, this.countUserTopicTotals(user.getId()));
 
         return userInfoMap;
     }

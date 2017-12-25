@@ -114,6 +114,7 @@ public class CountController {
             userCountMap.put(ParamConst.LIKE, userService.countUserLikeTopicTotals(userIdInt));
             userCountMap.put(ParamConst.COLLECT, userService.countUserCollectTopicTotals(userIdInt));
             userCountMap.put(ParamConst.ATTENTION, userService.countUserAttentionTopicTotals(userIdInt));
+            userCountMap.put(ParamConst.TOPIC, userService.countUserTopicTotals(userIdInt));
         return new PageJsonDTO(AjaxRequestStatus.SUCCESS, userCountMap);
     }
 }

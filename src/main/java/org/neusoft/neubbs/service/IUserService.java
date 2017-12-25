@@ -58,6 +58,14 @@ public interface IUserService {
     int countUserTotals();
 
     /**
+     * 统计用户发帖总数
+     *
+     * @param userId 用户id
+     * @return int 用户发帖总数
+     */
+    int countUserTopicTotals(int userId);
+
+    /**
      * 统计用户喜欢话题总数
      *
      * @param userId 用户id
