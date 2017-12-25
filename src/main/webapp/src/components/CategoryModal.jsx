@@ -37,12 +37,14 @@ const CategoryModal = (props) => {
       </Modal.Header>
       <Modal.Body>
         <Row>
-          <Category
-            id="ALL"
-            onClick={handleClick}
-          >
-            <FormattedMessage id="topic.category.new" />
-          </Category>
+          {props.showAll &&
+            <Category
+              id="ALL"
+              onClick={handleClick}
+            >
+              <FormattedMessage id="topic.category.new" />
+            </Category>
+          }
           {props.data.map(category => {
             return (
               <Category
@@ -60,11 +62,16 @@ const CategoryModal = (props) => {
   )
 }
 
+CategoryModal.defaultProps = {
+  showAll: false,
+}
+
 CategoryModal.propTypes = {
   data: PropTypes.array.isRequired,
   show: PropTypes.bool.isRequired,
   onHide: PropTypes.func.isRequired,
   onSelect: PropTypes.func.isRequired,
+  showAll: PropTypes.bool,
 }
 
 export default CategoryModal

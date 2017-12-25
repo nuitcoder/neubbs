@@ -72,6 +72,7 @@ const CategoryNavbar = (props) => {
             show={showCategoryModal}
             onHide={toggleCategoryModal}
             onSelect={selectCategory}
+            showAll
           />
         </Navbar.Brand>
       </Navbar.Header>

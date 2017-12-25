@@ -59,6 +59,7 @@ const Avator = styled.img`
 
 const Title = styled.h1`
   margin: 0;
+  overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 `

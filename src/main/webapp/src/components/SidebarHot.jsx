@@ -42,6 +42,11 @@ const Avator = styled.img`
 const Title = styled(Link)`
   color: #333;
   line-height: 24px;
+  display: inline-block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 200px;
 
   &:hover {
     color: #555;
