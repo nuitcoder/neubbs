@@ -47,6 +47,14 @@ public interface ITopicReplyDAO {
     int countReply();
 
     /**
+     * 统计用户回复数
+     *
+     * @param userId 用户id
+     * @return int 用户回复数
+     */
+    int countReplyByUserId(int userId);
+
+    /**
      * 获取最大的话题回复 id
      *      - 最新插入的回复 id
      *

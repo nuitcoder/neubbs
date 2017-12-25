@@ -98,6 +98,8 @@ public class CountController {
      *      - 用户喜欢话题数
      *      - 用户收藏话题数
      *      - 用户关注话题数
+     *      - 用户发帖数
+     *      - 用户回复数
      *
      * @param userId 用户id
      * @return PageJsonDTO 页面JSON传输对象
@@ -115,6 +117,7 @@ public class CountController {
             userCountMap.put(ParamConst.COLLECT, userService.countUserCollectTopicTotals(userIdInt));
             userCountMap.put(ParamConst.ATTENTION, userService.countUserAttentionTopicTotals(userIdInt));
             userCountMap.put(ParamConst.TOPIC, userService.countUserTopicTotals(userIdInt));
+            userCountMap.put(ParamConst.REPLY, userService.countUserReplyTotals(userIdInt));
         return new PageJsonDTO(AjaxRequestStatus.SUCCESS, userCountMap);
     }
 }

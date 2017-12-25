@@ -6,6 +6,7 @@ import org.neusoft.neubbs.constant.api.ParamConst;
 import org.neusoft.neubbs.constant.api.SetConst;
 import org.neusoft.neubbs.constant.log.LogWarn;
 import org.neusoft.neubbs.dao.ITopicDAO;
+import org.neusoft.neubbs.dao.ITopicReplyDAO;
 import org.neusoft.neubbs.dao.IUserActionDAO;
 import org.neusoft.neubbs.dao.IUserDAO;
 import org.neusoft.neubbs.entity.UserActionDO;
@@ -40,16 +41,18 @@ public class UserServiceImpl implements IUserService {
     private final IUserDAO userDAO;
     private final IUserActionDAO userActionDAO;
     private final ITopicDAO topicDAO;
+    private final ITopicReplyDAO replyDAO;
 
     /**
      * Constructor
      */
     @Autowired
     public UserServiceImpl(IUserDAO userDAO, IUserActionDAO userActionDAO,
-                           ITopicDAO topicDAO) {
+                           ITopicDAO topicDAO, ITopicReplyDAO replyDAO) {
         this.userDAO = userDAO;
         this.userActionDAO = userActionDAO;
         this.topicDAO = topicDAO;
+        this.replyDAO = replyDAO;
     }
 
     @Override
@@ -135,6 +138,12 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
+    public int countUserReplyTotals(int userId) {
+        this.getUserDONotNull(userId);
+        return replyDAO.countReplyByUserId(userId);
+    }
+
+    @Override
     public int countUserLikeTopicTotals(int userId) {
         UserActionDO userAction = this.getUserActionDONotNull(userId);
         return JsonUtil.countArrayLengthByJsonArrayString(userAction.getLikeTopicIdJsonArray());
@@ -178,7 +187,7 @@ public class UserServiceImpl implements IUserService {
             userInfoMap.put(ParamConst.COLLECT, this.countUserCollectTopicTotals(user.getId()));
             userInfoMap.put(ParamConst.ATTENTION, this.countUserAttentionTopicTotals(user.getId()));
             userInfoMap.put(ParamConst.TOPIC, this.countUserTopicTotals(user.getId()));
-
+            userInfoMap.put(ParamConst.REPLY, this.countUserReplyTotals(user.getId()));
         return userInfoMap;
     }
 

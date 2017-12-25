@@ -112,6 +112,15 @@ public class TopicReplyDAOTest {
     }
 
     /**
+     * 测试统计用户回复数
+     */
+    @Test
+    public void testCountReplyByUserId() {
+        int userReplytTotals = topicReplyDAO.countReplyByUserId(6);
+        System.out.println("count user topic reply totals=" + userReplytTotals);
+    }
+
+    /**
      * 测试获取最大的话题回复 id
      */
     @Test

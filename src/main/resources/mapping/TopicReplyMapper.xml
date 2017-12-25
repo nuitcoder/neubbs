@@ -32,6 +32,10 @@
    <select id="countReply" resultType="java.lang.Integer">
       SELECT COUNT(ftr_id) FROM forum_topic_reply;
    </select>
+   <select id="countReplyByUserId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+      SELECT COUNT(ftr_id) FROM forum_topic_reply WHERE fu_id = #{param1, jdbcType = INTEGER}
+   </select>
+
    <select id="getMaxTopicReplyId" resultType="java.lang.Integer">
       SELECT MAX(ftr_id) FROM forum_topic_reply;
    </select>
