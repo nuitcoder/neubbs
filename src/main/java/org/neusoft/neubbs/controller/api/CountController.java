@@ -19,7 +19,7 @@ import java.util.Map;
 
 /**
  * 统计 api
- *      - 数据库统计
+ *      - 论坛基数统计
  *          - 用户总数
  *          - 话题总数
  *          - 回复总数
@@ -46,7 +46,7 @@ public class CountController {
     }
 
     /**
-     * 数据库统计（CountController 默认访问）
+     * 论坛基数统计（CountController 默认访问）
      *      - 用户总数
      *      - 话题总数
      *      - 回复总数

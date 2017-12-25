@@ -58,6 +58,30 @@ public interface IUserService {
     int countUserTotals();
 
     /**
+     * 统计用户喜欢话题总数
+     *
+     * @param userId 用户id
+     * @return int 喜欢话题总数
+     */
+    int countUserLikeTopicTotals(int userId);
+
+    /**
+     * 统计用户收藏话题总数
+     *
+     * @param userId 用户id
+     * @return int 收藏话题总数
+     */
+    int countUserCollectTopicTotals(int userId);
+
+    /**
+     * 统计用户关注话题总数
+     *
+     * @param userId 用户id
+     * @return int 关注话题总数
+     */
+    int countUserAttentionTopicTotals(int userId);
+
+    /**
      * 统计用户关注人数（主动关注）
      *
      * @param userId 用户id
@@ -72,6 +96,7 @@ public interface IUserService {
      * @return int 被关注人总数
      */
     int countUserFollowedTotals(int userId);
+
 
     /**
      * 获取用户信息（已经登录状态）

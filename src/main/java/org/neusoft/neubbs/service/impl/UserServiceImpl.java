@@ -125,6 +125,24 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
+    public int countUserLikeTopicTotals(int userId) {
+        UserActionDO userAction = this.getUserActionDONotNull(userId);
+        return JsonUtil.countArrayLengthByJsonArrayString(userAction.getLikeTopicIdJsonArray());
+    }
+
+    @Override
+    public int countUserCollectTopicTotals(int userId) {
+        UserActionDO userAction = this.getUserActionDONotNull(userId);
+        return JsonUtil.countArrayLengthByJsonArrayString(userAction.getCollectTopicIdJsonArray());
+    }
+
+    @Override
+    public int countUserAttentionTopicTotals(int userId) {
+        UserActionDO userAction = this.getUserActionDONotNull(userId);
+        return JsonUtil.countArrayLengthByJsonArrayString(userAction.getAttentionTopicIdJsonArray());
+    }
+
+    @Override
     public int countUserFollowingTotals(int userId) {
         UserActionDO userAction = this.getUserActionDONotNull(userId);
         return JsonUtil.countArrayLengthByJsonArrayString(userAction.getFollowingUserIdJsonArray());
@@ -143,7 +161,14 @@ public class UserServiceImpl implements IUserService {
                 ? this.isEmailType(username) ? userDAO.getUserByEmail(username) : userDAO.getUserByName(username)
                 : userDAO.getUserByEmail(email);
 
-        return this.getUserInfoMapByUser(user);
+       Map<String, Object> userInfoMap = this.getUserInfoMap(user);
+            userInfoMap.put(ParamConst.FOLLOING, this.countUserFollowingTotals(user.getId()));
+            userInfoMap.put(ParamConst.FOLLOWED, this.countUserFollowedTotals(user.getId()));
+            userInfoMap.put(ParamConst.LIKE, this.countUserLikeTopicTotals(user.getId()));
+            userInfoMap.put(ParamConst.COLLECT, this.countUserCollectTopicTotals(user.getId()));
+            userInfoMap.put(ParamConst.ATTENTION, this.countUserAttentionTopicTotals(user.getId()));
+
+        return userInfoMap;
     }
 
     @Override

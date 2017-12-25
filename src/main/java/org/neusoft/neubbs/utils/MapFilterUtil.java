@@ -32,6 +32,8 @@ public final class MapFilterUtil {
     * 过滤用户信息
     *    - 仅用于 user service,
     *    - 修改 name -> username
+    *    - 修改 avator，拼接图片链接（FTP 服务器上，Netty 代理访问）
+    *    - 修改 id -> userid
     *    - 删除 id, name, password, rank
     *
     * @param userInfoMap 用户信息Map
@@ -40,6 +42,7 @@ public final class MapFilterUtil {
       //re-build username and avator field
       userInfoMap.put(ParamConst.USERNAME, userInfoMap.get(ParamConst.NAME));
       userInfoMap.put(ParamConst.AVATOR, StringUtil.spliceUserAvatorUrl(userInfoMap, SetConst.HTTP));
+      userInfoMap.put(ParamConst.USER_ID, userInfoMap.get(ParamConst.ID));
 
       removeKeys(userInfoMap,
               new String[] {ParamConst.ID, ParamConst.NAME, ParamConst.PASSWORD, ParamConst.RANK});

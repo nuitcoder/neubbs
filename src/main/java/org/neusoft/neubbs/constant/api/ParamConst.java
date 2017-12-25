@@ -29,6 +29,8 @@ public final class ParamConst {
     public static final String CREATETIME = "createtime";
     public static final String LAST_REPLY_USER_ID = "lastreplyuserid";
     public static final String LAST_REPLY_TIME = "lastreplytime";
+    public static final String FOLLOING = "following";
+    public static final String FOLLOWED = "followed";
 
     public static final String CAPTCHA = "captcha";
 
@@ -52,6 +54,8 @@ public final class ParamConst {
 
     public static final String CONTENT = "content";
     public static final String LIKE = "like";
+    public static final String COLLECT = "collect";
+    public static final String ATTENTION = "attention";
     public static final String READ = "read";
 
     public static final String NUMBER = "number";
