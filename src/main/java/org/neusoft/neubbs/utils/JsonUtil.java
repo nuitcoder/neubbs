@@ -115,4 +115,14 @@ public final class JsonUtil {
     public static List<Integer> changeJsonArrayStringToIntegerList(String jsonArrayString) {
         return JSON.parseArray(jsonArrayString, Integer.class);
     }
+
+    /**
+     * 统计 JSON 数组字符串长度
+     *
+     * @param jsonArrayString　JSON数组字符串
+     * @return int JSON数组字符串长度
+     */
+    public static int countArrayLengthByJsonArrayString(String jsonArrayString) {
+        return JSON.parseArray(jsonArrayString).size();
+    }
 }

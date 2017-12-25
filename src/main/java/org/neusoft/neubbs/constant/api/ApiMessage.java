@@ -37,6 +37,8 @@ public final class ApiMessage {
 
     public static final String GENERATE_CAPTCHA_FAIL = "generate captcha fail";
 
+    public static final String USER_OPERATE_FAIL = "user operate fail";
+
     /**
      * Count api 警告信息
      */

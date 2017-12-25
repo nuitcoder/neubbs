@@ -23,7 +23,9 @@ import org.neusoft.neubbs.utils.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -123,6 +125,18 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
+    public int countUserFollowingTotals(int userId) {
+        UserActionDO userAction = this.getUserActionDONotNull(userId);
+        return JsonUtil.countArrayLengthByJsonArrayString(userAction.getFollowingUserIdJsonArray());
+    }
+
+    @Override
+    public int countUserFollowedTotals(int userId) {
+        UserActionDO userAction = this.getUserActionDONotNull(userId);
+        return JsonUtil.countArrayLengthByJsonArrayString(userAction.getFollowedUserIdJsonArray());
+    }
+
+    @Override
     public Map<String, Object> getUserInfoToPageModelMap(String username, String email) {
         //get user information
         UserDO user = username != null
@@ -179,6 +193,38 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
+    public List<Map<String, Object>> listAllFollowingUserInfoToPageModelList(int userId) {
+        UserActionDO userAction = this.getUserActionDONotNull(userId);
+
+        List<Integer> followingUserIdList = JsonUtil.changeJsonArrayStringToIntegerList(
+                userAction.getFollowingUserIdJsonArray()
+        );
+
+        List<Map<String, Object>> followingUserInfoMapList = new ArrayList<>(followingUserIdList.size());
+        for (int followingUserId: followingUserIdList) {
+            followingUserInfoMapList.add(this.getUserInfoMap(this.getUserInfoById(followingUserId)));
+        }
+
+        return followingUserInfoMapList;
+    }
+
+    @Override
+    public List<Map<String, Object>> listAllFollowedUserInfoToPageModelList(int userId) {
+        UserActionDO userAction = this.getUserActionDONotNull(userId);
+
+        List<Integer> followedUserIdList = JsonUtil.changeJsonArrayStringToIntegerList(
+                userAction.getFollowedUserIdJsonArray()
+        );
+
+        List<Map<String, Object>> followedUserInfoMapList = new ArrayList<>(followedUserIdList.size());
+        for (int followedUserId: followedUserIdList) {
+            followedUserInfoMapList.add(this.getUserInfoMap(this.getUserInfoById(userId)));
+        }
+
+        return followedUserInfoMapList;
+    }
+
+    @Override
     public boolean isUserExist(String username, String email) {
         return username != null
                 ? this.isEmailType(username) ? this.isExistUserByEmail(username) : this.isExistUserByName(username)
@@ -207,6 +253,16 @@ public class UserServiceImpl implements IUserService {
         String userLikeTopicIdIntJsonArrayString = userActionDAO.getUserAction(userId).getLikeTopicIdJsonArray();
 
         return JsonUtil.isJsonArrayStringExistIntElement(userLikeTopicIdIntJsonArrayString, topicId);
+    }
+
+    @Override
+    public boolean isFollowingUser(int currentUserId, int followingUserId) {
+        this.getUserDONotNull(currentUserId);
+        this.getUserDONotNull(followingUserId);
+
+        return JsonUtil.isJsonArrayStringExistIntElement(
+                this.getUserFollowingUserIdJsonArrayStringByUserId(currentUserId), followingUserId
+        );
     }
 
     @Override
@@ -317,12 +373,96 @@ public class UserServiceImpl implements IUserService {
         }
     }
 
+    @Override
+    public List<Integer> operateFollowUser(int currentUserId, int followingUserId) {
+        //isFollowingUser() already checked 'currentUserId' and 'followingUserId'
+
+        //true -> do 'dec', false -> do 'inc'
+        if (this.isFollowingUser(currentUserId, followingUserId)) {
+            this.decUserFollowingToUpdateDatabase(currentUserId, followingUserId);
+        } else {
+            this.incUserFollowingToUpdateDatabase(currentUserId, followingUserId);
+        }
+
+        return JsonUtil.changeJsonArrayStringToIntegerList(
+                this.getUserFollowingUserIdJsonArrayStringByUserId(currentUserId)
+        );
+    }
+
 
     /*
      * ***********************************************
      * private method
      * ***********************************************
      */
+
+    /*
+     * ***********************************************
+     * database operate method (update forum_user_action)
+     *      - user attention user
+     * ***********************************************
+     */
+
+    /**
+     * (inc) 用户主动关注
+     *
+     * @param currentUserId 当前用户id
+     * @param followingUserId 主动关注用户id
+     */
+    private void incUserFollowingToUpdateDatabase(int currentUserId, int followingUserId) {
+        //add following user for current user
+        if (userActionDAO.updateFollowingUserIdJsonArrayByOneUserIdToAppendEnd(currentUserId, followingUserId) == 0) {
+            throwUserActionUpdateFailException(SetConst.FOLLOWING_INC);
+        }
+
+        //add followed user for following user
+        if (userActionDAO.updateFollowedUserIdJsonArrayByOneUserIdToAppendEnd(followingUserId, currentUserId) == 0) {
+            throwUserActionUpdateFailException(SetConst.FOLLOWED_INC);
+        }
+    }
+
+    /**
+     * (dec) 用户主动关注
+     *
+     * @param currentUserId 当前用户id
+     * @param followingUserId 将取消的主动关注用户id
+     */
+    private void decUserFollowingToUpdateDatabase(int currentUserId, int followingUserId) {
+        String followingUserJsonArrayString = this.getUserFollowingUserIdJsonArrayStringByUserId(currentUserId);
+        int userIdIndex = JsonUtil.getJsonArrayStringForIntElementIndex(followingUserJsonArrayString, followingUserId);
+        if (userActionDAO.updateFollowingUserIdJsonArrayByIndexToRemoveOneUserId(currentUserId, userIdIndex) == 0) {
+            throwUserActionUpdateFailException(SetConst.FOLLOWING_DEC);
+        }
+
+        String followedUserJsonArrayString = this.getUserFollowedUserIdJsonArrayStringByUserId(followingUserId);
+        userIdIndex = JsonUtil.getJsonArrayStringForIntElementIndex(followedUserJsonArrayString, currentUserId);
+        if (userActionDAO.updateFollowedUserIdJsonArrayByIndexToRemoveOneUserId(followingUserId, userIdIndex) == 0) {
+            throwUserActionUpdateFailException(SetConst.FOLLOWED_DEC);
+        }
+    }
+
+    /*
+     * ***********************************************
+     * filter information map (use util/MapFilter.java)
+     * ***********************************************
+     */
+
+    /**
+     * 获取用户基本信息 Map
+     *
+     * @param user 用户对象
+     * @return Map 已处理的用户信息
+     */
+    private Map<String, Object> getUserInfoMap(UserDO user) {
+        if (user == null) {
+            return new LinkedHashMap<>(SetConst.SIZE_ONE);
+        }
+
+        Map<String, Object> userInfoMap = JsonUtil.toMapByObject(user);
+        MapFilterUtil.filterUserInfo(userInfoMap);
+
+        return userInfoMap;
+    }
 
      /*
      * ***********************************************
@@ -418,6 +558,43 @@ public class UserServiceImpl implements IUserService {
         return user;
     }
 
+    /**
+     * 获取用户行为对象不能为空
+     *
+     * @param userId 用户id
+     * @return UserActionDO 用户行为对象
+     */
+    private UserActionDO getUserActionDONotNull(int userId) {
+        UserActionDO userAction = userActionDAO.getUserAction(userId);
+        if (userAction == null) {
+            throwNoUserException();
+        }
+
+        return userAction;
+    }
+
+    /**
+     * 获取用户主动关注用户 id JSON 数组字符串
+     *      - 用户不能为空
+     *
+     * @param userId 用户id
+     * @return String 主动关注用户idJSON数组字符串
+     */
+    private String getUserFollowingUserIdJsonArrayStringByUserId(int userId) {
+        return userActionDAO.getUserActionFollowingUserIdJsonArray(userId).getFollowingUserIdJsonArray();
+    }
+
+    /**
+     * 获取用户被关注用户 id JSON 数组字符串
+     *      - 用户不能为空
+     *
+     * @param userId 用户id
+     * @return String 被关注用户idJSON数组字符串
+     */
+    private String getUserFollowedUserIdJsonArrayStringByUserId(int userId) {
+        return userActionDAO.getUserActionFollowedUserIdJsonArray(userId).getFollowedUserIdJsonArray();
+    }
+
     /*
      * ***********************************************
      * throw exception method
@@ -428,5 +605,15 @@ public class UserServiceImpl implements IUserService {
      */
     private void throwNoUserException() {
         throw new AccountErrorException(ApiMessage.NO_USER).log(LogWarn.ACCOUNT_01);
+    }
+
+    /**
+     * 抛出用户行为更新失败异常
+     *      - 更新 forum_user_action 失败（关注用户）
+     *
+     * @param userOperate 用户操作
+     */
+    private void throwUserActionUpdateFailException(String userOperate) {
+        throw new AccountErrorException(ApiMessage.USER_OPERATE_FAIL).log(userOperate + LogWarn.ACCOUNT_18);
     }
 }

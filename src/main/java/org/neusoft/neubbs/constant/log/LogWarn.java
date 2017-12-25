@@ -29,6 +29,8 @@ public final class LogWarn {
     public static final String ACCOUNT_16 = " 创建 jwt 加密 token 失败！";
     public static final String ACCOUNT_17 = " IO异常，生成 captcha 图片验证码失败";
 
+    public static final String ACCOUNT_18 = " （用户）行为失败";
+
 
 
     /*****************************Topic api**********************************/

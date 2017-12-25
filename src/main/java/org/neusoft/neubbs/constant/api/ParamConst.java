@@ -37,6 +37,8 @@ public final class ParamConst {
 
     public static final String USER_DEFAULT_IMAGE = "default-avator-min.jpeg";
 
+    public static final String FOLLOWING_USER_ID = "followingUserId";
+
     /**
      * Topic
      */

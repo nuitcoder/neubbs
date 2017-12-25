@@ -2,6 +2,7 @@ package org.neusoft.neubbs.service;
 
 import org.neusoft.neubbs.entity.UserDO;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -57,11 +58,27 @@ public interface IUserService {
     int countUserTotals();
 
     /**
+     * 统计用户关注人数（主动关注）
+     *
+     * @param userId 用户id
+     * @return int 关注人总数
+     */
+    int countUserFollowingTotals(int userId);
+
+    /**
+     * 统计用户被关注人数（被关注）
+     *
+     * @param userId 用户id
+     * @return int 被关注人总数
+     */
+    int countUserFollowedTotals(int userId);
+
+    /**
      * 获取用户信息（已经登录状态）
      *
      * @param username 用户名
      * @param email 用户邮箱
-     * @return Map<String, Object> userInfoMap用户信息键值对
+     * @return Map userInfoMap用户信息键值对
      */
     Map<String, Object> getUserInfoToPageModelMap(String username, String email);
 
@@ -93,9 +110,25 @@ public interface IUserService {
      * 获取用户信息 Map
      *
      * @param user 用户对象
-     * @return Map<String, Object> 已过滤过的用户信息Map
+     * @return Map 已过滤过的用户信息Map
      */
     Map<String, Object> getUserInfoMapByUser(UserDO user);
+
+    /**
+     * 获取所有主动关注人用户信息列表
+     *
+     * @param userId 用户id
+     * @return List 用户主动关注用户信息列表
+     */
+    List<Map<String, Object>> listAllFollowingUserInfoToPageModelList(int userId);
+
+    /**
+     * 获取所有被关注用户信息列表
+     *
+     * @param userId 用户id
+     * @return List 用户被关注用户信息列表
+     */
+    List<Map<String, Object>> listAllFollowedUserInfoToPageModelList(int userId);
 
     /**
      * 用户是否存在
@@ -132,6 +165,15 @@ public interface IUserService {
      * @return boolean 是点击过喜欢按钮（true-喜欢，false-未点击）
      */
     boolean isUserLikeTopic(int userId, int topicId);
+
+    /**
+     * 判断用户是否主动关注用户
+     *
+     * @param currentUserId 当前用户id
+     * @param followingUserId 主动关注用户id
+     * @return boolean 判断结果（true-已关注，false-未关注）
+     */
+    boolean isFollowingUser(int currentUserId, int followingUserId);
 
     /**
      * 修改用户个人信息
@@ -197,4 +239,13 @@ public interface IUserService {
      * @param command 操作指令（inc-自增1，dec-自减1）
      */
     void alterUserActionLikeTopicIdArray(int userId, int topicId, String command);
+
+    /**
+     * 操作关注用户
+     *
+     * @param currentUserId 当前用户 id
+     * @param followingUserId 关注用户id
+     * @return List 用户目前主动关注用户id列表
+     */
+    List<Integer> operateFollowUser(int currentUserId, int followingUserId);
 }

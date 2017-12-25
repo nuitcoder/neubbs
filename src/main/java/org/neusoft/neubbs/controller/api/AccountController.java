@@ -8,6 +8,7 @@ import org.neusoft.neubbs.constant.secret.SecretInfo;
 import org.neusoft.neubbs.controller.annotation.AccountActivation;
 import org.neusoft.neubbs.controller.annotation.LoginAuthorization;
 import org.neusoft.neubbs.dto.PageJsonDTO;
+import org.neusoft.neubbs.dto.PageJsonListDTO;
 import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.service.ICaptchaService;
 import org.neusoft.neubbs.service.IEmailService;
@@ -37,6 +38,8 @@ import java.util.Map;
  *   账户 api
  *      + 获取用户信息
  *      + 获取用户激活状态
+ *      + 获取所有主动关注人信息
+ *      + 获取所有被关注人信息
  *      + 登录
  *      + 注销
  *      + 注册
@@ -48,6 +51,7 @@ import java.util.Map;
  *      + 图片验证码（页面生成图片）
  *      + 检查验证码（比较用户输入是否与图片一致）
  *      + 忘记密码（发送临时密码 email）
+ *      + 关注用户
  *
  * @author Suvan
  */
@@ -122,6 +126,34 @@ public final class AccountController {
     public PageJsonDTO accountState(@RequestParam(value = "username", required = false) String username) {
         paramCheckService.check(ParamConst.USERNAME, username);
         return new PageJsonDTO(userService.isUserActivatedByName(username));
+    }
+
+    /**
+     * 获取用户所有主动关注人信息
+     *
+     * @param userId 用户id
+     * @return PageJsonListDTO 页面JSON列表传输对象
+     */
+    @RequestMapping(value = "/following", method = RequestMethod.GET)
+    @ResponseBody
+    public PageJsonListDTO followingList(@RequestParam(value = "userid", required = false) String userId) {
+        paramCheckService.check(ParamConst.USER_ID, userId);
+        return new PageJsonListDTO(AjaxRequestStatus.SUCCESS,
+                userService.listAllFollowingUserInfoToPageModelList(Integer.valueOf(userId)));
+    }
+
+    /**
+     * 获取用户所有被关注信息
+     *
+     * @param userId 用户id
+     * @return PageJsonListDTO 页面JSON列表传输对象
+     */
+    @RequestMapping(value = "/followed", method = RequestMethod.GET)
+    @ResponseBody
+    public PageJsonListDTO followedList(@RequestParam(value = "userid", required = false) String userId) {
+        paramCheckService.check(ParamConst.USER_ID, userId);
+        return new PageJsonListDTO(AjaxRequestStatus.SUCCESS,
+                userService.listAllFollowedUserInfoToPageModelList(Integer.valueOf(userId)));
     }
 
     /**
@@ -423,5 +455,28 @@ public final class AccountController {
         );
 
         return new PageJsonDTO(AjaxRequestStatus.SUCCESS);
+    }
+
+    /**
+     * 关注用户
+     *
+     * @param requestBodyParams request-body内JSON数据
+     * @param request http请求
+     * @return PageJsonDTO 页面JSON传输对象
+     */
+    @RequestMapping(value = "/following", method = RequestMethod.POST, consumes = "application/json")
+    @LoginAuthorization @AccountActivation
+    @ResponseBody
+    public PageJsonDTO following(@RequestBody Map<String, Object> requestBodyParams, HttpServletRequest request) {
+        Integer followingUserId = (Integer) requestBodyParams.get(ParamConst.USER_ID);
+
+        paramCheckService.check(ParamConst.USER_ID, String.valueOf(followingUserId));
+
+        UserDO cookieUser = secretService.jwtVerifyTokenByTokenByKey(
+                httpService.getAuthenticationCookieValue(request), SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY
+        );
+
+        return new PageJsonDTO(AjaxRequestStatus.SUCCESS,
+                ParamConst.FOLLOWING_USER_ID, userService.operateFollowUser(cookieUser.getId(), followingUserId));
     }
 }
