@@ -49,6 +49,7 @@ public final class SetConst {
     public static final int ZERO = 0;
     public static final int ONE = 1;
     public static final int TWO = 2;
+    public static final int FIVE = 5;
     public static final int THOUSAND = 1000;
     public static final int TWENTY_FOUR = 24;
     public static final int SIXTY = 60;

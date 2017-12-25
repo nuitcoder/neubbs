@@ -5,12 +5,14 @@ import org.neusoft.neubbs.constant.api.ParamConst;
 import org.neusoft.neubbs.constant.api.SetConst;
 import org.neusoft.neubbs.dto.PageJsonDTO;
 import org.neusoft.neubbs.service.IHttpService;
+import org.neusoft.neubbs.service.IParamCheckService;
 import org.neusoft.neubbs.service.ITopicService;
 import org.neusoft.neubbs.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,6 +28,12 @@ import java.util.Map;
  *      - 在线统计
  *          - 在线访问人数
  *          - 在线登陆人数
+ *      - 用户统计
+ *          - 主动关注人数
+ *          - 粉丝数
+ *          - 喜欢话题数
+ *          - 收藏话题数
+ *          - 关注话题数量
  *
  * @author Suvan
  */
@@ -36,13 +44,15 @@ public class CountController {
     private final IHttpService httpService;
     private final IUserService userService;
     private final ITopicService topicService;
+    private final IParamCheckService paramCheckService;
 
     @Autowired
     public CountController(IHttpService httpService, IUserService userService,
-                           ITopicService topicService) {
+                           ITopicService topicService, IParamCheckService paramCheckService) {
         this.httpService = httpService;
         this.userService = userService;
         this.topicService = topicService;
+        this.paramCheckService = paramCheckService;
     }
 
     /**
@@ -79,5 +89,31 @@ public class CountController {
             onlineCountMap.put(ParamConst.VISIT_USER, httpService.getOnlineVisitUserNumber(request));
             onlineCountMap.put(ParamConst.LOGIN_USER, httpService.getOnlineLoginUserNumber(request));
         return new PageJsonDTO(AjaxRequestStatus.SUCCESS, onlineCountMap);
+    }
+
+    /**
+     * 用户统计
+     *      - 用户主动关注人数
+     *      - 用户粉丝数
+     *      - 用户喜欢话题数
+     *      - 用户收藏话题数
+     *      - 用户关注话题数
+     *
+     * @param userId 用户id
+     * @return PageJsonDTO 页面JSON传输对象
+     */
+    @RequestMapping(value = "user", method = RequestMethod.GET)
+    @ResponseBody
+    public PageJsonDTO user(@RequestParam(value = "userid", required = false) String userId) {
+        paramCheckService.check(ParamConst.USER_ID, userId);
+
+        int userIdInt = Integer.valueOf(userId);
+        Map<String, Object> userCountMap = new LinkedHashMap<>(SetConst.FIVE);
+            userCountMap.put(ParamConst.FOLLOING, userService.countUserFollowingTotals(userIdInt));
+            userCountMap.put(ParamConst.FOLLOWED, userService.countUserFollowedTotals(userIdInt));
+            userCountMap.put(ParamConst.LIKE, userService.countUserLikeTopicTotals(userIdInt));
+            userCountMap.put(ParamConst.COLLECT, userService.countUserCollectTopicTotals(userIdInt));
+            userCountMap.put(ParamConst.ATTENTION, userService.countUserAttentionTopicTotals(userIdInt));
+        return new PageJsonDTO(AjaxRequestStatus.SUCCESS, userCountMap);
     }
 }
