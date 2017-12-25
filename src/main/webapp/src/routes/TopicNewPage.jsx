@@ -29,11 +29,27 @@ class TopicNewPage extends Component {
     if (!this.props.loggedIn) {
       this.props.history.push(routes.ROOT)
     }
+
+    if (!this.props.isActivate) {
+      this.props.history.push(routes.ROOT)
+      this.props.dispatch({
+        type: 'app/setActivateModal',
+        payload: true,
+      })
+    }
   }
 
   componentWillUpdate(nextProps) {
     if (!nextProps.loggedIn) {
       this.props.history.push(routes.ROOT)
+    }
+
+    if (!nextProps.isActivate) {
+      this.props.history.push(routes.ROOT)
+      this.props.dispatch({
+        type: 'app/setActivateModal',
+        payload: true,
+      })
     }
   }
 
@@ -65,6 +81,7 @@ class TopicNewPage extends Component {
 TopicNewPage.propTypes = {
   loggedIn: PropTypes.bool.isRequired,
   categorys: PropTypes.array.isRequired,
+  isActivate: PropTypes.bool.isRequired,
   dispatch: PropTypes.func.isRequired,
   history: PropTypes.object.isRequired,
 }
@@ -72,8 +89,10 @@ TopicNewPage.propTypes = {
 const mapStateToProps = (state) => {
   const { loggedIn } = state.login
   const { categorys } = state.topics
+  const { current } = state.account
   return {
     loggedIn,
+    isActivate: current.state || false,
     categorys,
   }
 }

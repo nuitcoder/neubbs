@@ -5,13 +5,10 @@ export default {
   namespace: 'app',
 
   state: {
+    showActivateModal: false,
     showCategoryModal: false,
     countdown: {
       activate: 0,
-    },
-    emailForm: {
-      email: '',
-      showEmailInput: false,
     },
     count: {
       user: 0,
@@ -53,23 +50,10 @@ export default {
       }
     },
 
-    toggleEmailInput(state) {
+    setActivateModal(state, { payload }) {
       return {
         ...state,
-        emailForm: {
-          ...state.emailForm,
-          showEmailInput: !state.emailForm.showEmailInput,
-        },
-      }
-    },
-
-    changeEmailText(state, { payload: { email } }) {
-      return {
-        ...state,
-        emailForm: {
-          ...state.emailForm,
-          email,
-        },
+        showActivateModal: payload,
       }
     },
 

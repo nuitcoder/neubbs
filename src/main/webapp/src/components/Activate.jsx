@@ -40,24 +40,26 @@ class Activate extends Component {
   constructor(props) {
     super(props)
 
-    this.state = {
-      showModal: false,
-    }
-
     this.toggleModal = this.toggleModal.bind(this)
     this.submitEmail = this.submitEmail.bind(this)
   }
 
   componentWillReceiveProps(nextProps) {
     const { email } = nextProps.current
-    if (email) {
-      this.setState({ showModal: !!email })
+    const { showActivateModal } = this.props
+    if (email && !showActivateModal) {
+      this.props.dispatch({
+        type: 'app/setActivateModal',
+        payload: true,
+      })
     }
   }
 
   toggleModal() {
-    this.setState({
-      showModal: !this.state.showModal,
+    const { showActivateModal } = this.props
+    this.props.dispatch({
+      type: 'app/setActivateModal',
+      payload: !showActivateModal,
     })
   }
 
@@ -76,7 +78,7 @@ class Activate extends Component {
   }
 
   render() {
-    const { email } = this.props.current
+    const { current: { email }, showActivateModal } = this.props
     const inbox = email ? LinkToInbox.getHref(email) : ''
 
     if (email) {
@@ -95,7 +97,7 @@ class Activate extends Component {
             </StyledGrid>
           </StyledAlert>
 
-          <Modal show={this.state.showModal} onHide={this.toggleModal}>
+          <Modal show={showActivateModal} onHide={this.toggleModal}>
             <Modal.Header closeButton>
               <Modal.Title>
                 <FormattedMessage id="activate.modal.title" />
@@ -124,13 +126,16 @@ class Activate extends Component {
 
 Activate.propTypes = {
   current: PropTypes.object.isRequired,
+  showActivateModal: PropTypes.bool.isRequired,
   dispatch: PropTypes.func.isRequired,
 }
 
 const mapStateToProps = (state) => {
   const { current } = state.account
+  const { showActivateModal } = state.app
   return {
     current,
+    showActivateModal,
   }
 }
 

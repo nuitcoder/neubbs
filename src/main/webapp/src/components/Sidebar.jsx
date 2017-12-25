@@ -52,16 +52,21 @@ const Sidebar = (props) => {
 Sidebar.propTypes = {
   count: PropTypes.object.isRequired,
   loggedIn: PropTypes.bool.isRequired,
+  isActivate: PropTypes.bool.isRequired,
+  hotTopics: PropTypes.array.isRequired,
   history: PropTypes.object.isRequired,
+  dispatch: PropTypes.func.isRequired,
 }
 
 const mapStateToProps = (state) => {
   const { count } = state.app
   const { loggedIn } = state.login
   const { topicList } = state.topics
+  const { current } = state.account
   return {
     count,
     loggedIn,
+    isActivate: current.state || false,
     hotTopics: topicList.hot,
   }
 }

@@ -37,10 +37,10 @@ export default {
   'validate.category.required': '分类不能为空',
 
   // Activate
-  'activate.alert.text': '你的账号尚未激活，投票、评论、关注等功能将无法使用',
+  'activate.alert.text': '你的账号尚未发布，投票、评论、关注等功能将无法使用',
   'activate.alert.button': '马上激活',
   'activate.modal.title': '请激活账号',
-  'activate.modal.alert': '为了使用投票、评论、关注等功能，请激活你的账号',
+  'activate.modal.alert': '为了使用发布、评论、关注等功能，请激活你的账号',
   'activate.modal.email': '你的邮箱：',
   'activate.modal.change_email': '修改邮箱',
   'activate.modal.tips': '激活邮件已发送，请注意查收（注意检查回收站、垃圾箱中是否有激活邮件）',
