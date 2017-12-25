@@ -7,7 +7,7 @@ import topics from '../services/topics'
 import * as routes from '../config/routes'
 
 function filterTopics(data) {
-  return _.sortBy(_.uniqBy(data, 'topicid'), 'lastreplytime').reverse()
+  return _.sortBy(_.uniqBy(data.reverse(), 'topicid'), 'lastreplytime').reverse()
 }
 
 export default {
@@ -72,6 +72,7 @@ export default {
       try {
         if (data.success) {
           const { topicid } = data.model
+          yield put({ type: 'query', payload: { page: 1, limit: 25 } })
           yield put(routerRedux.push(routes.TOPIC_DETAIL.replace(':id', topicid)))
         } else {
           throw data.message
@@ -177,6 +178,7 @@ export default {
       try {
         if (data.success) {
           yield put({ type: 'detail', payload: { topicid } })
+          yield put({ type: 'query', payload: { page: 1, limit: 25 } })
         } else {
           throw data.messgae
         }
@@ -312,7 +314,6 @@ export default {
           },
         }
       }
-
 
       return {
         ...state,

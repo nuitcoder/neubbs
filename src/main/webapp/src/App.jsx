@@ -103,7 +103,9 @@ class App extends Component {
   renderActivate() {
     const { loggedIn, current } = this.props
     const { pathname } = this.props.location
-    if (loggedIn && !current.state && pathname !== routes.ACCOUNT_VALIDATE) {
+    if (loggedIn &&
+        current.state === false &&
+        pathname !== routes.ACCOUNT_VALIDATE) {
       return <Activate />
     }
     return null
