@@ -56,22 +56,23 @@
    </select>
    <select id="listTopicDESCByStartRowByCount" resultMap="TopicMap">
       SELECT ft_id, fu_id, ftcg_id, ft_title, ft_replies, ft_lastreplyuserid, ft_lastreplytime, ft_createtime
-      FROM forum_topic ORDER BY ft_createtime DESC LIMIT #{param1, jdbcType = INTEGER}, #{param2, jdbcType = INTEGER}
+      FROM forum_topic ORDER BY ft_lastreplytime DESC
+      LIMIT #{param1, jdbcType = INTEGER}, #{param2, jdbcType = INTEGER}
    </select>
    <select id="listTopicDESCByStartRowByCountByCategoryId" resultMap="TopicMap">
       SELECT ft_id, fu_id, ftcg_id, ft_title, ft_replies, ft_lastreplyuserid, ft_lastreplytime, ft_createtime
       FROM forum_topic  WHERE ftcg_id = #{param3, jdbcType = INTEGER}
-      ORDER BY ft_createtime DESC LIMIT #{param1, jdbcType = INTEGER}, #{param2, jdbcType = INTEGER}
+      ORDER BY ft_lastreplytime DESC LIMIT #{param1, jdbcType = INTEGER}, #{param2, jdbcType = INTEGER}
    </select>
    <select id="listTopicDESCByStartRowByCountByUserId" resultMap="TopicMap">
       SELECT ft_id, fu_id, ftcg_id, ft_title, ft_replies, ft_lastreplyuserid, ft_lastreplytime, ft_createtime
       FROM forum_topic WHERE fu_id = #{param3, jdbcType = INTEGER}
-      ORDER BY ft_createtime DESC LIMIT #{param1, jdbcType = INTEGER}, #{param2, jdbcType = INTEGER}
+      ORDER BY ft_lastreplytime DESC LIMIT #{param1, jdbcType = INTEGER}, #{param2, jdbcType = INTEGER}
    </select>
    <select id="listTopicDESCByStartRowByCountByCategoryIdByUserId" resultMap="TopicMap">
       SELECT ft_id, fu_id, ftcg_id, ft_title, ft_replies, ft_lastreplyuserid, ft_lastreplytime, ft_createtime
       FROM forum_topic WHERE ftcg_id = #{param3, jdbcType = INTEGER} AND fu_id = #{param4, jdbcType = INTEGER}
-      ORDER BY ft_createtime DESC LIMIT #{param1, jdbcType = INTEGER}, #{param2, jdbcType = INTEGER}
+      ORDER BY ft_lastreplytime DESC LIMIT #{param1, jdbcType = INTEGER}, #{param2, jdbcType = INTEGER}
    </select>
 
    <update id="updateCategoryById">
