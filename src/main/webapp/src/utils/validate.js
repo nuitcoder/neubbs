@@ -46,7 +46,7 @@ export const validateRegister = (values, props) => {
   const { intl: { formatMessage } } = props
 
   const rules = {
-    username: 'required|between:3,15',
+    username: 'required|between:3,15|alpha_num',
     email: 'required|email',
     password: 'required|between:6,16',
     password_confirmation: 'required|same:password',
@@ -54,6 +54,7 @@ export const validateRegister = (values, props) => {
   const messages = {
     'required.username': formatMessage({ id: 'validate.username.required' }),
     'between.username': formatMessage({ id: 'validate.username.between' }),
+    'alpha_num.username': formatMessage({ id: 'validate.username.alpha_num' }),
     'required.email': formatMessage({ id: 'validate.email.required' }),
     'email.email': formatMessage({ id: 'validate.email.email' }),
     'required.password': formatMessage({ id: 'validate.password.required' }),
@@ -137,13 +138,18 @@ export const uniqueAsync = (values, dispatch, props) => {
     ]).then(([usernameRes, emailRes]) => {
       const errors = {}
 
-      if (usernameRes !== false && usernameRes.data.success) {
-        errors.username = formatMessage({ id: 'validate.username.unique' })
+      if (usernameRes !== false) {
+        const { success, model } = usernameRes.data
+        if (success && !_.isEmpty(model)) {
+          errors.username = formatMessage({ id: 'validate.username.unique' })
+        }
       }
-      if (emailRes !== false && emailRes.data.success) {
-        errors.email = formatMessage({ id: 'validate.email.unique' })
+      if (emailRes !== false) {
+        const { success, model } = emailRes.data
+        if (success && !_.isEmpty(model)) {
+          errors.email = formatMessage({ id: 'validate.email.unique' })
+        }
       }
-
       if (_.isEmpty(errors)) {
         resolve()
       } else {

@@ -31,4 +31,5 @@ LoginForm.propTypes = {
 export default injectIntl(reduxForm({
   form: 'login',
   validate: validateLogin,
+  asyncBlurFields: ['username', 'password'],
 })(LoginForm))

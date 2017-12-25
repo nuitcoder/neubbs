@@ -44,17 +44,6 @@ class Activate extends Component {
     this.submitEmail = this.submitEmail.bind(this)
   }
 
-  componentWillReceiveProps(nextProps) {
-    const { email } = nextProps.current
-    const { showActivateModal } = this.props
-    if (email && !showActivateModal) {
-      this.props.dispatch({
-        type: 'app/setActivateModal',
-        payload: true,
-      })
-    }
-  }
-
   toggleModal() {
     const { showActivateModal } = this.props
     this.props.dispatch({

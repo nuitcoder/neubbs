@@ -5,7 +5,7 @@ export default {
   namespace: 'app',
 
   state: {
-    showActivateModal: false,
+    showActivateModal: true,
     showCategoryModal: false,
     countdown: {
       activate: 0,

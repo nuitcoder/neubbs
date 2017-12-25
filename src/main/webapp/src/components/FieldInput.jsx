@@ -12,7 +12,9 @@ const InputErrorText = styled.span`
 `
 
 const FieldInput = (props) => {
-  const { input, type, placeholder, autoFocus, meta } = props
+  const {
+    input, type, placeholder, autoFocus, meta,
+  } = props
   const { className, inline } = props
   const { touched, error } = meta
 
