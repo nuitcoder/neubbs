@@ -129,7 +129,7 @@ const TopicDetail = (props) => {
           </Info>
         </Left>
         <Right>
-          <Link to="#" title={topic.user.username}>
+          <Link to={userUrl} title={topic.user.username}>
             <Avator src={topic.user.avator} />
           </Link>
         </Right>

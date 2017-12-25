@@ -26,6 +26,10 @@ injectGlobal`
     padding-top: 50px;
   }
 
+  *:focus {
+    outline: none !important;
+  }
+
   /* fix panel heading border bottom */
   .panel-default > .panel-heading,
   .panel-default > .panel-footer {

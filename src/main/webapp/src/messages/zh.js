@@ -86,6 +86,10 @@ export default {
   'account.info.sex.female': '女',
   'account.info.position': '居住地',
   'account.info.createtime': '加入于 {time}',
+  'account.profile.topic.text': '话题',
+  'account.profile.topic.reply': ' · {number} 条评论',
+  'account.profile.reply.text': '回复',
+  'account.profile.collect.text': '收藏',
 
   // Message
   'username or password is incorrect': '用户名或密码错误',

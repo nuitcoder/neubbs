@@ -25,6 +25,15 @@ export default {
           if (accountRe.test(pathname)) {
             const username = accountRe.exec(pathname)[1]
             dispatch({ type: 'query', payload: { username } })
+            dispatch({
+              type: 'topics/query',
+              payload: {
+                page: 1,
+                limit: 25,
+                username,
+              },
+            })
+            dispatch({ type: 'topics/pages', payload: { limit: 25, username } })
           }
         }
       })

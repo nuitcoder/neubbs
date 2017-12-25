@@ -11,7 +11,7 @@ import 'codemirror/mode/markdown/markdown'
 
 import Markdown from './Markdown'
 
-const tabs = {
+const TABS = {
   EDIT: 'EDIT',
   PREVIEW: 'PREVIEW',
 }
@@ -87,19 +87,19 @@ class Editor extends Component {
     const { content, minHeight } = this.props
 
     return (
-      <Tab.Container id="editor" defaultActiveKey={tabs.EDIT}>
+      <Tab.Container id="editor" defaultActiveKey={TABS.EDIT}>
         <Row className="clearfix">
           <Col md={12}>
             <Nav bsStyle="tabs">
-              <StyledNavItem eventKey={tabs.EDIT}>
+              <StyledNavItem eventKey={TABS.EDIT}>
                 <FormattedMessage id="form.editor.edit" />
               </StyledNavItem>
-              <StyledNavItem eventKey={tabs.PREVIEW}>
+              <StyledNavItem eventKey={TABS.PREVIEW}>
                 <FormattedMessage id="form.editor.preview" />
               </StyledNavItem>
             </Nav>
             <Tab.Content animation={false}>
-              <Tab.Pane eventKey={tabs.EDIT}>
+              <Tab.Pane eventKey={TABS.EDIT}>
                 <StyledCodeMirror
                   minHeight={minHeight}
                   value={content}
@@ -108,7 +108,7 @@ class Editor extends Component {
                   onChange={this.props.onChange}
                 />
               </Tab.Pane>
-              <Tab.Pane eventKey={tabs.PREVIEW}>
+              <Tab.Pane eventKey={TABS.PREVIEW}>
                 <StyledMarkdown minHeight={minHeight} source={content} />
               </Tab.Pane>
             </Tab.Content>
