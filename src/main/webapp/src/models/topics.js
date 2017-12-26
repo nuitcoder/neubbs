@@ -54,11 +54,16 @@ export default {
 
   effects: {
     * refresh(action, { put }) {
-      const { category } = action.payload
+      const { category, username } = action.payload
 
-      yield put({ type: 'resetTopics', payload: { category } })
-      yield put({ type: 'query', payload: { page: 1, limit: 25, category } })
-      yield put({ type: 'pages', payload: { limit: 25, category } })
+      yield put({ type: 'resetTopics', payload: { category, username } })
+      yield put({
+        type: 'query',
+        payload: {
+          page: 1, limit: 25, category, username,
+        },
+      })
+      yield put({ type: 'pages', payload: { limit: 25, category, username } })
     },
 
     * create(action, { put, call }) {
@@ -297,8 +302,8 @@ export default {
     },
 
     resetTopics(state, action) {
-      const { category } = action.payload
-      const { all, categorys } = state.topicList
+      const { category, username } = action.payload
+      const { all, categorys, users } = state.topicList
 
       let topicList = {
         all: all.slice(0, 25),
@@ -311,6 +316,16 @@ export default {
           categorys: {
             ...categorys,
             [category]: old.slice(0, 25),
+          },
+        }
+      }
+
+      if (username) {
+        const old = users[username] || []
+        topicList = {
+          users: {
+            ...users,
+            [username]: old.slice(0, 25),
           },
         }
       }

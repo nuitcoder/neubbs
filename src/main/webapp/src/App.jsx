@@ -17,7 +17,7 @@ import * as routes from './config/routes'
 injectGlobal`
   body {
     color: #333;
-    background-color: #e5e5e5;
+    background-color: #f3f3f3;
     font-size: 14px;
     font-family: Helvetica, Arial, "PingFang SC", Roboto, "Microsoft Yahei", "sans-serif";
   }

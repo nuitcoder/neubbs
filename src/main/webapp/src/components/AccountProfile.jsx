@@ -31,6 +31,10 @@ const StyledPanel = styled(Panel)`
   }
 `
 
+const Number = styled.span`
+  margin-left: 5px;
+`
+
 const StyledNavItem = styled(NavItem)`
   & {
     padding: 0 20px;
@@ -80,7 +84,7 @@ const Status = styled.div`
 
 const AccountProfile = (props) => {
   const {
-    username, topics, page, pageTotal, querying,
+    user, topics, page, pageTotal, querying, current,
   } = props
 
   const loadMoreTopics = () => {
@@ -90,7 +94,7 @@ const AccountProfile = (props) => {
         payload: {
           page: page + 1,
           limit: 25,
-          username,
+          username: user.username,
         },
       })
     }
@@ -135,12 +139,21 @@ const AccountProfile = (props) => {
             <Nav bsStyle="tabs">
               <StyledNavItem eventKey={TABS.TOPIC}>
                 <FormattedMessage id="account.profile.topic.text" />
+                <Number>
+                  {current.topic}
+                </Number>
               </StyledNavItem>
               <StyledNavItem eventKey={TABS.REPLY}>
                 <FormattedMessage id="account.profile.reply.text" />
+                <Number>
+                  {current.reply}
+                </Number>
               </StyledNavItem>
               <StyledNavItem eventKey={TABS.COLLECT}>
                 <FormattedMessage id="account.profile.collect.text" />
+                <Number>
+                  {current.collect}
+                </Number>
               </StyledNavItem>
             </Nav>
             <Tab.Content>
@@ -156,20 +169,23 @@ const AccountProfile = (props) => {
 }
 
 AccountProfile.propTypes = {
-  username: PropTypes.string.isRequired,
+  user: PropTypes.object.isRequired,
   topics: PropTypes.array.isRequired,
   page: PropTypes.number.isRequired,
   pageTotal: PropTypes.number.isRequired,
   querying: PropTypes.bool.isRequired,
+  current: PropTypes.object.isRequired,
   dispatch: PropTypes.func.isRequired,
 }
 
 const mapStateToProps = (state) => {
+  const { current } = state.account
   const { page, pageTotal, querying } = state.topics
   return {
     page,
     pageTotal,
     querying,
+    current,
   }
 }
 

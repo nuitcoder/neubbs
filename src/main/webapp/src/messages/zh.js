@@ -90,6 +90,11 @@ export default {
   'account.profile.topic.reply': ' · {number} 条评论',
   'account.profile.reply.text': '回复',
   'account.profile.collect.text': '收藏',
+  'account.sidebar.following': '关注了',
+  'account.sidebar.followed': '关注者',
+  'account.sidebar.like': '赞过的话题',
+  'account.sidebar.collect': '收藏的话题',
+  'account.sidebar.attention': '关注的话题',
 
   // Message
   'username or password is incorrect': '用户名或密码错误',

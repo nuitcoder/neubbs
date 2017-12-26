@@ -7,6 +7,7 @@ import _ from 'lodash'
 
 import AccountInfo from '../components/AccountInfo'
 import AccountProfile from '../components/AccountProfile'
+import AccountSidebar from '../components/AccountSidebar'
 
 const StyledCol = styled(Col)`
   @media (max-width: 768px) {
@@ -28,11 +29,14 @@ const AccountPage = (props) => {
         <div>
           <StyledCol md={9}>
             <AccountProfile
-              username={props.username}
+              user={props.user}
               topics={props.topics}
             />
           </StyledCol>
           <StyledCol md={3}>
+            <AccountSidebar
+              user={props.user}
+            />
           </StyledCol>
         </div>
       }
@@ -40,10 +44,14 @@ const AccountPage = (props) => {
   )
 }
 
+AccountPage.defaultProps = {
+  user: {},
+  topics: [],
+}
+
 AccountPage.propTypes = {
-  username: PropTypes.string.isRequired,
-  user: PropTypes.object.isRequired,
-  topics: PropTypes.array.isRequired,
+  user: PropTypes.object,
+  topics: PropTypes.array,
 }
 
 const mapStateToProps = (state, props) => {
@@ -51,9 +59,8 @@ const mapStateToProps = (state, props) => {
   const { users } = state.account
   const { topicList } = state.topics
   return {
-    username,
-    user: users[username] || {},
-    topics: topicList.users[username] || [],
+    user: users[username],
+    topics: topicList.users[username],
   }
 }
 
