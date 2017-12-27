@@ -78,12 +78,16 @@ class TopicNewPage extends Component {
   }
 }
 
+TopicNewPage.defaultProps = {
+  isActivate: 0,
+}
+
 TopicNewPage.propTypes = {
   loggedIn: PropTypes.bool.isRequired,
   categorys: PropTypes.array.isRequired,
-  isActivate: PropTypes.bool.isRequired,
   dispatch: PropTypes.func.isRequired,
   history: PropTypes.object.isRequired,
+  isActivate: PropTypes.bool,
 }
 
 const mapStateToProps = (state) => {
@@ -92,7 +96,7 @@ const mapStateToProps = (state) => {
   const { current } = state.account
   return {
     loggedIn,
-    isActivate: current.state || false,
+    isActivate: current.state,
     categorys,
   }
 }
