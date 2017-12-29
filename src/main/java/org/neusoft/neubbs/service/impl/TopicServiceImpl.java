@@ -396,7 +396,7 @@ public class TopicServiceImpl implements ITopicService {
         //judge current user whether repeat operation(no repeat input 'inc' or 'dec')
         boolean isIncOfInstruction = command.equals(SetConst.INC);
         if (isCurrentUserLikeTopic && isIncOfInstruction) {
-            throw new TopicErrorException(ApiMessage.NO_REAPEAT_INC_TOPIC_LIKE).log(LogWarn.TOPIC_20);
+            throw new TopicErrorException(ApiMessage.NO_REPEAT_INC_TOPIC_LIKE).log(LogWarn.TOPIC_20);
         } else if (!isCurrentUserLikeTopic && !isIncOfInstruction) {
             throw new TopicErrorException(ApiMessage.NO_REAPEAT_DEC_TOPIC_LIKE).log(LogWarn.TOPIC_21);
         }

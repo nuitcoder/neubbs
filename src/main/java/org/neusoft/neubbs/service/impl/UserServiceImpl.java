@@ -375,12 +375,12 @@ public class UserServiceImpl implements IUserService {
         String plainText = SecretUtil.decryptBase64(token);
         String[] array = plainText.split("-");
         if (array.length != SetConst.LENGTH_TWO) {
-            throw new TokenErrorException(ApiMessage.IVALID_TOKEN).log(token + LogWarn.ACCOUNT_15);
+            throw new TokenErrorException(ApiMessage.INVALID_TOKEN).log(token + LogWarn.ACCOUNT_15);
         }
 
         String email = array[0];
         if (!PatternUtil.matchEmail(email)) {
-            throw new TokenErrorException(ApiMessage.IVALID_TOKEN).log(token + LogWarn.ACCOUNT_15);
+            throw new TokenErrorException(ApiMessage.INVALID_TOKEN).log(token + LogWarn.ACCOUNT_15);
         }
         String expireTime = array[1];
         if (StringUtil.isExpire(expireTime)) {

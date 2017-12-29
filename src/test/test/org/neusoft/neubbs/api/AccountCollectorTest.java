@@ -926,7 +926,7 @@ public class AccountCollectorTest {
                     .contentType(MediaType.APPLICATION_JSON)
                     .content("{\"email\":\"" + email + "\"}")
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
-         .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(ApiMessage.WATI_TIMER))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(ApiMessage.WAIT_TIMER))
          .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
          .andExpect(MockMvcResultMatchers.jsonPath("$.model.timer").exists());
 

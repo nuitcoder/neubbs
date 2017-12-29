@@ -345,7 +345,7 @@ public final class AccountController {
         //60s send email interval
         long remainAllowSendEmailInterval = redisService.getExpireTime(email);
         if (remainAllowSendEmailInterval != SetConst.REDIS_EXPIRED) {
-            return new PageJsonDTO(AjaxRequestStatus.FAIL, ApiMessage.WATI_TIMER,
+            return new PageJsonDTO(AjaxRequestStatus.FAIL, ApiMessage.WAIT_TIMER,
                     SetConst.EMAIL_TIMER, remainAllowSendEmailInterval / SetConst.THOUSAND);
         }
 

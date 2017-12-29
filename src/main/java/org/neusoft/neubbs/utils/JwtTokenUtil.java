@@ -72,7 +72,7 @@ public final class JwtTokenUtil {
                                 .sign(Algorithm.HMAC256(SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY));
 
         } catch (UnsupportedEncodingException e) {
-            throw new TokenErrorException(ApiMessage.IVALID_TOKEN).log(LogWarn.ACCOUNT_16);
+            throw new TokenErrorException(ApiMessage.INVALID_TOKEN).log(LogWarn.ACCOUNT_16);
         }
     }
 
