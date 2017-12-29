@@ -181,7 +181,7 @@ public class UserServiceImpl implements IUserService {
                 : userDAO.getUserByEmail(email);
 
        Map<String, Object> userInfoMap = this.getUserInfoMap(user);
-            userInfoMap.put(ParamConst.FOLLOING, this.countUserFollowingTotals(user.getId()));
+            userInfoMap.put(ParamConst.FOLLOWING, this.countUserFollowingTotals(user.getId()));
             userInfoMap.put(ParamConst.FOLLOWED, this.countUserFollowedTotals(user.getId()));
             userInfoMap.put(ParamConst.LIKE, this.countUserLikeTopicTotals(user.getId()));
             userInfoMap.put(ParamConst.COLLECT, this.countUserCollectTopicTotals(user.getId()));

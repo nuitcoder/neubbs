@@ -398,7 +398,7 @@ public class TopicServiceImpl implements ITopicService {
         if (isCurrentUserLikeTopic && isIncOfInstruction) {
             throw new TopicErrorException(ApiMessage.NO_REPEAT_INC_TOPIC_LIKE).log(LogWarn.TOPIC_20);
         } else if (!isCurrentUserLikeTopic && !isIncOfInstruction) {
-            throw new TopicErrorException(ApiMessage.NO_REAPEAT_DEC_TOPIC_LIKE).log(LogWarn.TOPIC_21);
+            throw new TopicErrorException(ApiMessage.NO_REPEAT_DEC_TOPIC_LIKE).log(LogWarn.TOPIC_21);
         }
 
         //update forum_topic_content 'like'
