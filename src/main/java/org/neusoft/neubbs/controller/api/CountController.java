@@ -111,7 +111,7 @@ public class CountController {
 
         int userIdInt = Integer.valueOf(userId);
         Map<String, Object> userCountMap = new LinkedHashMap<>(SetConst.FIVE);
-            userCountMap.put(ParamConst.FOLLOING, userService.countUserFollowingTotals(userIdInt));
+            userCountMap.put(ParamConst.FOLLOWING, userService.countUserFollowingTotals(userIdInt));
             userCountMap.put(ParamConst.FOLLOWED, userService.countUserFollowedTotals(userIdInt));
             userCountMap.put(ParamConst.LIKE, userService.countUserLikeTopicTotals(userIdInt));
             userCountMap.put(ParamConst.COLLECT, userService.countUserCollectTopicTotals(userIdInt));
