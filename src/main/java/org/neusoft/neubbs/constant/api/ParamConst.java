@@ -53,6 +53,11 @@ public final class ParamConst {
     public static final String LAST_REPLY_TIME = "lastreplytime";
 
     /**
+     * 邮箱计时器
+     */
+    public static final String TIMER = "timer";
+
+    /**
      * 验证码
      */
     public static final String CAPTCHA = "captcha";
@@ -122,4 +127,12 @@ public final class ParamConst {
     public static final String USER_TOTALS = "userTotals";
     public static final String TOPIC_TOTALS = "topicTotals";
     public static final String REPLY_TOTALS = "replyTotals";
+
+    /**
+     * TCP/IP 协议
+     *      - http
+     *      - ftp
+     */
+    public static final String HTTP = "http";
+    public static final String FTP = "ftp";
 }

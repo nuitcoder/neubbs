@@ -288,7 +288,7 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public boolean isUserActivatedByState(int state) {
-        return state == SetConst.ACCOUNT_STATE_TRUE;
+        return state == SetConst.ACCOUNT_ACTIVATED_ONE;
     }
 
     @Override
@@ -400,7 +400,7 @@ public class UserServiceImpl implements IUserService {
     public void alterUserActionLikeTopicIdArray(int userId, int topicId, String command) {
         //input 'inc'
         int effectRow;
-        if (command.equals(SetConst.INC)) {
+        if (command.equals(SetConst.COMMAND_INC)) {
             effectRow = userActionDAO.updateLikeTopicIdJsonArrayByOneTopicIdToAppendEnd(userId, topicId);
         } else {
             //input `dec`

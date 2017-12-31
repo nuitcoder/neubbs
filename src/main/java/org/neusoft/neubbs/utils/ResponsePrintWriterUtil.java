@@ -37,8 +37,8 @@ public final class ResponsePrintWriterUtil {
 
         String json = JsonUtil.toJSONStringByObject(map);
 
-        response.setCharacterEncoding(SetConst.CHARACTER_ENCODING);
-        response.setContentType(SetConst.CONTENT_TYPE);
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("application/json;charset=UTF-8");
         
         PrintWriter writer = null;
         try {

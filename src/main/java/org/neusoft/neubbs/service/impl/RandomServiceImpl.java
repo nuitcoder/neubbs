@@ -14,6 +14,6 @@ import org.springframework.stereotype.Service;
 public class RandomServiceImpl implements IRandomService {
     @Override
     public String generateSixDigitsRandomPassword() {
-        return RandomUtil.getRandomString(SetConst.FORGET_PASSWORD_RANDOM_LENGTH);
+        return RandomUtil.getRandomString(SetConst.TEMPORARY_PASSWORD_LENGTH);
     }
 }

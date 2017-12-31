@@ -34,7 +34,7 @@ public class FileTreatServiceImpl implements IFileTreatService {
         }
 
         //no exceed 5MB
-        if (userImageFile.getSize() >  SetConst.SIZE_FIVE_MB) {
+        if (userImageFile.getSize() >  SetConst.USER_AVATOR_MAX_SIZE_FIVE_MB) {
             throw new FileUploadErrorException(ApiMessage.PICTURE_TOO_LARGE).log(LogWarn.FILE_05);
         }
     }

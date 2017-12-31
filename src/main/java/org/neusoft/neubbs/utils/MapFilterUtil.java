@@ -2,7 +2,6 @@ package org.neusoft.neubbs.utils;
 
 
 import org.neusoft.neubbs.constant.api.ParamConst;
-import org.neusoft.neubbs.constant.api.SetConst;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -41,7 +40,7 @@ public final class MapFilterUtil {
    public static void filterUserInfo(Map<String, Object> userInfoMap) {
       //re-build username and avator field
       userInfoMap.put(ParamConst.USERNAME, userInfoMap.get(ParamConst.NAME));
-      userInfoMap.put(ParamConst.AVATOR, StringUtil.spliceUserAvatorUrl(userInfoMap, SetConst.HTTP));
+      userInfoMap.put(ParamConst.AVATOR, StringUtil.spliceUserAvatorUrl(userInfoMap, ParamConst.HTTP));
       userInfoMap.put(ParamConst.USER_ID, userInfoMap.get(ParamConst.ID));
 
       removeKeys(userInfoMap,
@@ -104,7 +103,7 @@ public final class MapFilterUtil {
       keepKesy(userInfoMap, new String[] {ParamConst.ID, ParamConst.NAME, ParamConst.AVATOR});
 
       userInfoMap.put(ParamConst.USERNAME, userInfoMap.get(ParamConst.NAME));
-      userInfoMap.put(ParamConst.AVATOR, StringUtil.spliceUserAvatorUrl(userInfoMap, SetConst.HTTP));
+      userInfoMap.put(ParamConst.AVATOR, StringUtil.spliceUserAvatorUrl(userInfoMap, ParamConst.HTTP));
 
       userInfoMap.remove(ParamConst.ID);
       userInfoMap.remove(ParamConst.NAME);

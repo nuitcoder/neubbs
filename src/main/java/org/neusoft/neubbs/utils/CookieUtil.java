@@ -42,7 +42,7 @@ public final class CookieUtil {
     public static void removeCookie(HttpServletRequest request, HttpServletResponse response, String cookieName) {
         for (Cookie cookie : request.getCookies()) {
             if (cookieName.equals(cookie.getName())) {
-                cookie.setMaxAge(SetConst.EXPIRETIME_S_ZERO);
+                cookie.setMaxAge(SetConst.EXPIRE_TIME_ZERO_S);
                 cookie.setPath("/");
                 cookie.setHttpOnly(true);
 

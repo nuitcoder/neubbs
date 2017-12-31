@@ -919,7 +919,7 @@ public class AccountCollectorTest {
 
         //get redis service on web container
         IRedisService redisService = (IRedisService) webApplicationContext.getBean("redisServiceImpl");
-        redisService.save(email, "activate", SetConst.EXPIRE_TIME_MS_SIXTY_SECOND);
+        redisService.save(email, "activate", SetConst.EXPIRE_TIME_SIXTY_SECOND_MS);
 
         mockMvc.perform(
                 MockMvcRequestBuilders.post(API_ACCOUNT_ACTIVATE)

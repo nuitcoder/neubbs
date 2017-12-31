@@ -90,8 +90,8 @@ public class TopicController {
 
         boolean isAddTopicRead = false;
         if (hadRead != null) {
-            paramCheckService.checkInstructionOfSpecifyArray(hadRead, "0", "1");
-            isAddTopicRead = SetConst.ONE_S.equals(hadRead);
+            paramCheckService.checkInstructionOfSpecifyArray(hadRead, SetConst.COMMAND_ZERO, SetConst.COMMAND_ONE);
+            isAddTopicRead = SetConst.COMMAND_ONE.equals(hadRead);
         }
 
         int topicIdInt = Integer.parseInt(topicId);
@@ -355,7 +355,7 @@ public class TopicController {
        String command = (String) requestBodyParamsMap.get(ParamConst.COMMAND);
 
        paramCheckService.check(ParamConst.TOPIC_ID, String.valueOf(topicId));
-       paramCheckService.checkInstructionOfSpecifyArray(command, SetConst.INC, SetConst.DEC);
+       paramCheckService.checkInstructionOfSpecifyArray(command, SetConst.COMMAND_INC, SetConst.COMMAND_DEC);
 
        UserDO cookieUser = secretService.jwtVerifyTokenByTokenByKey(
                httpService.getAuthenticationCookieValue(request), SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY

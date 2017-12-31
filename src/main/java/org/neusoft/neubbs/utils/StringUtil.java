@@ -119,7 +119,7 @@ public final class StringUtil {
      */
     public static String getSeparateDay(long startTime, long endTime) {
         int separateDay = (int) ((startTime - endTime) / SetConst.ONE_DAY_MS);
-        return separateDay == 0 ? SetConst.TODAY : separateDay + SetConst.DAY_AGE;
+        return separateDay == 0 ? "今天" : separateDay + " 天前";
     }
 
     /**
@@ -152,7 +152,7 @@ public final class StringUtil {
      */
     public static String spliceUserAvatorUrl(Map<String, Object> userInfoMap, String urlType) {
         StringBuilder avatorFtpUrl = new StringBuilder();
-        if (SetConst.HTTP.equals(urlType)) {
+        if (ParamConst.HTTP.equals(urlType)) {
             avatorFtpUrl.append(getNginxHttpUrlPreFix());
         } else {
             //default

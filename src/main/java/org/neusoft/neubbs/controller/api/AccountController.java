@@ -344,9 +344,9 @@ public final class AccountController {
 
         //60s send email interval
         long remainAllowSendEmailInterval = redisService.getExpireTime(email);
-        if (remainAllowSendEmailInterval != SetConst.REDIS_EXPIRED) {
+        if (remainAllowSendEmailInterval != SetConst.EXPIRE_TIME_REDIS_NO_EXIST_KEY) {
             return new PageJsonDTO(AjaxRequestStatus.FAIL, ApiMessage.WAIT_TIMER,
-                    SetConst.EMAIL_TIMER, remainAllowSendEmailInterval / SetConst.THOUSAND);
+                    ParamConst.TIMER, remainAllowSendEmailInterval / SetConst.THOUSAND);
         }
 
         //start another thread to send mail
@@ -357,7 +357,7 @@ public final class AccountController {
         emailService.sendEmail(SetConst.EMAIL_SENDER_NAME, email, SetConst.EMAIL_SUBJECT_ACTIVATE, emailContent);
 
         //set user send email 60s interval
-        redisService.save(email, SetConst.KEY_ACTIVATE, SetConst.EXPIRE_TIME_MS_SIXTY_SECOND);
+        redisService.save(email, SetConst.VALUE_MAIL_SEMD_INTERVAL, SetConst.EXPIRE_TIME_SIXTY_SECOND_MS);
 
         return new PageJsonDTO(AjaxRequestStatus.SUCCESS);
     }
