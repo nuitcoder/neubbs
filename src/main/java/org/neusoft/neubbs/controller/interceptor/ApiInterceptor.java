@@ -106,10 +106,10 @@ public class ApiInterceptor implements HandlerInterceptor {
                     return true;
                 }
 
-                throw new AccountErrorException(ApiMessage.TOKEN_EXPIRED).log(LogWarn.INTERCEPTRO_01);
+                throw new AccountErrorException(ApiMessage.TOKEN_EXPIRED).log(LogWarn.INTERCEPTOR_01);
             } else {
                 //无登录，无权访问 api
-                throw new AccountErrorException(ApiMessage.NO_PERMISSION).log(LogWarn.INTERCEPTRO_02);
+                throw new AccountErrorException(ApiMessage.NO_PERMISSION).log(LogWarn.INTERCEPTOR_02);
             }
         }
 
@@ -169,7 +169,7 @@ public class ApiInterceptor implements HandlerInterceptor {
                     return true;
                 }
 
-                throw new AccountErrorException(ApiMessage.NO_PERMISSION).log(LogWarn.INTERCEPTRO_03);
+                throw new AccountErrorException(ApiMessage.NO_PERMISSION).log(LogWarn.INTERCEPTOR_03);
             }
         }
 

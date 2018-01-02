@@ -69,19 +69,19 @@ public class UserServiceImpl implements IUserService {
 
         //register user to database
         if (userDAO.saveUser(user) == 0) {
-            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.SERVICE_01);
+            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.USER_01);
         }
 
         //insert default user action record
         UserActionDO userAction = new UserActionDO();
             userAction.setUserId(user.getId());
         if (userActionDAO.saveUserAction(userAction) == 0) {
-            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.SERVICE_04);
+            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.USER_04);
         }
 
         //update data user image filed, set default avator image
         if (userDAO.updateUserAvatorByName(user.getName(), ParamConst.USER_DEFAULT_IMAGE) == 0) {
-            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.SERVICE_02);
+            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.USER_02);
         }
 
         //again select user information by new register user id
@@ -321,7 +321,7 @@ public class UserServiceImpl implements IUserService {
             updateUser.setDescription(description);
 
         if (userDAO.updateUser(updateUser) == 0) {
-            throw new AccountErrorException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.SERVICE_02);
+            throw new AccountErrorException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.USER_02);
         }
 
         return this.getUserInfoMapByUser(userDAO.getUserByName(username));
@@ -336,7 +336,7 @@ public class UserServiceImpl implements IUserService {
 
         //secret new password, update user passowrd
         if (userDAO.updateUserPasswordByName(username, SecretUtil.encryptUserPassword(newPassword)) == 0) {
-            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.SERVICE_02);
+            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.USER_02);
         }
     }
 
@@ -347,7 +347,7 @@ public class UserServiceImpl implements IUserService {
 
         //secret new password, update user passowrd
         if (userDAO.updateUserPasswordByName(username, SecretUtil.encryptUserPassword(newPassword)) == 0) {
-            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.SERVICE_02);
+            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.USER_02);
         }
     }
 
@@ -358,14 +358,14 @@ public class UserServiceImpl implements IUserService {
         this.confirmUserNotOccupiedByEmail(newEmail);
 
         if (userDAO.updateUserEmailByName(username, newEmail) == 0) {
-            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.SERVICE_02);
+            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.USER_02);
         }
     }
 
     @Override
     public void alterUserAvatorImage(String username, String newImageName) {
         if (userDAO.updateUserAvatorByName(username, newImageName) == 0) {
-            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.SERVICE_02);
+            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.USER_02);
         }
     }
 
@@ -390,7 +390,7 @@ public class UserServiceImpl implements IUserService {
         this.confirmUserActivatedByEmail(email);
 
         if (userDAO.updateUserStateToActivateByEmail(email) == 0) {
-            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.SERVICE_02);
+            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.USER_02);
         }
 
         return userDAO.getUserByEmail(email);
@@ -414,7 +414,7 @@ public class UserServiceImpl implements IUserService {
         }
 
         if (effectRow == 0) {
-            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.SERVICE_04);
+            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.USER_04);
         }
     }
 
