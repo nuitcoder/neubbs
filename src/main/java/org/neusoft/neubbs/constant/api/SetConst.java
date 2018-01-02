@@ -44,6 +44,11 @@ public final class SetConst {
     public static final int TEMPORARY_PASSWORD_LENGTH = 6;
 
     /**
+     * JWT Token 密钥
+     */
+    public static final String JWT_TOKEN_SECRET_KEY = "this neubbs is best";
+
+    /**
      * 数字
      */
     public static final int NEGATIVE_ONE = -1;

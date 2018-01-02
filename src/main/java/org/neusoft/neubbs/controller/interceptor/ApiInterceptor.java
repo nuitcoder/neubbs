@@ -4,7 +4,6 @@ import org.neusoft.neubbs.constant.api.ApiMessage;
 import org.neusoft.neubbs.constant.api.ParamConst;
 import org.neusoft.neubbs.constant.api.SetConst;
 import org.neusoft.neubbs.constant.log.LogWarn;
-import org.neusoft.neubbs.constant.secret.SecretInfo;
 import org.neusoft.neubbs.controller.annotation.AccountActivation;
 import org.neusoft.neubbs.controller.annotation.AdminRank;
 import org.neusoft.neubbs.controller.annotation.LoginAuthorization;
@@ -101,7 +100,7 @@ public class ApiInterceptor implements HandlerInterceptor {
         if (AnnotationUtil.hasMethodAnnotation(handler, LoginAuthorization.class)) {
             String authentication =  CookieUtil.getCookieValue(request, ParamConst.AUTHENTICATION);
             if (authentication != null) {
-                UserDO user = JwtTokenUtil.verifyToken(authentication, SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY);
+                UserDO user = JwtTokenUtil.verifyToken(authentication, SetConst.JWT_TOKEN_SECRET_KEY);
                 if (user != null) {
                     //通过验证
                     return true;
@@ -131,7 +130,7 @@ public class ApiInterceptor implements HandlerInterceptor {
         if (AnnotationUtil.hasMethodAnnotation(handler, AccountActivation.class)) {
             String authentication = CookieUtil.getCookieValue(request, ParamConst.AUTHENTICATION);
             if (authentication != null) {
-                UserDO user = JwtTokenUtil.verifyToken(authentication, SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY);
+                UserDO user = JwtTokenUtil.verifyToken(authentication, SetConst.JWT_TOKEN_SECRET_KEY);
                 if (user == null) {
                     //JWT Token 过期，解密失败
                     throw new AccountErrorException(ApiMessage.TOKEN_EXPIRED).log(LogWarn.ACCOUNT_05);
@@ -161,7 +160,7 @@ public class ApiInterceptor implements HandlerInterceptor {
         if (AnnotationUtil.hasMethodAnnotation(handler, AdminRank.class)) {
             String authentication = CookieUtil.getCookieValue(request, ParamConst.AUTHENTICATION);
             if (authentication != null) {
-                UserDO user = JwtTokenUtil.verifyToken(authentication, SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY);
+                UserDO user = JwtTokenUtil.verifyToken(authentication, SetConst.JWT_TOKEN_SECRET_KEY);
                 if (user == null) {
                     throw new AccountErrorException(ApiMessage.TOKEN_EXPIRED).log(LogWarn.ACCOUNT_05);
                 }

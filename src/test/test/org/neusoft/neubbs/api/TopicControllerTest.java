@@ -10,7 +10,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.neusoft.neubbs.constant.api.ApiMessage;
 import org.neusoft.neubbs.constant.api.ParamConst;
-import org.neusoft.neubbs.constant.secret.SecretInfo;
+import org.neusoft.neubbs.constant.api.SetConst;
 import org.neusoft.neubbs.controller.handler.SwitchDataSourceHandler;
 import org.neusoft.neubbs.dao.ITopicActionDAO;
 import org.neusoft.neubbs.dao.ITopicCategoryDAO;
@@ -1014,7 +1014,7 @@ public class TopicControllerTest {
         System.out.println("input request-body: "  + requestBody);
 
         Cookie cookie = this.getAlreadLoginUserCookie();
-        int userId = JwtTokenUtil.verifyToken(cookie.getValue(), SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY).getId();
+        int userId = JwtTokenUtil.verifyToken(cookie.getValue(), SetConst.JWT_TOKEN_SECRET_KEY).getId();
         int beforeTopicContentLike = topicContentDAO.getTopicContentByTopicId(topicId).getLike();
 
         mockMvc.perform(
@@ -1052,7 +1052,7 @@ public class TopicControllerTest {
 
         //set user already like, get userId from cookie user
         Cookie cookie = this.getAlreadLoginUserCookie();
-        int userId = JwtTokenUtil.verifyToken(cookie.getValue(), SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY).getId();
+        int userId = JwtTokenUtil.verifyToken(cookie.getValue(), SetConst.JWT_TOKEN_SECRET_KEY).getId();
 
         Assert.assertEquals(1, topicContentDAO.updateLikeAddOneByTopicId(topicId));
         Assert.assertEquals(1, userActionDAO.updateLikeTopicIdJsonArrayByOneTopicIdToAppendEnd(userId, topicId));

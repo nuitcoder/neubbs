@@ -2,7 +2,7 @@ package org.neusoft.neubbs.controller.api;
 
 import org.neusoft.neubbs.constant.ajax.AjaxRequestStatus;
 import org.neusoft.neubbs.constant.api.ApiMessage;
-import org.neusoft.neubbs.constant.secret.SecretInfo;
+import org.neusoft.neubbs.constant.api.SetConst;
 import org.neusoft.neubbs.controller.annotation.AccountActivation;
 import org.neusoft.neubbs.controller.annotation.LoginAuthorization;
 import org.neusoft.neubbs.dto.PageJsonDTO;
@@ -69,7 +69,7 @@ public class FileController {
 //      MultipartFile compressedFile = fileService.compressFile(multipartFile)
 
         UserDO cookieUser = secretService.jwtVerifyTokenByTokenByKey(
-                httpService.getAuthenticationCookieValue(request), SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY
+                httpService.getAuthenticationCookieValue(request), SetConst.JWT_TOKEN_SECRET_KEY
         );
 
         String serverUserAvatorImageName = ftpService.generateServerUserAvatorFileName(multipartFile);

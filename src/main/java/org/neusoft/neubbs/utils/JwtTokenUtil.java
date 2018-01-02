@@ -9,7 +9,6 @@ import org.neusoft.neubbs.constant.api.ApiMessage;
 import org.neusoft.neubbs.constant.api.ParamConst;
 import org.neusoft.neubbs.constant.api.SetConst;
 import org.neusoft.neubbs.constant.log.LogWarn;
-import org.neusoft.neubbs.constant.secret.SecretInfo;
 import org.neusoft.neubbs.exception.TokenErrorException;
 import org.neusoft.neubbs.entity.UserDO;
 
@@ -69,7 +68,7 @@ public final class JwtTokenUtil {
                             .withClaim(ParamConst.NAME, user.getName())
                             .withClaim(ParamConst.RANK, user.getRank())
                             .withClaim(ParamConst.STATE, user.getState())
-                                .sign(Algorithm.HMAC256(SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY));
+                                .sign(Algorithm.HMAC256(SetConst.JWT_TOKEN_SECRET_KEY));
 
         } catch (UnsupportedEncodingException e) {
             throw new TokenErrorException(ApiMessage.INVALID_TOKEN).log(LogWarn.ACCOUNT_16);

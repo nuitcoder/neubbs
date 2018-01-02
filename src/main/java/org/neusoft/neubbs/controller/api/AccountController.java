@@ -4,7 +4,6 @@ import org.neusoft.neubbs.constant.ajax.AjaxRequestStatus;
 import org.neusoft.neubbs.constant.api.ApiMessage;
 import org.neusoft.neubbs.constant.api.ParamConst;
 import org.neusoft.neubbs.constant.api.SetConst;
-import org.neusoft.neubbs.constant.secret.SecretInfo;
 import org.neusoft.neubbs.controller.annotation.AccountActivation;
 import org.neusoft.neubbs.controller.annotation.LoginAuthorization;
 import org.neusoft.neubbs.dto.PageJsonDTO;
@@ -263,7 +262,7 @@ public final class AccountController {
 
         //get user information in client cookie
         UserDO user = secretService.jwtVerifyTokenByTokenByKey(
-               httpService.getAuthenticationCookieValue(request), SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY
+               httpService.getAuthenticationCookieValue(request), SetConst.JWT_TOKEN_SECRET_KEY
         );
 
         return new PageJsonDTO(AjaxRequestStatus.SUCCESS,
@@ -290,7 +289,7 @@ public final class AccountController {
 
         //confirm input username match logged in user
         UserDO cookieUser = secretService.jwtVerifyTokenByTokenByKey(
-                httpService.getAuthenticationCookieValue(request), SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY
+                httpService.getAuthenticationCookieValue(request), SetConst.JWT_TOKEN_SECRET_KEY
         );
         userService.confirmUserMatchCookieUser(username, cookieUser);
 
@@ -318,7 +317,7 @@ public final class AccountController {
         paramCheckService.check(ParamConst.EMAIL, newEmail);
 
         UserDO cookieUser = secretService.jwtVerifyTokenByTokenByKey(
-                httpService.getAuthenticationCookieValue(request), SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY
+                httpService.getAuthenticationCookieValue(request), SetConst.JWT_TOKEN_SECRET_KEY
         );
         userService.confirmUserMatchCookieUser(username, cookieUser);
 
@@ -473,7 +472,7 @@ public final class AccountController {
         paramCheckService.check(ParamConst.USER_ID, String.valueOf(followingUserId));
 
         UserDO cookieUser = secretService.jwtVerifyTokenByTokenByKey(
-                httpService.getAuthenticationCookieValue(request), SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY
+                httpService.getAuthenticationCookieValue(request), SetConst.JWT_TOKEN_SECRET_KEY
         );
 
         return new PageJsonDTO(AjaxRequestStatus.SUCCESS,

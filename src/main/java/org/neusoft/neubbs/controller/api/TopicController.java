@@ -3,7 +3,6 @@ package org.neusoft.neubbs.controller.api;
 import org.neusoft.neubbs.constant.ajax.AjaxRequestStatus;
 import org.neusoft.neubbs.constant.api.ParamConst;
 import org.neusoft.neubbs.constant.api.SetConst;
-import org.neusoft.neubbs.constant.secret.SecretInfo;
 import org.neusoft.neubbs.controller.annotation.AccountActivation;
 import org.neusoft.neubbs.controller.annotation.AdminRank;
 import org.neusoft.neubbs.controller.annotation.LoginAuthorization;
@@ -101,7 +100,7 @@ public class TopicController {
         boolean isCurrentUserLikeThisTopic = false;
         if (httpService.isLoggedInUser(request)) {
             UserDO currentUser = secretService.jwtVerifyTokenByTokenByKey(
-                    httpService.getAuthenticationCookieValue(request), SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY
+                    httpService.getAuthenticationCookieValue(request), SetConst.JWT_TOKEN_SECRET_KEY
             );
             isCurrentUserLikeThisTopic = userService.isUserLikeTopic(currentUser.getId(), topicIdInt);
         }
@@ -223,7 +222,7 @@ public class TopicController {
         paramCheckService.check(ParamConst.TOPIC_CONTENT, topicContent);
 
         UserDO cookieUser = secretService.jwtVerifyTokenByTokenByKey(
-                httpService.getAuthenticationCookieValue(request), SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY
+                httpService.getAuthenticationCookieValue(request), SetConst.JWT_TOKEN_SECRET_KEY
         );
 
         int topicId = topicService.saveTopic(cookieUser.getId(), category, title, topicContent);
@@ -249,7 +248,7 @@ public class TopicController {
         paramCheckService.check(ParamConst.REPLY_CONTENT, replyContent);
 
         UserDO cookieUser = secretService.jwtVerifyTokenByTokenByKey(
-                httpService.getAuthenticationCookieValue(request), SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY
+                httpService.getAuthenticationCookieValue(request), SetConst.JWT_TOKEN_SECRET_KEY
         );
 
         int replyId = topicService.saveReply(cookieUser.getId(), topicId, replyContent);
@@ -358,7 +357,7 @@ public class TopicController {
        paramCheckService.checkInstructionOfSpecifyArray(command, SetConst.COMMAND_INC, SetConst.COMMAND_DEC);
 
        UserDO cookieUser = secretService.jwtVerifyTokenByTokenByKey(
-               httpService.getAuthenticationCookieValue(request), SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY
+               httpService.getAuthenticationCookieValue(request), SetConst.JWT_TOKEN_SECRET_KEY
        );
 
        //judge cuurent user like topic, according the command('inc', 'dec'), alter like of topic
@@ -387,7 +386,7 @@ public class TopicController {
         paramCheckService.check(ParamConst.TOPIC_ID, String.valueOf(topicId));
 
         UserDO cookieUser = secretService.jwtVerifyTokenByTokenByKey(
-                httpService.getAuthenticationCookieValue(request), SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY
+                httpService.getAuthenticationCookieValue(request), SetConst.JWT_TOKEN_SECRET_KEY
         );
 
         Map<String, Object> resultMap = new LinkedHashMap<>(SetConst.SIZE_TWO);
@@ -412,7 +411,7 @@ public class TopicController {
         paramCheckService.check(ParamConst.TOPIC_ID, String.valueOf(topicId));
 
         UserDO cookieUser = secretService.jwtVerifyTokenByTokenByKey(
-                httpService.getAuthenticationCookieValue(request), SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY
+                httpService.getAuthenticationCookieValue(request), SetConst.JWT_TOKEN_SECRET_KEY
         );
 
         return new PageJsonDTO(AjaxRequestStatus.SUCCESS,
@@ -435,7 +434,7 @@ public class TopicController {
         paramCheckService.check(ParamConst.TOPIC_ID, String.valueOf(topicId));
 
         UserDO cookieUser = secretService.jwtVerifyTokenByTokenByKey(
-                httpService.getAuthenticationCookieValue(request), SecretInfo.JWT_TOKEN_LOGIN_SECRET_KEY
+                httpService.getAuthenticationCookieValue(request), SetConst.JWT_TOKEN_SECRET_KEY
         );
 
         return new PageJsonDTO(AjaxRequestStatus.SUCCESS,
