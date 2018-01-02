@@ -1,6 +1,5 @@
 package org.neusoft.neubbs.service.impl;
 
-import org.apache.log4j.Logger;
 import org.neusoft.neubbs.constant.api.ApiMessage;
 import org.neusoft.neubbs.constant.api.ParamConst;
 import org.neusoft.neubbs.constant.api.SetConst;
@@ -42,8 +41,6 @@ import java.util.Map;
  */
 @Service("topicServiceImpl")
 public class TopicServiceImpl implements ITopicService {
-
-    private Logger logger = Logger.getLogger(TopicServiceImpl.class);
 
     private final ITopicDAO topicDAO;
     private final ITopicContentDAO topicContentDAO;
@@ -1126,7 +1123,7 @@ public class TopicServiceImpl implements ITopicService {
      */
     private void throwNoUserExceptionById(int userId) {
         throw new AccountErrorException(ApiMessage.NO_USER)
-                .log("userId=" + userId + LogWarn.ACCOUNT_01);
+                .log("userId=" + userId + LogWarn.USER_01);
     }
 
     /**
@@ -1136,7 +1133,7 @@ public class TopicServiceImpl implements ITopicService {
      */
     private void throwNoUserExceptionByName(String username) {
         throw new AccountErrorException(ApiMessage.NO_USER)
-                .log("username=" + username + LogWarn.ACCOUNT_01);
+                .log("username=" + username + LogWarn.USER_01);
     }
 
     /**

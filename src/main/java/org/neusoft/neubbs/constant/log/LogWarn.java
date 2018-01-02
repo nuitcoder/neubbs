@@ -9,23 +9,6 @@ public final class LogWarn {
 
     private LogWarn() { }
 
-    /*****************************Account api**********************************/
-    public static final String ACCOUNT_01 = " 数据库中不存在该用户 ";
-    public static final String ACCOUNT_03 = "账户未激活，无权调用 api";
-    public static final String ACCOUNT_05 = " 授权口令已经过期";
-    public static final String ACCOUNT_07 = " 用户已经激活，无需再次激活";
-    public static final String ACCOUNT_08 = "  邮箱已被占用";
-    public static final String ACCOUNT_09 = " 用户密码不正确";
-    public static final String ACCOUNT_10 = "未生成验证码，无法验证";
-    public static final String ACCOUNT_11 = " 验证码不正确";
-    public static final String ACCOUNT_12 = "无权修改其余用户";
-    public static final String ACCOUNT_14 = " 用户名已被占用";
-    public static final String ACCOUNT_15 = " 口令无效";
-    public static final String ACCOUNT_16 = " 创建 jwt 加密 token 失败！";
-    public static final String ACCOUNT_17 = " IO异常，生成 captcha 图片验证码失败";
-    public static final String ACCOUNT_18 = " （用户）行为失败";
-
-
     /*****************************File api**********************************/
     public static final String FILE_01 = "用户没有选择上传文件 ";
     public static final String FILE_02 = " 文件类型不符合头像类型（jpg | png | jpeg）";
@@ -44,7 +27,20 @@ public final class LogWarn {
     public static final String USER_01 = "用户保存失败";
     public static final String USER_02 = "用户修改失败";
     public static final String USER_04 = "用户行为修改失败";
-
+    public static final String USER_05 = " 授权口令已经过期";
+    public static final String USER_07 = " 用户已经激活，无需再次激活";
+    public static final String USER_08 = "  邮箱已被占用";
+    public static final String USER_09 = " 用户密码不正确";
+    public static final String USER_10 = "未生成验证码，无法验证";
+    public static final String USER_11 = " 验证码不正确";
+    public static final String USER_12 = "无权修改其余用户";
+    public static final String USER_14 = " 用户名已被占用";
+    public static final String USER_15 = " 口令无效";
+    public static final String USER_16 = " 创建 jwt 加密 token 失败！";
+    public static final String USER_17 = " IO异常，生成 captcha 图片验证码失败";
+    public static final String USER_18 = " （用户）行为失败";
+    public static final String USER_19 = " 数据库中不存在该用户 ";
+    public static final String USER_20 = "账户未激活，无权调用 api";
 
     /******************************Topic Service*********************************/
     public static final String TOPIC_01 = " 话题保存失败";

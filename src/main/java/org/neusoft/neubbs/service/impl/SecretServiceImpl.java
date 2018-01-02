@@ -32,7 +32,7 @@ public class SecretServiceImpl implements ISecretService {
     public UserDO jwtVerifyTokenByTokenByKey(String token, String key) {
         UserDO user = JwtTokenUtil.verifyToken(token, key);
         if (user == null) {
-            throw new AccountErrorException(ApiMessage.TOKEN_EXPIRED).log(LogWarn.ACCOUNT_05);
+            throw new AccountErrorException(ApiMessage.TOKEN_EXPIRED).log(LogWarn.USER_05);
         }
         return user;
     }

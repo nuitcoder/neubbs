@@ -29,7 +29,6 @@ public final class JwtTokenUtil {
     private static final String JWT = "JWT";
     private static final String HS256 = "HS256";
 
-    private static final String HEADER = "Header";
     private static final String HEADER_TYP = "typ";
     private static final String HEADER_ALG = "alg";
 
@@ -71,7 +70,7 @@ public final class JwtTokenUtil {
                                 .sign(Algorithm.HMAC256(SetConst.JWT_TOKEN_SECRET_KEY));
 
         } catch (UnsupportedEncodingException e) {
-            throw new TokenErrorException(ApiMessage.INVALID_TOKEN).log(LogWarn.ACCOUNT_16);
+            throw new TokenErrorException(ApiMessage.INVALID_TOKEN).log(LogWarn.USER_16);
         }
     }
 

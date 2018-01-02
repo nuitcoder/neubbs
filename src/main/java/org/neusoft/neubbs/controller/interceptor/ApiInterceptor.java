@@ -133,7 +133,7 @@ public class ApiInterceptor implements HandlerInterceptor {
                 UserDO user = JwtTokenUtil.verifyToken(authentication, SetConst.JWT_TOKEN_SECRET_KEY);
                 if (user == null) {
                     //JWT Token 过期，解密失败
-                    throw new AccountErrorException(ApiMessage.TOKEN_EXPIRED).log(LogWarn.ACCOUNT_05);
+                    throw new AccountErrorException(ApiMessage.TOKEN_EXPIRED).log(LogWarn.USER_05);
                 }
 
                 if (user.getState() == 1) {
@@ -141,7 +141,7 @@ public class ApiInterceptor implements HandlerInterceptor {
                     return true;
                 }
 
-                throw new AccountErrorException(ApiMessage.NO_ACTIVATE).log(user.getName() + LogWarn.ACCOUNT_03);
+                throw new AccountErrorException(ApiMessage.NO_ACTIVATE).log(user.getName() + LogWarn.USER_20);
             }
         }
 
@@ -162,7 +162,7 @@ public class ApiInterceptor implements HandlerInterceptor {
             if (authentication != null) {
                 UserDO user = JwtTokenUtil.verifyToken(authentication, SetConst.JWT_TOKEN_SECRET_KEY);
                 if (user == null) {
-                    throw new AccountErrorException(ApiMessage.TOKEN_EXPIRED).log(LogWarn.ACCOUNT_05);
+                    throw new AccountErrorException(ApiMessage.TOKEN_EXPIRED).log(LogWarn.USER_05);
                 }
                 if (SetConst.RANK_ADMIN.equals(user.getRank())) {
                     //通过验证

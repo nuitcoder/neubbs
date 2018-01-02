@@ -102,7 +102,7 @@ public class UserServiceImpl implements IUserService {
         String cipherText = SecretUtil.encryptUserPassword(password);
         if (!cipherText.equals(user.getPassword())) {
             throw new AccountErrorException(ApiMessage.USERNAME_OR_PASSWORD_INCORRECT)
-                    .log(username + LogWarn.ACCOUNT_09);
+                    .log(username + LogWarn.USER_09);
         }
 
         return user;
@@ -114,7 +114,7 @@ public class UserServiceImpl implements IUserService {
 
         //judge user activate state
         if (this.isUserActivatedByState(user.getState())) {
-            throw new AccountErrorException(ApiMessage.ACCOUNT_ACTIVATED).log(email + LogWarn.ACCOUNT_07);
+            throw new AccountErrorException(ApiMessage.ACCOUNT_ACTIVATED).log(email + LogWarn.USER_07);
         }
     }
 
@@ -122,7 +122,7 @@ public class UserServiceImpl implements IUserService {
     @Override
     public void confirmUserMatchCookieUser(String inputUsername, UserDO cookieUser) {
         if (cookieUser == null || !inputUsername.equals(cookieUser.getName())) {
-            throw new AccountErrorException(ApiMessage.NO_PERMISSION).log(LogWarn.ACCOUNT_12);
+            throw new AccountErrorException(ApiMessage.NO_PERMISSION).log(LogWarn.USER_12);
         }
     }
 
@@ -375,16 +375,16 @@ public class UserServiceImpl implements IUserService {
         String plainText = SecretUtil.decryptBase64(token);
         String[] array = plainText.split("-");
         if (array.length != SetConst.LENGTH_TWO) {
-            throw new TokenErrorException(ApiMessage.INVALID_TOKEN).log(token + LogWarn.ACCOUNT_15);
+            throw new TokenErrorException(ApiMessage.INVALID_TOKEN).log(token + LogWarn.USER_15);
         }
 
         String email = array[0];
         if (!PatternUtil.matchEmail(email)) {
-            throw new TokenErrorException(ApiMessage.INVALID_TOKEN).log(token + LogWarn.ACCOUNT_15);
+            throw new TokenErrorException(ApiMessage.INVALID_TOKEN).log(token + LogWarn.USER_15);
         }
         String expireTime = array[1];
         if (StringUtil.isExpire(expireTime)) {
-            throw new TokenErrorException(ApiMessage.LINK_INVALID).log(token + LogWarn.ACCOUNT_05);
+            throw new TokenErrorException(ApiMessage.LINK_INVALID).log(token + LogWarn.USER_05);
         }
 
         this.confirmUserActivatedByEmail(email);
@@ -522,7 +522,7 @@ public class UserServiceImpl implements IUserService {
      */
     private void confirmUserNotOccupiedByUsername(String username) {
         if (userDAO.getUserByName(username) != null) {
-            throw new AccountErrorException(ApiMessage.USERNAME_REGISTERED).log(username + LogWarn.ACCOUNT_14);
+            throw new AccountErrorException(ApiMessage.USERNAME_REGISTERED).log(username + LogWarn.USER_14);
         }
     }
 
@@ -533,7 +533,7 @@ public class UserServiceImpl implements IUserService {
      */
     private void confirmUserNotOccupiedByEmail(String email) {
         if (userDAO.getUserByEmail(email) != null) {
-            throw new AccountErrorException(ApiMessage.EMAIL_REGISTERED).log(email + LogWarn.ACCOUNT_08);
+            throw new AccountErrorException(ApiMessage.EMAIL_REGISTERED).log(email + LogWarn.USER_08);
         }
     }
 
@@ -649,7 +649,7 @@ public class UserServiceImpl implements IUserService {
      * 抛出不存用户异常
      */
     private void throwNoUserException() {
-        throw new AccountErrorException(ApiMessage.NO_USER).log(LogWarn.ACCOUNT_01);
+        throw new AccountErrorException(ApiMessage.NO_USER).log(LogWarn.USER_19);
     }
 
     /**
@@ -659,6 +659,6 @@ public class UserServiceImpl implements IUserService {
      * @param userOperate 用户操作
      */
     private void throwUserActionUpdateFailException(String userOperate) {
-        throw new AccountErrorException(ApiMessage.USER_OPERATE_FAIL).log(userOperate + LogWarn.ACCOUNT_18);
+        throw new AccountErrorException(ApiMessage.USER_OPERATE_FAIL).log(userOperate + LogWarn.USER_18);
     }
 }

@@ -38,7 +38,7 @@ public class ParamCheckServiceImpl implements IParamCheckService {
     public void checkNotNullParamsKeyValue(String... params) {
         int len = params.length;
         if (len == SetConst.ZERO || len % SetConst.TWO != 0) {
-            throw new ParamsErrorException(ApiMessage.PARAM_ERROR).log(LogWarn.ACCOUNT_05);
+            throw new ParamsErrorException(ApiMessage.PARAM_ERROR).log(LogWarn.USER_05);
         }
 
         int i = SetConst.ONE;

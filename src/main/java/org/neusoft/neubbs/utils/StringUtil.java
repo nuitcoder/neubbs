@@ -73,7 +73,7 @@ public final class StringUtil {
         try {
             time = Long.parseLong(expireTime);
         } catch (NumberFormatException nfe) {
-            throw new TokenErrorException(ApiMessage.INVALID_TOKEN).log(LogWarn.ACCOUNT_15);
+            throw new TokenErrorException(ApiMessage.INVALID_TOKEN).log(LogWarn.USER_15);
         }
 
         return time <= System.currentTimeMillis();

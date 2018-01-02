@@ -102,7 +102,7 @@ public final class SecretUtil {
         try {
             return new String(Base64.getDecoder().decode(token));
         } catch (Exception e) {
-            throw new TokenErrorException(ApiMessage.INVALID_TOKEN).log(token + LogWarn.ACCOUNT_15);
+            throw new TokenErrorException(ApiMessage.INVALID_TOKEN).log(token + LogWarn.USER_15);
         }
     }
 

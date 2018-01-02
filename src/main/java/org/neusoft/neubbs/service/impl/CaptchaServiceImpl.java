@@ -38,10 +38,10 @@ public class CaptchaServiceImpl implements ICaptchaService {
     @Override
     public void judgeInputCaptchaWhetherSessionCaptcha(String inputCaptcha, String sessionCaptcha) {
         if (sessionCaptcha == null) {
-            throw new AccountErrorException(ApiMessage.NO_GENERATE_CAPTCHA).log(LogWarn.ACCOUNT_10);
+            throw new AccountErrorException(ApiMessage.NO_GENERATE_CAPTCHA).log(LogWarn.USER_10);
         }
         if (!inputCaptcha.equals(sessionCaptcha)) {
-            throw new AccountErrorException(ApiMessage.CAPTCHA_INCORRECT).log(LogWarn.ACCOUNT_11);
+            throw new AccountErrorException(ApiMessage.CAPTCHA_INCORRECT).log(LogWarn.USER_11);
         }
     }
 }

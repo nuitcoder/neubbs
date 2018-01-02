@@ -105,7 +105,7 @@ public class HttpServiceImpl implements IHttpService {
             out.flush();
             out.close();
         } catch (IOException e) {
-            throw new AccountErrorException(ApiMessage.GENERATE_CAPTCHA_FAIL).log(LogWarn.ACCOUNT_17);
+            throw new AccountErrorException(ApiMessage.GENERATE_CAPTCHA_FAIL).log(LogWarn.USER_17);
         }
     }
 
