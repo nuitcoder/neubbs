@@ -217,8 +217,8 @@ public class TopicController {
         String topicContent = (String) requestBodyParamsMap.get(ParamConst.CONTENT);
 
         paramCheckService.check(ParamConst.TOPIC_CATEGORY_NICK, category)
-                .check(ParamConst.TOPIC_TITLE, title)
-                .check(ParamConst.TOPIC_CONTENT, topicContent);
+                         .check(ParamConst.TOPIC_TITLE, title)
+                         .check(ParamConst.TOPIC_CONTENT, topicContent);
 
         UserDO cookieUser = secretService.jwtVerifyTokenByTokenByKey(
                 httpService.getAuthenticationCookieValue(request), SetConst.JWT_TOKEN_SECRET_KEY
@@ -307,9 +307,9 @@ public class TopicController {
         String newTopicContent = (String) requestBodyParamsMap.get(ParamConst.CONTENT);
 
         paramCheckService.check(ParamConst.ID, String.valueOf(topicId))
-                .check(ParamConst.TOPIC_CATEGORY_NICK, newCategoryNick)
-                .check(ParamConst.TOPIC_TITLE, newTitle)
-                .check(ParamConst.TOPIC_CONTENT, newTopicContent);
+                         .check(ParamConst.TOPIC_CATEGORY_NICK, newCategoryNick)
+                         .check(ParamConst.TOPIC_TITLE, newTitle)
+                         .check(ParamConst.TOPIC_CONTENT, newTopicContent);
 
         topicService.alterTopicContent(topicId, newCategoryNick, newTitle, newTopicContent);
 

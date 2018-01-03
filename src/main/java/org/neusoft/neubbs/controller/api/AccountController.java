@@ -104,8 +104,7 @@ public final class AccountController {
                                HttpServletRequest request) {
         paramCheckService.paramsNotNull(username, email);
         if (username != null) {
-            String paramType = paramCheckService.getUsernameParamType(username);
-            paramCheckService.check(paramType, username);
+            paramCheckService.check(paramCheckService.getUsernameParamType(username), username);
         } else {
             paramCheckService.check(ParamConst.EMAIL, email);
         }
@@ -223,8 +222,8 @@ public final class AccountController {
         String email = (String) requestBodyParamsMap.get(ParamConst.EMAIL);
 
         paramCheckService.check(ParamConst.USERNAME, username)
-                .check(ParamConst.PASSWORD, password)
-                .check(ParamConst.EMAIL, email);
+                         .check(ParamConst.PASSWORD, password)
+                         .check(ParamConst.EMAIL, email);
 
         //database register user
         UserDO newRegisterUser = userService.registerUser(username, password, email);
@@ -257,8 +256,8 @@ public final class AccountController {
         paramCheckService.checkInstructionOfSpecifyArray(String.valueOf(newSex), "0", "1");
         paramCheckService.paramsNotNull(newBirthday, newPosition, newDescription);
         paramCheckService.check(ParamConst.BIRTHDAY, newBirthday)
-                .check(ParamConst.POSITION, newPosition)
-                .check(ParamConst.DESCRIPTION, newDescription);
+                         .check(ParamConst.POSITION, newPosition)
+                         .check(ParamConst.DESCRIPTION, newDescription);
 
         //get user information in client cookie
         UserDO user = secretService.jwtVerifyTokenByTokenByKey(
