@@ -84,7 +84,6 @@ public class TopicController {
     public PageJsonDTO topic(@RequestParam(value = "topicid", required = false) String topicId,
                              @RequestParam(value = "hadread", required = false) String hadRead,
                              HttpServletRequest request) {
-
         paramCheckService.check(ParamConst.ID, topicId);
 
         boolean isAddTopicRead = false;
@@ -217,9 +216,9 @@ public class TopicController {
         String title = (String) requestBodyParamsMap.get(ParamConst.TITLE);
         String topicContent = (String) requestBodyParamsMap.get(ParamConst.CONTENT);
 
-        paramCheckService.check(ParamConst.TOPIC_CATEGORY_NICK, category);
-        paramCheckService.check(ParamConst.TOPIC_TITLE, title);
-        paramCheckService.check(ParamConst.TOPIC_CONTENT, topicContent);
+        paramCheckService.check(ParamConst.TOPIC_CATEGORY_NICK, category)
+                .check(ParamConst.TOPIC_TITLE, title)
+                .check(ParamConst.TOPIC_CONTENT, topicContent);
 
         UserDO cookieUser = secretService.jwtVerifyTokenByTokenByKey(
                 httpService.getAuthenticationCookieValue(request), SetConst.JWT_TOKEN_SECRET_KEY
@@ -244,8 +243,7 @@ public class TopicController {
         Integer topicId = (Integer) requestBodyParamsMap.get(ParamConst.TOPIC_ID);
         String replyContent = (String) requestBodyParamsMap.get(ParamConst.CONTENT);
 
-        paramCheckService.check(ParamConst.ID, String.valueOf(topicId));
-        paramCheckService.check(ParamConst.REPLY_CONTENT, replyContent);
+        paramCheckService.check(ParamConst.ID, String.valueOf(topicId)).check(ParamConst.REPLY_CONTENT, replyContent);
 
         UserDO cookieUser = secretService.jwtVerifyTokenByTokenByKey(
                 httpService.getAuthenticationCookieValue(request), SetConst.JWT_TOKEN_SECRET_KEY
@@ -308,10 +306,10 @@ public class TopicController {
         String newTitle = (String) requestBodyParamsMap.get(ParamConst.TITLE);
         String newTopicContent = (String) requestBodyParamsMap.get(ParamConst.CONTENT);
 
-        paramCheckService.check(ParamConst.ID, String.valueOf(topicId));
-        paramCheckService.check(ParamConst.TOPIC_CATEGORY_NICK, newCategoryNick);
-        paramCheckService.check(ParamConst.TOPIC_TITLE, newTitle);
-        paramCheckService.check(ParamConst.TOPIC_CONTENT, newTopicContent);
+        paramCheckService.check(ParamConst.ID, String.valueOf(topicId))
+                .check(ParamConst.TOPIC_CATEGORY_NICK, newCategoryNick)
+                .check(ParamConst.TOPIC_TITLE, newTitle)
+                .check(ParamConst.TOPIC_CONTENT, newTopicContent);
 
         topicService.alterTopicContent(topicId, newCategoryNick, newTitle, newTopicContent);
 
@@ -331,8 +329,7 @@ public class TopicController {
        Integer replyId = (Integer) requestBodyParamsMap.get(ParamConst.REPLY_ID);
        String newReplyContent = (String) requestBodyParamsMap.get(ParamConst.CONTENT);
 
-       paramCheckService.check(ParamConst.ID, String.valueOf(replyId));
-       paramCheckService.check(ParamConst.REPLY_CONTENT, newReplyContent);
+       paramCheckService.check(ParamConst.ID, String.valueOf(replyId)).check(ParamConst.REPLY_CONTENT, newReplyContent);
 
        topicService.alterReplyContent(replyId, newReplyContent);
 

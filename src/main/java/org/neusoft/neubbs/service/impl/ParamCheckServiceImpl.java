@@ -19,8 +19,9 @@ import org.springframework.stereotype.Service;
 public class ParamCheckServiceImpl implements IParamCheckService {
 
     @Override
-    public void check(String paramType, String paramValue) {
+    public IParamCheckService check(String paramType, String paramValue) {
         RequestParamCheckUtil.check(paramType, paramValue);
+        return this;
     }
 
     @Override

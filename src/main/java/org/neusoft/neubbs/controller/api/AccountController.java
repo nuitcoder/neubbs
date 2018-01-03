@@ -74,9 +74,10 @@ public final class AccountController {
      */
     @Autowired
     private AccountController(IParamCheckService paramCheckService, IUserService userService,
-                              ISecretService secretService, IRedisService redisService, IFtpService ftpService,
-                              IHttpService httpService, IEmailService emailService,
-                              ICaptchaService captchaService, IRandomService randomService) {
+                              ISecretService secretService, IRedisService redisService,
+                              IFtpService ftpService, IHttpService httpService,
+                              IEmailService emailService, ICaptchaService captchaService,
+                              IRandomService randomService) {
         this.paramCheckService = paramCheckService;
         this.userService = userService;
         this.secretService = secretService;
@@ -170,8 +171,7 @@ public final class AccountController {
         String username = (String) requestBodyParamsMap.get(ParamConst.USERNAME);
         String password = (String) requestBodyParamsMap.get(ParamConst.PASSWORD);
 
-        paramCheckService.check(ParamConst.USERNAME, username);
-        paramCheckService.check(ParamConst.PASSWORD, password);
+        paramCheckService.check(ParamConst.USERNAME, username).check(ParamConst.PASSWORD, password);
 
         //database login authenticate
         UserDO user = userService.loginAuthenticate(username, password);
@@ -222,9 +222,9 @@ public final class AccountController {
         String password = (String) requestBodyParamsMap.get(ParamConst.PASSWORD);
         String email = (String) requestBodyParamsMap.get(ParamConst.EMAIL);
 
-        paramCheckService.check(ParamConst.USERNAME, username);
-        paramCheckService.check(ParamConst.PASSWORD, password);
-        paramCheckService.check(ParamConst.EMAIL, email);
+        paramCheckService.check(ParamConst.USERNAME, username)
+                .check(ParamConst.PASSWORD, password)
+                .check(ParamConst.EMAIL, email);
 
         //database register user
         UserDO newRegisterUser = userService.registerUser(username, password, email);
@@ -256,9 +256,9 @@ public final class AccountController {
 
         paramCheckService.checkInstructionOfSpecifyArray(String.valueOf(newSex), "0", "1");
         paramCheckService.paramsNotNull(newBirthday, newPosition, newDescription);
-        paramCheckService.check(ParamConst.BIRTHDAY, newBirthday);
-        paramCheckService.check(ParamConst.POSITION, newPosition);
-        paramCheckService.check(ParamConst.DESCRIPTION, newDescription);
+        paramCheckService.check(ParamConst.BIRTHDAY, newBirthday)
+                .check(ParamConst.POSITION, newPosition)
+                .check(ParamConst.DESCRIPTION, newDescription);
 
         //get user information in client cookie
         UserDO user = secretService.jwtVerifyTokenByTokenByKey(
@@ -284,8 +284,7 @@ public final class AccountController {
         String username = (String) requestBodyParamsMap.get(ParamConst.USERNAME);
         String newPassword = (String) requestBodyParamsMap.get(ParamConst.PASSWORD);
 
-        paramCheckService.check(ParamConst.USERNAME, username);
-        paramCheckService.check(ParamConst.PASSWORD, newPassword);
+        paramCheckService.check(ParamConst.USERNAME, username).check(ParamConst.PASSWORD, newPassword);
 
         //confirm input username match logged in user
         UserDO cookieUser = secretService.jwtVerifyTokenByTokenByKey(
@@ -313,8 +312,7 @@ public final class AccountController {
         String username = (String) requestBodyParamsMap.get(ParamConst.USERNAME);
         String newEmail = (String) requestBodyParamsMap.get(ParamConst.EMAIL);
 
-        paramCheckService.check(ParamConst.USERNAME, username);
-        paramCheckService.check(ParamConst.EMAIL, newEmail);
+        paramCheckService.check(ParamConst.USERNAME, username).check(ParamConst.EMAIL, newEmail);
 
         UserDO cookieUser = secretService.jwtVerifyTokenByTokenByKey(
                 httpService.getAuthenticationCookieValue(request), SetConst.JWT_TOKEN_SECRET_KEY
