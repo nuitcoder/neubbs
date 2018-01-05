@@ -18,7 +18,7 @@
 
 	<!-- 注入配置文件 -->
 	<bean id="propertyConfigurer"
-		  class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		  class="org.neusoft.neubbs.controller.handler.DecryptPropertyPlaceholderConfigurerHandler">
 		<property name="locations">
 			<list>
 				<value>classpath:jdbc.properties</value>

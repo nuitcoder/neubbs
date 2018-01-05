@@ -155,5 +155,4 @@ public final class SetConst {
     public static final String COLLECT_USER_DEC = "collect user dec";
     public static final String ATTENTION_USER_INC = "attention user inc";
     public static final String ATTENTION_USER_DEC = "attention user dec";
-
 }
