@@ -49,6 +49,7 @@ import java.util.Map;
  */
 @Controller
 @RequestMapping("/api")
+@ResponseBody
 public class TopicController {
 
     private final IParamCheckService paramCheckService;
@@ -79,7 +80,6 @@ public class TopicController {
      * @return PageJsonDTO 页面JSON传输对象
      */
     @RequestMapping(value = "/topic", method = RequestMethod.GET)
-    @ResponseBody
     public PageJsonDTO topic(@RequestParam(value = "topicid", required = false) String topicId,
                              @RequestParam(value = "hadread", required = false) String hadRead,
                              HttpServletRequest request) {
@@ -121,7 +121,6 @@ public class TopicController {
      * @return PageJsonDTO 页面JSON传输对象
      */
     @RequestMapping(value = "/topic/reply", method = RequestMethod.GET)
-    @ResponseBody
     public PageJsonDTO topicReply(@RequestParam(value = "replyid", required = false) String replyId) {
         paramCheckService.check(ParamConst.ID, replyId);
         return new PageJsonDTO(AjaxRequestStatus.SUCCESS, topicService.getReplyPageModelMap(Integer.parseInt(replyId)));
@@ -133,7 +132,6 @@ public class TopicController {
      * @return PageJsonListDTO 页面JSON列表传输对象
      */
     @RequestMapping(value = "/topics/hot", method = RequestMethod.GET)
-    @ResponseBody
     public PageJsonListDTO topicsHot() {
         return new PageJsonListDTO(AjaxRequestStatus.SUCCESS, topicService.listHotTalkTopics());
     }
@@ -147,7 +145,6 @@ public class TopicController {
      * @return PageJsonListDTO 响应JSON传输列表对象
      */
     @RequestMapping(value = "/topics", method = RequestMethod.GET)
-    @ResponseBody
     public PageJsonListDTO topics(@RequestParam(value = "limit", required = false) String limit,
                                   @RequestParam(value = "page", required = false) String page,
                                   @RequestParam(value = "category", required = false) String category,
@@ -174,7 +171,6 @@ public class TopicController {
      * @return PageJsonDTO 页面JSON传输对象
      */
     @RequestMapping(value = "/topics/pages", method = RequestMethod.GET)
-    @ResponseBody
     public PageJsonDTO topicsPages(@RequestParam(value = "limit", required = false) String limit,
                                    @RequestParam(value = "category", required = false) String category,
                                    @RequestParam(value = "username", required = false) String username) {
@@ -195,7 +191,6 @@ public class TopicController {
      * @return PageJsonListDTO 页面JSON传输数据
      */
     @RequestMapping(value = "/topics/categorys", method = RequestMethod.GET)
-    @ResponseBody
     public PageJsonListDTO topicCategories() {
         return new PageJsonListDTO(AjaxRequestStatus.SUCCESS,  topicService.listAllTopicCategorys());
     }
@@ -209,7 +204,6 @@ public class TopicController {
      */
     @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/topic", method = RequestMethod.POST, consumes = "application/json")
-    @ResponseBody
     public PageJsonDTO saveTopic(@RequestBody Map<String, Object> requestBodyParamsMap, HttpServletRequest request) {
         String category = (String) requestBodyParamsMap.get(ParamConst.CATEGORY);
         String title = (String) requestBodyParamsMap.get(ParamConst.TITLE);
@@ -237,7 +231,6 @@ public class TopicController {
      */
     @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/topic/reply", method = RequestMethod.POST, consumes = "application/json")
-    @ResponseBody
     public PageJsonDTO saveReply(@RequestBody Map<String, Object> requestBodyParamsMap, HttpServletRequest request) {
         Integer topicId = (Integer) requestBodyParamsMap.get(ParamConst.TOPIC_ID);
         String replyContent = (String) requestBodyParamsMap.get(ParamConst.CONTENT);
@@ -260,7 +253,6 @@ public class TopicController {
      */
     @LoginAuthorization @AccountActivation @AdminRank
     @RequestMapping(value = "/topic-remove", method = RequestMethod.POST, consumes = "application/json")
-    @ResponseBody
     public PageJsonDTO topicRemove(@RequestBody Map<String, Object> requestBodyParamsMap) {
         Integer topicId = (Integer) requestBodyParamsMap.get(ParamConst.TOPIC_ID);
 
@@ -279,7 +271,6 @@ public class TopicController {
      */
     @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/topic/reply-remove", method = RequestMethod.POST, consumes = "application/json")
-    @ResponseBody
     public PageJsonDTO topicReplyRemove(@RequestBody Map<String, Object> requestBodyParamsMap) {
         Integer replyId = (Integer) requestBodyParamsMap.get(ParamConst.REPLY_ID);
 
@@ -298,7 +289,6 @@ public class TopicController {
      */
     @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/topic-update", method = RequestMethod.POST, consumes = "application/json")
-    @ResponseBody
     public PageJsonDTO topicContentUpdate(@RequestBody Map<String, Object> requestBodyParamsMap) {
         Integer topicId = (Integer) requestBodyParamsMap.get(ParamConst.TOPIC_ID);
         String newCategoryNick = (String) requestBodyParamsMap.get(ParamConst.CATEGORY);
@@ -323,7 +313,6 @@ public class TopicController {
      */
    @LoginAuthorization @AccountActivation
    @RequestMapping(value = "/topic/reply-update", method = RequestMethod.POST, consumes = "application/json")
-   @ResponseBody
    public PageJsonDTO topicReplyContentUpdate(@RequestBody Map<String, Object> requestBodyParamsMap) {
        Integer replyId = (Integer) requestBodyParamsMap.get(ParamConst.REPLY_ID);
        String newReplyContent = (String) requestBodyParamsMap.get(ParamConst.CONTENT);
@@ -344,7 +333,6 @@ public class TopicController {
      */
    @LoginAuthorization @AccountActivation
    @RequestMapping(value = "/topic/like", method = RequestMethod.POST, consumes = "application/json")
-   @ResponseBody
    public PageJsonDTO topicLike(@RequestBody Map<String, Object> requestBodyParamsMap, HttpServletRequest request) {
        Integer topicId = (Integer) requestBodyParamsMap.get(ParamConst.TOPIC_ID);
        String command = (String) requestBodyParamsMap.get(ParamConst.COMMAND);
@@ -375,7 +363,6 @@ public class TopicController {
      */
     @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/topic/newlike", method = RequestMethod.POST, consumes = "application/json")
-    @ResponseBody
     public PageJsonDTO like(@RequestBody Map<String, Object> requestBodyParamsMap, HttpServletRequest request) {
         Integer topicId = (Integer) requestBodyParamsMap.get(ParamConst.TOPIC_ID);
 
@@ -400,7 +387,6 @@ public class TopicController {
      */
     @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/topic/collect", method = RequestMethod.POST, consumes = "application/json")
-    @ResponseBody
     public PageJsonDTO collect(@RequestBody Map<String, Object> requestBodyParamsMap, HttpServletRequest request) {
         Integer topicId = (Integer) requestBodyParamsMap.get(ParamConst.TOPIC_ID);
 
@@ -423,7 +409,6 @@ public class TopicController {
      */
     @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/topic/attention", method = RequestMethod.POST, consumes = "application/json")
-    @ResponseBody
     public PageJsonDTO attention(@RequestBody Map<String, Object> requestBodyParamsMap, HttpServletRequest request) {
         Integer topicId = (Integer) requestBodyParamsMap.get(ParamConst.TOPIC_ID);
 

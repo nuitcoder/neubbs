@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletRequest;
  */
 @Controller
 @RequestMapping("/api/file")
+@ResponseBody
 public class FileController {
 
     private final IUserService userService;
@@ -59,7 +60,6 @@ public class FileController {
      */
     @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/avator", method = RequestMethod.POST)
-    @ResponseBody
     public PageJsonDTO uploadUserImage(@RequestParam("avatorImage")MultipartFile multipartFile,
                                        HttpServletRequest request) {
 

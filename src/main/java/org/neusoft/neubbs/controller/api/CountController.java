@@ -39,6 +39,7 @@ import java.util.Map;
  */
 @Controller
 @RequestMapping("/api/count")
+@ResponseBody
 public class CountController {
 
     private final IHttpService httpService;
@@ -65,7 +66,6 @@ public class CountController {
      * @return PageJsonDTO 页面传输对象
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
-    @ResponseBody
     public PageJsonDTO count(HttpServletRequest request) {
         Map<String, Object> modelMap = new LinkedHashMap<>(SetConst.SIZE_THREE);
             modelMap.put(ParamConst.USER, userService.countUserTotals());
@@ -83,7 +83,6 @@ public class CountController {
      * @return PageJsonDTO 页面JSON传输对象
      */
     @RequestMapping(value = "/online", method = RequestMethod.GET)
-    @ResponseBody
     public PageJsonDTO login(HttpServletRequest request) {
         Map<String, Object> onlineCountMap = new LinkedHashMap<>(SetConst.SIZE_TWO);
             onlineCountMap.put(ParamConst.VISIT_USER, httpService.getOnlineVisitUserNumber(request));
@@ -105,7 +104,6 @@ public class CountController {
      * @return PageJsonDTO 页面JSON传输对象
      */
     @RequestMapping(value = "user", method = RequestMethod.GET)
-    @ResponseBody
     public PageJsonDTO user(@RequestParam(value = "userid", required = false) String userId) {
         paramCheckService.check(ParamConst.USER_ID, userId);
 

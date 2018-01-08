@@ -56,6 +56,7 @@ import java.util.Map;
  */
 @Controller
 @RequestMapping("/api/account")
+@ResponseBody
 public final class AccountController {
 
     private final IParamCheckService paramCheckService;
@@ -98,7 +99,6 @@ public final class AccountController {
      * @return PageJsonDTO 页面JSON传输对象
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
-    @ResponseBody
     public PageJsonDTO account(@RequestParam(value = "username", required = false) String username,
                                @RequestParam(value = "email", required = false) String email,
                                HttpServletRequest request) {
@@ -121,7 +121,6 @@ public final class AccountController {
      * @return PageJsonDTO 页面JSON传输对象
      */
     @RequestMapping(value = "/state", method = RequestMethod.GET)
-    @ResponseBody
     public PageJsonDTO accountState(@RequestParam(value = "username", required = false) String username) {
         paramCheckService.check(ParamConst.USERNAME, username);
         return new PageJsonDTO(userService.isUserActivatedByName(username));
@@ -134,7 +133,7 @@ public final class AccountController {
      * @return PageJsonListDTO 页面JSON列表传输对象
      */
     @RequestMapping(value = "/following", method = RequestMethod.GET)
-    @ResponseBody
+
     public PageJsonListDTO followingList(@RequestParam(value = "userid", required = false) String userId) {
         paramCheckService.check(ParamConst.USER_ID, userId);
         return new PageJsonListDTO(AjaxRequestStatus.SUCCESS,
@@ -148,7 +147,6 @@ public final class AccountController {
      * @return PageJsonListDTO 页面JSON列表传输对象
      */
     @RequestMapping(value = "/followed", method = RequestMethod.GET)
-    @ResponseBody
     public PageJsonListDTO followedList(@RequestParam(value = "userid", required = false) String userId) {
         paramCheckService.check(ParamConst.USER_ID, userId);
         return new PageJsonListDTO(AjaxRequestStatus.SUCCESS,
@@ -164,7 +162,6 @@ public final class AccountController {
      * @return PageJsonDTO 页面JSON传输对象
      */
     @RequestMapping(value = "/login", method = RequestMethod.POST, consumes = "application/json")
-    @ResponseBody
     public PageJsonDTO login(@RequestBody Map<String, Object> requestBodyParamsMap,
                                  HttpServletRequest request, HttpServletResponse response) {
         String username = (String) requestBodyParamsMap.get(ParamConst.USERNAME);
@@ -198,7 +195,6 @@ public final class AccountController {
      */
     @LoginAuthorization
     @RequestMapping(value = "/logout", method = RequestMethod.GET)
-    @ResponseBody
     public PageJsonDTO logout(HttpServletRequest request, HttpServletResponse response) {
         httpService.removeCookie(request, response, ParamConst.AUTHENTICATION);
 
@@ -215,7 +211,6 @@ public final class AccountController {
      * @return PageJsonDTO 页面JSON传输对象
      */
     @RequestMapping(value = "/register", method = RequestMethod.POST, consumes = "application/json")
-    @ResponseBody
     public PageJsonDTO register(@RequestBody Map<String, Object> requestBodyParamsMap) {
         String username = (String) requestBodyParamsMap.get(ParamConst.USERNAME);
         String password = (String) requestBodyParamsMap.get(ParamConst.PASSWORD);
@@ -245,7 +240,6 @@ public final class AccountController {
      */
     @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/update-profile", method = RequestMethod.POST, consumes = "application/json")
-    @ResponseBody
     public PageJsonDTO updateProfile(@RequestBody Map<String, Object> requestBodyParamsMap,
                                      HttpServletRequest request) {
         Integer newSex = (Integer) requestBodyParamsMap.get(ParamConst.SEX);
@@ -277,7 +271,6 @@ public final class AccountController {
      */
     @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/update-password", method = RequestMethod.POST, consumes = "application/json")
-    @ResponseBody
     public PageJsonDTO updatePassword(@RequestBody Map<String, Object> requestBodyParamsMap,
                                       HttpServletRequest request) {
         String username = (String) requestBodyParamsMap.get(ParamConst.USERNAME);
@@ -305,7 +298,6 @@ public final class AccountController {
      */
     @LoginAuthorization
     @RequestMapping(value = "/update-email", method = RequestMethod.POST, consumes = "application/json")
-    @ResponseBody
     public PageJsonDTO updateEmail(@RequestBody Map<String, Object> requestBodyParamsMap,
                                        HttpServletRequest request) {
         String username = (String) requestBodyParamsMap.get(ParamConst.USERNAME);
@@ -330,7 +322,6 @@ public final class AccountController {
      * @return PageJsonDTO 页面JSON传输对象
      */
     @RequestMapping(value = "/activate", method = RequestMethod.POST, consumes = "application/json")
-    @ResponseBody
     public PageJsonDTO activate(@RequestBody Map<String, Object> requestBodyParamsMap) {
         String email = (String) requestBodyParamsMap.get(ParamConst.EMAIL);
 
@@ -368,7 +359,6 @@ public final class AccountController {
      * @return PageJsonDTO 页面JSON传输对象
      */
     @RequestMapping(value = "/validate", method = RequestMethod.GET)
-    @ResponseBody
     public PageJsonDTO validate(@RequestParam(value = "token", required = false) String token,
                                 HttpServletResponse response) {
         paramCheckService.check(ParamConst.TOKEN, token);
@@ -413,7 +403,6 @@ public final class AccountController {
      * @return PageJsonDTO 页面JSON字符串
      */
     @RequestMapping(value = "/check-captcha", method = RequestMethod.GET)
-    @ResponseBody
     public PageJsonDTO checkCaptcha(@RequestParam(value = "captcha", required = false)String captcha,
                                         HttpServletRequest request) {
         paramCheckService.check(ParamConst.CAPTCHA, captcha);
@@ -435,7 +424,6 @@ public final class AccountController {
      * @return PageJsonDTO 页面JSON传输对象
      */
     @RequestMapping(value = "/forget-password", method = RequestMethod.POST)
-    @ResponseBody
     public PageJsonDTO sendTemporaryPasswordEmail(@RequestBody Map<String, Object> requestBodyParamsMap) {
         String email = (String) requestBodyParamsMap.get(ParamConst.EMAIL);
 
@@ -462,7 +450,6 @@ public final class AccountController {
      */
     @RequestMapping(value = "/following", method = RequestMethod.POST, consumes = "application/json")
     @LoginAuthorization @AccountActivation
-    @ResponseBody
     public PageJsonDTO following(@RequestBody Map<String, Object> requestBodyParams, HttpServletRequest request) {
         Integer followingUserId = (Integer) requestBodyParams.get(ParamConst.USER_ID);
 
