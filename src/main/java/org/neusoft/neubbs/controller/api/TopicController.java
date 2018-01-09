@@ -50,17 +50,17 @@ import java.util.Map;
 @RequestMapping("/api")
 public class TopicController {
 
-    private final IValidationService paramCheckService;
+    private final IValidationService validationService;
     private final ITopicService topicService;
     private final IUserService userService;
     private final IHttpService httpService;
     private final ISecretService secretService;
 
     @Autowired
-    public TopicController(IValidationService paramCheckService, ITopicService topicService,
+    public TopicController(IValidationService validationService, ITopicService topicService,
                            IUserService userService, IHttpService httpService,
                            ISecretService secretService) {
-        this.paramCheckService = paramCheckService;
+        this.validationService = validationService;
         this.topicService = topicService;
         this.userService = userService;
         this.httpService = httpService;
@@ -81,11 +81,11 @@ public class TopicController {
     public PageJsonDTO topic(@RequestParam(value = "topicid", required = false) String topicId,
                              @RequestParam(value = "hadread", required = false) String hadRead,
                              HttpServletRequest request) {
-        paramCheckService.check(ParamConst.ID, topicId);
+        validationService.check(ParamConst.ID, topicId);
 
         boolean isAddTopicRead = false;
         if (hadRead != null) {
-            paramCheckService.checkInstructionOfSpecifyArray(hadRead, SetConst.COMMAND_ZERO, SetConst.COMMAND_ONE);
+            validationService.checkInstructionOfSpecifyArray(hadRead, SetConst.COMMAND_ZERO, SetConst.COMMAND_ONE);
             isAddTopicRead = SetConst.COMMAND_ONE.equals(hadRead);
         }
 
@@ -120,7 +120,7 @@ public class TopicController {
      */
     @RequestMapping(value = "/topic/reply", method = RequestMethod.GET)
     public PageJsonDTO topicReply(@RequestParam(value = "replyid", required = false) String replyId) {
-        paramCheckService.check(ParamConst.ID, replyId);
+        validationService.check(ParamConst.ID, replyId);
         return new PageJsonDTO(AjaxRequestStatus.SUCCESS, topicService.getReplyPageModelMap(Integer.parseInt(replyId)));
     }
 
@@ -147,10 +147,10 @@ public class TopicController {
                                   @RequestParam(value = "page", required = false) String page,
                                   @RequestParam(value = "category", required = false) String category,
                                   @RequestParam(value = "username", required = false) String username) {
-        paramCheckService.check(ParamConst.NUMBER, page);
+        validationService.check(ParamConst.NUMBER, page);
 
         //judge input param(limit, category, username), if no input, user the default value
-        paramCheckService.checkNotNullParamsKeyValue(
+        validationService.checkNotNullParamsKeyValue(
                 ParamConst.NUMBER, limit,
                 ParamConst.TOPIC_CATEGORY_NICK, category,
                 ParamConst.USERNAME, username
@@ -172,7 +172,7 @@ public class TopicController {
     public PageJsonDTO topicsPages(@RequestParam(value = "limit", required = false) String limit,
                                    @RequestParam(value = "category", required = false) String category,
                                    @RequestParam(value = "username", required = false) String username) {
-        paramCheckService.checkNotNullParamsKeyValue(
+        validationService.checkNotNullParamsKeyValue(
                 ParamConst.NUMBER, limit,
                 ParamConst.TOPIC_CATEGORY_NICK, category,
                 ParamConst.USERNAME, username
@@ -207,7 +207,7 @@ public class TopicController {
         String title = (String) requestBodyParamsMap.get(ParamConst.TITLE);
         String topicContent = (String) requestBodyParamsMap.get(ParamConst.CONTENT);
 
-        paramCheckService.check(ParamConst.TOPIC_CATEGORY_NICK, category)
+        validationService.check(ParamConst.TOPIC_CATEGORY_NICK, category)
                          .check(ParamConst.TOPIC_TITLE, title)
                          .check(ParamConst.TOPIC_CONTENT, topicContent);
 
@@ -233,7 +233,7 @@ public class TopicController {
         Integer topicId = (Integer) requestBodyParamsMap.get(ParamConst.TOPIC_ID);
         String replyContent = (String) requestBodyParamsMap.get(ParamConst.CONTENT);
 
-        paramCheckService.check(ParamConst.ID, String.valueOf(topicId)).check(ParamConst.REPLY_CONTENT, replyContent);
+        validationService.check(ParamConst.ID, String.valueOf(topicId)).check(ParamConst.REPLY_CONTENT, replyContent);
 
         UserDO cookieUser = secretService.jwtVerifyTokenByTokenByKey(
                 httpService.getAuthenticationCookieValue(request), SetConst.JWT_TOKEN_SECRET_KEY
@@ -254,7 +254,7 @@ public class TopicController {
     public PageJsonDTO topicRemove(@RequestBody Map<String, Object> requestBodyParamsMap) {
         Integer topicId = (Integer) requestBodyParamsMap.get(ParamConst.TOPIC_ID);
 
-        paramCheckService.check(ParamConst.ID, String.valueOf(topicId));
+        validationService.check(ParamConst.ID, String.valueOf(topicId));
 
         topicService.removeTopic(topicId);
 
@@ -272,7 +272,7 @@ public class TopicController {
     public PageJsonDTO topicReplyRemove(@RequestBody Map<String, Object> requestBodyParamsMap) {
         Integer replyId = (Integer) requestBodyParamsMap.get(ParamConst.REPLY_ID);
 
-        paramCheckService.check(ParamConst.ID, String.valueOf(replyId));
+        validationService.check(ParamConst.ID, String.valueOf(replyId));
 
         topicService.removeReply(replyId);
 
@@ -293,7 +293,7 @@ public class TopicController {
         String newTitle = (String) requestBodyParamsMap.get(ParamConst.TITLE);
         String newTopicContent = (String) requestBodyParamsMap.get(ParamConst.CONTENT);
 
-        paramCheckService.check(ParamConst.ID, String.valueOf(topicId))
+        validationService.check(ParamConst.ID, String.valueOf(topicId))
                          .check(ParamConst.TOPIC_CATEGORY_NICK, newCategoryNick)
                          .check(ParamConst.TOPIC_TITLE, newTitle)
                          .check(ParamConst.TOPIC_CONTENT, newTopicContent);
@@ -315,7 +315,7 @@ public class TopicController {
        Integer replyId = (Integer) requestBodyParamsMap.get(ParamConst.REPLY_ID);
        String newReplyContent = (String) requestBodyParamsMap.get(ParamConst.CONTENT);
 
-       paramCheckService.check(ParamConst.ID, String.valueOf(replyId)).check(ParamConst.REPLY_CONTENT, newReplyContent);
+       validationService.check(ParamConst.ID, String.valueOf(replyId)).check(ParamConst.REPLY_CONTENT, newReplyContent);
 
        topicService.alterReplyContent(replyId, newReplyContent);
 
@@ -335,8 +335,8 @@ public class TopicController {
        Integer topicId = (Integer) requestBodyParamsMap.get(ParamConst.TOPIC_ID);
        String command = (String) requestBodyParamsMap.get(ParamConst.COMMAND);
 
-       paramCheckService.check(ParamConst.TOPIC_ID, String.valueOf(topicId));
-       paramCheckService.checkInstructionOfSpecifyArray(command, SetConst.COMMAND_INC, SetConst.COMMAND_DEC);
+       validationService.check(ParamConst.TOPIC_ID, String.valueOf(topicId));
+       validationService.checkInstructionOfSpecifyArray(command, SetConst.COMMAND_INC, SetConst.COMMAND_DEC);
 
        UserDO cookieUser = secretService.jwtVerifyTokenByTokenByKey(
                httpService.getAuthenticationCookieValue(request), SetConst.JWT_TOKEN_SECRET_KEY
@@ -364,7 +364,7 @@ public class TopicController {
     public PageJsonDTO like(@RequestBody Map<String, Object> requestBodyParamsMap, HttpServletRequest request) {
         Integer topicId = (Integer) requestBodyParamsMap.get(ParamConst.TOPIC_ID);
 
-        paramCheckService.check(ParamConst.TOPIC_ID, String.valueOf(topicId));
+        validationService.check(ParamConst.TOPIC_ID, String.valueOf(topicId));
 
         UserDO cookieUser = secretService.jwtVerifyTokenByTokenByKey(
                 httpService.getAuthenticationCookieValue(request), SetConst.JWT_TOKEN_SECRET_KEY
@@ -388,7 +388,7 @@ public class TopicController {
     public PageJsonDTO collect(@RequestBody Map<String, Object> requestBodyParamsMap, HttpServletRequest request) {
         Integer topicId = (Integer) requestBodyParamsMap.get(ParamConst.TOPIC_ID);
 
-        paramCheckService.check(ParamConst.TOPIC_ID, String.valueOf(topicId));
+        validationService.check(ParamConst.TOPIC_ID, String.valueOf(topicId));
 
         UserDO cookieUser = secretService.jwtVerifyTokenByTokenByKey(
                 httpService.getAuthenticationCookieValue(request), SetConst.JWT_TOKEN_SECRET_KEY
@@ -410,7 +410,7 @@ public class TopicController {
     public PageJsonDTO attention(@RequestBody Map<String, Object> requestBodyParamsMap, HttpServletRequest request) {
         Integer topicId = (Integer) requestBodyParamsMap.get(ParamConst.TOPIC_ID);
 
-        paramCheckService.check(ParamConst.TOPIC_ID, String.valueOf(topicId));
+        validationService.check(ParamConst.TOPIC_ID, String.valueOf(topicId));
 
         UserDO cookieUser = secretService.jwtVerifyTokenByTokenByKey(
                 httpService.getAuthenticationCookieValue(request), SetConst.JWT_TOKEN_SECRET_KEY

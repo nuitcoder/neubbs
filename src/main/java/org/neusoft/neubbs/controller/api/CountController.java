@@ -43,15 +43,15 @@ public class CountController {
     private final IHttpService httpService;
     private final IUserService userService;
     private final ITopicService topicService;
-    private final IValidationService paramCheckService;
+    private final IValidationService validationService;
 
     @Autowired
     public CountController(IHttpService httpService, IUserService userService,
-                           ITopicService topicService, IValidationService paramCheckService) {
+                           ITopicService topicService, IValidationService validationService) {
         this.httpService = httpService;
         this.userService = userService;
         this.topicService = topicService;
-        this.paramCheckService = paramCheckService;
+        this.validationService = validationService;
     }
 
     /**
@@ -103,7 +103,7 @@ public class CountController {
      */
     @RequestMapping(value = "user", method = RequestMethod.GET)
     public PageJsonDTO user(@RequestParam(value = "userid", required = false) String userId) {
-        paramCheckService.check(ParamConst.USER_ID, userId);
+        validationService.check(ParamConst.USER_ID, userId);
 
         int userIdInt = Integer.valueOf(userId);
         Map<String, Object> userCountMap = new LinkedHashMap<>(SetConst.FIVE);
