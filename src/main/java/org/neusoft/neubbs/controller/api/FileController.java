@@ -19,8 +19,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
-
 
 /**
  * 文件 api
@@ -55,13 +53,11 @@ public class FileController {
      *      - 上传至 ftp
      *
      * @param multipartFile 用户上传的文件对象
-     * @param request http请求
      * @return PageJsonDTO 响应JSON传输对象
      */
     @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/avator", method = RequestMethod.POST)
-    public PageJsonDTO uploadUserAvatars(@RequestParam("avatorImage")MultipartFile multipartFile,
-                                         HttpServletRequest request) {
+    public PageJsonDTO uploadUserAvatars(@RequestParam("avatorImage")MultipartFile multipartFile) {
 
         fileService.checkUploadUserAvatorImageFileNorm(multipartFile);
 
@@ -69,7 +65,7 @@ public class FileController {
 //      MultipartFile compressedFile = fileService.compressFile(multipartFile)
 
         UserDO cookieUser = secretService.jwtVerifyTokenByTokenByKey(
-                httpService.getAuthenticationCookieValue(request), SetConst.JWT_TOKEN_SECRET_KEY
+                httpService.getAuthenticationCookieValue(), SetConst.JWT_TOKEN_SECRET_KEY
         );
 
         String serverUserAvatorImageName = ftpService.generateServerUserAvatorFileName(multipartFile);

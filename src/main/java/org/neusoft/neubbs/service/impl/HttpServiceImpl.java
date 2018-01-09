@@ -4,17 +4,17 @@ import org.neusoft.neubbs.constant.api.ApiMessage;
 import org.neusoft.neubbs.constant.api.ParamConst;
 import org.neusoft.neubbs.constant.api.SetConst;
 import org.neusoft.neubbs.constant.log.LogWarn;
-import org.neusoft.neubbs.exception.AccountErrorException;
 import org.neusoft.neubbs.entity.properties.NeubbsConfigDO;
+import org.neusoft.neubbs.exception.AccountErrorException;
 import org.neusoft.neubbs.service.IHttpService;
 import org.neusoft.neubbs.utils.CookieUtil;
+import org.neusoft.neubbs.utils.PublicParamsUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -35,73 +35,75 @@ public class HttpServiceImpl implements IHttpService {
     }
 
     @Override
-    public void saveCookie(HttpServletResponse response, String cookieName, String cookieValue, Integer cookieMaxTime) {
-        if (cookieMaxTime == null) {
-            cookieMaxTime = neubbsConfig.getCookieAutoLoginMaxAgeDay();
-        }
-        CookieUtil.saveCookie(response, cookieName, cookieValue, cookieMaxTime);
+    public void saveCookie(String cookieName, String cookieValue) {
+        //get cookie max day in neubbs.properties
+        CookieUtil.saveCookie(PublicParamsUtil.getResponse(), cookieName,
+                cookieValue, neubbsConfig.getCookieAutoLoginMaxAgeDay());
     }
 
     @Override
-    public void saveAuthenticationCookie(HttpServletResponse response, String authentication) {
-       this.saveCookie(response, ParamConst.AUTHENTICATION, authentication, null);
+    public void saveAuthenticationCookie(String authentication) {
+       this.saveCookie(ParamConst.AUTHENTICATION, authentication);
     }
 
     @Override
-    public void removeCookie(HttpServletRequest request, HttpServletResponse response, String cookieName) {
-        CookieUtil.removeCookie(request, response, cookieName);
+    public void removeCookie(String cookieName) {
+        CookieUtil.removeCookie(PublicParamsUtil.getRequest(), PublicParamsUtil.getResponse(), cookieName);
     }
 
     @Override
-    public String getCookieValue(HttpServletRequest request, String cookieName) {
-        return CookieUtil.getCookieValue(request, cookieName);
+    public String getCookieValue(String cookieName) {
+        return CookieUtil.getCookieValue(PublicParamsUtil.getRequest(), cookieName);
     }
 
     @Override
-    public String getAuthenticationCookieValue(HttpServletRequest request) {
-        return CookieUtil.getCookieValue(request, ParamConst.AUTHENTICATION);
+    public String getAuthenticationCookieValue() {
+        return CookieUtil.getCookieValue(PublicParamsUtil.getRequest(), ParamConst.AUTHENTICATION);
     }
 
     @Override
-    public boolean isLoggedInUser(HttpServletRequest request) {
-        return this.getAuthenticationCookieValue(request) != null;
+    public boolean isLoggedInUser() {
+        return this.getAuthenticationCookieValue() != null;
     }
 
     @Override
-    public void addOnlineLoginUserNumber(HttpServletRequest request) {
-        ServletContext context = request.getServletContext();
-        context.setAttribute(ParamConst.LOGIN_USER, this.getOnlineLoginUserNumber(request) + 1);
+    public void incOnlineLoginUserNumber() {
+        ServletContext context = PublicParamsUtil.getContext();
+        context.setAttribute(ParamConst.LOGIN_USER, this.getOnlineLoginUserNumber() + 1);
     }
 
     @Override
-    public void cutOnlineLoginUserNumber(HttpServletRequest request) {
-        ServletContext context = request.getServletContext();
-        context.setAttribute(ParamConst.LOGIN_USER, this.getOnlineLoginUserNumber(request) - 1);
+    public void decOnlineLoginUserNumber() {
+        ServletContext context = PublicParamsUtil.getContext();
+        context.setAttribute(ParamConst.LOGIN_USER, this.getOnlineLoginUserNumber() - 1);
     }
 
     @Override
-    public int getOnlineLoginUserNumber(HttpServletRequest request) {
-        return (int) request.getServletContext().getAttribute(ParamConst.LOGIN_USER);
+    public int getOnlineVisitUserNumber() {
+        return (int) PublicParamsUtil.getContext().getAttribute(ParamConst.VISIT_USER);
     }
 
     @Override
-    public int getOnlineVisitUserNumber(HttpServletRequest request) {
-        return (int) request.getServletContext().getAttribute(ParamConst.VISIT_USER);
+
+    public int getOnlineLoginUserNumber() {
+        return (int) PublicParamsUtil.getContext().getAttribute(ParamConst.LOGIN_USER);
     }
 
     @Override
-    public void setPageResponseHearderToImageType(HttpServletResponse response) {
-        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
-        response.addHeader("Cache-Control", "post-check=0, pre-check=0");
-        response.setHeader("Pragma", "no-cache");
-        response.setContentType("image/jpeg");
+    public void setPageResponseHeaderToImageType() {
+        HttpServletResponse response = PublicParamsUtil.getResponse();
+            response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+            response.addHeader("Cache-Control", "post-check=0, pre-check=0");
+            response.setHeader("Pragma", "no-cache");
+            response.setContentType("image/jpeg");
     }
 
     @Override
-    public void outputPageImageToJPGFormat(HttpServletResponse response, BufferedImage outputImage) {
+    public void outputPageImageJPGFormat(BufferedImage outputImage) {
         try {
-            ServletOutputStream out = response.getOutputStream();
+            ServletOutputStream out = PublicParamsUtil.getResponse().getOutputStream();
             ImageIO.write(outputImage, "jpg", out);
+
             out.flush();
             out.close();
         } catch (IOException e) {
@@ -110,12 +112,17 @@ public class HttpServiceImpl implements IHttpService {
     }
 
     @Override
-    public void setSessionToSaveCaptchaText(HttpServletRequest request, String captchaText) {
-        request.getSession().setAttribute(SetConst.SESSION_CAPTCHA, captchaText);
+    public String getSessionCaptchaText() {
+        return (String) PublicParamsUtil.getSession().getAttribute(SetConst.SESSION_CAPTCHA);
     }
 
     @Override
-    public String getSessionCaptchaText(HttpServletRequest request) {
-        return (String) request.getSession().getAttribute(SetConst.SESSION_CAPTCHA);
+    public void setSessionToSaveCaptchaText(String captchaText) {
+        PublicParamsUtil.getRequest().setAttribute(SetConst.SESSION_CAPTCHA, captchaText);
+    }
+    @Override
+
+    public void destroySession () {
+        PublicParamsUtil.getSession().invalidate();
     }
 }

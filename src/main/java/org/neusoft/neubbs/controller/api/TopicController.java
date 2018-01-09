@@ -10,10 +10,10 @@ import org.neusoft.neubbs.dto.PageJsonDTO;
 import org.neusoft.neubbs.dto.PageJsonListDTO;
 import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.service.IHttpService;
-import org.neusoft.neubbs.service.IValidationService;
 import org.neusoft.neubbs.service.ISecretService;
 import org.neusoft.neubbs.service.ITopicService;
 import org.neusoft.neubbs.service.IUserService;
+import org.neusoft.neubbs.service.IValidationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -75,13 +74,11 @@ public class TopicController {
      *
      * @param topicId 话题id
      * @param hadRead 阅读数是否增加（0-不增加，1-增加）
-     * @param request http请求
      * @return PageJsonDTO 页面JSON传输对象
      */
     @RequestMapping(value = "/topic", method = RequestMethod.GET)
     public PageJsonDTO getTopicInfo(@RequestParam(value = "topicid", required = false) String topicId,
-                             @RequestParam(value = "hadread", required = false) String hadRead,
-                             HttpServletRequest request) {
+                             @RequestParam(value = "hadread", required = false) String hadRead) {
         validationService.check(ParamConst.ID, topicId);
 
         //judge whether to increase read count
@@ -96,9 +93,9 @@ public class TopicController {
 
         //judge current user like topic state(visit user default value of false)
         boolean isCurrentUserLikeThisTopic = false;
-        if (httpService.isLoggedInUser(request)) {
+        if (httpService.isLoggedInUser()) {
             UserDO currentUser = secretService.jwtVerifyTokenByTokenByKey(
-                    httpService.getAuthenticationCookieValue(request), SetConst.JWT_TOKEN_SECRET_KEY
+                    httpService.getAuthenticationCookieValue(), SetConst.JWT_TOKEN_SECRET_KEY
             );
             isCurrentUserLikeThisTopic = userService.isUserLikeTopic(currentUser.getId(), topicIdInt);
         }
@@ -200,12 +197,11 @@ public class TopicController {
      * 发布话题
      *
      * @param requestBodyParamsMap request-body内JSON数据
-     * @param request http请求
      * @return PageJsonDTO 页面JSON传输数据
      */
     @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/topic", method = RequestMethod.POST, consumes = "application/json")
-    public PageJsonDTO releaseTopic(@RequestBody Map<String, Object> requestBodyParamsMap, HttpServletRequest request) {
+    public PageJsonDTO releaseTopic(@RequestBody Map<String, Object> requestBodyParamsMap) {
         String category = (String) requestBodyParamsMap.get(ParamConst.CATEGORY);
         String title = (String) requestBodyParamsMap.get(ParamConst.TITLE);
         String topicContent = (String) requestBodyParamsMap.get(ParamConst.CONTENT);
@@ -215,7 +211,7 @@ public class TopicController {
                          .check(ParamConst.TOPIC_CONTENT, topicContent);
 
         UserDO cookieUser = secretService.jwtVerifyTokenByTokenByKey(
-                httpService.getAuthenticationCookieValue(request), SetConst.JWT_TOKEN_SECRET_KEY
+                httpService.getAuthenticationCookieValue(), SetConst.JWT_TOKEN_SECRET_KEY
         );
 
         int topicId = topicService.saveTopic(cookieUser.getId(), category, title, topicContent);
@@ -227,19 +223,18 @@ public class TopicController {
      * 发布回复
      *
      * @param requestBodyParamsMap request-body内JSON数据
-     * @param request http请求
      * @return PageJsonDTO 页面JSON传输对象
      */
     @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/topic/reply", method = RequestMethod.POST, consumes = "application/json")
-    public PageJsonDTO releaseTopciReply(@RequestBody Map<String, Object> requestBodyParamsMap, HttpServletRequest request) {
+    public PageJsonDTO releaseTopciReply(@RequestBody Map<String, Object> requestBodyParamsMap) {
         Integer topicId = (Integer) requestBodyParamsMap.get(ParamConst.TOPIC_ID);
         String replyContent = (String) requestBodyParamsMap.get(ParamConst.CONTENT);
 
         validationService.check(ParamConst.ID, String.valueOf(topicId)).check(ParamConst.REPLY_CONTENT, replyContent);
 
         UserDO cookieUser = secretService.jwtVerifyTokenByTokenByKey(
-                httpService.getAuthenticationCookieValue(request), SetConst.JWT_TOKEN_SECRET_KEY
+                httpService.getAuthenticationCookieValue(), SetConst.JWT_TOKEN_SECRET_KEY
         );
 
         int replyId = topicService.saveReply(cookieUser.getId(), topicId, replyContent);
@@ -330,12 +325,11 @@ public class TopicController {
      *      - 需要 command 命令（用于点赞 or 取消）
      *
      * @param requestBodyParamsMap request-body内JSON数据
-     * @param request http请求
      * @return PageJsonDTO 页面JSON传输对象
      */
    @LoginAuthorization @AccountActivation
    @RequestMapping(value = "/topic/like", method = RequestMethod.POST, consumes = "application/json")
-   public PageJsonDTO likeTopic(@RequestBody Map<String, Object> requestBodyParamsMap, HttpServletRequest request) {
+   public PageJsonDTO likeTopic(@RequestBody Map<String, Object> requestBodyParamsMap) {
        Integer topicId = (Integer) requestBodyParamsMap.get(ParamConst.TOPIC_ID);
        String command = (String) requestBodyParamsMap.get(ParamConst.COMMAND);
 
@@ -343,7 +337,7 @@ public class TopicController {
        validationService.checkInstructionOfSpecifyArray(command, SetConst.COMMAND_INC, SetConst.COMMAND_DEC);
 
        UserDO cookieUser = secretService.jwtVerifyTokenByTokenByKey(
-               httpService.getAuthenticationCookieValue(request), SetConst.JWT_TOKEN_SECRET_KEY
+               httpService.getAuthenticationCookieValue(), SetConst.JWT_TOKEN_SECRET_KEY
        );
 
        //judge cuurent user like topic, according the command('inc', 'dec'), alter like of topic
@@ -361,18 +355,17 @@ public class TopicController {
      *      - 不需要 command 命令
      *
      * @param requestBodyParamsMap request-body内JSON数据
-     * @param request http请求
      * @return PageJsonDTO 页面JSON传输对象
      */
     @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/topic/newlike", method = RequestMethod.POST, consumes = "application/json")
-    public PageJsonDTO newLikeTopic(@RequestBody Map<String, Object> requestBodyParamsMap, HttpServletRequest request) {
+    public PageJsonDTO newLikeTopic(@RequestBody Map<String, Object> requestBodyParamsMap) {
         Integer topicId = (Integer) requestBodyParamsMap.get(ParamConst.TOPIC_ID);
 
         validationService.check(ParamConst.TOPIC_ID, String.valueOf(topicId));
 
         UserDO cookieUser = secretService.jwtVerifyTokenByTokenByKey(
-                httpService.getAuthenticationCookieValue(request), SetConst.JWT_TOKEN_SECRET_KEY
+                httpService.getAuthenticationCookieValue(), SetConst.JWT_TOKEN_SECRET_KEY
         );
 
         Map<String, Object> resultMap = new LinkedHashMap<>(SetConst.SIZE_TWO);
@@ -385,18 +378,17 @@ public class TopicController {
      * 收藏话题
      *
      * @param requestBodyParamsMap request-body内JSON数据
-     * @param request http请求
      * @return PageJsonDTO　页面JSON传输对象
      */
     @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/topic/collect", method = RequestMethod.POST, consumes = "application/json")
-    public PageJsonDTO collectTopic(@RequestBody Map<String, Object> requestBodyParamsMap, HttpServletRequest request) {
+    public PageJsonDTO collectTopic(@RequestBody Map<String, Object> requestBodyParamsMap) {
         Integer topicId = (Integer) requestBodyParamsMap.get(ParamConst.TOPIC_ID);
 
         validationService.check(ParamConst.TOPIC_ID, String.valueOf(topicId));
 
         UserDO cookieUser = secretService.jwtVerifyTokenByTokenByKey(
-                httpService.getAuthenticationCookieValue(request), SetConst.JWT_TOKEN_SECRET_KEY
+                httpService.getAuthenticationCookieValue(), SetConst.JWT_TOKEN_SECRET_KEY
         );
 
         return new PageJsonDTO(AjaxRequestStatus.SUCCESS,
@@ -407,18 +399,17 @@ public class TopicController {
      * 关注话题
      *
      * @param requestBodyParamsMap request-body内JSON数据
-     * @param request http请求
      * @return PageJsonDTO 页面JSON传输对象
      */
     @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/topic/attention", method = RequestMethod.POST, consumes = "application/json")
-    public PageJsonDTO attentionTopic(@RequestBody Map<String, Object> requestBodyParamsMap, HttpServletRequest request) {
+    public PageJsonDTO attentionTopic(@RequestBody Map<String, Object> requestBodyParamsMap) {
         Integer topicId = (Integer) requestBodyParamsMap.get(ParamConst.TOPIC_ID);
 
         validationService.check(ParamConst.TOPIC_ID, String.valueOf(topicId));
 
         UserDO cookieUser = secretService.jwtVerifyTokenByTokenByKey(
-                httpService.getAuthenticationCookieValue(request), SetConst.JWT_TOKEN_SECRET_KEY
+                httpService.getAuthenticationCookieValue(), SetConst.JWT_TOKEN_SECRET_KEY
         );
 
         return new PageJsonDTO(AjaxRequestStatus.SUCCESS,

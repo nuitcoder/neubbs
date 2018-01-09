@@ -13,11 +13,11 @@ import org.neusoft.neubbs.service.ICaptchaService;
 import org.neusoft.neubbs.service.IEmailService;
 import org.neusoft.neubbs.service.IFtpService;
 import org.neusoft.neubbs.service.IHttpService;
-import org.neusoft.neubbs.service.IValidationService;
 import org.neusoft.neubbs.service.IRandomService;
 import org.neusoft.neubbs.service.IRedisService;
 import org.neusoft.neubbs.service.ISecretService;
 import org.neusoft.neubbs.service.IUserService;
+import org.neusoft.neubbs.service.IValidationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,8 +25,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -94,13 +92,11 @@ public final class AccountController {
      *
      * @param username 用户名
      * @param email 用户邮箱
-     * @param request http请求
      * @return PageJsonDTO 页面JSON传输对象
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
     public PageJsonDTO getUserInfo(@RequestParam(value = "username", required = false) String username,
-                                   @RequestParam(value = "email", required = false) String email,
-                                   HttpServletRequest request) {
+                                   @RequestParam(value = "email", required = false) String email) {
         validationService.paramsNotNull(username, email);
         if (username != null) {
             validationService.check(validationService.getUsernameParamType(username), username);
@@ -155,13 +151,10 @@ public final class AccountController {
      * 登录
      *
      * @param requestBodyParamsMap  request-body内JSON数据
-     * @param request http请求
-     * @param response http响应
      * @return PageJsonDTO 页面JSON传输对象
      */
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public PageJsonDTO loginAccount(@RequestBody Map<String, Object> requestBodyParamsMap,
-                                 HttpServletRequest request, HttpServletResponse response) {
+    public PageJsonDTO loginAccount(@RequestBody Map<String, Object> requestBodyParamsMap) {
         String username = (String) requestBodyParamsMap.get(ParamConst.USERNAME);
         String password = (String) requestBodyParamsMap.get(ParamConst.PASSWORD);
 
@@ -172,10 +165,10 @@ public final class AccountController {
 
         //jwt secret user information, save authentication to cookie
         String authentication = secretService.jwtCreateTokenByUser(user);
-        httpService.saveAuthenticationCookie(response, authentication);
+        httpService.saveAuthenticationCookie(authentication);
 
-        //re-count login user
-        request.getSession().invalidate();
+        //login user +1
+        httpService.incOnlineLoginUserNumber();
 
         //response model -> include authentication and state
         Map<String, Object> modelJsonMap = new LinkedHashMap<>(SetConst.LENGTH_TWO);
@@ -187,17 +180,15 @@ public final class AccountController {
     /**
      * 注销
      *
-     * @param request http请求
-     * @param response http响应
      * @return PageJsonDTO 页面JSON传输对象
      */
     @LoginAuthorization
     @RequestMapping(value = "/logout", method = RequestMethod.GET)
-    public PageJsonDTO logoutAccount(HttpServletRequest request, HttpServletResponse response) {
-        httpService.removeCookie(request, response, ParamConst.AUTHENTICATION);
+    public PageJsonDTO logoutAccount() {
+        httpService.removeCookie(ParamConst.AUTHENTICATION);
 
-        //re-count login user
-        request.getSession().invalidate();
+        //login user +1
+        httpService.decOnlineLoginUserNumber();
 
         return new PageJsonDTO(AjaxRequestStatus.SUCCESS);
     }
@@ -233,13 +224,11 @@ public final class AccountController {
      *      - birthday, position, description 允许 "",但是不能为 null
      *
      * @param requestBodyParamsMap request-body内JSON数据
-     * @param request http 请求
      * @return PageJsonDTO 页面JSON传输对象
      */
     @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/update-profile", method = RequestMethod.POST, consumes = "application/json")
-    public PageJsonDTO updateUserInfo(@RequestBody Map<String, Object> requestBodyParamsMap,
-                                      HttpServletRequest request) {
+    public PageJsonDTO updateUserInfo(@RequestBody Map<String, Object> requestBodyParamsMap) {
         Integer newSex = (Integer) requestBodyParamsMap.get(ParamConst.SEX);
         String newBirthday = (String) requestBodyParamsMap.get(ParamConst.BIRTHDAY);
         String newPosition = (String) requestBodyParamsMap.get(ParamConst.POSITION);
@@ -253,7 +242,7 @@ public final class AccountController {
 
         //get user information in client cookie
         UserDO user = secretService.jwtVerifyTokenByTokenByKey(
-               httpService.getAuthenticationCookieValue(request), SetConst.JWT_TOKEN_SECRET_KEY
+               httpService.getAuthenticationCookieValue(), SetConst.JWT_TOKEN_SECRET_KEY
         );
 
         return new PageJsonDTO(AjaxRequestStatus.SUCCESS,
@@ -264,13 +253,11 @@ public final class AccountController {
      * 修改密码
      *
      * @param requestBodyParamsMap request-body内JSON数据
-     * @param request http请求
      * @return PageJsonDTO 页面JSON传输对象
      */
     @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/update-password", method = RequestMethod.POST, consumes = "application/json")
-    public PageJsonDTO updateUserPassword(@RequestBody Map<String, Object> requestBodyParamsMap,
-                                          HttpServletRequest request) {
+    public PageJsonDTO updateUserPassword(@RequestBody Map<String, Object> requestBodyParamsMap) {
         String username = (String) requestBodyParamsMap.get(ParamConst.USERNAME);
         String newPassword = (String) requestBodyParamsMap.get(ParamConst.PASSWORD);
 
@@ -278,7 +265,7 @@ public final class AccountController {
 
         //confirm input username match logged in user
         UserDO cookieUser = secretService.jwtVerifyTokenByTokenByKey(
-                httpService.getAuthenticationCookieValue(request), SetConst.JWT_TOKEN_SECRET_KEY
+                httpService.getAuthenticationCookieValue(), SetConst.JWT_TOKEN_SECRET_KEY
         );
         userService.confirmUserMatchCookieUser(username, cookieUser);
 
@@ -291,20 +278,18 @@ public final class AccountController {
      * 修改邮箱
      *
      * @param requestBodyParamsMap request-body内JSON数据
-     * @param request http请求
      * @return PageJsonDTO 页面JSON传输对象
      */
     @LoginAuthorization
     @RequestMapping(value = "/update-email", method = RequestMethod.POST, consumes = "application/json")
-    public PageJsonDTO updateUserEmail(@RequestBody Map<String, Object> requestBodyParamsMap,
-                                       HttpServletRequest request) {
+    public PageJsonDTO updateUserEmail(@RequestBody Map<String, Object> requestBodyParamsMap) {
         String username = (String) requestBodyParamsMap.get(ParamConst.USERNAME);
         String newEmail = (String) requestBodyParamsMap.get(ParamConst.EMAIL);
 
         validationService.check(ParamConst.USERNAME, username).check(ParamConst.EMAIL, newEmail);
 
         UserDO cookieUser = secretService.jwtVerifyTokenByTokenByKey(
-                httpService.getAuthenticationCookieValue(request), SetConst.JWT_TOKEN_SECRET_KEY
+                httpService.getAuthenticationCookieValue(), SetConst.JWT_TOKEN_SECRET_KEY
         );
         userService.confirmUserMatchCookieUser(username, cookieUser);
 
@@ -359,14 +344,13 @@ public final class AccountController {
      * @return PageJsonDTO 页面JSON传输对象
      */
     @RequestMapping(value = "/validate", method = RequestMethod.GET)
-    public PageJsonDTO validateActivateToken(@RequestParam(value = "token", required = false) String token,
-                                             HttpServletResponse response) {
+    public PageJsonDTO validateActivateToken(@RequestParam(value = "token", required = false) String token) {
         validationService.check(ParamConst.TOKEN, token);
 
         UserDO activatedUser = userService.alterUserActivateStateByToken(token);
 
         String authentication = secretService.jwtCreateTokenByUser(activatedUser);
-        httpService.saveAuthenticationCookie(response, authentication);
+        httpService.saveAuthenticationCookie(authentication);
 
         return new PageJsonDTO(AjaxRequestStatus.SUCCESS);
     }
@@ -376,25 +360,23 @@ public final class AccountController {
      *      - 页面生成验证码图片, 刷新重新生成
      *      - 目前 Session 储存验证码
      *
-     * @param request http请求
-     * @param response http响应
      */
     @RequestMapping(value = "/captcha", method = RequestMethod.GET)
-    public void generateCaptchaPicture(HttpServletRequest request, HttpServletResponse response) {
+    public void generateCaptchaPicture() {
         //set response headers
-        httpService.setPageResponseHearderToImageType(response);
+        httpService.setPageResponseHeaderToImageType();
 
         //generate captcha text
         String captchaText = captchaService.getCaptchaText();
 
         //set session attribute
-       httpService.setSessionToSaveCaptchaText(request, captchaText);
+       httpService.setSessionToSaveCaptchaText(captchaText);
 
         //generate captcha image, input captcha text
         BufferedImage outputImage = captchaService.getCaptchaImage(captchaText);
 
         //page output jpg format image
-        httpService.outputPageImageToJPGFormat(response, outputImage);
+        httpService.outputPageImageJPGFormat(outputImage);
     }
 
     /**
@@ -402,16 +384,14 @@ public final class AccountController {
      *      - 比较用户输入是否与图片一致
      *
      * @param captcha 用户输入验证码
-     * @param request http请求
      * @return PageJsonDTO 页面JSON字符串
      */
     @RequestMapping(value = "/check-captcha", method = RequestMethod.GET)
-    public PageJsonDTO validateCaptcha(@RequestParam(value = "captcha", required = false)String captcha,
-                                        HttpServletRequest request) {
+    public PageJsonDTO validateCaptcha(@RequestParam(value = "captcha", required = false)String captcha) {
         validationService.check(ParamConst.CAPTCHA, captcha);
 
         //get session captcha
-        String sessionCaptcha = httpService.getSessionCaptchaText(request);
+        String sessionCaptcha = httpService.getSessionCaptchaText();
 
         //compare user input captcha match session captcha
         captchaService.judgeInputCaptchaWhetherSessionCaptcha(captcha, sessionCaptcha);
@@ -452,18 +432,17 @@ public final class AccountController {
      *      - 自动切换：有 -> 无， 无 -> 有
      *
      * @param requestBodyParams request-body内JSON数据
-     * @param request http请求
      * @return PageJsonDTO 页面JSON传输对象
      */
     @RequestMapping(value = "/following", method = RequestMethod.POST, consumes = "application/json")
     @LoginAuthorization @AccountActivation
-    public PageJsonDTO followingUser(@RequestBody Map<String, Object> requestBodyParams, HttpServletRequest request) {
+    public PageJsonDTO followingUser(@RequestBody Map<String, Object> requestBodyParams) {
         Integer followingUserId = (Integer) requestBodyParams.get(ParamConst.USER_ID);
 
         validationService.check(ParamConst.USER_ID, String.valueOf(followingUserId));
 
         UserDO cookieUser = secretService.jwtVerifyTokenByTokenByKey(
-                httpService.getAuthenticationCookieValue(request), SetConst.JWT_TOKEN_SECRET_KEY
+                httpService.getAuthenticationCookieValue(), SetConst.JWT_TOKEN_SECRET_KEY
         );
 
         return new PageJsonDTO(AjaxRequestStatus.SUCCESS,

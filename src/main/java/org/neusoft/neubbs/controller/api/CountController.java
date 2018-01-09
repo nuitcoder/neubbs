@@ -80,14 +80,13 @@ public class CountController {
      *      - 在线访问人数
      *      - 在线登陆人数
      *
-     * @param request http请求
      * @return PageJsonDTO 页面JSON传输对象
      */
     @RequestMapping(value = "/online", method = RequestMethod.GET)
-    public PageJsonDTO countOnlineData(HttpServletRequest request) {
+    public PageJsonDTO countOnlineData() {
         Map<String, Object> onlineCountMap = new LinkedHashMap<>(SetConst.SIZE_TWO);
-            onlineCountMap.put(ParamConst.VISIT_USER, httpService.getOnlineVisitUserNumber(request));
-            onlineCountMap.put(ParamConst.LOGIN_USER, httpService.getOnlineLoginUserNumber(request));
+            onlineCountMap.put(ParamConst.VISIT_USER, httpService.getOnlineVisitUserNumber());
+            onlineCountMap.put(ParamConst.LOGIN_USER, httpService.getOnlineLoginUserNumber());
         return new PageJsonDTO(AjaxRequestStatus.SUCCESS, onlineCountMap);
     }
 
