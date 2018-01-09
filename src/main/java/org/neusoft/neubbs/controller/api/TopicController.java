@@ -26,23 +26,23 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Topic api
+ * 话题 api
  *      获取话题信息
  *      获取回复信息
- *      获取热议话题列表
- *      获取话题列表（分页，指定数量）
+ *      获取热议话题信息列表
+ *      获取话题信息列表
  *      获取话题总页数
- *      获取话题分类信息
+ *      获取话题分类信息列表
  *      发布话题
  *      发布回复
  *      删除话题
  *      删除回复
- *      修改话题内容
- *      修改回复内容
- *      话题点赞
- *      话题点赞（新接口）
- *      话题收藏
- *      话题关注
+ *      编辑话题
+ *      编辑回复
+ *      点赞话题
+ *      点赞话题（新接口）
+ *      收藏话题
+ *      关注话题
  *
  * @author Suvan
  */
@@ -71,6 +71,7 @@ public class TopicController {
     /**
      * 获取话题信息
      *      - 能够获取当前用户是否点赞该文章信息（访客用户默认为 false）
+     *      - hadread 口令决定是否增加阅读数（0-不增加, 1-增加）
      *
      * @param topicId 话题id
      * @param hadRead 阅读数是否增加（0-不增加，1-增加）
@@ -78,14 +79,15 @@ public class TopicController {
      * @return PageJsonDTO 页面JSON传输对象
      */
     @RequestMapping(value = "/topic", method = RequestMethod.GET)
-    public PageJsonDTO topic(@RequestParam(value = "topicid", required = false) String topicId,
+    public PageJsonDTO getTopicInfo(@RequestParam(value = "topicid", required = false) String topicId,
                              @RequestParam(value = "hadread", required = false) String hadRead,
                              HttpServletRequest request) {
         validationService.check(ParamConst.ID, topicId);
 
+        //judge whether to increase read count
         boolean isAddTopicRead = false;
         if (hadRead != null) {
-            validationService.checkInstructionOfSpecifyArray(hadRead, SetConst.COMMAND_ZERO, SetConst.COMMAND_ONE);
+            validationService.checkInstructionOfSpecifyArray(hadRead, "0", "1");
             isAddTopicRead = SetConst.COMMAND_ONE.equals(hadRead);
         }
 
@@ -119,7 +121,7 @@ public class TopicController {
      * @return PageJsonDTO 页面JSON传输对象
      */
     @RequestMapping(value = "/topic/reply", method = RequestMethod.GET)
-    public PageJsonDTO topicReply(@RequestParam(value = "replyid", required = false) String replyId) {
+    public PageJsonDTO getTopicReplyInfo(@RequestParam(value = "replyid", required = false) String replyId) {
         validationService.check(ParamConst.ID, replyId);
         return new PageJsonDTO(AjaxRequestStatus.SUCCESS, topicService.getReplyPageModelMap(Integer.parseInt(replyId)));
     }
@@ -130,12 +132,13 @@ public class TopicController {
      * @return PageJsonListDTO 页面JSON列表传输对象
      */
     @RequestMapping(value = "/topics/hot", method = RequestMethod.GET)
-    public PageJsonListDTO topicsHot() {
+    public PageJsonListDTO listTopicsInfo() {
         return new PageJsonListDTO(AjaxRequestStatus.SUCCESS, topicService.listHotTalkTopics());
     }
 
     /**
-     * 获取话题列表（分页，指定数量）
+     * 获取话题信息列表
+     *      - 分页，指定数量
      *      - 未输入 limit 参数，使用 neubbs.properties 参数文件内指定的默认值
      *
      * @param limit 每页显示数量
@@ -143,10 +146,10 @@ public class TopicController {
      * @return PageJsonListDTO 响应JSON传输列表对象
      */
     @RequestMapping(value = "/topics", method = RequestMethod.GET)
-    public PageJsonListDTO topics(@RequestParam(value = "limit", required = false) String limit,
-                                  @RequestParam(value = "page", required = false) String page,
-                                  @RequestParam(value = "category", required = false) String category,
-                                  @RequestParam(value = "username", required = false) String username) {
+    public PageJsonListDTO listTopics(@RequestParam(value = "limit", required = false) String limit,
+                                      @RequestParam(value = "page", required = false) String page,
+                                      @RequestParam(value = "category", required = false) String category,
+                                      @RequestParam(value = "username", required = false) String username) {
         validationService.check(ParamConst.NUMBER, page);
 
         //judge input param(limit, category, username), if no input, user the default value
@@ -169,9 +172,9 @@ public class TopicController {
      * @return PageJsonDTO 页面JSON传输对象
      */
     @RequestMapping(value = "/topics/pages", method = RequestMethod.GET)
-    public PageJsonDTO topicsPages(@RequestParam(value = "limit", required = false) String limit,
-                                   @RequestParam(value = "category", required = false) String category,
-                                   @RequestParam(value = "username", required = false) String username) {
+    public PageJsonDTO countTopicTotalPages(@RequestParam(value = "limit", required = false) String limit,
+                                            @RequestParam(value = "category", required = false) String category,
+                                            @RequestParam(value = "username", required = false) String username) {
         validationService.checkNotNullParamsKeyValue(
                 ParamConst.NUMBER, limit,
                 ParamConst.TOPIC_CATEGORY_NICK, category,
@@ -184,25 +187,25 @@ public class TopicController {
     }
 
     /**
-     * 获取话题分类信息
+     * 获取话题分类信息列表
      *
      * @return PageJsonListDTO 页面JSON传输数据
      */
     @RequestMapping(value = "/topics/categorys", method = RequestMethod.GET)
-    public PageJsonListDTO topicCategories() {
+    public PageJsonListDTO listTopicCategories() {
         return new PageJsonListDTO(AjaxRequestStatus.SUCCESS,  topicService.listAllTopicCategorys());
     }
 
     /**
      * 发布话题
      *
-     * @param requestBodyParamsMap reuest-body内JSON数据
+     * @param requestBodyParamsMap request-body内JSON数据
      * @param request http请求
      * @return PageJsonDTO 页面JSON传输数据
      */
     @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/topic", method = RequestMethod.POST, consumes = "application/json")
-    public PageJsonDTO saveTopic(@RequestBody Map<String, Object> requestBodyParamsMap, HttpServletRequest request) {
+    public PageJsonDTO releaseTopic(@RequestBody Map<String, Object> requestBodyParamsMap, HttpServletRequest request) {
         String category = (String) requestBodyParamsMap.get(ParamConst.CATEGORY);
         String title = (String) requestBodyParamsMap.get(ParamConst.TITLE);
         String topicContent = (String) requestBodyParamsMap.get(ParamConst.CONTENT);
@@ -229,7 +232,7 @@ public class TopicController {
      */
     @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/topic/reply", method = RequestMethod.POST, consumes = "application/json")
-    public PageJsonDTO saveReply(@RequestBody Map<String, Object> requestBodyParamsMap, HttpServletRequest request) {
+    public PageJsonDTO releaseTopciReply(@RequestBody Map<String, Object> requestBodyParamsMap, HttpServletRequest request) {
         Integer topicId = (Integer) requestBodyParamsMap.get(ParamConst.TOPIC_ID);
         String replyContent = (String) requestBodyParamsMap.get(ParamConst.CONTENT);
 
@@ -251,7 +254,7 @@ public class TopicController {
      */
     @LoginAuthorization @AccountActivation @AdminRank
     @RequestMapping(value = "/topic-remove", method = RequestMethod.POST, consumes = "application/json")
-    public PageJsonDTO topicRemove(@RequestBody Map<String, Object> requestBodyParamsMap) {
+    public PageJsonDTO removeTopic(@RequestBody Map<String, Object> requestBodyParamsMap) {
         Integer topicId = (Integer) requestBodyParamsMap.get(ParamConst.TOPIC_ID);
 
         validationService.check(ParamConst.ID, String.valueOf(topicId));
@@ -269,7 +272,7 @@ public class TopicController {
      */
     @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/topic/reply-remove", method = RequestMethod.POST, consumes = "application/json")
-    public PageJsonDTO topicReplyRemove(@RequestBody Map<String, Object> requestBodyParamsMap) {
+    public PageJsonDTO removeTopicReply(@RequestBody Map<String, Object> requestBodyParamsMap) {
         Integer replyId = (Integer) requestBodyParamsMap.get(ParamConst.REPLY_ID);
 
         validationService.check(ParamConst.ID, String.valueOf(replyId));
@@ -280,14 +283,14 @@ public class TopicController {
     }
 
     /**
-     * 修改话题内容
+     * 编辑话题
      *
      * @param requestBodyParamsMap request-body内JSON数据
      * @return PageJsonDTO 页面JSON传输对象
      */
     @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/topic-update", method = RequestMethod.POST, consumes = "application/json")
-    public PageJsonDTO topicContentUpdate(@RequestBody Map<String, Object> requestBodyParamsMap) {
+    public PageJsonDTO updateTopic(@RequestBody Map<String, Object> requestBodyParamsMap) {
         Integer topicId = (Integer) requestBodyParamsMap.get(ParamConst.TOPIC_ID);
         String newCategoryNick = (String) requestBodyParamsMap.get(ParamConst.CATEGORY);
         String newTitle = (String) requestBodyParamsMap.get(ParamConst.TITLE);
@@ -304,14 +307,14 @@ public class TopicController {
    }
 
     /**
-     * 修改回复内容
+     * 编辑回复
      *
      * @param requestBodyParamsMap request-body内JSON数据
      * @return PageJsonDTO 页面JSON传输对象
      */
    @LoginAuthorization @AccountActivation
    @RequestMapping(value = "/topic/reply-update", method = RequestMethod.POST, consumes = "application/json")
-   public PageJsonDTO topicReplyContentUpdate(@RequestBody Map<String, Object> requestBodyParamsMap) {
+   public PageJsonDTO updateTopicReply(@RequestBody Map<String, Object> requestBodyParamsMap) {
        Integer replyId = (Integer) requestBodyParamsMap.get(ParamConst.REPLY_ID);
        String newReplyContent = (String) requestBodyParamsMap.get(ParamConst.CONTENT);
 
@@ -324,6 +327,7 @@ public class TopicController {
 
     /**
      * 点赞话题
+     *      - 需要 command 命令（用于点赞 or 取消）
      *
      * @param requestBodyParamsMap request-body内JSON数据
      * @param request http请求
@@ -331,7 +335,7 @@ public class TopicController {
      */
    @LoginAuthorization @AccountActivation
    @RequestMapping(value = "/topic/like", method = RequestMethod.POST, consumes = "application/json")
-   public PageJsonDTO topicLike(@RequestBody Map<String, Object> requestBodyParamsMap, HttpServletRequest request) {
+   public PageJsonDTO likeTopic(@RequestBody Map<String, Object> requestBodyParamsMap, HttpServletRequest request) {
        Integer topicId = (Integer) requestBodyParamsMap.get(ParamConst.TOPIC_ID);
        String command = (String) requestBodyParamsMap.get(ParamConst.COMMAND);
 
@@ -354,14 +358,15 @@ public class TopicController {
 
     /**
      * 点赞话题（新接口）
+     *      - 不需要 command 命令
      *
-     * @param requestBodyParamsMap rquest-body内JSON数据
+     * @param requestBodyParamsMap request-body内JSON数据
      * @param request http请求
      * @return PageJsonDTO 页面JSON传输对象
      */
     @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/topic/newlike", method = RequestMethod.POST, consumes = "application/json")
-    public PageJsonDTO like(@RequestBody Map<String, Object> requestBodyParamsMap, HttpServletRequest request) {
+    public PageJsonDTO newLikeTopic(@RequestBody Map<String, Object> requestBodyParamsMap, HttpServletRequest request) {
         Integer topicId = (Integer) requestBodyParamsMap.get(ParamConst.TOPIC_ID);
 
         validationService.check(ParamConst.TOPIC_ID, String.valueOf(topicId));
@@ -385,7 +390,7 @@ public class TopicController {
      */
     @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/topic/collect", method = RequestMethod.POST, consumes = "application/json")
-    public PageJsonDTO collect(@RequestBody Map<String, Object> requestBodyParamsMap, HttpServletRequest request) {
+    public PageJsonDTO collectTopic(@RequestBody Map<String, Object> requestBodyParamsMap, HttpServletRequest request) {
         Integer topicId = (Integer) requestBodyParamsMap.get(ParamConst.TOPIC_ID);
 
         validationService.check(ParamConst.TOPIC_ID, String.valueOf(topicId));
@@ -407,7 +412,7 @@ public class TopicController {
      */
     @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/topic/attention", method = RequestMethod.POST, consumes = "application/json")
-    public PageJsonDTO attention(@RequestBody Map<String, Object> requestBodyParamsMap, HttpServletRequest request) {
+    public PageJsonDTO attentionTopic(@RequestBody Map<String, Object> requestBodyParamsMap, HttpServletRequest request) {
         Integer topicId = (Integer) requestBodyParamsMap.get(ParamConst.TOPIC_ID);
 
         validationService.check(ParamConst.TOPIC_ID, String.valueOf(topicId));

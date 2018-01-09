@@ -50,7 +50,9 @@ public class FileController {
     }
 
     /**
-     * 1.上传用户头像（新上传的会覆盖旧的）
+     * 上传用户头像
+     *      - 新上传的会覆盖旧的
+     *      - 上传至 ftp
      *
      * @param multipartFile 用户上传的文件对象
      * @param request http请求
@@ -58,8 +60,8 @@ public class FileController {
      */
     @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/avator", method = RequestMethod.POST)
-    public PageJsonDTO uploadUserImage(@RequestParam("avatorImage")MultipartFile multipartFile,
-                                       HttpServletRequest request) {
+    public PageJsonDTO uploadUserAvatars(@RequestParam("avatorImage")MultipartFile multipartFile,
+                                         HttpServletRequest request) {
 
         fileService.checkUploadUserAvatorImageFileNorm(multipartFile);
 
