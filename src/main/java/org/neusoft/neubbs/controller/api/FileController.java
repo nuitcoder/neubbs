@@ -13,11 +13,10 @@ import org.neusoft.neubbs.service.IHttpService;
 import org.neusoft.neubbs.service.ISecretService;
 import org.neusoft.neubbs.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
@@ -29,9 +28,8 @@ import javax.servlet.http.HttpServletRequest;
  *
  * @author Suvan
  */
-@Controller
+@RestController
 @RequestMapping("/api/file")
-@ResponseBody
 public class FileController {
 
     private final IUserService userService;

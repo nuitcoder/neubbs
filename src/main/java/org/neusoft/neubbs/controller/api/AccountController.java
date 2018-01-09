@@ -19,12 +19,11 @@ import org.neusoft.neubbs.service.IRedisService;
 import org.neusoft.neubbs.service.ISecretService;
 import org.neusoft.neubbs.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -54,9 +53,8 @@ import java.util.Map;
  *
  * @author Suvan
  */
-@Controller
+@RestController
 @RequestMapping("/api/account")
-@ResponseBody
 public final class AccountController {
 
     private final IParamCheckService paramCheckService;
@@ -161,7 +159,7 @@ public final class AccountController {
      * @param response http响应
      * @return PageJsonDTO 页面JSON传输对象
      */
-    @RequestMapping(value = "/login", method = RequestMethod.POST, consumes = "application/json")
+    @RequestMapping(value = "/login", method = RequestMethod.POST)
     public PageJsonDTO login(@RequestBody Map<String, Object> requestBodyParamsMap,
                                  HttpServletRequest request, HttpServletResponse response) {
         String username = (String) requestBodyParamsMap.get(ParamConst.USERNAME);

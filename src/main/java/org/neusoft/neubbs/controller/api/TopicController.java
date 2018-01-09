@@ -15,12 +15,11 @@ import org.neusoft.neubbs.service.ISecretService;
 import org.neusoft.neubbs.service.ITopicService;
 import org.neusoft.neubbs.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.LinkedHashMap;
@@ -47,9 +46,8 @@ import java.util.Map;
  *
  * @author Suvan
  */
-@Controller
+@RestController
 @RequestMapping("/api")
-@ResponseBody
 public class TopicController {
 
     private final IParamCheckService paramCheckService;
