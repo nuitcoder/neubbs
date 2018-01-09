@@ -5,21 +5,21 @@ import org.neusoft.neubbs.constant.api.ParamConst;
 import org.neusoft.neubbs.constant.api.SetConst;
 import org.neusoft.neubbs.constant.log.LogWarn;
 import org.neusoft.neubbs.exception.ParamsErrorException;
-import org.neusoft.neubbs.service.IParamCheckService;
+import org.neusoft.neubbs.service.IValidationService;
 import org.neusoft.neubbs.utils.PatternUtil;
 import org.neusoft.neubbs.utils.RequestParamCheckUtil;
 import org.springframework.stereotype.Service;
 
 /**
- * IParamCheckService 实现类
+ * IValidationService 实现类
  *
  * @author Suvan
  */
 @Service("paramCheckServiceImpl")
-public class ParamCheckServiceImpl implements IParamCheckService {
+public class ValidationServiceImpl implements IValidationService {
 
     @Override
-    public IParamCheckService check(String paramType, String paramValue) {
+    public IValidationService check(String paramType, String paramValue) {
         RequestParamCheckUtil.check(paramType, paramValue);
         return this;
     }

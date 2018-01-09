@@ -10,7 +10,7 @@ import org.neusoft.neubbs.dto.PageJsonDTO;
 import org.neusoft.neubbs.dto.PageJsonListDTO;
 import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.service.IHttpService;
-import org.neusoft.neubbs.service.IParamCheckService;
+import org.neusoft.neubbs.service.IValidationService;
 import org.neusoft.neubbs.service.ISecretService;
 import org.neusoft.neubbs.service.ITopicService;
 import org.neusoft.neubbs.service.IUserService;
@@ -50,14 +50,14 @@ import java.util.Map;
 @RequestMapping("/api")
 public class TopicController {
 
-    private final IParamCheckService paramCheckService;
+    private final IValidationService paramCheckService;
     private final ITopicService topicService;
     private final IUserService userService;
     private final IHttpService httpService;
     private final ISecretService secretService;
 
     @Autowired
-    public TopicController(IParamCheckService paramCheckService, ITopicService topicService,
+    public TopicController(IValidationService paramCheckService, ITopicService topicService,
                            IUserService userService, IHttpService httpService,
                            ISecretService secretService) {
         this.paramCheckService = paramCheckService;

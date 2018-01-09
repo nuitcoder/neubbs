@@ -13,7 +13,7 @@ import org.neusoft.neubbs.service.ICaptchaService;
 import org.neusoft.neubbs.service.IEmailService;
 import org.neusoft.neubbs.service.IFtpService;
 import org.neusoft.neubbs.service.IHttpService;
-import org.neusoft.neubbs.service.IParamCheckService;
+import org.neusoft.neubbs.service.IValidationService;
 import org.neusoft.neubbs.service.IRandomService;
 import org.neusoft.neubbs.service.IRedisService;
 import org.neusoft.neubbs.service.ISecretService;
@@ -57,7 +57,7 @@ import java.util.Map;
 @RequestMapping("/api/account")
 public final class AccountController {
 
-    private final IParamCheckService paramCheckService;
+    private final IValidationService validationService;
     private final IUserService userService;
     private final ISecretService secretService;
     private final IRedisService redisService;
@@ -72,12 +72,12 @@ public final class AccountController {
      * Constructor（自动注入）
      */
     @Autowired
-    private AccountController(IParamCheckService paramCheckService, IUserService userService,
+    private AccountController(IValidationService validationService, IUserService userService,
                               ISecretService secretService, IRedisService redisService,
                               IFtpService ftpService, IHttpService httpService,
                               IEmailService emailService, ICaptchaService captchaService,
                               IRandomService randomService) {
-        this.paramCheckService = paramCheckService;
+        this.validationService = validationService;
         this.userService = userService;
         this.secretService = secretService;
         this.redisService = redisService;
@@ -100,11 +100,11 @@ public final class AccountController {
     public PageJsonDTO account(@RequestParam(value = "username", required = false) String username,
                                @RequestParam(value = "email", required = false) String email,
                                HttpServletRequest request) {
-        paramCheckService.paramsNotNull(username, email);
+        validationService.paramsNotNull(username, email);
         if (username != null) {
-            paramCheckService.check(paramCheckService.getUsernameParamType(username), username);
+            validationService.check(validationService.getUsernameParamType(username), username);
         } else {
-            paramCheckService.check(ParamConst.EMAIL, email);
+            validationService.check(ParamConst.EMAIL, email);
         }
 
         return userService.isUserExist(username, email)
@@ -120,7 +120,7 @@ public final class AccountController {
      */
     @RequestMapping(value = "/state", method = RequestMethod.GET)
     public PageJsonDTO accountState(@RequestParam(value = "username", required = false) String username) {
-        paramCheckService.check(ParamConst.USERNAME, username);
+        validationService.check(ParamConst.USERNAME, username);
         return new PageJsonDTO(userService.isUserActivatedByName(username));
     }
 
@@ -131,9 +131,8 @@ public final class AccountController {
      * @return PageJsonListDTO 页面JSON列表传输对象
      */
     @RequestMapping(value = "/following", method = RequestMethod.GET)
-
     public PageJsonListDTO followingList(@RequestParam(value = "userid", required = false) String userId) {
-        paramCheckService.check(ParamConst.USER_ID, userId);
+        validationService.check(ParamConst.USER_ID, userId);
         return new PageJsonListDTO(AjaxRequestStatus.SUCCESS,
                 userService.listAllFollowingUserInfoToPageModelList(Integer.valueOf(userId)));
     }
@@ -146,7 +145,7 @@ public final class AccountController {
      */
     @RequestMapping(value = "/followed", method = RequestMethod.GET)
     public PageJsonListDTO followedList(@RequestParam(value = "userid", required = false) String userId) {
-        paramCheckService.check(ParamConst.USER_ID, userId);
+        validationService.check(ParamConst.USER_ID, userId);
         return new PageJsonListDTO(AjaxRequestStatus.SUCCESS,
                 userService.listAllFollowedUserInfoToPageModelList(Integer.valueOf(userId)));
     }
@@ -165,7 +164,7 @@ public final class AccountController {
         String username = (String) requestBodyParamsMap.get(ParamConst.USERNAME);
         String password = (String) requestBodyParamsMap.get(ParamConst.PASSWORD);
 
-        paramCheckService.check(ParamConst.USERNAME, username).check(ParamConst.PASSWORD, password);
+        validationService.check(ParamConst.USERNAME, username).check(ParamConst.PASSWORD, password);
 
         //database login authenticate
         UserDO user = userService.loginAuthenticate(username, password);
@@ -214,7 +213,7 @@ public final class AccountController {
         String password = (String) requestBodyParamsMap.get(ParamConst.PASSWORD);
         String email = (String) requestBodyParamsMap.get(ParamConst.EMAIL);
 
-        paramCheckService.check(ParamConst.USERNAME, username)
+        validationService.check(ParamConst.USERNAME, username)
                          .check(ParamConst.PASSWORD, password)
                          .check(ParamConst.EMAIL, email);
 
@@ -245,9 +244,9 @@ public final class AccountController {
         String newPosition = (String) requestBodyParamsMap.get(ParamConst.POSITION);
         String newDescription = (String) requestBodyParamsMap.get(ParamConst.DESCRIPTION);
 
-        paramCheckService.checkInstructionOfSpecifyArray(String.valueOf(newSex), "0", "1");
-        paramCheckService.paramsNotNull(newBirthday, newPosition, newDescription);
-        paramCheckService.check(ParamConst.BIRTHDAY, newBirthday)
+        validationService.checkInstructionOfSpecifyArray(String.valueOf(newSex), "0", "1");
+        validationService.paramsNotNull(newBirthday, newPosition, newDescription);
+        validationService.check(ParamConst.BIRTHDAY, newBirthday)
                          .check(ParamConst.POSITION, newPosition)
                          .check(ParamConst.DESCRIPTION, newDescription);
 
@@ -274,7 +273,7 @@ public final class AccountController {
         String username = (String) requestBodyParamsMap.get(ParamConst.USERNAME);
         String newPassword = (String) requestBodyParamsMap.get(ParamConst.PASSWORD);
 
-        paramCheckService.check(ParamConst.USERNAME, username).check(ParamConst.PASSWORD, newPassword);
+        validationService.check(ParamConst.USERNAME, username).check(ParamConst.PASSWORD, newPassword);
 
         //confirm input username match logged in user
         UserDO cookieUser = secretService.jwtVerifyTokenByTokenByKey(
@@ -301,7 +300,7 @@ public final class AccountController {
         String username = (String) requestBodyParamsMap.get(ParamConst.USERNAME);
         String newEmail = (String) requestBodyParamsMap.get(ParamConst.EMAIL);
 
-        paramCheckService.check(ParamConst.USERNAME, username).check(ParamConst.EMAIL, newEmail);
+        validationService.check(ParamConst.USERNAME, username).check(ParamConst.EMAIL, newEmail);
 
         UserDO cookieUser = secretService.jwtVerifyTokenByTokenByKey(
                 httpService.getAuthenticationCookieValue(request), SetConst.JWT_TOKEN_SECRET_KEY
@@ -323,7 +322,7 @@ public final class AccountController {
     public PageJsonDTO activate(@RequestBody Map<String, Object> requestBodyParamsMap) {
         String email = (String) requestBodyParamsMap.get(ParamConst.EMAIL);
 
-        paramCheckService.check(ParamConst.EMAIL, email);
+        validationService.check(ParamConst.EMAIL, email);
 
         userService.confirmUserActivatedByEmail(email);
 
@@ -359,7 +358,7 @@ public final class AccountController {
     @RequestMapping(value = "/validate", method = RequestMethod.GET)
     public PageJsonDTO validate(@RequestParam(value = "token", required = false) String token,
                                 HttpServletResponse response) {
-        paramCheckService.check(ParamConst.TOKEN, token);
+        validationService.check(ParamConst.TOKEN, token);
 
         UserDO activatedUser = userService.alterUserActivateStateByToken(token);
 
@@ -403,7 +402,7 @@ public final class AccountController {
     @RequestMapping(value = "/check-captcha", method = RequestMethod.GET)
     public PageJsonDTO checkCaptcha(@RequestParam(value = "captcha", required = false)String captcha,
                                         HttpServletRequest request) {
-        paramCheckService.check(ParamConst.CAPTCHA, captcha);
+        validationService.check(ParamConst.CAPTCHA, captcha);
 
         //get session captcha
         String sessionCaptcha = httpService.getSessionCaptchaText(request);
@@ -425,7 +424,7 @@ public final class AccountController {
     public PageJsonDTO sendTemporaryPasswordEmail(@RequestBody Map<String, Object> requestBodyParamsMap) {
         String email = (String) requestBodyParamsMap.get(ParamConst.EMAIL);
 
-        paramCheckService.check(ParamConst.EMAIL, email);
+        validationService.check(ParamConst.EMAIL, email);
 
         String randomPassword = randomService.generateSixDigitsRandomPassword();
         userService.alterUserPasswordByEmail(email, randomPassword);
@@ -451,7 +450,7 @@ public final class AccountController {
     public PageJsonDTO following(@RequestBody Map<String, Object> requestBodyParams, HttpServletRequest request) {
         Integer followingUserId = (Integer) requestBodyParams.get(ParamConst.USER_ID);
 
-        paramCheckService.check(ParamConst.USER_ID, String.valueOf(followingUserId));
+        validationService.check(ParamConst.USER_ID, String.valueOf(followingUserId));
 
         UserDO cookieUser = secretService.jwtVerifyTokenByTokenByKey(
                 httpService.getAuthenticationCookieValue(request), SetConst.JWT_TOKEN_SECRET_KEY

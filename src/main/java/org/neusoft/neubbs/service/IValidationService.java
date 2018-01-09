@@ -5,7 +5,7 @@ package org.neusoft.neubbs.service;
  *
  * @author Suvan
  */
-public interface IParamCheckService {
+public interface IValidationService {
 
     /**
      * 检查工具
@@ -13,9 +13,9 @@ public interface IParamCheckService {
      *
      * @param paramType 参数类型
      * @param paramValue 参数值
-     * @return IParamCheckService 参数检查服务接口（链式调用）
+     * @return IValidationService 参数检查服务接口（链式调用）
      */
-    IParamCheckService check(String paramType, String paramValue);
+    IValidationService check(String paramType, String paramValue);
 
     /**
      * 检查指令参数，是否存在于指定指令数组

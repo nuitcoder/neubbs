@@ -5,7 +5,7 @@ import org.neusoft.neubbs.constant.api.ParamConst;
 import org.neusoft.neubbs.constant.api.SetConst;
 import org.neusoft.neubbs.dto.PageJsonDTO;
 import org.neusoft.neubbs.service.IHttpService;
-import org.neusoft.neubbs.service.IParamCheckService;
+import org.neusoft.neubbs.service.IValidationService;
 import org.neusoft.neubbs.service.ITopicService;
 import org.neusoft.neubbs.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,11 +43,11 @@ public class CountController {
     private final IHttpService httpService;
     private final IUserService userService;
     private final ITopicService topicService;
-    private final IParamCheckService paramCheckService;
+    private final IValidationService paramCheckService;
 
     @Autowired
     public CountController(IHttpService httpService, IUserService userService,
-                           ITopicService topicService, IParamCheckService paramCheckService) {
+                           ITopicService topicService, IValidationService paramCheckService) {
         this.httpService = httpService;
         this.userService = userService;
         this.topicService = topicService;
