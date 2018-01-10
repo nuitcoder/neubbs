@@ -212,7 +212,7 @@ public final class AccountController {
         //database register user
         UserDO newRegisterUser = userService.registerUser(username, password, email);
 
-        //craete user person directory on cloud ftp server
+        //create user person directory on cloud ftp server
         ftpService.registerUserCreatePersonDirectory(newRegisterUser);
 
         return new PageJsonDTO(AjaxRequestStatus.SUCCESS, userService.getUserInfoMapByUser(newRegisterUser));

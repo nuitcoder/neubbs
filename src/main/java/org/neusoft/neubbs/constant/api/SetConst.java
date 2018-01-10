@@ -49,6 +49,14 @@ public final class SetConst {
     public static final String JWT_TOKEN_SECRET_KEY = "this neubbs is best";
 
     /**
+     * 数据源类型
+     *      - 腾讯云 MySQL
+     *      - 本地 MySQL
+     */
+    public static final String CLOUD_DATA_SOURCE_MYSQL = "cloudDataSourceMysql";
+    public static final String LOCALHOST_DATA_SOURCE_MYSQL = "localDataSourceMysql";
+
+    /**
      * 数字
      */
     public static final int NEGATIVE_ONE = -1;

@@ -11,7 +11,7 @@ import org.junit.runner.RunWith;
 import org.neusoft.neubbs.constant.api.ApiMessage;
 import org.neusoft.neubbs.constant.api.ParamConst;
 import org.neusoft.neubbs.constant.api.SetConst;
-import org.neusoft.neubbs.controller.handler.SwitchDataSourceHandler;
+import org.neusoft.neubbs.controller.data.DynamicSwitchDataSource;
 import org.neusoft.neubbs.dao.IUserActionDAO;
 import org.neusoft.neubbs.dao.IUserDAO;
 import org.neusoft.neubbs.entity.UserDO;
@@ -164,8 +164,8 @@ public class AccountCollectorTest {
 
     @BeforeClass
     public static void init() {
-//      //使用本地数据库（默认是云数据库）
-        SwitchDataSourceHandler.setDataSourceType(SwitchDataSourceHandler.LOCALHOST_DATA_SOURCE_MYSQL);
+        //use local MySQL DataBase
+        DynamicSwitchDataSource.setDataSource(SetConst.LOCALHOST_DATA_SOURCE_MYSQL);
     }
 
     @Before

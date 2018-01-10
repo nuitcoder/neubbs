@@ -8,11 +8,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.neusoft.neubbs.constant.api.ApiMessage;
 import org.neusoft.neubbs.constant.api.ParamConst;
+import org.neusoft.neubbs.constant.api.SetConst;
+import org.neusoft.neubbs.controller.data.DynamicSwitchDataSource;
 import org.neusoft.neubbs.exception.AccountErrorException;
 import org.neusoft.neubbs.exception.DatabaseOperationFailException;
 import org.neusoft.neubbs.exception.FileUploadErrorException;
 import org.neusoft.neubbs.exception.FtpServiceErrorException;
-import org.neusoft.neubbs.controller.handler.SwitchDataSourceHandler;
 import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.service.IUserService;
 import org.neusoft.neubbs.utils.FtpUtil;
@@ -70,7 +71,7 @@ public class FileControllerTest {
 
     @BeforeClass
     public static void init() {
-        SwitchDataSourceHandler.setDataSourceType(SwitchDataSourceHandler.LOCALHOST_DATA_SOURCE_MYSQL);
+        DynamicSwitchDataSource.setDataSource(SetConst.LOCALHOST_DATA_SOURCE_MYSQL);
     }
 
     @Before

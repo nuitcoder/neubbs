@@ -4,7 +4,8 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.neusoft.neubbs.controller.handler.SwitchDataSourceHandler;
+import org.neusoft.neubbs.constant.api.SetConst;
+import org.neusoft.neubbs.controller.data.DynamicSwitchDataSource;
 import org.neusoft.neubbs.dao.IMessageDAO;
 import org.neusoft.neubbs.entity.MessageDO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +47,7 @@ public class MessageDAOTest {
 
     @BeforeClass
     public static void init() {
-        SwitchDataSourceHandler.setDataSourceType(SwitchDataSourceHandler.LOCALHOST_DATA_SOURCE_MYSQL);
+        DynamicSwitchDataSource.setDataSource(SetConst.LOCALHOST_DATA_SOURCE_MYSQL);
     }
 
     /**

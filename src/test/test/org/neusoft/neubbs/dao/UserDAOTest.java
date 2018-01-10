@@ -4,7 +4,8 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.neusoft.neubbs.controller.handler.SwitchDataSourceHandler;
+import org.neusoft.neubbs.constant.api.SetConst;
+import org.neusoft.neubbs.controller.data.DynamicSwitchDataSource;
 import org.neusoft.neubbs.dao.IUserDAO;
 import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.utils.JsonUtil;
@@ -48,9 +49,7 @@ public class UserDAOTest {
 
     @BeforeClass
     public static void init() {
-        // can set cloud data source (default cloud), this test case set local data source
-//      SwitchDataSourceHandler.setDataSourceType(SwitchDataSourceHandler.CLOUD_DATA_SOURCE_MYSQL);
-        SwitchDataSourceHandler.setDataSourceType(SwitchDataSourceHandler.LOCALHOST_DATA_SOURCE_MYSQL);
+        DynamicSwitchDataSource.setDataSource(SetConst.LOCALHOST_DATA_SOURCE_MYSQL);
     }
 
     /**

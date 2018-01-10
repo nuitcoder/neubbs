@@ -4,7 +4,8 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.neusoft.neubbs.controller.handler.SwitchDataSourceHandler;
+import org.neusoft.neubbs.constant.api.SetConst;
+import org.neusoft.neubbs.controller.data.DynamicSwitchDataSource;
 import org.neusoft.neubbs.dao.ITopicDAO;
 import org.neusoft.neubbs.entity.TopicDO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,8 +56,7 @@ public class TopicDAOTest {
 
     @BeforeClass
     public static void init() {
-        //set local database source
-       SwitchDataSourceHandler.setDataSourceType(SwitchDataSourceHandler.LOCALHOST_DATA_SOURCE_MYSQL);
+        DynamicSwitchDataSource.setDataSource(SetConst.LOCALHOST_DATA_SOURCE_MYSQL);
     }
 
     /**
@@ -362,18 +362,21 @@ public class TopicDAOTest {
 
     /**
      * 测试更新最后回复时间
+     *      - 插入数据时，默认最后回复时间 == 发布时间
      */
     @Test
     @Transactional
-    public void testUpdateLastReplyTimeById() {
+    public void testUpdateLastReplyTimeById() throws InterruptedException {
         TopicDO topic = this.saveTestTopicToDB();
 
-        Date newLastReplyTime = new Date();
-        Assert.assertEquals(1, topicDAO.updateLastReplyTimeById(topic.getId(), newLastReplyTime));
-        Assert.assertNotEquals(topic.getLastreplytime(),
-                topicDAO.getTopicById(topic.getId()).getLastreplytime());
+        Assert.assertEquals(1, topicDAO.updateLastReplyTimeById(topic.getId(), new Date()));
+
+        Thread.sleep(10);
+
+        TopicDO newTopic = topicDAO.getTopicById(topic.getId());
+        Assert.assertNotEquals(topic.getLastreplytime(), newTopic.getLastreplytime());
 
         System.out.println("update topicId=" + topic.getId()
-                + " topic lastreplytime=<" + newLastReplyTime+ "> success!");
+                + " topic lastreplytime=<" + newTopic.getLastreplytime()+ "> success!");
     }
 }
