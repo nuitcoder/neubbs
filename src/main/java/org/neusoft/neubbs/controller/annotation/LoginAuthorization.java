@@ -6,9 +6,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- *  登录认证注解 @LoginAuthorization （验证账户是否登录）
- *      1.修饰方法
- *      2.运行时注解
+ *  登录认证注解（@LoginAuthorization）
+ *      - 标记访问 api 的账户，需要登陆状态
  *
  *  @author Suvan
  */

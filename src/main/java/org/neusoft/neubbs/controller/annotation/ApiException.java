@@ -6,9 +6,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Api 异常注解 @ApiException
- *      1.修饰类 or 接口
- *      2.运行时注解
+ * Api 异常注解（@ApiException）
+ *      - 标记异常，为 neubbs 项目自定义异常
  *
  * @author Suvan
  */
