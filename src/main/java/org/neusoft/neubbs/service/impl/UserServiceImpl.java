@@ -288,7 +288,7 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public boolean isUserActivatedByState(int state) {
-        return state == SetConst.ACCOUNT_ACTIVATED_ONE;
+        return state == SetConst.ACCOUNT_ACTIVATED_STATE;
     }
 
     @Override

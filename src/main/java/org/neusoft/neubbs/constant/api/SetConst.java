@@ -93,8 +93,10 @@ public final class SetConst {
     /**
      * 账户激活状态
      *      - 用户已激活，1 表示
+     *      - 用户未激活，0 表示
      */
-    public static final int ACCOUNT_ACTIVATED_ONE = 1;
+    public static final int ACCOUNT_ACTIVATED_STATE = 1;
+    public static final int ACCOUNT_NO_ACTIVATED_STATE = 0;
 
     /**
      * 邮箱服务

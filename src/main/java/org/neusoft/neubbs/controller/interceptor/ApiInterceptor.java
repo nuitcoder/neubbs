@@ -7,8 +7,8 @@ import org.neusoft.neubbs.constant.log.LogWarn;
 import org.neusoft.neubbs.controller.annotation.AccountActivation;
 import org.neusoft.neubbs.controller.annotation.AdminRank;
 import org.neusoft.neubbs.controller.annotation.LoginAuthorization;
-import org.neusoft.neubbs.exception.AccountErrorException;
 import org.neusoft.neubbs.entity.UserDO;
+import org.neusoft.neubbs.exception.AccountErrorException;
 import org.neusoft.neubbs.utils.AnnotationUtil;
 import org.neusoft.neubbs.utils.CookieUtil;
 import org.neusoft.neubbs.utils.JwtTokenUtil;
@@ -20,159 +20,154 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  *  api 拦截器
- *      1.登录验证
- *      2.账户激活验证
- *      3.管理员验证
+ *      - 登录验证
+ *      - 账户激活验证
+ *      - 管理员验证
  *
  *  @author Suvan
  */
 public class ApiInterceptor implements HandlerInterceptor {
 
-    /**
-     * 函数处理器（Controller 函数，执行前调用）
-     *
-     * @param request http请求
-     * @param response http响应
-     * @param handler 方法对象
-     * @return boolean 返回结果（true-放行，false-拦截）
-     * @throws Exception 所有异常
-     */
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
-            throws Exception {
-        //登录验证，账户激活，管理员级别
-        if (!doLoginAuthorization(request, handler)
-                || !doAccountActivation(request, handler)
-                || !doAdminRank(request, handler)) {
-           return false;
-        }
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
+                             Object handler) throws Exception {
+        //judge @LoginAuthorization, @AccountActivation and @AdminRank
+        doLoginAuthorization(request, handler);
+        doAccountActivation(request, handler);
+        doAdminRank(request, handler);
 
-        //是否通过（true-通过，false-拦截，默认是true）
+        //through the api interceptor
         return true;
     }
 
-    /**
-     * 请求处理器（函数 return 后，跳转视图前调用）
-     *
-     * @param request http请求
-     * @param response http响应
-     * @param obj 方法对象
-     * @param modelAndView 视图对象
-     * @throws Exception 所有异常
-     */
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response,
-                           Object obj, ModelAndView modelAndView)
-            throws Exception { }
+                           Object obj, ModelAndView modelAndView) throws Exception { }
 
-    /**
-     * 请求完成成立（MVC 控制器 DispatcherServlet 完全处理完请求后调用，可用于清理资源）
-     *
-     * @param request http请求
-     * @param response http响应
-     * @param obj 方法对象
-     * @param exception 异常对象（可处理函数所抛出的异常）
-     * @throws Exception 所有异常
-     */
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response,
-                                Object obj, Exception exception)
-            throws Exception { }
+                                Object obj, Exception exception) throws Exception { }
 
+    /*
+     * ***********************************************
+     * private method
+     * ***********************************************
+     */
+
+    /*
+     * ***********************************************
+     * authority management method
+     * ***********************************************
+     */
 
     /**
      * 执行登录验证
+     *      - 判断 api 函数是否标识 @LoginAuthorization
+     *      - 判断是否存在 authentication Cookie（不存在表明未登陆, 未登录无权操作）
+     *      - 判断 authentication Cookie 是否解密成功（解密失败，表示认证信息已经过期）
      *
      * @param request http请求
-     * @param handler 方法对象
-     * @return boolean 验证结果
-     * @throws AccountErrorException 账户错误异常
+     * @param handler 接口方法对象
      */
-    private boolean doLoginAuthorization(HttpServletRequest request, Object handler) throws AccountErrorException {
+    private void doLoginAuthorization(HttpServletRequest request, Object handler) throws AccountErrorException {
 
-        /*
-         * 验证流程：
-         *      1.验证拦截 api 函数，是否包含 @LoginAuthorization
-         *      2.获取 Cookie 内 authentication 参数（登陆时，JWT 加密信息） ?
-         *      3.解密 authentication（过期无法解密），获取用户信息（UserDO 对象）
-         *      4.判断（能获取用户信息，表示已经登录）
-         */
         if (AnnotationUtil.hasMethodAnnotation(handler, LoginAuthorization.class)) {
             String authentication =  CookieUtil.getCookieValue(request, ParamConst.AUTHENTICATION);
-            if (authentication != null) {
-                UserDO user = JwtTokenUtil.verifyToken(authentication, SetConst.JWT_TOKEN_SECRET_KEY);
-                if (user != null) {
-                    //通过验证
-                    return true;
-                }
-
-                throw new AccountErrorException(ApiMessage.TOKEN_EXPIRED).log(LogWarn.INTERCEPTOR_01);
-            } else {
-                //无登录，无权访问 api
-                throw new AccountErrorException(ApiMessage.NO_PERMISSION).log(LogWarn.INTERCEPTOR_02);
-            }
+            this.judgeAuthentication(authentication);
         }
-
-        //直接放行
-        return true;
     }
 
     /**
      * 执行账户激活验证
+     *      - 判断 api 函数是否标识 @AccountActivation
+     *      - 判断是否存在 authentication Cookie（不存在表明未登陆, 未登录无权操作）
+     *      - 判断 authentication Cookie 是否解密成功（解密失败，表示认认证信息已经过期）
+     *      - 从认证信息内获取用户信息，判断用户激活状态
      *
      * @param request http请求
      * @param handler 方法对象
-     * @return boolean 验证结果
-     * @throws AccountErrorException 账户错误异常
      */
-    private boolean doAccountActivation(HttpServletRequest request, Object handler) throws AccountErrorException {
+    private void doAccountActivation(HttpServletRequest request, Object handler) throws AccountErrorException {
 
         if (AnnotationUtil.hasMethodAnnotation(handler, AccountActivation.class)) {
             String authentication = CookieUtil.getCookieValue(request, ParamConst.AUTHENTICATION);
-            if (authentication != null) {
-                UserDO user = JwtTokenUtil.verifyToken(authentication, SetConst.JWT_TOKEN_SECRET_KEY);
-                if (user == null) {
-                    //JWT Token 过期，解密失败
-                    throw new AccountErrorException(ApiMessage.TOKEN_EXPIRED).log(LogWarn.USER_05);
-                }
+            UserDO currentUser = this.judgeAuthentication(authentication);
 
-                if (user.getState() == 1) {
-                    //通过验证
-                    return true;
-                }
-
-                throw new AccountErrorException(ApiMessage.NO_ACTIVATE).log(user.getName() + LogWarn.USER_20);
+            //judge user state
+            if (currentUser.getState() == SetConst.ACCOUNT_NO_ACTIVATED_STATE) {
+                throw new AccountErrorException(ApiMessage.NO_ACTIVATE).log(currentUser.getName() + LogWarn.USER_20);
             }
         }
-
-        return true;
     }
 
     /**
      * 执行管理员权限验证
+     *      - 判断 api 函数是否标识 @AdminRank
+     *      - 判断是否存在 authentication Cookie（不存在表明未登陆, 未登录无权操作）
+     *      - 判断 authentication Cookie 是否解密成功（解密失败，表示认认证信息已经过期）
+     *      - 从认证信息内获取用户信息，判断用户权限
      *
      * @param request http请求
      * @param handler 方法对象
-     * @return boolean 验证结果
-     * @throws AccountErrorException 账户错误异常
      */
-    private boolean doAdminRank(HttpServletRequest request, Object handler) throws AccountErrorException {
+    private void doAdminRank(HttpServletRequest request, Object handler) throws AccountErrorException {
+
         if (AnnotationUtil.hasMethodAnnotation(handler, AdminRank.class)) {
             String authentication = CookieUtil.getCookieValue(request, ParamConst.AUTHENTICATION);
-            if (authentication != null) {
-                UserDO user = JwtTokenUtil.verifyToken(authentication, SetConst.JWT_TOKEN_SECRET_KEY);
-                if (user == null) {
-                    throw new AccountErrorException(ApiMessage.TOKEN_EXPIRED).log(LogWarn.USER_05);
-                }
-                if (SetConst.RANK_ADMIN.equals(user.getRank())) {
-                    //通过验证
-                    return true;
-                }
+            UserDO currentUser = this.judgeAuthentication(authentication);
 
+            //judge user rank
+            if (!SetConst.RANK_ADMIN.equals(currentUser.getRank())) {
                 throw new AccountErrorException(ApiMessage.NO_PERMISSION).log(LogWarn.INTERCEPTOR_03);
             }
         }
+    }
 
-        return true;
+    /*
+     * ***********************************************
+     * judge method
+     * ***********************************************
+     */
+
+    /**
+     * 判断 authentication 认证信息函数
+     *      - 若出错则抛出异常
+     *
+     * @param authentication Cookie内认证信息
+     * @return UserDO 用户信息对象实例
+     */
+    private UserDO judgeAuthentication(String authentication) {
+         //judge whether login
+         if (authentication == null) {
+                this.throwNoPermissionException();
+         }
+
+        //judge token validity
+        UserDO user = JwtTokenUtil.verifyToken(authentication, SetConst.JWT_TOKEN_SECRET_KEY);
+        if (user == null) {
+            this.throwTokenExpiredException();
+        }
+
+        return user;
+    }
+
+    /*
+     * ***********************************************
+     * throw exception method
+     * ***********************************************
+     */
+
+    /**
+     * 抛出无权限异常
+     */
+    private void throwNoPermissionException() {
+        throw new AccountErrorException(ApiMessage.NO_PERMISSION).log(LogWarn.INTERCEPTOR_02);
+    }
+
+    /**
+     * 抛出 token 过期异常
+     */
+    private void throwTokenExpiredException() {
+        throw new AccountErrorException(ApiMessage.TOKEN_EXPIRED).log(LogWarn.INTERCEPTOR_01);
     }
 }
