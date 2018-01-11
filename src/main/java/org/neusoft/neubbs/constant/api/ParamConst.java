@@ -90,16 +90,13 @@ public final class ParamConst {
     public static final String ATTENTION = "attention";
     public static final String READ = "read";
     public static final String IS_LIKE_TOPIC  = "isliketopic";
-    public static final String INSTRUCTION = "instruction";
     public static final String COMMAND = "command";
 
     /**
      * 话题分类
      */
     public static final String CATEGORY = "category";
-    public static final String CATEGORYS = "categorys";
     public static final String NICK = "nick";
-    public static final String CATEGORY_NAME = "categoryName";
     public static final String TOPIC_CATEGORY_NICK = "topicCategoryNick";
 
     /**
@@ -121,12 +118,9 @@ public final class ParamConst {
 
     /**
      * 统计
+     *      - 在线登陆人数
      */
-    public static final String VISIT_USER = "visitUser";
     public static final String LOGIN_USER = "loginUser";
-    public static final String USER_TOTALS = "userTotals";
-    public static final String TOPIC_TOTALS = "topicTotals";
-    public static final String REPLY_TOTALS = "replyTotals";
 
     /**
      * TCP/IP 协议
@@ -134,5 +128,4 @@ public final class ParamConst {
      *      - ftp
      */
     public static final String HTTP = "http";
-    public static final String FTP = "ftp";
 }

@@ -79,12 +79,6 @@ public class HttpServiceImpl implements IHttpService {
     }
 
     @Override
-    public int getOnlineVisitUserNumber() {
-        return (int) PublicParamsUtil.getContext().getAttribute(ParamConst.VISIT_USER);
-    }
-
-    @Override
-
     public int getOnlineLoginUserNumber() {
         return (int) PublicParamsUtil.getContext().getAttribute(ParamConst.LOGIN_USER);
     }

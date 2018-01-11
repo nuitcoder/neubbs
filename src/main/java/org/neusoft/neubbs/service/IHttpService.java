@@ -75,13 +75,6 @@ public interface IHttpService {
     int getOnlineLoginUserNumber();
 
     /**
-     * 【application】获取在线访问人数
-     *
-     * @return int 在线访问人数
-     */
-    int getOnlineVisitUserNumber();
-
-    /**
      * 【Response】设置页面响应为图片类型
      *
      */

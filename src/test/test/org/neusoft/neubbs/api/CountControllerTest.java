@@ -60,7 +60,6 @@ public class CountControllerTest {
     public void setup() {
         //set servlet context online visit user and loin user
         ServletContext context = webApplicationContext.getServletContext();
-            context.setAttribute(ParamConst.VISIT_USER, 21);
             context.setAttribute(ParamConst.LOGIN_USER, 50);
 
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
@@ -98,7 +97,6 @@ public class CountControllerTest {
        ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
         .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
         .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
-        .andExpect(MockMvcResultMatchers.jsonPath("$.model." + ParamConst.VISIT_USER).value(21))
         .andExpect(MockMvcResultMatchers.jsonPath("$.model." + ParamConst.LOGIN_USER).value(50));
 
        printSuccessPassTestMehtodMessage();

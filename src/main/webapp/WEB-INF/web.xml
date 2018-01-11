@@ -25,7 +25,7 @@
         <listener-class>org.neusoft.neubbs.controller.listener.ApplicationInitListener</listener-class><!-- Servlet Context 监听器 -->
     </listener>
     <listener>
-        <listener-class>org.neusoft.neubbs.controller.listener.ClientOnlineAccessListener</listener-class><!-- Session 监听器 -->
+        <listener-class>org.neusoft.neubbs.controller.listener.ClientListener</listener-class><!-- Session 监听器 -->
     </listener>
 
     <servlet>
