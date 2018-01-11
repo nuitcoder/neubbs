@@ -6,6 +6,7 @@ import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 
 /**
  * 动态切换数据源
+ *      - 继承 AbstractRoutingDataSource 类, 在 spring-mybatis-context.xml 内注册 bean
  *      - 每个请求，启动新的线程，每次调用一次
  *
  * @author Suvan
