@@ -29,7 +29,6 @@ public class ClientListener implements HttpSessionListener, ServletRequestListen
 
     @Override
     public void sessionCreated(HttpSessionEvent httpSessionEvent) {
-        System.out.println("1");
         String ip = clientRequest.getRemoteAddr();
         if (this.isUserLogged()) {
             //login user number +1
