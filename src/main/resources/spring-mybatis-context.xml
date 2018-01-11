@@ -32,7 +32,7 @@
 	</bean>
 
     <!-- 统一数据源（动态切换） -->
-	<bean id="dynamicDataSource" class="org.neusoft.neubbs.controller.data.DynamicSwitchDataSource">
+	<bean id="dynamicDataSource" class="org.neusoft.neubbs.controller.handler.DynamicSwitchDataSourceHandler">
 		<property name="targetDataSources">
 			<map key-type="java.lang.String">
 				<!-- 通过不同 key 决定使用哪个数据源 -->

@@ -9,7 +9,7 @@ import org.junit.runner.RunWith;
 import org.neusoft.neubbs.constant.api.ApiMessage;
 import org.neusoft.neubbs.constant.api.ParamConst;
 import org.neusoft.neubbs.constant.api.SetConst;
-import org.neusoft.neubbs.controller.data.DynamicSwitchDataSource;
+import org.neusoft.neubbs.controller.handler.DynamicSwitchDataSourceHandler;
 import org.neusoft.neubbs.exception.AccountErrorException;
 import org.neusoft.neubbs.exception.DatabaseOperationFailException;
 import org.neusoft.neubbs.exception.FileUploadErrorException;
@@ -71,7 +71,7 @@ public class FileControllerTest {
 
     @BeforeClass
     public static void init() {
-        DynamicSwitchDataSource.setDataSource(SetConst.LOCALHOST_DATA_SOURCE_MYSQL);
+        DynamicSwitchDataSourceHandler.setDataSource(SetConst.LOCALHOST_DATA_SOURCE_MYSQL);
     }
 
     @Before

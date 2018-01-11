@@ -1,4 +1,4 @@
-package org.neusoft.neubbs.controller.data;
+package org.neusoft.neubbs.controller.handler;
 
 import org.neusoft.neubbs.constant.api.SetConst;
 import org.neusoft.neubbs.utils.StringUtil;
@@ -10,7 +10,7 @@ import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
  *
  * @author Suvan
  */
-public class DynamicSwitchDataSource extends AbstractRoutingDataSource {
+public class DynamicSwitchDataSourceHandler extends AbstractRoutingDataSource {
 
     private static ThreadLocal<String> currentThreadDataSource = new ThreadLocal<>();
 

@@ -5,7 +5,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.neusoft.neubbs.constant.api.SetConst;
-import org.neusoft.neubbs.controller.data.DynamicSwitchDataSource;
+import org.neusoft.neubbs.controller.handler.DynamicSwitchDataSourceHandler;
 import org.neusoft.neubbs.dao.ITopicContentDAO;
 import org.neusoft.neubbs.dao.ITopicDAO;
 import org.neusoft.neubbs.entity.TopicContentDO;
@@ -59,7 +59,7 @@ public class TopicContentDAOTest {
 
     @BeforeClass
     public static void init() {
-        DynamicSwitchDataSource.setDataSource(SetConst.LOCALHOST_DATA_SOURCE_MYSQL);
+        DynamicSwitchDataSourceHandler.setDataSource(SetConst.LOCALHOST_DATA_SOURCE_MYSQL);
     }
 
     /**
