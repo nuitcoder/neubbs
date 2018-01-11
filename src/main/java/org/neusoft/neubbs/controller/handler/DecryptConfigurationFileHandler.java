@@ -5,11 +5,12 @@ import org.neusoft.neubbs.utils.SecretUtil;
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 
 /**
- * 解密读取配置文件信息处理器
+ * 解密配置文件处理器
+ *      - 加密内容解析（例：密码）
  *
  * @author Suvan
  */
-public class DecryptPropertyPlaceholderConfigurerHandler extends PropertyPlaceholderConfigurer {
+public class DecryptConfigurationFileHandler extends PropertyPlaceholderConfigurer {
     @Override
     protected String convertProperty(String propertyName, String propertyValue) {
         //decrypt contain 'password' for property field
