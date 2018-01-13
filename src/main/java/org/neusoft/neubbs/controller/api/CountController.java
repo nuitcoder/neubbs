@@ -1,13 +1,12 @@
 package org.neusoft.neubbs.controller.api;
 
-import org.neusoft.neubbs.constant.ajax.AjaxRequestStatus;
 import org.neusoft.neubbs.constant.api.ParamConst;
 import org.neusoft.neubbs.constant.api.SetConst;
-import org.neusoft.neubbs.dto.PageJsonDTO;
+import org.neusoft.neubbs.dto.ApiJsonDTO;
 import org.neusoft.neubbs.service.IHttpService;
-import org.neusoft.neubbs.service.IValidationService;
 import org.neusoft.neubbs.service.ITopicService;
 import org.neusoft.neubbs.service.IUserService;
+import org.neusoft.neubbs.service.IValidationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -64,27 +63,26 @@ public class CountController {
      *      - 回复总数
      *
      * @param request http默认请求
-     * @return PageJsonDTO 页面传输对象
+     * @return ApiJsonDTO 接口JSON传输对象
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public PageJsonDTO countForumBasicData(HttpServletRequest request) {
+    public ApiJsonDTO countForumBasicData(HttpServletRequest request) {
         Map<String, Object> modelMap = new LinkedHashMap<>(SetConst.SIZE_THREE);
             modelMap.put(ParamConst.USER, userService.countUserTotals());
             modelMap.put(ParamConst.TOPIC, topicService.countTopicTotals());
             modelMap.put(ParamConst.REPLY, topicService.countReplyTotals());
-        return new PageJsonDTO(AjaxRequestStatus.SUCCESS, modelMap);
+        return new ApiJsonDTO().success().map(modelMap);
     }
 
     /**
      * 在线统计
      *      - 在线登陆人数
      *
-     * @return PageJsonDTO 页面JSON传输对象
+     * @return ApiJsonDTO 接口JSON传输对象
      */
     @RequestMapping(value = "/online", method = RequestMethod.GET)
-    public PageJsonDTO countOnlineData() {
-        return new PageJsonDTO(AjaxRequestStatus.SUCCESS,
-                ParamConst.LOGIN_USER, httpService.getOnlineLoginUserNumber());
+    public ApiJsonDTO countOnlineData() {
+        return new ApiJsonDTO().success().buildMap(ParamConst.LOGIN_USER, httpService.getOnlineLoginUserNumber());
     }
 
     /**
@@ -98,22 +96,21 @@ public class CountController {
      *      - 回复数
      *
      * @param userId 用户id
-     * @return PageJsonDTO 页面JSON传输对象
+     * @return ApiJsonDTO 接口JSON传输对象
      */
     @RequestMapping(value = "user", method = RequestMethod.GET)
-    public PageJsonDTO countUser(@RequestParam(value = "userid", required = false) String userId) {
+    public ApiJsonDTO countUser(@RequestParam(value = "userid", required = false) String userId) {
         validationService.check(ParamConst.USER_ID, userId);
 
         int userIdInt = Integer.valueOf(userId);
-        Map<String, Object> userCountMap = new LinkedHashMap<>(SetConst.FIVE);
-            userCountMap.put(ParamConst.FOLLOWING, userService.countUserFollowingTotals(userIdInt));
-            userCountMap.put(ParamConst.FOLLOWED, userService.countUserFollowedTotals(userIdInt));
-            userCountMap.put(ParamConst.LIKE, userService.countUserLikeTopicTotals(userIdInt));
-            userCountMap.put(ParamConst.COLLECT, userService.countUserCollectTopicTotals(userIdInt));
-            userCountMap.put(ParamConst.ATTENTION, userService.countUserAttentionTopicTotals(userIdInt));
-            userCountMap.put(ParamConst.TOPIC, userService.countUserTopicTotals(userIdInt));
-            userCountMap.put(ParamConst.REPLY, userService.countUserReplyTotals(userIdInt));
-
-        return new PageJsonDTO(AjaxRequestStatus.SUCCESS, userCountMap);
+        Map<String, Object> modelMap = new LinkedHashMap<>(SetConst.FIVE);
+            modelMap.put(ParamConst.FOLLOWING, userService.countUserFollowingTotals(userIdInt));
+            modelMap.put(ParamConst.FOLLOWED, userService.countUserFollowedTotals(userIdInt));
+            modelMap.put(ParamConst.LIKE, userService.countUserLikeTopicTotals(userIdInt));
+            modelMap.put(ParamConst.COLLECT, userService.countUserCollectTopicTotals(userIdInt));
+            modelMap.put(ParamConst.ATTENTION, userService.countUserAttentionTopicTotals(userIdInt));
+            modelMap.put(ParamConst.TOPIC, userService.countUserTopicTotals(userIdInt));
+            modelMap.put(ParamConst.REPLY, userService.countUserReplyTotals(userIdInt));
+        return new ApiJsonDTO().success().map(modelMap);
     }
 }

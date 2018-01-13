@@ -18,9 +18,9 @@ public interface ITopicService {
      * @param categoryNick 话题分类昵称
      * @param title 话题标题
      * @param topicContent 话题内容
-     * @return int 新增的话题id
+     * @return Map 保存（新增的话题id）
      */
-    int saveTopic(int userId, String categoryNick, String title, String topicContent);
+    Map<String, Object> saveTopic(int userId, String categoryNick, String title, String topicContent);
 
     /**
      * 保存回复
@@ -28,9 +28,9 @@ public interface ITopicService {
      * @param userId 用户id
      * @param topicId 话题id
      * @param replyContent 话题内容
-     * @return int 新增的回复id
+     * @return Map 保存（新增的回复id）
      */
-    int saveReply(int userId, int topicId, String replyContent);
+    Map<String, Object> saveReply(int userId, int topicId, String replyContent);
 
     /**
      * 保存话题分类
@@ -82,9 +82,9 @@ public interface ITopicService {
      * @param limit 每页限制多少条
      * @param categoryNick 话题分类昵称
      * @param username 用户名
-     * @return int 总页数
+     * @return Map 显示总页数
      */
-    int countTopicTotalPages(int limit, String categoryNick, String username);
+    Map<String, Object> countTopicTotalPages(int limit, String categoryNick, String username);
 
     /**
      * 获取话题内容点赞数
@@ -174,9 +174,9 @@ public interface ITopicService {
      * @param isCurrentUserLikeTopic 当前用户是否喜欢该话题（是否已经点赞）
      * @param topicId 话题id
      * @param command 操作指令（INC-自增1，DEC-自减-）
-     * @return int 当前话题点赞数
+     * @return Map 保存（当前话题点赞数）
      */
-    int alterTopicLikeByInstruction(boolean isCurrentUserLikeTopic, int topicId, String command);
+     Map<String, Object> alterTopicLikeByInstruction(boolean isCurrentUserLikeTopic, int topicId, String command);
 
     /**
      * 修改话题分类描述
@@ -229,9 +229,9 @@ public interface ITopicService {
      *
      * @param userId 用户id
      * @param topicId 话题id
-     * @return List 用户目前收藏话题id列表
+     * @return Map (保存用户目前收藏话题id列表)
      */
-    List<Integer> operateCollectTopic(int userId, int topicId);
+    Map<String, Object> operateCollectTopic(int userId, int topicId);
 
     /**
      * 操作关注话题
@@ -239,7 +239,7 @@ public interface ITopicService {
      *
      * @param userId 用户id
      * @param topicId 话题id
-     * @return List 用户目前关注话题id列表
+     * @return Map (保存用户目前关注话题id列表)
      */
-    List<Integer> operateAttentionTopic(int userId, int topicId);
+    Map<String, Object> operateAttentionTopic(int userId, int topicId);
 }

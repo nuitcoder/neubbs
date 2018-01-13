@@ -2,7 +2,9 @@ package org.neusoft.neubbs.utils;
 
 
 import org.neusoft.neubbs.constant.api.ParamConst;
+import org.neusoft.neubbs.constant.api.SetConst;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -25,6 +27,19 @@ public final class MapFilterUtil {
       for (String key : keys) {
          map.remove(key);
       }
+   }
+
+   /**
+    * 生成 Map，初始面积为 1
+    *
+    * @param key 键
+    * @param value 值
+    * @return Map 生成键值对
+    */
+   public static Map<String, Object> generateMapOneSize(String key, Object value) {
+      Map<String, Object> map = new HashMap<>(SetConst.SIZE_ONE);
+         map.put(key, value);
+      return map;
    }
 
    /**

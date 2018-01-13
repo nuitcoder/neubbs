@@ -1,11 +1,10 @@
 package org.neusoft.neubbs.controller.api;
 
-import org.neusoft.neubbs.constant.ajax.AjaxRequestStatus;
 import org.neusoft.neubbs.constant.api.ApiMessage;
 import org.neusoft.neubbs.constant.api.SetConst;
 import org.neusoft.neubbs.controller.annotation.AccountActivation;
 import org.neusoft.neubbs.controller.annotation.LoginAuthorization;
-import org.neusoft.neubbs.dto.PageJsonDTO;
+import org.neusoft.neubbs.dto.ApiJsonDTO;
 import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.service.IFileTreatService;
 import org.neusoft.neubbs.service.IFtpService;
@@ -53,11 +52,11 @@ public class FileController {
      *      - 上传至 ftp
      *
      * @param multipartFile 用户上传的文件对象
-     * @return PageJsonDTO 响应JSON传输对象
+     * @return ApiJsonDTO 接口JSON传输对象
      */
     @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/avator", method = RequestMethod.POST)
-    public PageJsonDTO uploadUserAvatars(@RequestParam("avatorImage")MultipartFile multipartFile) {
+    public ApiJsonDTO uploadUserAvatars(@RequestParam("avatorImage")MultipartFile multipartFile) {
 
         fileService.checkUploadUserAvatorImageFileNorm(multipartFile);
 
@@ -77,6 +76,6 @@ public class FileController {
 
         userService.alterUserAvatorImage(cookieUser.getName(), serverUserAvatorImageName);
 
-        return new PageJsonDTO(AjaxRequestStatus.SUCCESS, ApiMessage.UPLOAD_SUCCESS);
+        return new ApiJsonDTO().success().message(ApiMessage.UPLOAD_SUCCESS);
     }
 }

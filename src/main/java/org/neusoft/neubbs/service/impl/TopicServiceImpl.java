@@ -68,7 +68,7 @@ public class TopicServiceImpl implements ITopicService {
     }
 
     @Override
-    public int saveTopic(int userId, String categoryNick, String title, String topicContent) {
+    public Map<String, Object> saveTopic(int userId, String categoryNick, String title, String topicContent) {
         //because userId of cookie already cookie, so no null empty check
         TopicCategoryDO category = this.getTopicCategoryNotNullByNick(categoryNick);
 
@@ -97,11 +97,11 @@ public class TopicServiceImpl implements ITopicService {
             throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.TOPIC_35);
         }
 
-        return topic.getId();
+        return MapFilterUtil.generateMapOneSize(ParamConst.TOPIC_ID, topic.getId());
     }
 
     @Override
-    public int saveReply(int userId, int topicId, String replyContent) {
+    public Map<String, Object> saveReply(int userId, int topicId, String replyContent) {
         this.getTopicNotNull(topicId);
 
         //insert forum_topic_reply
@@ -122,7 +122,7 @@ public class TopicServiceImpl implements ITopicService {
             throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.TOPIC_03);
         }
 
-        return topicReply.getId();
+        return MapFilterUtil.generateMapOneSize(ParamConst.REPLY_ID, topicReply.getId());
     }
 
     @Override
@@ -198,7 +198,7 @@ public class TopicServiceImpl implements ITopicService {
     }
 
     @Override
-    public int countTopicTotalPages(int limit, String categoryNick, String username) {
+    public Map<String, Object> countTopicTotalPages(int limit, String categoryNick, String username) {
         if (limit == SetConst.ZERO) {
             limit = neubbsConfig.getTopicsApiRequestParamLimitDefault();
         }
@@ -212,8 +212,9 @@ public class TopicServiceImpl implements ITopicService {
         int topicNumber = this.countTopicCount(categoryId, userId);
         this.confirmQueryTopicListResultSizeNotEqualZero(topicNumber);
 
-        //count totalpages by limit by topicNumber
-        return topicNumber % limit == 0 ? topicNumber / limit : topicNumber / limit + 1;
+        //count totalPages by limit by topicNumber
+        int totalPages =  topicNumber % limit == 0 ? topicNumber / limit : topicNumber / limit + 1;
+        return MapFilterUtil.generateMapOneSize(ParamConst.TOTAL_PAGES, totalPages);
     }
 
     @Override
@@ -389,7 +390,7 @@ public class TopicServiceImpl implements ITopicService {
     }
 
     @Override
-    public int alterTopicLikeByInstruction(boolean isCurrentUserLikeTopic, int topicId, String command) {
+    public Map<String, Object> alterTopicLikeByInstruction(boolean isCurrentUserLikeTopic, int topicId, String command) {
         //judge current user whether repeat operation(no repeat input 'inc' or 'dec')
         boolean isIncOfInstruction = command.equals(SetConst.COLLECT_INC);
         if (isCurrentUserLikeTopic && isIncOfInstruction) {
@@ -407,8 +408,8 @@ public class TopicServiceImpl implements ITopicService {
             throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.TOPIC_07);
         }
 
-        return isIncOfInstruction
-                ? topicContent.getLike() + SetConst.ONE : topicContent.getLike() - SetConst.ONE;
+        int currentTopicLike = isIncOfInstruction ? topicContent.getLike() + 1 : topicContent.getLike() - 1;
+        return MapFilterUtil.generateMapOneSize(ParamConst.LIKE, currentTopicLike);
     }
 
     @Override
@@ -463,7 +464,7 @@ public class TopicServiceImpl implements ITopicService {
     }
 
     @Override
-    public List<Integer> operateCollectTopic(int userId, int topicId) {
+    public Map<String, Object> operateCollectTopic(int userId, int topicId) {
         //isCollectTopic() already checked 'userId' and 'topicId'
 
         //true -> do 'dec' , false -> do 'inc'
@@ -473,11 +474,14 @@ public class TopicServiceImpl implements ITopicService {
             this.incUserCollectTopicToUpdateDatabase(userId, topicId);
         }
 
-        return JsonUtil.changeJsonArrayStringToIntegerList(this.getUserCollectTopicIdJsonArrayStringByUserId(userId));
+        return MapFilterUtil.generateMapOneSize(
+                ParamConst.USER_COLLECT_TOPIC_ID,
+                JsonUtil.changeJsonArrayStringToIntegerList(this.getUserCollectTopicIdJsonArrayStringByUserId(userId))
+        );
     }
 
     @Override
-    public List<Integer> operateAttentionTopic(int userId, int topicId) {
+    public Map<String, Object> operateAttentionTopic(int userId, int topicId) {
         // isAttentionTopic() already checked 'userId' and 'topicId'
 
         //true -> do 'dec', false -> do 'inc'
@@ -488,7 +492,10 @@ public class TopicServiceImpl implements ITopicService {
 
         }
 
-        return JsonUtil.changeJsonArrayStringToIntegerList(this.getUserAttentionTopicIdJsonArrayStringByUserId(userId));
+        return MapFilterUtil.generateMapOneSize(
+                ParamConst.USER_ATTENTION_TOPIC_ID,
+                JsonUtil.changeJsonArrayStringToIntegerList(this.getUserAttentionTopicIdJsonArrayStringByUserId(userId))
+        );
     }
 
     /*
