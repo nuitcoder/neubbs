@@ -105,7 +105,7 @@ public final class AccountController {
 
         return userService.isUserExist(username, email)
                 ? new ApiJsonDTO().success().map(userService.getUserInfoToPageModelMap(username, email))
-                : new ApiJsonDTO().error();
+                : new ApiJsonDTO().fail();
     }
 
     /**
@@ -170,10 +170,10 @@ public final class AccountController {
         httpService.incOnlineLoginUserNumber();
 
         //response model -> include authentication and state
-        Map<String, Object> modelJsonMap = new LinkedHashMap<>(SetConst.LENGTH_TWO);
-            modelJsonMap.put(ParamConst.AUTHENTICATION, authentication);
-            modelJsonMap.put(ParamConst.STATE, userService.isUserActivatedByState(user.getState()));
-        return new ApiJsonDTO().success().map(modelJsonMap);
+        Map<String, Object> modelMap = new LinkedHashMap<>(SetConst.LENGTH_TWO);
+            modelMap.put(ParamConst.AUTHENTICATION, authentication);
+            modelMap.put(ParamConst.STATE, userService.isUserActivatedByState(user.getState()));
+        return new ApiJsonDTO().success().map(modelMap);
     }
 
     /**
@@ -317,7 +317,7 @@ public final class AccountController {
         if (remainAllowSendEmailInterval != SetConst.EXPIRE_TIME_REDIS_NO_EXIST_KEY) {
             Map<String, Object> timerMap = new HashMap<>(SetConst.SIZE_ONE);
                 timerMap.put(ParamConst.TIMER, remainAllowSendEmailInterval / SetConst.THOUSAND);
-            return new ApiJsonDTO().error().message(ApiMessage.WAIT_TIMER).map(timerMap);
+            return new ApiJsonDTO().fail().message(ApiMessage.WAIT_TIMER).map(timerMap);
         }
 
         //start another thread to send mail

@@ -35,7 +35,7 @@ public class ApiJsonDTO {
         this.setSuccess(AjaxRequestStatus.SUCCESS);
         return this;
     }
-    public ApiJsonDTO error() {
+    public ApiJsonDTO fail() {
         this.setSuccess(AjaxRequestStatus.FAIL);
         return this;
     }
