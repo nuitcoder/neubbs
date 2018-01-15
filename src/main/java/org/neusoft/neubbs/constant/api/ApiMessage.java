@@ -34,6 +34,11 @@ public final class ApiMessage {
     public static final String TOKEN_EXPIRED = "token expired";
 
     /**
+     * 错误
+     */
+    public static final String UNKNOWN_ERROR = "unknown error";
+
+    /**
      * 计时器
      */
     public static final String WAIT_TIMER = "wait for timer";
