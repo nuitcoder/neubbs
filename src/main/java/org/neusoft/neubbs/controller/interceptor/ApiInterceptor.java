@@ -3,7 +3,7 @@ package org.neusoft.neubbs.controller.interceptor;
 import org.neusoft.neubbs.constant.api.ApiMessage;
 import org.neusoft.neubbs.constant.api.ParamConst;
 import org.neusoft.neubbs.constant.api.SetConst;
-import org.neusoft.neubbs.constant.log.LogWarn;
+import org.neusoft.neubbs.constant.log.LogWarnEnum;
 import org.neusoft.neubbs.controller.annotation.AccountActivation;
 import org.neusoft.neubbs.controller.annotation.AdminRank;
 import org.neusoft.neubbs.controller.annotation.LoginAuthorization;
@@ -95,7 +95,7 @@ public class ApiInterceptor implements HandlerInterceptor {
 
             //judge user state
             if (currentUser.getState() == SetConst.ACCOUNT_NO_ACTIVATED_STATE) {
-                throw new AccountErrorException(ApiMessage.NO_ACTIVATE).log(currentUser.getName() + LogWarn.USER_20);
+                throw new AccountErrorException(ApiMessage.NO_ACTIVATE).log(LogWarnEnum.US17);
             }
         }
     }
@@ -118,7 +118,7 @@ public class ApiInterceptor implements HandlerInterceptor {
 
             //judge user rank
             if (!SetConst.RANK_ADMIN.equals(currentUser.getRank())) {
-                throw new AccountErrorException(ApiMessage.NO_PERMISSION).log(LogWarn.INTERCEPTOR_03);
+                throw new AccountErrorException(ApiMessage.NO_PERMISSION).log(LogWarnEnum.AT3);
             }
         }
     }
@@ -161,13 +161,13 @@ public class ApiInterceptor implements HandlerInterceptor {
      * 抛出无权限异常
      */
     private void throwNoPermissionException() {
-        throw new AccountErrorException(ApiMessage.NO_PERMISSION).log(LogWarn.INTERCEPTOR_02);
+        throw new AccountErrorException(ApiMessage.NO_PERMISSION).log(LogWarnEnum.AT2);
     }
 
     /**
      * 抛出 token 过期异常
      */
     private void throwTokenExpiredException() {
-        throw new AccountErrorException(ApiMessage.TOKEN_EXPIRED).log(LogWarn.INTERCEPTOR_01);
+        throw new AccountErrorException(ApiMessage.TOKEN_EXPIRED).log(LogWarnEnum.AT1);
     }
 }

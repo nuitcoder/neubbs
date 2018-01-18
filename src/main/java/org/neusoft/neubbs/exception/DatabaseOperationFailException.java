@@ -1,5 +1,7 @@
 package org.neusoft.neubbs.exception;
 
+import org.neusoft.neubbs.constant.log.LogWarnEnum;
+
 /**
  * 数据库操作失败异常
  *
@@ -7,7 +9,7 @@ package org.neusoft.neubbs.exception;
  */
 public class DatabaseOperationFailException extends RuntimeException implements IPrintLog {
 
-    private String logMessage;
+    private LogWarnEnum logWarnEnum;
 
     /**
      * Constructor
@@ -17,13 +19,13 @@ public class DatabaseOperationFailException extends RuntimeException implements 
     }
 
     @Override
-    public DatabaseOperationFailException log(String logMessage) {
-        this.logMessage = logMessage;
+    public DatabaseOperationFailException log(LogWarnEnum logWarnEnum) {
+        this.logWarnEnum = logWarnEnum;
         return this;
     }
 
     @Override
-    public String getLogMessage() {
-        return logMessage;
+    public LogWarnEnum getLog() {
+        return logWarnEnum;
     }
 }

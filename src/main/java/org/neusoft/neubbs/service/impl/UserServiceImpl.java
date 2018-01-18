@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSON;
 import org.neusoft.neubbs.constant.api.ApiMessage;
 import org.neusoft.neubbs.constant.api.ParamConst;
 import org.neusoft.neubbs.constant.api.SetConst;
-import org.neusoft.neubbs.constant.log.LogWarn;
+import org.neusoft.neubbs.constant.log.LogWarnEnum;
 import org.neusoft.neubbs.dao.ITopicDAO;
 import org.neusoft.neubbs.dao.ITopicReplyDAO;
 import org.neusoft.neubbs.dao.IUserActionDAO;
@@ -69,19 +69,19 @@ public class UserServiceImpl implements IUserService {
 
         //register user to database
         if (userDAO.saveUser(user) == 0) {
-            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.USER_01);
+            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarnEnum.US1);
         }
 
         //insert default user action record
         UserActionDO userAction = new UserActionDO();
             userAction.setUserId(user.getId());
         if (userActionDAO.saveUserAction(userAction) == 0) {
-            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.USER_04);
+            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarnEnum.US33);
         }
 
         //update data user image filed, set default avator image
         if (userDAO.updateUserAvatorByName(user.getName(), ParamConst.USER_DEFAULT_IMAGE) == 0) {
-            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.USER_02);
+            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarnEnum.US2);
         }
 
         //again select user information by new register user id
@@ -95,14 +95,13 @@ public class UserServiceImpl implements IUserService {
         try {
             user = this.getUserInfoByName(username);
         } catch (AccountErrorException ae) {
-            throw new AccountErrorException(ApiMessage.USERNAME_OR_PASSWORD_INCORRECT).log(ae.getLogMessage());
+            throw new AccountErrorException(ApiMessage.USERNAME_OR_PASSWORD_INCORRECT).log(ae.getLog());
         }
 
-        //judge user passowrd whether correct
+        //judge user password whether correct
         String cipherText = SecretUtil.encryptUserPassword(password);
         if (!cipherText.equals(user.getPassword())) {
-            throw new AccountErrorException(ApiMessage.USERNAME_OR_PASSWORD_INCORRECT)
-                    .log(username + LogWarn.USER_09);
+            throw new AccountErrorException(ApiMessage.USERNAME_OR_PASSWORD_INCORRECT).log(LogWarnEnum.US7);
         }
 
         return user;
@@ -114,7 +113,7 @@ public class UserServiceImpl implements IUserService {
 
         //judge user activate state
         if (this.isUserActivatedByState(user.getState())) {
-            throw new AccountErrorException(ApiMessage.ACCOUNT_ACTIVATED).log(email + LogWarn.USER_07);
+            throw new AccountErrorException(ApiMessage.ACCOUNT_ACTIVATED).log(LogWarnEnum.US5);
         }
     }
 
@@ -122,7 +121,7 @@ public class UserServiceImpl implements IUserService {
     @Override
     public void confirmUserMatchCookieUser(String inputUsername, UserDO cookieUser) {
         if (cookieUser == null || !inputUsername.equals(cookieUser.getName())) {
-            throw new AccountErrorException(ApiMessage.NO_PERMISSION).log(LogWarn.USER_12);
+            throw new AccountErrorException(ApiMessage.NO_PERMISSION).log(LogWarnEnum.US10);
         }
     }
 
@@ -321,7 +320,7 @@ public class UserServiceImpl implements IUserService {
             updateUser.setDescription(description);
 
         if (userDAO.updateUser(updateUser) == 0) {
-            throw new AccountErrorException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.USER_02);
+            throw new AccountErrorException(ApiMessage.DATABASE_EXCEPTION).log(LogWarnEnum.US2);
         }
 
         return this.getUserInfoMapByUser(userDAO.getUserByName(username));
@@ -336,7 +335,7 @@ public class UserServiceImpl implements IUserService {
 
         //secret new password, update user passowrd
         if (userDAO.updateUserPasswordByName(username, SecretUtil.encryptUserPassword(newPassword)) == 0) {
-            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.USER_02);
+            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarnEnum.US2);
         }
     }
 
@@ -347,7 +346,7 @@ public class UserServiceImpl implements IUserService {
 
         //secret new password, update user passowrd
         if (userDAO.updateUserPasswordByName(username, SecretUtil.encryptUserPassword(newPassword)) == 0) {
-            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.USER_02);
+            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarnEnum.US2);
         }
     }
 
@@ -358,14 +357,14 @@ public class UserServiceImpl implements IUserService {
         this.confirmUserNotOccupiedByEmail(newEmail);
 
         if (userDAO.updateUserEmailByName(username, newEmail) == 0) {
-            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.USER_02);
+            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarnEnum.US2);
         }
     }
 
     @Override
     public void alterUserAvatorImage(String username, String newImageName) {
         if (userDAO.updateUserAvatorByName(username, newImageName) == 0) {
-            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.USER_02);
+            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarnEnum.US2);
         }
     }
 
@@ -375,22 +374,22 @@ public class UserServiceImpl implements IUserService {
         String plainText = SecretUtil.decryptBase64(token);
         String[] array = plainText.split("-");
         if (array.length != SetConst.LENGTH_TWO) {
-            throw new TokenErrorException(ApiMessage.INVALID_TOKEN).log(token + LogWarn.USER_15);
+            throw new TokenErrorException(ApiMessage.INVALID_TOKEN).log(LogWarnEnum.US12);
         }
 
         String email = array[0];
         if (!PatternUtil.matchEmail(email)) {
-            throw new TokenErrorException(ApiMessage.INVALID_TOKEN).log(token + LogWarn.USER_15);
+            throw new TokenErrorException(ApiMessage.INVALID_TOKEN).log(LogWarnEnum.US12);
         }
         String expireTime = array[1];
         if (StringUtil.isExpire(expireTime)) {
-            throw new TokenErrorException(ApiMessage.LINK_INVALID).log(token + LogWarn.USER_05);
+            throw new TokenErrorException(ApiMessage.LINK_INVALID).log(LogWarnEnum.US4);
         }
 
         this.confirmUserActivatedByEmail(email);
 
         if (userDAO.updateUserStateToActivateByEmail(email) == 0) {
-            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.USER_02);
+            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarnEnum.US2);
         }
 
         return userDAO.getUserByEmail(email);
@@ -407,14 +406,14 @@ public class UserServiceImpl implements IUserService {
             String likeTopicIdArrayString = userActionDAO.getUserAction(userId).getLikeTopicIdJsonArray();
             int indexTopicId = JSON.parseArray(likeTopicIdArrayString).indexOf(topicId);
             if (indexTopicId == SetConst.NEGATIVE_ONE) {
-                throw new TopicErrorException(ApiMessage.USER_NO_LIKE_THIS_TOPIC).log(LogWarn.TOPIC_22);
+                throw new TopicErrorException(ApiMessage.USER_NO_LIKE_THIS_TOPIC).log(LogWarnEnum.TS21);
             }
 
             effectRow = userActionDAO.updateLikeTopicIdJsonArrayByIndexToRemoveOneTopicId(userId, indexTopicId);
         }
 
         if (effectRow == 0) {
-            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarn.USER_04);
+            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarnEnum.US3);
         }
     }
 
@@ -522,7 +521,7 @@ public class UserServiceImpl implements IUserService {
      */
     private void confirmUserNotOccupiedByUsername(String username) {
         if (userDAO.getUserByName(username) != null) {
-            throw new AccountErrorException(ApiMessage.USERNAME_REGISTERED).log(username + LogWarn.USER_14);
+            throw new AccountErrorException(ApiMessage.USERNAME_REGISTERED).log(LogWarnEnum.US11);
         }
     }
 
@@ -533,7 +532,7 @@ public class UserServiceImpl implements IUserService {
      */
     private void confirmUserNotOccupiedByEmail(String email) {
         if (userDAO.getUserByEmail(email) != null) {
-            throw new AccountErrorException(ApiMessage.EMAIL_REGISTERED).log(email + LogWarn.USER_08);
+            throw new AccountErrorException(ApiMessage.EMAIL_REGISTERED).log(LogWarnEnum.US6);
         }
     }
 
@@ -649,7 +648,7 @@ public class UserServiceImpl implements IUserService {
      * 抛出不存用户异常
      */
     private void throwNoUserException() {
-        throw new AccountErrorException(ApiMessage.NO_USER).log(LogWarn.USER_19);
+        throw new AccountErrorException(ApiMessage.NO_USER).log(LogWarnEnum.US16);
     }
 
     /**
@@ -659,6 +658,6 @@ public class UserServiceImpl implements IUserService {
      * @param userOperate 用户操作
      */
     private void throwUserActionUpdateFailException(String userOperate) {
-        throw new AccountErrorException(ApiMessage.USER_OPERATE_FAIL).log(userOperate + LogWarn.USER_18);
+        throw new AccountErrorException(ApiMessage.USER_OPERATE_FAIL).log(LogWarnEnum.US15);
     }
 }

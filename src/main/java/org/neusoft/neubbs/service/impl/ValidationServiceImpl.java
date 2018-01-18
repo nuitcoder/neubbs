@@ -3,7 +3,7 @@ package org.neusoft.neubbs.service.impl;
 import org.neusoft.neubbs.constant.api.ApiMessage;
 import org.neusoft.neubbs.constant.api.ParamConst;
 import org.neusoft.neubbs.constant.api.SetConst;
-import org.neusoft.neubbs.constant.log.LogWarn;
+import org.neusoft.neubbs.constant.log.LogWarnEnum;
 import org.neusoft.neubbs.exception.ParamsErrorException;
 import org.neusoft.neubbs.service.IValidationService;
 import org.neusoft.neubbs.utils.PatternUtil;
@@ -32,14 +32,14 @@ public class ValidationServiceImpl implements IValidationService {
             }
         }
 
-        throw new ParamsErrorException(ApiMessage.PARAM_ERROR).log(LogWarn.PARAM_CHECK_02);
+        throw new ParamsErrorException(ApiMessage.PARAM_ERROR).log(LogWarnEnum.VS2);
     }
 
     @Override
     public void checkNotNullParamsKeyValue(String... params) {
         int len = params.length;
         if (len == SetConst.ZERO || len % SetConst.TWO != 0) {
-            throw new ParamsErrorException(ApiMessage.PARAM_ERROR).log(LogWarn.USER_05);
+            throw new ParamsErrorException(ApiMessage.PARAM_ERROR).log(LogWarnEnum.US4);
         }
 
         int i = SetConst.ONE;
@@ -65,7 +65,7 @@ public class ValidationServiceImpl implements IValidationService {
         }
 
         if (count == params.length) {
-            throw new ParamsErrorException(ApiMessage.PARAM_ERROR).log(LogWarn.PARAM_CHECK_01);
+            throw new ParamsErrorException(ApiMessage.PARAM_ERROR).log(LogWarnEnum.VS1);
         }
     }
 

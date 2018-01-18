@@ -1,9 +1,5 @@
 package org.neusoft.neubbs.utils;
 
-import org.neusoft.neubbs.constant.api.ApiMessage;
-import org.neusoft.neubbs.constant.log.LogWarn;
-import org.neusoft.neubbs.exception.TokenErrorException;
-
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
@@ -96,14 +92,9 @@ public final class SecretUtil {
      *
      * @param token Base64密文
      * @return String 明文
-     * @throws TokenErrorException 口令错误异常
      */
-    public static String decryptBase64(String token) throws TokenErrorException {
-        try {
-            return new String(Base64.getDecoder().decode(token));
-        } catch (Exception e) {
-            throw new TokenErrorException(ApiMessage.INVALID_TOKEN).log(token + LogWarn.USER_15);
-        }
+    public static String decryptBase64(String token) {
+         return new String(Base64.getDecoder().decode(token));
     }
 
     /**

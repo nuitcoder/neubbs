@@ -3,7 +3,7 @@ package org.neusoft.neubbs.service.impl;
 import org.neusoft.neubbs.constant.api.ApiMessage;
 import org.neusoft.neubbs.constant.api.ParamConst;
 import org.neusoft.neubbs.constant.api.SetConst;
-import org.neusoft.neubbs.constant.log.LogWarn;
+import org.neusoft.neubbs.constant.log.LogWarnEnum;
 import org.neusoft.neubbs.entity.properties.NeubbsConfigDO;
 import org.neusoft.neubbs.exception.AccountErrorException;
 import org.neusoft.neubbs.service.IHttpService;
@@ -101,7 +101,7 @@ public class HttpServiceImpl implements IHttpService {
             out.flush();
             out.close();
         } catch (IOException e) {
-            throw new AccountErrorException(ApiMessage.GENERATE_CAPTCHA_FAIL).log(LogWarn.USER_17);
+            throw new AccountErrorException(ApiMessage.GENERATE_CAPTCHA_FAIL).log(LogWarnEnum.US17);
         }
     }
 
@@ -116,7 +116,7 @@ public class HttpServiceImpl implements IHttpService {
     }
     @Override
 
-    public void destroySession () {
+    public void destroySession() {
         PublicParamsUtil.getSession().invalidate();
     }
 }

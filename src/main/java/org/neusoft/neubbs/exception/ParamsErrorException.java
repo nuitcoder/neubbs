@@ -1,5 +1,6 @@
 package org.neusoft.neubbs.exception;
 
+import org.neusoft.neubbs.constant.log.LogWarnEnum;
 import org.neusoft.neubbs.controller.annotation.ApiException;
 
 /**
@@ -13,7 +14,7 @@ public class ParamsErrorException extends RuntimeException implements IPrintLog 
     /**
      * 日志信息
      */
-    private String logMessage;
+    private LogWarnEnum logWarnEnum;
 
     /**
      *  Constructor
@@ -23,13 +24,13 @@ public class ParamsErrorException extends RuntimeException implements IPrintLog 
     }
 
     @Override
-    public ParamsErrorException log(String logMessage) {
-        this.logMessage = logMessage;
+    public ParamsErrorException log(LogWarnEnum logWarnEnum) {
+        this.logWarnEnum = logWarnEnum;
         return this;
     }
 
     @Override
-    public String getLogMessage() {
-        return logMessage;
+    public LogWarnEnum getLog() {
+        return logWarnEnum;
     }
 }

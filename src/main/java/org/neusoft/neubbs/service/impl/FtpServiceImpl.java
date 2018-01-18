@@ -1,9 +1,9 @@
 package org.neusoft.neubbs.service.impl;
 
 import org.neusoft.neubbs.constant.api.ApiMessage;
-import org.neusoft.neubbs.constant.log.LogWarn;
-import org.neusoft.neubbs.exception.FtpServiceErrorException;
+import org.neusoft.neubbs.constant.log.LogWarnEnum;
 import org.neusoft.neubbs.entity.UserDO;
+import org.neusoft.neubbs.exception.FtpServiceErrorException;
 import org.neusoft.neubbs.service.IFtpService;
 import org.neusoft.neubbs.utils.FtpUtil;
 import org.springframework.stereotype.Service;
@@ -24,7 +24,7 @@ public class FtpServiceImpl implements IFtpService {
         try {
             FtpUtil.createDirectory("/user/" + user.getId() + "-" + user.getName() + "/avator");
         } catch (IOException ioe) {
-            throw new FtpServiceErrorException(ApiMessage.FTP_SERVICE_EXCEPTION).log(LogWarn.FTP_01);
+            throw new FtpServiceErrorException(ApiMessage.FTP_SERVICE_EXCEPTION).log(LogWarnEnum.FTPS1);
         }
     }
 
@@ -33,7 +33,7 @@ public class FtpServiceImpl implements IFtpService {
         try {
             FtpUtil.uploadFile(ftpPath, fileName, multipartFile.getInputStream());
         } catch (IOException ioe) {
-            throw new FtpServiceErrorException(ApiMessage.FTP_SERVICE_EXCEPTION).log(LogWarn.FTP_02);
+            throw new FtpServiceErrorException(ApiMessage.FTP_SERVICE_EXCEPTION).log(LogWarnEnum.FTPS2);
         }
     }
 

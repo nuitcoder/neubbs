@@ -1,10 +1,7 @@
 package org.neusoft.neubbs.utils;
 
-import org.neusoft.neubbs.constant.api.ApiMessage;
 import org.neusoft.neubbs.constant.api.ParamConst;
 import org.neusoft.neubbs.constant.api.SetConst;
-import org.neusoft.neubbs.constant.log.LogWarn;
-import org.neusoft.neubbs.exception.TokenErrorException;
 import org.neusoft.neubbs.entity.properties.NeubbsConfigDO;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -69,14 +66,7 @@ public final class StringUtil {
      * @return boolean 检测结果
      */
     public static boolean isExpire(String expireTime) {
-        long time;
-        try {
-            time = Long.parseLong(expireTime);
-        } catch (NumberFormatException nfe) {
-            throw new TokenErrorException(ApiMessage.INVALID_TOKEN).log(LogWarn.USER_15);
-        }
-
-        return time <= System.currentTimeMillis();
+        return Long.parseLong(expireTime) <= System.currentTimeMillis();
     }
 
     /**

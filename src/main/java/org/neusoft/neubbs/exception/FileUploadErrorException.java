@@ -1,5 +1,6 @@
 package org.neusoft.neubbs.exception;
 
+import org.neusoft.neubbs.constant.log.LogWarnEnum;
 import org.neusoft.neubbs.controller.annotation.ApiException;
 
 /**
@@ -10,7 +11,7 @@ import org.neusoft.neubbs.controller.annotation.ApiException;
 @ApiException
 public class FileUploadErrorException extends RuntimeException implements IPrintLog {
 
-    private String logMessage;
+    private LogWarnEnum logWarnEnum;
 
     /**
      * Constructor
@@ -20,13 +21,13 @@ public class FileUploadErrorException extends RuntimeException implements IPrint
     }
 
     @Override
-    public FileUploadErrorException log(String logMessage) {
-        this.logMessage = logMessage;
+    public FileUploadErrorException log(LogWarnEnum logWarnEnum) {
+        this.logWarnEnum = logWarnEnum;
         return this;
     }
 
     @Override
-    public String getLogMessage() {
-        return logMessage;
+    public LogWarnEnum getLog() {
+        return logWarnEnum;
     }
 }

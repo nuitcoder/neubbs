@@ -1,6 +1,7 @@
 package org.neusoft.neubbs.utils;
 
 
+import org.apache.log4j.Logger;
 import org.neusoft.neubbs.constant.api.ApiMessage;
 import org.neusoft.neubbs.constant.api.ParamConst;
 import org.neusoft.neubbs.exception.ParamsErrorException;
@@ -24,28 +25,61 @@ public final class RequestParamCheckUtil {
 
     private RequestParamCheckUtil() { }
 
-    private static final int ZERO = 0;
-    private static final Integer ONE = 1;
-    private static final Integer THREE = 3;
-    private static final Integer FIVE = 5;
-    private static final Integer SIX = 6;
-    private static final Integer TEN = 10;
-    private static final Integer ELEVEN = 11;
-    private static final Integer FIFTEEN = 15;
-    private static final Integer SIXTEEN = 16;
-    private static final Integer TWENTY = 20;
-    private static final Integer FIFTY = 50;
-    private static final Integer ONE_HUNDRED_FIFTY = 150;
-    private static final Integer TWO_HUNDRED_FIFTY_FIVE = 255;
-    private static final Integer FIVE_HUNDRED = 500;
-    private static final Integer TEN_THOUSAND = 10000;
-    private static final Integer ONE_HUNDRED_THOUSAND = 100000;
+    /**
+     * 请求参数检查长度限制
+     *      - 用户名
+     *      - 用户密码
+     *      - 用户性别
+     *      - 用户生日
+     *      - 用户所在地
+     *      - 用户描述
+     *      - 验证码
+     *      - ID 参数
+     *      - 数字参数
+     *      - 话题标题
+     *      - 话题分类昵称
+     *      - 话题内容
+     *      - 回复内容
+     *
+     *      - 日志打印 MAX 范围（当长度超过此瞄准，自动 ......）
+     */
 
-    private static final String NULL = "null";
+     private static final int USERNAME_MIN = 1;
+     private static final int USERNAME_MAX = 15;
+     private static final int PASSWORD_MIN = 6;
+     private static final int PASSWORD_MAX = 16;
+     private static final int SEX_MIN = 1;
+     private static final int SEX_MAX = 1;
+     private static final int BIRTHDAY_MIN = 0;
+     private static final int BIRTHDAY_MAX = 20;
+     private static final int POSITION_MIN = 0;
+     private static final int POSITION_MAX = 235;
+     private static final int DESCRIPTION_MIN = 0;
+     private static final int DESCRIPTION_MAX = 255;
+     private static final int CAPTCHA_MIN = 5;
+     private static final int CAPTCHA_MAX = 5;
+     private static final int ID_MIN = 1;
+     private static final int ID_MAX = 10;
+     private static final int NUMBER_MIN = 1;
+     private static final int NUMBER_MAX = 10;
+     private static final int TOPIC_TITLE_MIN = 1;
+     private static final int TOPIC_TITLE_MAX = 55;
+     private static final int TOPIC_CATEGORY_NICK_MIN = 1;
+     private static final int TOPIC_CATEGORY_NICK_MAX = 20;
+     private static final int TOPIC_CONTENT_MIN = 1;
+     private static final int TOPIC_CONTENT_MAX = 100000;
+     private static final int REPLY_CONTENT_MIN = 1;
+     private static final int REPLY_CONTENT_MAX = 150;
 
-    private static Set<String> allowEmptyTypeSet = new HashSet<>();
-    private static Map<String, Scope> typeScopeMap = new HashMap<>();
-    private static Map<String, Pattern> typePatternMap = new HashMap<>();
+     private static final int LOG_LENGTH_MAX = 5;
+
+     private static final String VALUE_NULL = "null";
+
+     private static Set<String> allowEmptyTypeSet = new HashSet<>();
+     private static Map<String, Scope> typeScopeMap = new HashMap<>();
+     private static Map<String, Pattern> typePatternMap = new HashMap<>();
+
+     private static Logger log = Logger.getRootLogger();
 
     /**
      * 储存范围，最大值与最小值
@@ -88,19 +122,19 @@ public final class RequestParamCheckUtil {
         allowEmptyTypeSet.add(ParamConst.POSITION);
         allowEmptyTypeSet.add(ParamConst.DESCRIPTION);
 
-        typeScopeMap.put(ParamConst.USERNAME, new Scope(THREE, FIFTEEN));
-        typeScopeMap.put(ParamConst.PASSWORD, new Scope(SIX, SIXTEEN));
-        typeScopeMap.put(ParamConst.SEX, new Scope(ONE, ONE));
-        typeScopeMap.put(ParamConst.BIRTHDAY, new Scope(ZERO, TWENTY));
-        typeScopeMap.put(ParamConst.POSITION, new Scope(ZERO, TWO_HUNDRED_FIFTY_FIVE));
-        typeScopeMap.put(ParamConst.DESCRIPTION, new Scope(ZERO, TWO_HUNDRED_FIFTY_FIVE));
-        typeScopeMap.put(ParamConst.CAPTCHA, new Scope(FIVE, FIVE));
-        typeScopeMap.put(ParamConst.ID, new Scope(ONE, TEN));
-        typeScopeMap.put(ParamConst.NUMBER, new Scope(ONE, TEN));
-        typeScopeMap.put(ParamConst.TOPIC_TITLE, new Scope(ONE, FIFTY));
-        typeScopeMap.put(ParamConst.TOPIC_CATEGORY_NICK, new Scope(ONE, TWENTY));
-        typeScopeMap.put(ParamConst.TOPIC_CONTENT, new Scope(ONE, ONE_HUNDRED_THOUSAND));
-        typeScopeMap.put(ParamConst.REPLY_CONTENT, new Scope(ONE, ONE_HUNDRED_FIFTY));
+        typeScopeMap.put(ParamConst.USERNAME, new Scope(USERNAME_MIN, USERNAME_MAX));
+        typeScopeMap.put(ParamConst.PASSWORD, new Scope(PASSWORD_MIN, PASSWORD_MAX));
+        typeScopeMap.put(ParamConst.SEX, new Scope(SEX_MIN, SEX_MAX));
+        typeScopeMap.put(ParamConst.BIRTHDAY, new Scope(BIRTHDAY_MIN, BIRTHDAY_MAX));
+        typeScopeMap.put(ParamConst.POSITION, new Scope(POSITION_MIN, POSITION_MAX));
+        typeScopeMap.put(ParamConst.DESCRIPTION, new Scope(DESCRIPTION_MIN, DESCRIPTION_MAX));
+        typeScopeMap.put(ParamConst.CAPTCHA, new Scope(CAPTCHA_MIN, CAPTCHA_MAX));
+        typeScopeMap.put(ParamConst.ID, new Scope(ID_MIN, ID_MAX));
+        typeScopeMap.put(ParamConst.NUMBER, new Scope(NUMBER_MIN, NUMBER_MAX));
+        typeScopeMap.put(ParamConst.TOPIC_TITLE, new Scope(TOPIC_TITLE_MIN, TOPIC_TITLE_MAX));
+        typeScopeMap.put(ParamConst.TOPIC_CATEGORY_NICK, new Scope(TOPIC_CATEGORY_NICK_MIN, TOPIC_CATEGORY_NICK_MAX));
+        typeScopeMap.put(ParamConst.TOPIC_CONTENT, new Scope(TOPIC_CONTENT_MIN, TOPIC_CONTENT_MAX));
+        typeScopeMap.put(ParamConst.REPLY_CONTENT, new Scope(REPLY_CONTENT_MIN, REPLY_CONTENT_MAX));
 
         typePatternMap.put(ParamConst.ID, new Pattern("isPureNumber", " （类型）参数不符合规范，必须为纯数字（0 ~ 9）！"));
         typePatternMap.put(ParamConst.TOPIC_CATEGORY_NICK,
@@ -152,8 +186,9 @@ public final class RequestParamCheckUtil {
      * @param param 参数值
      */
     private static void checkNull(String type, String param) {
-        if (StringUtil.isEmpty(param) | NULL.equals(param)) {
-            throw new ParamsErrorException(ApiMessage.PARAM_ERROR).log(param + " （" + type + " 类型）参数不能为空；");
+        if (StringUtil.isEmpty(param) | VALUE_NULL.equals(param)) {
+            log.warn(param + " （" + type + " 类型）参数不能为空；");
+            throw new ParamsErrorException(ApiMessage.PARAM_ERROR);
         }
     }
 
@@ -172,11 +207,12 @@ public final class RequestParamCheckUtil {
         int min = scope.min;
         int max = scope.max;
         if (!StringUtil.isScope(param, min, max)) {
-            if (param.length() >= FIFTY) {
-                param = param.substring(0, FIFTY) + "......";
+            if (param.length() >= LOG_LENGTH_MAX) {
+                param = param.substring(0, LOG_LENGTH_MAX) + "......";
             }
-            throw new ParamsErrorException(ApiMessage.PARAM_ERROR)
-                    .log(param + " （ " + type + " 类型）长度不符合范围（" + min + " <= length <= " + max + "）");
+
+            log.warn(param + " （ " + type + " 类型）长度不符合范围（" + min + " <= length <= " + max + "）");
+            throw new ParamsErrorException(ApiMessage.PARAM_ERROR);
         }
     }
 
@@ -200,7 +236,8 @@ public final class RequestParamCheckUtil {
             Method method = clazz.getDeclaredMethod(pattern.methodName, String.class);
 
             if (!((boolean) method.invoke(null, param))) {
-                throw new ParamsErrorException(ApiMessage.PARAM_ERROR).log(param + " （ " + type + pattern.logMessage);
+                log.warn(param + " （ " + type + pattern.logMessage);
+                throw new ParamsErrorException(ApiMessage.PARAM_ERROR);
             }
         } catch (NoSuchMethodException | ClassNotFoundException
                 | IllegalAccessException |  InvocationTargetException e) {

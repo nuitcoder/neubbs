@@ -2,7 +2,7 @@ package org.neusoft.neubbs.service.impl;
 
 import com.google.code.kaptcha.Producer;
 import org.neusoft.neubbs.constant.api.ApiMessage;
-import org.neusoft.neubbs.constant.log.LogWarn;
+import org.neusoft.neubbs.constant.log.LogWarnEnum;
 import org.neusoft.neubbs.exception.AccountErrorException;
 import org.neusoft.neubbs.service.ICaptchaService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,10 +38,10 @@ public class CaptchaServiceImpl implements ICaptchaService {
     @Override
     public void judgeInputCaptchaWhetherSessionCaptcha(String inputCaptcha, String sessionCaptcha) {
         if (sessionCaptcha == null) {
-            throw new AccountErrorException(ApiMessage.NO_GENERATE_CAPTCHA).log(LogWarn.USER_10);
+            throw new AccountErrorException(ApiMessage.NO_GENERATE_CAPTCHA).log(LogWarnEnum.US8);
         }
         if (!inputCaptcha.equals(sessionCaptcha)) {
-            throw new AccountErrorException(ApiMessage.CAPTCHA_INCORRECT).log(LogWarn.USER_11);
+            throw new AccountErrorException(ApiMessage.CAPTCHA_INCORRECT).log(LogWarnEnum.US9);
         }
     }
 }

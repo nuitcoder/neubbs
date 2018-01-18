@@ -8,9 +8,9 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import org.neusoft.neubbs.constant.api.ApiMessage;
 import org.neusoft.neubbs.constant.api.ParamConst;
 import org.neusoft.neubbs.constant.api.SetConst;
-import org.neusoft.neubbs.constant.log.LogWarn;
-import org.neusoft.neubbs.exception.TokenErrorException;
+import org.neusoft.neubbs.constant.log.LogWarnEnum;
 import org.neusoft.neubbs.entity.UserDO;
+import org.neusoft.neubbs.exception.TokenErrorException;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
@@ -70,7 +70,7 @@ public final class JwtTokenUtil {
                                 .sign(Algorithm.HMAC256(SetConst.JWT_TOKEN_SECRET_KEY));
 
         } catch (UnsupportedEncodingException e) {
-            throw new TokenErrorException(ApiMessage.INVALID_TOKEN).log(LogWarn.USER_16);
+            throw new TokenErrorException(ApiMessage.INVALID_TOKEN).log(LogWarnEnum.US13);
         }
     }
 

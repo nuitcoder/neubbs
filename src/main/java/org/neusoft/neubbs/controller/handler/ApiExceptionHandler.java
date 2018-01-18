@@ -46,7 +46,8 @@ public class ApiExceptionHandler implements HandlerExceptionResolver {
     private void printApiExceptionToLocalLog(Exception e) {
         //print api exception to local log
         if (e instanceof IPrintLog) {
-            String logMessage = ((IPrintLog) e).getLogMessage();
+            String logMessage = ((IPrintLog) e).getLog().getErrorMessage();
+
             if (logMessage != null) {
                 //get exception stack root element (pass stacktrace)
                 StackTraceElement stackElement = e.getStackTrace()[0];

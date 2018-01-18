@@ -1,9 +1,9 @@
 package org.neusoft.neubbs.service.impl;
 
 import org.neusoft.neubbs.constant.api.ApiMessage;
-import org.neusoft.neubbs.constant.log.LogWarn;
-import org.neusoft.neubbs.exception.AccountErrorException;
+import org.neusoft.neubbs.constant.log.LogWarnEnum;
 import org.neusoft.neubbs.entity.UserDO;
+import org.neusoft.neubbs.exception.AccountErrorException;
 import org.neusoft.neubbs.service.ISecretService;
 import org.neusoft.neubbs.utils.JwtTokenUtil;
 import org.neusoft.neubbs.utils.SecretUtil;
@@ -32,7 +32,7 @@ public class SecretServiceImpl implements ISecretService {
     public UserDO jwtVerifyTokenByTokenByKey(String token, String key) {
         UserDO user = JwtTokenUtil.verifyToken(token, key);
         if (user == null) {
-            throw new AccountErrorException(ApiMessage.TOKEN_EXPIRED).log(LogWarn.USER_05);
+            throw new AccountErrorException(ApiMessage.TOKEN_EXPIRED).log(LogWarnEnum.US4);
         }
         return user;
     }

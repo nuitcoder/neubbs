@@ -10,7 +10,9 @@ import javax.servlet.http.HttpSession;
  *
  * @author Suvan
  */
-public class PublicParamsUtil {
+public final class PublicParamsUtil {
+
+    private PublicParamsUtil() { }
 
     private static ThreadLocal<HttpServletRequest> requestTL = new ThreadLocal<>();
     private static ThreadLocal<HttpServletResponse> responseTL = new ThreadLocal<>();
