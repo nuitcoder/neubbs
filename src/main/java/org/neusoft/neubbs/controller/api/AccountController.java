@@ -388,7 +388,7 @@ public final class AccountController {
 
     /**
      * 验证用户输入的验证码
-     *      - 比较用户输入是否与图片一致
+     *      - 比较用户输入验证，是否匹配 session 中已随机生成的验证码
      *
      * @param captcha 用户输入验证码
      * @return ApiJsonDTO 接口JSON字符串
@@ -397,11 +397,7 @@ public final class AccountController {
     public ApiJsonDTO validateCaptcha(@RequestParam(value = "captcha", required = false)String captcha) {
         validationService.check(ParamConst.CAPTCHA, captcha);
 
-        //get session captcha
-        String sessionCaptcha = httpService.getSessionCaptchaText();
-
-        //compare user input captcha match session captcha
-        captchaService.judgeInputCaptchaWhetherSessionCaptcha(captcha, sessionCaptcha);
+        captchaService.compareCaptcha(captcha, httpService.getSessionCaptchaText());
 
         return new ApiJsonDTO().success();
     }
