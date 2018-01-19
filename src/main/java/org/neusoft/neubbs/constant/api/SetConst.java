@@ -71,6 +71,7 @@ public final class SetConst {
     /**
      * 长度
      */
+    public static final int LENGTH_ZERO = 0;
     public static final int LENGTH_TWO = 2;
 
     /**

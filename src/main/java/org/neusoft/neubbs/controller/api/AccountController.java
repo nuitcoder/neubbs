@@ -88,6 +88,8 @@ public final class AccountController {
     /**
      * 获取用户信息
      *      - AccountController 默认访问
+     *      - username 和 email 至少有一个, 两个参数不能同时为空
+     *      - 优先检测 username（支持正常用户名 or 邮箱格式）, 若为空，再检测 email
      *
      * @param username 用户名
      * @param email 用户邮箱
@@ -96,9 +98,10 @@ public final class AccountController {
     @RequestMapping(value = "", method = RequestMethod.GET)
     public ApiJsonDTO getUserInfo(@RequestParam(value = "username", required = false) String username,
                                   @RequestParam(value = "email", required = false) String email) {
-        validationService.paramsNotNull(username, email);
+
+        validationService.checkParamsNotNull(username, email);
         if (username != null) {
-            validationService.check(validationService.getUsernameParamType(username), username);
+            validationService.checkUsername(username);
         } else {
             validationService.check(ParamConst.EMAIL, email);
         }
@@ -110,13 +113,14 @@ public final class AccountController {
 
     /**
      * 获取用户激活状态
+     *      - username
      *
      * @param username 用户名
      * @return ApiJsonDTO 接口JSON传输对象
      */
     @RequestMapping(value = "/state", method = RequestMethod.GET)
     public ApiJsonDTO getUserState(@RequestParam(value = "username", required = false) String username) {
-        validationService.check(ParamConst.USERNAME, username);
+        validationService.checkUsername(username);
         return new ApiJsonDTO().success().map(userService.isUserActivatedByName(username));
     }
 
@@ -148,6 +152,7 @@ public final class AccountController {
 
     /**
      * 登录
+     *      - username（支持用户名 or 邮箱格式）
      *
      * @param requestBodyParamsMap  request-body内JSON数据
      * @return ApiJsonDTO 接口JSON传输对象
@@ -157,7 +162,8 @@ public final class AccountController {
         String username = (String) requestBodyParamsMap.get(ParamConst.USERNAME);
         String password = (String) requestBodyParamsMap.get(ParamConst.PASSWORD);
 
-        validationService.check(ParamConst.USERNAME, username).check(ParamConst.PASSWORD, password);
+        validationService.checkUsername(username)
+                         .check(ParamConst.PASSWORD, password);
 
         //database login authenticate
         UserDO user = userService.loginAuthenticate(username, password);
@@ -233,8 +239,8 @@ public final class AccountController {
         String newPosition = (String) requestBodyParamsMap.get(ParamConst.POSITION);
         String newDescription = (String) requestBodyParamsMap.get(ParamConst.DESCRIPTION);
 
-        validationService.checkInstructionOfSpecifyArray(String.valueOf(newSex), "0", "1");
-        validationService.paramsNotNull(newBirthday, newPosition, newDescription);
+        validationService.checkCommand(String.valueOf(newSex), "0", "1");
+        validationService.checkParamsNotNull(newBirthday, newPosition, newDescription);
         validationService.check(ParamConst.BIRTHDAY, newBirthday)
                          .check(ParamConst.POSITION, newPosition)
                          .check(ParamConst.DESCRIPTION, newDescription);
@@ -260,7 +266,8 @@ public final class AccountController {
         String username = (String) requestBodyParamsMap.get(ParamConst.USERNAME);
         String newPassword = (String) requestBodyParamsMap.get(ParamConst.PASSWORD);
 
-        validationService.check(ParamConst.USERNAME, username).check(ParamConst.PASSWORD, newPassword);
+        validationService.check(ParamConst.USERNAME, username)
+                         .check(ParamConst.PASSWORD, newPassword);
 
         //confirm input username match logged in user
         UserDO cookieUser = secretService.jwtVerifyTokenByTokenByKey(
@@ -285,7 +292,8 @@ public final class AccountController {
         String username = (String) requestBodyParamsMap.get(ParamConst.USERNAME);
         String newEmail = (String) requestBodyParamsMap.get(ParamConst.EMAIL);
 
-        validationService.check(ParamConst.USERNAME, username).check(ParamConst.EMAIL, newEmail);
+        validationService.check(ParamConst.USERNAME, username)
+                         .check(ParamConst.EMAIL, newEmail);
 
         UserDO cookieUser = secretService.jwtVerifyTokenByTokenByKey(
                 httpService.getAuthenticationCookieValue(), SetConst.JWT_TOKEN_SECRET_KEY

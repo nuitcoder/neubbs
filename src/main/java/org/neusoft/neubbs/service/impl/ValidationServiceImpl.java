@@ -25,9 +25,16 @@ public class ValidationServiceImpl implements IValidationService {
     }
 
     @Override
-    public void checkInstructionOfSpecifyArray(String instructionParam, String... instructionArray) {
-        for (String allowInstruction: instructionArray) {
-            if (allowInstruction.equals(instructionParam)) {
+    public IValidationService checkUsername(String username) {
+        String paramType = PatternUtil.matchEmail(username) ? ParamConst.EMAIL : ParamConst.USERNAME;
+        RequestParamCheckUtil.check(paramType, username);
+        return this;
+    }
+
+    @Override
+    public void checkCommand(String command, String... commandArray) {
+        for (String commandElement: commandArray) {
+            if (commandElement.equals(command)) {
                 return;
             }
         }
@@ -36,27 +43,25 @@ public class ValidationServiceImpl implements IValidationService {
     }
 
     @Override
-    public void checkNotNullParamsKeyValue(String... params) {
+    public void checkNotNullParam(String... params) {
         int len = params.length;
-        if (len == SetConst.ZERO || len % SetConst.TWO != 0) {
+        if (len == 0 || len % SetConst.LENGTH_TWO != 0) {
             throw new ParamsErrorException(ApiMessage.PARAM_ERROR).log(LogWarnEnum.US4);
         }
 
-        int i = SetConst.ONE;
-        while (i < len) {
-            String type = params[i - SetConst.ONE];
-            String value = params[i];
+        for (int i = 0; i < len; i += SetConst.LENGTH_TWO) {
+             String type = params[i];
+             String value = params[i + 1];
 
+            //if value != null, to check param
             if (value != null) {
                 this.check(type, value);
             }
-
-            i += SetConst.TWO;
         }
     }
 
     @Override
-    public void paramsNotNull(String... params) {
+    public void checkParamsNotNull(String... params) {
         int count = 0;
         for (String param: params) {
             if (param == null) {
@@ -67,10 +72,5 @@ public class ValidationServiceImpl implements IValidationService {
         if (count == params.length) {
             throw new ParamsErrorException(ApiMessage.PARAM_ERROR).log(LogWarnEnum.VS1);
         }
-    }
-
-    @Override
-    public String getUsernameParamType(String username) {
-        return PatternUtil.matchEmail(username) ? ParamConst.EMAIL : ParamConst.USERNAME;
     }
 }

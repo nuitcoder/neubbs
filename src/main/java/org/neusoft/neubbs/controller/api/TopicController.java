@@ -76,13 +76,13 @@ public class TopicController {
      */
     @RequestMapping(value = "/topic", method = RequestMethod.GET)
     public ApiJsonDTO getTopicInfo(@RequestParam(value = "topicid", required = false) String topicId,
-                                        @RequestParam(value = "hadread", required = false) String hadRead) {
+                                   @RequestParam(value = "hadread", required = false) String hadRead) {
         validationService.check(ParamConst.ID, topicId);
 
         //judge whether to increase read count
         boolean isAddTopicRead = false;
         if (hadRead != null) {
-            validationService.checkInstructionOfSpecifyArray(hadRead, "0", "1");
+            validationService.checkCommand(hadRead, "0", "1");
             isAddTopicRead = SetConst.COMMAND_ONE.equals(hadRead);
         }
 
@@ -146,9 +146,7 @@ public class TopicController {
                                       @RequestParam(value = "category", required = false) String category,
                                       @RequestParam(value = "username", required = false) String username) {
         validationService.check(ParamConst.NUMBER, page);
-
-        //judge input param(limit, category, username), if no input, user the default value
-        validationService.checkNotNullParamsKeyValue(
+        validationService.checkNotNullParam(
                 ParamConst.NUMBER, limit,
                 ParamConst.TOPIC_CATEGORY_NICK, category,
                 ParamConst.USERNAME, username
@@ -170,7 +168,7 @@ public class TopicController {
     public ApiJsonDTO countTopicTotalPages(@RequestParam(value = "limit", required = false) String limit,
                                             @RequestParam(value = "category", required = false) String category,
                                             @RequestParam(value = "username", required = false) String username) {
-        validationService.checkNotNullParamsKeyValue(
+        validationService.checkNotNullParam(
                 ParamConst.NUMBER, limit,
                 ParamConst.TOPIC_CATEGORY_NICK, category,
                 ParamConst.USERNAME, username
@@ -227,7 +225,8 @@ public class TopicController {
         Integer topicId = (Integer) requestBodyParamsMap.get(ParamConst.TOPIC_ID);
         String replyContent = (String) requestBodyParamsMap.get(ParamConst.CONTENT);
 
-        validationService.check(ParamConst.ID, String.valueOf(topicId)).check(ParamConst.REPLY_CONTENT, replyContent);
+        validationService.check(ParamConst.ID, String.valueOf(topicId))
+                         .check(ParamConst.REPLY_CONTENT, replyContent);
 
         UserDO cookieUser = secretService.jwtVerifyTokenByTokenByKey(
                 httpService.getAuthenticationCookieValue(), SetConst.JWT_TOKEN_SECRET_KEY
@@ -308,7 +307,8 @@ public class TopicController {
        Integer replyId = (Integer) requestBodyParamsMap.get(ParamConst.REPLY_ID);
        String newReplyContent = (String) requestBodyParamsMap.get(ParamConst.CONTENT);
 
-       validationService.check(ParamConst.ID, String.valueOf(replyId)).check(ParamConst.REPLY_CONTENT, newReplyContent);
+       validationService.check(ParamConst.ID, String.valueOf(replyId))
+                        .check(ParamConst.REPLY_CONTENT, newReplyContent);
 
        topicService.alterReplyContent(replyId, newReplyContent);
 
@@ -329,7 +329,7 @@ public class TopicController {
        String command = (String) requestBodyParamsMap.get(ParamConst.COMMAND);
 
        validationService.check(ParamConst.TOPIC_ID, String.valueOf(topicId));
-       validationService.checkInstructionOfSpecifyArray(command, SetConst.COMMAND_INC, SetConst.COMMAND_DEC);
+       validationService.checkCommand(command, SetConst.COMMAND_INC, SetConst.COMMAND_DEC);
 
        UserDO cookieUser = secretService.jwtVerifyTokenByTokenByKey(
                httpService.getAuthenticationCookieValue(), SetConst.JWT_TOKEN_SECRET_KEY
