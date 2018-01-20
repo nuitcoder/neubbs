@@ -8,31 +8,35 @@ package org.neusoft.neubbs.service;
 public interface IEmailService {
 
     /**
-     * 获取邮件内容，关于激活用户邮件 HTML
+     * 获取激活邮件内容
+     *      - HTML 格式
+     *      - activateUrl 是需注入内容的激活链接（可设为 null，即用 neubbs.properties 的默认值）
      *
-     * @param activateUrl 激活URL（http://...=）
-     * @param token 激活密文 token
-     * @return String 用户激活邮件内容HTML
+     * @param activateUrl 激活链接
+     * @param token 激活密文token（Base64加密）
+     * @return String 激活邮件内容
      */
-    String getEmailContentxtToActivateUserMailHtml(String activateUrl, String token);
+    String getActivationMailContent(String activateUrl, String token);
 
 
     /**
-     * 获取邮件内容，警告用户生产随机密码
+     * 获取密码变更邮件内容
+     *      - 提示用户密码已变更过，已变为临时随机密码
      *
      * @param email 用户邮箱
-     * @param ramdomPassword 随机数密码（新生成的临时密码）
-     * @return String 邮件内容
+     * @param tempRandomPassword 新生成的临时随机密码
+     * @return String 密码变更邮件内容
      */
-    String getEmailContentToWarnUserGeneratedRandomPassword(String email, String ramdomPassword);
+    String getPasswordChangeMailContent(String email, String tempRandomPassword);
 
     /**
      * 发送邮件
+     *      - 线程池另起线程发送邮件
      *
-     * @param sendUserName 发件人昵称
-     * @param toEmail 发送至邮箱
-     * @param toSubject 发送主题
-     * @param toEmailcontent 发送内容
+     * @param sendNickname 发送人昵称
+     * @param receiveEmail 接收邮箱
+     * @param sendSubject 发送主题
+     * @param sendEmailContent 发送内容
      */
-    void sendEmail(String sendUserName, String toEmail, String toSubject, String toEmailcontent);
+    void send(String sendNickname, String receiveEmail, String sendSubject, String sendEmailContent);
 }

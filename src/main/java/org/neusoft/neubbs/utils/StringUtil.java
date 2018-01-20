@@ -70,19 +70,14 @@ public final class StringUtil {
     }
 
     /**
-     * 生成邮件 HTML 字符串（构建，邮箱激活邮件内容）
+     * 生成激活邮件 HTML 内容
      *
-     * @param url 输入字符串
-     * @return String 生成的HTML字符串
+     * @param url 需加入的激活链接 URL
+     * @return String 激活邮件HTML内容
      */
-    public static String createEmailActivationHtmlString(String url) {
-        StringBuffer sb = new StringBuffer();
-            sb.append("<html><head></head><body><h1>Neubbs 帐号活邮件，点击激活帐号</h1><br>");
-            sb.append("<a href=\"" + url + "\">");
-            sb.append(url);
-            sb.append("</a></body></html>");
-
-        return sb.toString();
+    public static String generateActivationMailHtmlContent(String url) {
+        return "<html><head></head><body><h1>Neubbs 帐号活邮件，点击激活帐号</h1><br><a href=\""
+                + url + "\">" + url + "</a></body></html>";
     }
 
     /**

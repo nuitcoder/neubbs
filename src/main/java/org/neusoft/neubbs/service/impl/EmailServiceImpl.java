@@ -26,23 +26,24 @@ public class EmailServiceImpl implements IEmailService {
     }
 
     @Override
-    public String getEmailContentxtToActivateUserMailHtml(String activateUrl, String token) {
+    public String getActivationMailContent(String activateUrl, String token) {
+        // if activateUrl == null, use 'neubbs.proerties' default value
         if (activateUrl == null) {
             activateUrl = neubbsConfig.getAccountApiVaslidateUrl();
         }
 
-        return StringUtil.createEmailActivationHtmlString(activateUrl + token);
+        return StringUtil.generateActivationMailHtmlContent(activateUrl + token);
     }
 
     @Override
-    public String getEmailContentToWarnUserGeneratedRandomPassword(String email, String randomPassword) {
-        return  email + " 邮箱用户临时密码为：" + randomPassword + " ，请登陆后尽快修改密码！";
+    public String getPasswordChangeMailContent(String email, String tempRandomPassword) {
+        return  email + " 邮箱用户临时密码为：" + tempRandomPassword + " ，请登陆后尽快修改密码！";
     }
 
     @Override
-    public void sendEmail(String sendUserName, String toEmail, String toSubject, String toEmailcontent) {
+    public void send(String sendNickname, String receiveEmail, String sendSubject, String sendEmailContent) {
         taskExecutor.execute(
-                () -> SendEmailUtil.sendEmail(sendUserName, toEmail, toSubject, toEmailcontent)
+                () -> SendEmailUtil.sendEmail(sendNickname, receiveEmail, sendSubject, sendEmailContent)
         );
     }
 }

@@ -330,10 +330,8 @@ public final class AccountController {
 
         //start another thread to send mail
         String token = secretService.getEmailActivateToken(email);
-
-        //get email content(if param activateUrl = null, default use neubbs.properties settings)
-        String emailContent = emailService.getEmailContentxtToActivateUserMailHtml(null, token);
-        emailService.sendEmail(SetConst.EMAIL_SENDER_NAME, email, SetConst.EMAIL_SUBJECT_ACTIVATE, emailContent);
+        String emailContent = emailService.getActivationMailContent(null, token);
+        emailService.send(SetConst.EMAIL_SENDER_NAME, email, SetConst.EMAIL_SUBJECT_ACTIVATE, emailContent);
 
         //set user send email 60s interval
         redisService.save(email, SetConst.VALUE_MAIL_SEMD_INTERVAL, SetConst.EXPIRE_TIME_SIXTY_SECOND_MS);
@@ -420,8 +418,8 @@ public final class AccountController {
         String randomPassword = randomService.generateSixDigitsRandomPassword();
         userService.alterUserPasswordByEmail(email, randomPassword);
 
-        String emailContent = emailService.getEmailContentToWarnUserGeneratedRandomPassword(email, randomPassword);
-        emailService.sendEmail(
+        String emailContent = emailService.getPasswordChangeMailContent(email, randomPassword);
+        emailService.send(
                 SetConst.EMAIL_SENDER_NAME, email,
                 SetConst.EMAIL_SUBJECT_TEMPORARY_PASSWORD, emailContent
         );
