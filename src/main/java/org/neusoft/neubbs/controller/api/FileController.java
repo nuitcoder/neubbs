@@ -48,33 +48,30 @@ public class FileController {
 
     /**
      * 上传用户头像
-     *      - 新上传的会覆盖旧的
-     *      - 上传至 ftp
+     *      - 检查上传头像规范（空，类型，文件大小）
+     *      - Cookie 内获取用户信息
+     *      - ftp 服务上传用户头像
+     *      - 修改数据库用户个人信息（头像名）
      *
-     * @param multipartFile 用户上传的文件对象
+     * @param avatarFile 用户上传的文件对象
      * @return ApiJsonDTO 接口JSON传输对象
      */
     @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/avator", method = RequestMethod.POST)
-    public ApiJsonDTO uploadUserAvatars(@RequestParam("avatorImage")MultipartFile multipartFile) {
-
-        fileService.checkUploadUserAvatorImageFileNorm(multipartFile);
-
-        //compress picture, function no finish
-//      MultipartFile compressedFile = fileService.compressFile(multipartFile)
+    public ApiJsonDTO uploadUserAvatars(@RequestParam("avatorImage")MultipartFile avatarFile) {
+        fileService.checkUploadAvatarNorm(avatarFile);
 
         UserDO cookieUser = secretService.jwtVerifyTokenByTokenByKey(
                 httpService.getAuthenticationCookieValue(), SetConst.JWT_TOKEN_SECRET_KEY
         );
 
-        String serverUserAvatorImageName = ftpService.generateServerUserAvatorFileName(multipartFile);
+        String serverUserAvatarName = ftpService.generateServerUserAvatorFileName(avatarFile);
         ftpService.uploadUserAvatorImage(
                 ftpService.getServerPersonalUserAvatorDirectoryPath(cookieUser),
-                serverUserAvatorImageName,
-                multipartFile
+                serverUserAvatarName, avatarFile
         );
 
-        userService.alterUserAvatorImage(cookieUser.getName(), serverUserAvatorImageName);
+        userService.alterUserAvatorImage(cookieUser.getName(), serverUserAvatarName);
 
         return new ApiJsonDTO().success().message(ApiMessage.UPLOAD_SUCCESS);
     }
