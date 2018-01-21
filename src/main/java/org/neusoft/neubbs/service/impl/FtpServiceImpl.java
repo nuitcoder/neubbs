@@ -20,30 +20,30 @@ import java.io.IOException;
 public class FtpServiceImpl implements IFtpService {
 
     @Override
-    public void registerUserCreatePersonDirectory(UserDO user) {
+    public void createUserPersonalDirectory(UserDO user) {
         try {
-            FtpUtil.createDirectory("/user/" + user.getId() + "-" + user.getName() + "/avator");
+            String userPath = "/user/" + user.getId() + "-" + user.getName();
+            FtpUtil.createDirectory(userPath);
+            FtpUtil.createDirectory(userPath + "/avatar");
         } catch (IOException ioe) {
             throw new FtpServiceErrorException(ApiMessage.FTP_SERVICE_EXCEPTION).log(LogWarnEnum.FTPS1);
         }
     }
 
     @Override
-    public void uploadUserAvatorImage(String ftpPath, String fileName, MultipartFile multipartFile) {
+    public void uploadUserAvatar(UserDO user, MultipartFile avatarFile) {
         try {
-            FtpUtil.uploadFile(ftpPath, fileName, multipartFile.getInputStream());
+            String serverUploadPath = "/user/" + user.getId() + "-" + user.getName() + "/avatar/";
+            String serverFileName = this.generateServerAvatarFileName(avatarFile);
+
+            FtpUtil.uploadFile(serverUploadPath, serverFileName, avatarFile.getInputStream());
         } catch (IOException ioe) {
             throw new FtpServiceErrorException(ApiMessage.FTP_SERVICE_EXCEPTION).log(LogWarnEnum.FTPS2);
         }
     }
 
     @Override
-    public String getServerPersonalUserAvatorDirectoryPath(UserDO user) {
-        return "/user/" + user.getId() + "-" + user.getName() + "/avator/";
-    }
-
-    @Override
-    public String generateServerUserAvatorFileName(MultipartFile multipartFile) {
-        return System.currentTimeMillis() + "_" + multipartFile.getOriginalFilename();
+    public String generateServerAvatarFileName(MultipartFile avatarFile) {
+        return System.currentTimeMillis() + "_" + avatarFile.getOriginalFilename();
     }
 }

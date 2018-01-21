@@ -218,7 +218,7 @@ public final class AccountController {
         UserDO newRegisterUser = userService.registerUser(username, password, email);
 
         //create user person directory on cloud ftp server
-        ftpService.registerUserCreatePersonDirectory(newRegisterUser);
+        ftpService.createUserPersonalDirectory(newRegisterUser);
 
         return new ApiJsonDTO().success().map(userService.getUserInfoMapByUser(newRegisterUser));
     }

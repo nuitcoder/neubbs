@@ -143,7 +143,7 @@ public class InsertTestData {
         String [] administratorArray = {"ahonn", "AnAndroidXiang", "kayye", "topLynch", "Nancyshan", "suvan"};
 
         for (String admin: administratorArray) {
-            ftpService.registerUserCreatePersonDirectory(userDAO.getUserByName(admin));
+            ftpService.createUserPersonalDirectory(userDAO.getUserByName(admin));
         }
 
         System.out.println("*************************** success add 6 administrator ftp persion directory!"

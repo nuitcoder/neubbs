@@ -129,7 +129,7 @@ public class FileControllerTest {
         //【ftp server file】(path: ftp-url/user/userid-username/avator/)
         UserDO user = userService.getUserInfoByName("suvan");
         String ftpAvatorDirectoryPath = "/user/" + user.getId() + "-" + user.getName() + "/avator/";
-        List<String> listFileName = FtpUtil.listDirectoryFileName(ftpAvatorDirectoryPath);
+        List<String> listFileName = FtpUtil.listServerPathFileName(ftpAvatorDirectoryPath);
         for (String fName: listFileName) {
             if (fName.contains(uploadFileName)) {
                 FtpUtil.delete(ftpAvatorDirectoryPath, fName);

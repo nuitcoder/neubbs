@@ -65,13 +65,9 @@ public class FileController {
                 httpService.getAuthenticationCookieValue(), SetConst.JWT_TOKEN_SECRET_KEY
         );
 
-        String serverUserAvatarName = ftpService.generateServerUserAvatorFileName(avatarFile);
-        ftpService.uploadUserAvatorImage(
-                ftpService.getServerPersonalUserAvatorDirectoryPath(cookieUser),
-                serverUserAvatarName, avatarFile
-        );
+        ftpService.uploadUserAvatar(cookieUser, avatarFile);
 
-        userService.alterUserAvatorImage(cookieUser.getName(), serverUserAvatarName);
+        userService.alterUserAvatorImage(cookieUser.getName(), ftpService.generateServerAvatarFileName(avatarFile));
 
         return new ApiJsonDTO().success().message(ApiMessage.UPLOAD_SUCCESS);
     }

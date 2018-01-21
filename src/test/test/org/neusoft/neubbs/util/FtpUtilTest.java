@@ -35,7 +35,7 @@ public class FtpUtilTest {
      */
     @Ignore
     public void testListDirectoryFileName() throws Exception {
-        List<String> fileNameList = FtpUtil.listDirectoryFileName("/user/6-suvan/avator");
+        List<String> fileNameList = FtpUtil.listServerPathFileName("/user/6-suvan/avatar");
         for (String name: fileNameList) {
             System.out.println("文件名：" + name);
         }
