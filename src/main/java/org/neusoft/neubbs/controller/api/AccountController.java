@@ -172,8 +172,7 @@ public final class AccountController {
         String authentication = secretService.jwtCreateTokenByUser(user);
         httpService.saveAuthenticationCookie(authentication);
 
-        //login user +1
-        httpService.incOnlineLoginUserNumber();
+        httpService.increaseOnlineLoginUserNumber();
 
         //response model -> include authentication and state
         Map<String, Object> modelMap = new LinkedHashMap<>(SetConst.LENGTH_TWO);
@@ -192,8 +191,7 @@ public final class AccountController {
     public ApiJsonDTO logoutAccount() {
         httpService.removeCookie(ParamConst.AUTHENTICATION);
 
-        //login user +1
-        httpService.decOnlineLoginUserNumber();
+        httpService.decreaseOnlineLoginUserNumber();
 
         return new ApiJsonDTO().success();
     }
@@ -369,19 +367,19 @@ public final class AccountController {
     @RequestMapping(value = "/captcha", method = RequestMethod.GET)
     public void generateCaptchaPicture() {
         //set response headers
-        httpService.setPageResponseHeaderToImageType();
+        httpService.setCaptchaImageTypeResponseHeader();
 
         //generate captcha text
         String captchaText = captchaService.getCaptchaText();
 
         //set session attribute
-       httpService.setSessionToSaveCaptchaText(captchaText);
+       httpService.saveCaptchaText(captchaText);
 
         //generate captcha image, input captcha text
-        BufferedImage outputImage = captchaService.getCaptchaImage(captchaText);
+        BufferedImage captchaImage = captchaService.getCaptchaImage(captchaText);
 
         //page output jpg format image
-        httpService.outputPageImageJPGFormat(outputImage);
+        httpService.outputCaptchaImage(captchaImage);
     }
 
     /**
@@ -395,7 +393,7 @@ public final class AccountController {
     public ApiJsonDTO validateCaptcha(@RequestParam(value = "captcha", required = false)String captcha) {
         validationService.check(ParamConst.CAPTCHA, captcha);
 
-        captchaService.compareCaptcha(captcha, httpService.getSessionCaptchaText());
+        captchaService.compareCaptcha(captcha, httpService.getCaptchaText());
 
         return new ApiJsonDTO().success();
     }

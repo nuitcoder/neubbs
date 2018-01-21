@@ -2,6 +2,9 @@ package org.neusoft.neubbs.service;
 
 /**
  * 邮箱业务接口
+ *      - 获取激活邮件内容
+ *      - 获取密码变更邮件内容
+ *      - 发送邮件
  *
  * @author Suvan
  */
@@ -17,7 +20,6 @@ public interface IEmailService {
      * @return String 激活邮件内容
      */
     String getActivationMailContent(String activateUrl, String token);
-
 
     /**
      * 获取密码变更邮件内容

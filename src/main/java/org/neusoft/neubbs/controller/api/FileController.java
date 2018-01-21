@@ -59,7 +59,7 @@ public class FileController {
     @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/avator", method = RequestMethod.POST)
     public ApiJsonDTO uploadUserAvatars(@RequestParam("avatorImage")MultipartFile avatarFile) {
-        fileService.checkUploadAvatarNorm(avatarFile);
+        fileService.checkUserUploadAvatarNorm(avatarFile);
 
         UserDO cookieUser = secretService.jwtVerifyTokenByTokenByKey(
                 httpService.getAuthenticationCookieValue(), SetConst.JWT_TOKEN_SECRET_KEY

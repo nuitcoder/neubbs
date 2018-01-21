@@ -4,6 +4,9 @@ import java.awt.image.BufferedImage;
 
 /**
  * 验证码业务接口
+ *      - 获取验证码文本
+ *      - 获取验证码图片
+ *      - 比较验证码
  *
  * @author Suvan
  */

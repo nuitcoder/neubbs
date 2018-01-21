@@ -5,7 +5,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 /**
  * FTP 服务接口
- *      - FTP 服务器上传头像
+ *      - 创建用户个人目录
+ *      - 上传用户头像
+ *      - 生成服务器头像文件名
  *
  * @author Suvan
  */
@@ -14,7 +16,7 @@ public interface IFtpService {
     /**
      * 创建用户个人目录
      *      - ftp 服务器上私人目录
-     *          - 包含头像目录
+     *      - 同时创建头像目录
      *
      * @param user 注册的新用户对象
      */

@@ -18,7 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class FileTreatServiceImpl implements IFileTreatService {
 
     @Override
-    public void checkUploadAvatarNorm(MultipartFile avatarFile) {
+    public void checkUserUploadAvatarNorm(MultipartFile avatarFile) {
         //no empty
         if (avatarFile.isEmpty()) {
             throw new FileUploadErrorException(ApiMessage.NO_CHOICE_PICTURE).log(LogWarnEnum.FS1);

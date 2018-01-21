@@ -91,7 +91,7 @@ public class TopicController {
 
         //judge current user like topic state(visit user default value of false)
         boolean isCurrentUserLikeThisTopic = false;
-        if (httpService.isLoggedInUser()) {
+        if (httpService.isUserLoginState()) {
             UserDO currentUser = secretService.jwtVerifyTokenByTokenByKey(
                     httpService.getAuthenticationCookieValue(), SetConst.JWT_TOKEN_SECRET_KEY
             );

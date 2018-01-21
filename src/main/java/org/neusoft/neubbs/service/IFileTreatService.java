@@ -4,6 +4,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 文件处理业务接口
+ *      - 检查用户上传头像规范
  *
  * @author Suvan
  */
@@ -16,5 +17,5 @@ public interface IFileTreatService {
      *
      * @param avatarFile 头像文件对象
      */
-    void checkUploadAvatarNorm(MultipartFile avatarFile);
+    void checkUserUploadAvatarNorm(MultipartFile avatarFile);
 }

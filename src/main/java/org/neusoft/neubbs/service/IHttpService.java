@@ -4,13 +4,60 @@ import java.awt.image.BufferedImage;
 
 /**
  * Http 服务接口
+ *      - Response
+ *          - 设置验证码图片类型响应报头
+ *          - 输出验证码图片
+ *      - Cookie
+ *          - 保存 Cookie
+ *          - 删除 Cookie
+ *          - 获取 Cookie 值
+ *          - 保存认证 Cookie
+ *          - 获取认证 Cookie 的值
+ *          - 获取用户登陆状态
+ *      - Session
+ *          - 保存验证码文本
+ *          - 获取验证码文本
+ *          - 销毁当前 session
+ *      - Application（Servlet Context）
+ *          - 增加在线登陆用户人数（+1）
+ *          - 减少在线登陆用户人数（-1）
+ *          - 获取在线登陆人数
+ *
+ * 【注意】http 参数 request, response, cookie, session, context  运用 ThreadLocal 技术隐藏
+ *          - ApiFilter.java 存入，PublicParamsUtil.java 取出
  *
  * @author Suvan
  */
 public interface IHttpService {
 
+    /*
+     * ***********************************************
+     * Response method
+     * ***********************************************
+     */
+
     /**
-     * 【Cookie】保存 Cookie
+     * 设置验证码图片类型响应报头
+     *      - 验证码图片页面的 response.header
+     */
+    void setCaptchaImageTypeResponseHeader();
+
+    /**
+     * 输出验证码图片
+     *      - jpg 格式图片
+     *
+     * @param captchaImage 验证码图片
+     */
+    void outputCaptchaImage(BufferedImage captchaImage);
+
+    /*
+     * ***********************************************
+     * Cooke method
+     * ***********************************************
+     */
+
+    /**
+     * 保存 Cookie
      *
      * @param cookieName cookie名
      * @param cookieValue cookie值
@@ -18,23 +65,14 @@ public interface IHttpService {
     void saveCookie(String cookieName, String cookieValue);
 
     /**
-     * 【Cookie】保存认证 Cookie
-     *      - 经过 SercretService （JWT 加密）后的 token
-     *      - 包含用户信息（加密后的 UserDO[id, name, rank, state] 信息）
+     * 删除 Cookie
      *
-     * @param authentication Cookie用户认证信息
-     */
-    void saveAuthenticationCookie(String authentication);
-
-    /**
-     * 【Cookie】删除 Cookie
-     *
-     * @param cookieName 要删除Cookie名
+     * @param cookieName Cookie名
      */
     void removeCookie(String cookieName);
 
     /**
-     * 【Cookie】获取 Cookie值
+     * 获取 Cookie 值
      *
      * @param cookieName Cookie名
      * @return String Cookie值
@@ -42,67 +80,82 @@ public interface IHttpService {
     String getCookieValue(String cookieName);
 
     /**
-     * 【Cookie】获取 Cookie 内的 key=Authentication 的值
+     * 保存认证 Cookie
+     *      - JWT 加密密文（ISecretService 加密）
+     *      - 包含用户信息（UserDO[id, name, rank, state]）
+     *      - Cookie，key=authentication, value=输入参数
      *
-     * @return String Cookie的Authentication的值
+     * @param authentication 认证加密信息（密文）
+     */
+    void saveAuthenticationCookie(String authentication);
+
+    /**
+     * 获取认证 Cookie 的值
+     *      - key=authentication, 获取 value
+     *
+     * @return String 认证加密信息（密文）
      */
     String getAuthenticationCookieValue();
 
     /**
-     * 【Cookie】判断用户是否已经登陆
+     * 获取用户登陆状态
      *
-     * @return boolean 用户是否已登录（true-已登录，false-未登录）
+     * @return boolean 用户登陆状态（true-已登录，false-未登录）
      */
-    boolean isLoggedInUser();
+    boolean isUserLoginState();
+
+    /*
+     * ***********************************************
+     * Session method
+     * ***********************************************
+     */
 
     /**
-     * 【Application】增加在线登录人数（+1）
+     * 保存验证码文本
+     *      - 保存至 session
+     *      - 当前用户的验证码
+     *      - 属性键值对: key=captcha, value= 输入参数
      *
+     * @param captchaText 将存储验证码文本
      */
-    void incOnlineLoginUserNumber();
+    void saveCaptchaText(String captchaText);
 
     /**
-     * 【Application】减少在线登录人数（-1）
+     * 获取验证码文本，来自 session
+     *      - 从 session 获取
+     *      - 当前用户的验证码
+     *      - 属性键值对：key=captcha, 获取 value
      *
+     * @return String 取出的验证码文本
      */
-    void decOnlineLoginUserNumber();
+    String getCaptchaText();
 
     /**
-     * 【Application】获取在线登录人数
+     * 销毁当前 session
+     *      - 当前线程用户的 session
+     */
+    void destroySession();
+
+    /*
+     * ***********************************************
+     * Application(Servlet Context) method
+     * ***********************************************
+     */
+
+    /**
+     * 增加在线登陆用户人数（+1）
+     */
+    void increaseOnlineLoginUserNumber();
+
+    /**
+     * 减少在线登陆用户人数（-1）
+     */
+    void decreaseOnlineLoginUserNumber();
+
+    /**
+     * 获取在线登录人数
      *
      * @return int 在线登录人数
      */
     int getOnlineLoginUserNumber();
-
-    /**
-     * 【Response】设置页面响应为图片类型
-     *
-     */
-    void setPageResponseHeaderToImageType();
-
-    /**
-     * 【Response】输出页面图片（jpg 格式） *
-     *
-     * @param outputImage 输出图片流
-     */
-    void outputPageImageJPGFormat(BufferedImage outputImage);
-
-    /**
-     * 【Session】设置 Session 保存验证码文本
-     *
-     * @param captchaText 验证码文本
-     */
-    void setSessionToSaveCaptchaText(String captchaText);
-
-    /**
-     * 【Session】获取 Session 已经存在的验证码文本
-     *
-     * @return String Session内验证码文本
-     */
-    String getSessionCaptchaText();
-
-    /**
-     * 【Session】销毁当前 Session
-     */
-    void destroySession();
 }
