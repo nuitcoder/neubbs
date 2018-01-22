@@ -7,12 +7,12 @@ import org.neusoft.neubbs.controller.annotation.AccountActivation;
 import org.neusoft.neubbs.controller.annotation.LoginAuthorization;
 import org.neusoft.neubbs.dto.ApiJsonDTO;
 import org.neusoft.neubbs.entity.UserDO;
+import org.neusoft.neubbs.service.ICacheService;
 import org.neusoft.neubbs.service.ICaptchaService;
 import org.neusoft.neubbs.service.IEmailService;
 import org.neusoft.neubbs.service.IFtpService;
 import org.neusoft.neubbs.service.IHttpService;
 import org.neusoft.neubbs.service.IRandomService;
-import org.neusoft.neubbs.service.IRedisService;
 import org.neusoft.neubbs.service.ISecretService;
 import org.neusoft.neubbs.service.IUserService;
 import org.neusoft.neubbs.service.IValidationService;
@@ -57,7 +57,7 @@ public final class AccountController {
     private final IValidationService validationService;
     private final IUserService userService;
     private final ISecretService secretService;
-    private final IRedisService redisService;
+    private final ICacheService cacheService;
     private final IFtpService ftpService;
     private final IHttpService httpService;
     private final IEmailService emailService;
@@ -70,14 +70,14 @@ public final class AccountController {
      */
     @Autowired
     private AccountController(IValidationService validationService, IUserService userService,
-                              ISecretService secretService, IRedisService redisService,
+                              ISecretService secretService, ICacheService cacheService,
                               IFtpService ftpService, IHttpService httpService,
                               IEmailService emailService, ICaptchaService captchaService,
                               IRandomService randomService) {
         this.validationService = validationService;
         this.userService = userService;
         this.secretService = secretService;
-        this.redisService = redisService;
+        this.cacheService = cacheService;
         this.ftpService = ftpService;
         this.httpService = httpService;
         this.emailService = emailService;
@@ -319,7 +319,7 @@ public final class AccountController {
         userService.confirmUserActivatedByEmail(email);
 
         //60s send email interval
-        long remainAllowSendEmailInterval = redisService.getExpireTime(email);
+        long remainAllowSendEmailInterval = cacheService.getEmailKeyExpireTime(email);
         if (remainAllowSendEmailInterval != SetConst.EXPIRE_TIME_REDIS_NO_EXIST_KEY) {
             Map<String, Object> timerMap = new HashMap<>(SetConst.SIZE_ONE);
                 timerMap.put(ParamConst.TIMER, remainAllowSendEmailInterval / SetConst.THOUSAND);
@@ -332,7 +332,7 @@ public final class AccountController {
         emailService.send(SetConst.EMAIL_SENDER_NAME, email, SetConst.EMAIL_SUBJECT_ACTIVATE, emailContent);
 
         //set user send email 60s interval
-        redisService.save(email, SetConst.VALUE_MAIL_SEMD_INTERVAL, SetConst.EXPIRE_TIME_SIXTY_SECOND_MS);
+        cacheService.saveUserEmailKey(email);
 
         return new ApiJsonDTO().success();
     }

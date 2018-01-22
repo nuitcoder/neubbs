@@ -19,8 +19,8 @@ import org.neusoft.neubbs.exception.AccountErrorException;
 import org.neusoft.neubbs.exception.DatabaseOperationFailException;
 import org.neusoft.neubbs.exception.ParamsErrorException;
 import org.neusoft.neubbs.exception.TokenErrorException;
+import org.neusoft.neubbs.service.ICacheService;
 import org.neusoft.neubbs.service.ICaptchaService;
-import org.neusoft.neubbs.service.IRedisService;
 import org.neusoft.neubbs.service.IUserService;
 import org.neusoft.neubbs.utils.FtpUtil;
 import org.neusoft.neubbs.utils.JwtTokenUtil;
@@ -918,8 +918,8 @@ public class AccountCollectorTest {
         userService.registerUser(email.substring(0, email.indexOf("@")), "123456", email);
 
         //get redis service on web container
-        IRedisService redisService = (IRedisService) webApplicationContext.getBean("redisServiceImpl");
-        redisService.save(email, "activate", SetConst.EXPIRE_TIME_SIXTY_SECOND_MS);
+        ICacheService redisService = (ICacheService) webApplicationContext.getBean("redisServiceImpl");
+        //redisService.saveUserEmailKey(email, "activate", SetConst.EXPIRE_TIME_SIXTY_SECOND_MS);
 
         mockMvc.perform(
                 MockMvcRequestBuilders.post(API_ACCOUNT_ACTIVATE)
