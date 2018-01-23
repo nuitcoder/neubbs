@@ -169,7 +169,7 @@ public final class AccountController {
         UserDO user = userService.loginAuthenticate(username, password);
 
         //jwt secret user information, save authentication to cookie
-        String authentication = secretService.jwtCreateTokenByUser(user);
+        String authentication = secretService.generateUserInfoAuthentication(user);
         httpService.saveAuthenticationCookie(authentication);
 
         httpService.increaseOnlineLoginUserNumber();
@@ -244,9 +244,7 @@ public final class AccountController {
                          .check(ParamConst.DESCRIPTION, newDescription);
 
         //get user information in client cookie
-        UserDO user = secretService.jwtVerifyTokenByTokenByKey(
-               httpService.getAuthenticationCookieValue(), SetConst.JWT_TOKEN_SECRET_KEY
-        );
+        UserDO user = secretService.getUserInfoByAuthentication(httpService.getAuthenticationCookieValue());
 
         return new ApiJsonDTO().success()
                 .map(userService.alterUserProfile(user.getName(), newSex, newBirthday, newPosition, newDescription));
@@ -268,9 +266,8 @@ public final class AccountController {
                          .check(ParamConst.PASSWORD, newPassword);
 
         //confirm input username match logged in user
-        UserDO cookieUser = secretService.jwtVerifyTokenByTokenByKey(
-                httpService.getAuthenticationCookieValue(), SetConst.JWT_TOKEN_SECRET_KEY
-        );
+        UserDO cookieUser = secretService.getUserInfoByAuthentication(httpService.getAuthenticationCookieValue());
+
         userService.confirmUserMatchCookieUser(username, cookieUser);
 
         userService.alterUserPasswordByName(username, newPassword);
@@ -293,9 +290,8 @@ public final class AccountController {
         validationService.check(ParamConst.USERNAME, username)
                          .check(ParamConst.EMAIL, newEmail);
 
-        UserDO cookieUser = secretService.jwtVerifyTokenByTokenByKey(
-                httpService.getAuthenticationCookieValue(), SetConst.JWT_TOKEN_SECRET_KEY
-        );
+        UserDO cookieUser = secretService.getUserInfoByAuthentication(httpService.getAuthenticationCookieValue());
+
         userService.confirmUserMatchCookieUser(username, cookieUser);
 
         userService.alterUserEmail(username, newEmail);
@@ -327,7 +323,7 @@ public final class AccountController {
         }
 
         //start another thread to send mail
-        String token = secretService.getEmailActivateToken(email);
+        String token = secretService.generateValidateEmailToken(email);
         String emailContent = emailService.getActivationMailContent(null, token);
         emailService.send(SetConst.EMAIL_SENDER_NAME, email, SetConst.EMAIL_SUBJECT_ACTIVATE, emailContent);
 
@@ -353,8 +349,7 @@ public final class AccountController {
 
         UserDO activatedUser = userService.alterUserActivateStateByToken(token);
 
-        String authentication = secretService.jwtCreateTokenByUser(activatedUser);
-        httpService.saveAuthenticationCookie(authentication);
+        httpService.saveAuthenticationCookie(secretService.generateUserInfoAuthentication(activatedUser));
 
         return new ApiJsonDTO().success();
     }
@@ -439,9 +434,7 @@ public final class AccountController {
 
         validationService.check(ParamConst.USER_ID, String.valueOf(followingUserId));
 
-        UserDO cookieUser = secretService.jwtVerifyTokenByTokenByKey(
-                httpService.getAuthenticationCookieValue(), SetConst.JWT_TOKEN_SECRET_KEY
-        );
+        UserDO cookieUser = secretService.getUserInfoByAuthentication(httpService.getAuthenticationCookieValue());
 
         return new ApiJsonDTO().success().
                 buildMap(ParamConst.FOLLOWING_USER_ID,

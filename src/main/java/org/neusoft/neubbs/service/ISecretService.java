@@ -4,33 +4,39 @@ import org.neusoft.neubbs.entity.UserDO;
 
 /**
  * 加密业务接口
+ *      - 生成验证邮箱 Token
+ *      - 生成用户信息 authentication
+ *      - 通过 authentication，获取用户信息
  *
  * @author Suvan
  */
 public interface ISecretService {
 
     /**
-     * 获取邮箱激活 token
+     * 生成验证邮箱 Token
+     *      - 用于账号邮箱激活
+     *      - 使用 Base64 加密，用户邮箱
      *
-     * @param email 需要激活的邮箱
-     * @return 密文 token（Base64加密）
+     * @param email 待激活邮箱
+     * @return String 密文token
      */
-    String getEmailActivateToken(String email);
+    String generateValidateEmailToken(String email);
 
     /**
-     * jwt 创建 token
+     * 生成用户信息 authentication
+     *      - JWT 加密用户信息（UserDO（id, name, rank, state））
+     *      - 存入 Cookie，用于登陆验证，管理员权限认证，激活认证
      *
-     * @param user 用户对象
-     * @return String 密文
+     * @param user 用户对象（不为 null，已包含用户信息）
+     * @return String 密文authentication
      */
-    String jwtCreateTokenByUser(UserDO user);
+    String generateUserInfoAuthentication(UserDO user);
 
     /**
-     * jwt 解密 token
+     * 通过 authentication, 获取用户信息
      *
-     * @param token token密文
-     * @param key 解密密钥
-     * @return UserDO 解密获取用户对象信息
+     * @param authentication 密文authentication
+     * @return UserDO 用户信息实例对象
      */
-    UserDO jwtVerifyTokenByTokenByKey(String token, String key);
+    UserDO getUserInfoByAuthentication(String authentication);
 }

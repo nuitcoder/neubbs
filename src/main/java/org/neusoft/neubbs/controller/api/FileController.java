@@ -1,7 +1,6 @@
 package org.neusoft.neubbs.controller.api;
 
 import org.neusoft.neubbs.constant.api.ApiMessage;
-import org.neusoft.neubbs.constant.api.SetConst;
 import org.neusoft.neubbs.controller.annotation.AccountActivation;
 import org.neusoft.neubbs.controller.annotation.LoginAuthorization;
 import org.neusoft.neubbs.dto.ApiJsonDTO;
@@ -61,9 +60,7 @@ public class FileController {
     public ApiJsonDTO uploadUserAvatars(@RequestParam("avatorImage")MultipartFile avatarFile) {
         fileService.checkUserUploadAvatarNorm(avatarFile);
 
-        UserDO cookieUser = secretService.jwtVerifyTokenByTokenByKey(
-                httpService.getAuthenticationCookieValue(), SetConst.JWT_TOKEN_SECRET_KEY
-        );
+        UserDO cookieUser = secretService.getUserInfoByAuthentication(httpService.getAuthenticationCookieValue());
 
         ftpService.uploadUserAvatar(cookieUser, avatarFile);
 

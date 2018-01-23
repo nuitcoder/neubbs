@@ -92,9 +92,8 @@ public class TopicController {
         //judge current user like topic state(visit user default value of false)
         boolean isCurrentUserLikeThisTopic = false;
         if (httpService.isUserLoginState()) {
-            UserDO currentUser = secretService.jwtVerifyTokenByTokenByKey(
-                    httpService.getAuthenticationCookieValue(), SetConst.JWT_TOKEN_SECRET_KEY
-            );
+            UserDO currentUser = secretService.getUserInfoByAuthentication(httpService.getAuthenticationCookieValue());
+
             isCurrentUserLikeThisTopic = userService.isUserLikeTopic(currentUser.getId(), topicIdInt);
         }
 
@@ -205,9 +204,7 @@ public class TopicController {
                          .check(ParamConst.TOPIC_TITLE, title)
                          .check(ParamConst.TOPIC_CONTENT, topicContent);
 
-        UserDO cookieUser = secretService.jwtVerifyTokenByTokenByKey(
-                httpService.getAuthenticationCookieValue(), SetConst.JWT_TOKEN_SECRET_KEY
-        );
+        UserDO cookieUser = secretService.getUserInfoByAuthentication(httpService.getAuthenticationCookieValue());
 
         return new ApiJsonDTO().success()
                 .map(topicService.saveTopic(cookieUser.getId(), category, title, topicContent));
@@ -228,9 +225,7 @@ public class TopicController {
         validationService.check(ParamConst.ID, String.valueOf(topicId))
                          .check(ParamConst.REPLY_CONTENT, replyContent);
 
-        UserDO cookieUser = secretService.jwtVerifyTokenByTokenByKey(
-                httpService.getAuthenticationCookieValue(), SetConst.JWT_TOKEN_SECRET_KEY
-        );
+        UserDO cookieUser = secretService.getUserInfoByAuthentication(httpService.getAuthenticationCookieValue());
 
         return new ApiJsonDTO().success().map(topicService.saveReply(cookieUser.getId(), topicId, replyContent));
     }
@@ -331,9 +326,7 @@ public class TopicController {
        validationService.check(ParamConst.TOPIC_ID, String.valueOf(topicId));
        validationService.checkCommand(command, SetConst.COMMAND_INC, SetConst.COMMAND_DEC);
 
-       UserDO cookieUser = secretService.jwtVerifyTokenByTokenByKey(
-               httpService.getAuthenticationCookieValue(), SetConst.JWT_TOKEN_SECRET_KEY
-       );
+       UserDO cookieUser = secretService.getUserInfoByAuthentication(httpService.getAuthenticationCookieValue());
        //record user like topic id array of user action
        userService.alterUserActionLikeTopicIdArray(cookieUser.getId(), topicId, command);
 
@@ -358,9 +351,7 @@ public class TopicController {
 
         validationService.check(ParamConst.TOPIC_ID, String.valueOf(topicId));
 
-        UserDO cookieUser = secretService.jwtVerifyTokenByTokenByKey(
-                httpService.getAuthenticationCookieValue(), SetConst.JWT_TOKEN_SECRET_KEY
-        );
+        UserDO cookieUser = secretService.getUserInfoByAuthentication(httpService.getAuthenticationCookieValue());
 
         Map<String, Object> resultMap = new LinkedHashMap<>(SetConst.SIZE_TWO);
             resultMap.put(ParamConst.USER_LIKE_TOPIC_ID, topicService.operateLikeTopic(cookieUser.getId(), topicId));
@@ -381,9 +372,7 @@ public class TopicController {
 
         validationService.check(ParamConst.TOPIC_ID, String.valueOf(topicId));
 
-        UserDO cookieUser = secretService.jwtVerifyTokenByTokenByKey(
-                httpService.getAuthenticationCookieValue(), SetConst.JWT_TOKEN_SECRET_KEY
-        );
+        UserDO cookieUser = secretService.getUserInfoByAuthentication(httpService.getAuthenticationCookieValue());
 
         return new ApiJsonDTO().success().map(topicService.operateCollectTopic(cookieUser.getId(), topicId));
     }
@@ -401,9 +390,7 @@ public class TopicController {
 
         validationService.check(ParamConst.TOPIC_ID, String.valueOf(topicId));
 
-        UserDO cookieUser = secretService.jwtVerifyTokenByTokenByKey(
-                httpService.getAuthenticationCookieValue(), SetConst.JWT_TOKEN_SECRET_KEY
-        );
+        UserDO cookieUser = secretService.getUserInfoByAuthentication(httpService.getAuthenticationCookieValue());
 
         return new ApiJsonDTO().success().map(topicService.operateAttentionTopic(cookieUser.getId(), topicId));
     }
