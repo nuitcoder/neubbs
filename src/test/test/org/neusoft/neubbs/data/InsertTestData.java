@@ -190,7 +190,7 @@ public class InsertTestData {
         String topicTitle = " topic title ";
         String topicContent = " topic content";
 
-        List<Map<String, Object>> allCategoryList =  topicService.listAllTopicCategorys();
+        List<Map<String, Object>> allCategoryList =  topicService.listAllTopicCategories();
 
         for (int i = 1; i <= 100; i++) {
             int userId = 1 + (int) (Math.random() * 6);

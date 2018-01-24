@@ -30,15 +30,17 @@ public final class MapFilterUtil {
    }
 
    /**
-    * 生成 Map，初始面积为 1
+    * 生成 Map
+    *    - 构建新的 Map 对象，并入住唯一的 key，value
     *
     * @param key 键
     * @param value 值
     * @return Map 生成键值对
     */
-   public static Map<String, Object> generateMapOneSize(String key, Object value) {
+   public static Map<String, Object> generateMap(String key, Object value) {
       Map<String, Object> map = new HashMap<>(SetConst.SIZE_ONE);
          map.put(key, value);
+
       return map;
    }
 

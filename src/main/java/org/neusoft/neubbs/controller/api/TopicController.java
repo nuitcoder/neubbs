@@ -87,7 +87,7 @@ public class TopicController {
         }
 
         int topicIdInt = Integer.parseInt(topicId);
-        Map<String, Object> topicContentPageModelMap = topicService.getTopicContentPageModelMap(topicIdInt);
+        Map<String, Object> topicContentPageModelMap = topicService.getTopicContentModelMap(topicIdInt);
 
         //judge current user like topic state(visit user default value of false)
         boolean isCurrentUserLikeThisTopic = false;
@@ -99,7 +99,7 @@ public class TopicController {
 
         //read + 1 (default no add)
         if (isAddTopicRead) {
-            topicService.alterTopicReadAddOne(topicIdInt);
+            topicService.increaseTopicRead(topicIdInt);
             topicContentPageModelMap.put(ParamConst.READ,
                     (int) topicContentPageModelMap.get(ParamConst.READ) + SetConst.ONE);
         }
@@ -117,7 +117,7 @@ public class TopicController {
     @RequestMapping(value = "/topic/reply", method = RequestMethod.GET)
     public ApiJsonDTO getTopicReplyInfo(@RequestParam(value = "replyid", required = false) String replyId) {
         validationService.check(ParamConst.ID, replyId);
-        return new ApiJsonDTO().success().map(topicService.getReplyPageModelMap(Integer.parseInt(replyId)));
+        return new ApiJsonDTO().success().map(topicService.getTopicReplyModelMap(Integer.parseInt(replyId)));
     }
 
     /**
@@ -127,7 +127,7 @@ public class TopicController {
      */
     @RequestMapping(value = "/topics/hot", method = RequestMethod.GET)
     public ApiJsonDTO listTopicsInfo() {
-        return new ApiJsonDTO().success().list(topicService.listHotTalkTopics());
+        return new ApiJsonDTO().success().list(topicService.listHotTopics());
     }
 
     /**
@@ -151,9 +151,9 @@ public class TopicController {
                 ParamConst.USERNAME, username
         );
 
-        int inputLimit = limit != null ? Integer.parseInt(limit) : SetConst.ZERO;
+        int limitParam = limit == null ? 0 : Integer.parseInt(limit);
         return new ApiJsonDTO().success()
-                .list(topicService.listTopics(inputLimit, Integer.parseInt(page), category, username));
+                .list(topicService.listTopics(limitParam, Integer.parseInt(page), category, username));
     }
 
 
@@ -173,8 +173,8 @@ public class TopicController {
                 ParamConst.USERNAME, username
         );
 
-        int inputLimit = limit != null ? Integer.parseInt(limit) : SetConst.ZERO;
-        return new ApiJsonDTO().success().map(topicService.countTopicTotalPages(inputLimit, category, username));
+        int limitParam = limit == null ? 0 : Integer.parseInt(limit);
+        return new ApiJsonDTO().success().map(topicService.countTopicTotalPages(limitParam, category, username));
     }
 
     /**
@@ -184,7 +184,7 @@ public class TopicController {
      */
     @RequestMapping(value = "/topics/categorys", method = RequestMethod.GET)
     public ApiJsonDTO listTopicCategories() {
-        return new ApiJsonDTO().success().map(topicService.listAllTopicCategorys());
+        return new ApiJsonDTO().success().map(topicService.listAllTopicCategories());
     }
 
     /**

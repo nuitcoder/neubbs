@@ -13,6 +13,7 @@ public interface ITopicService {
 
     /**
      * 保存话题
+     *      - userId 无需判断存在性（用户必须登陆，才能访问相应接口，发布主题）
      *
      * @param userId 用户id
      * @param categoryNick 话题分类昵称
@@ -24,6 +25,8 @@ public interface ITopicService {
 
     /**
      * 保存回复
+     *      - userId 无需判断存在性
+     *      - topicId 需判断存在性
      *
      * @param userId 用户id
      * @param topicId 话题id
@@ -34,6 +37,7 @@ public interface ITopicService {
 
     /**
      * 保存话题分类
+     *      - categoryNick 和 categoryName 都需要验证存在性（不能重复）
      *
      * @param categoryNick 话题分类昵称（英文）
      * @param categoryName 话题分类名称（中文）
@@ -43,6 +47,10 @@ public interface ITopicService {
 
     /**
      * 删除话题
+     *      - topicId 需判断存在性
+     *      - 删除话题所有回复
+     *      - 删除话题行为（未实现）
+     *      - 删除话题
      *
      * @param topicId 要删除的话题id
      */
@@ -50,17 +58,11 @@ public interface ITopicService {
 
     /**
      * 删除回复
+     *      - replyId 需验证存在性
      *
      * @param replyId 回复id
      */
     void removeReply(int replyId);
-
-    /**
-     * 删除话题分类
-     *
-     * @param categoryNick 话题分类昵称（英文）
-     */
-    void removeCategory(String categoryNick);
 
     /**
      * 统计话题总数
@@ -71,6 +73,7 @@ public interface ITopicService {
 
     /**
      * 统计话题回复总数
+     *      - 所有回复
      *
      * @return int 回复总数
      */
@@ -95,64 +98,69 @@ public interface ITopicService {
     int countTopicContentLike(int topicId);
 
     /**
-     * 获取话题内容页面 Map
+     * 获取话题内容 Model Map
+     *      - topicId 需验证存在性
+     *      - 话题信息（基本信息 + 内容 + 分类）
+     *      - 回复信息
      *
      * @param topicId 话题id
      * @return Map 话题内容页信息
      */
-    Map<String, Object> getTopicContentPageModelMap(int topicId);
+    Map<String, Object> getTopicContentModelMap(int topicId);
 
     /**
-     * 获取话题回复页面Map
+     * 获取话题回复 Model Map
      *      - 单条回复
      *
      * @param replyId 回复id
      * @return Map 回复信息
      */
-    Map<String, Object> getReplyPageModelMap(int replyId);
+    Map<String, Object> getTopicReplyModelMap(int replyId);
 
     /**
-     * 获取热门话题
+     * 获取热门话题列表
      *      - 每天回复数最高
      *      - 默认 10 条（不足 10 条，则补充前一天热议话题）
      *
-     * @return List<Map> 话题列表
+     * @return List 热门话题列表
      */
-    List<Map<String, Object>> listHotTalkTopics();
+    List<Map<String, Object>> listHotTopics();
 
     /**
      * 获取话题列表
-     *      - 包含话题基本信息，内容
-     *      - 话题用户信息
+     *      - username 和 categoryNick 需验证存在性
+     *      - limit 可为 0，表示使用 neubbs.properties 默认配置文件
+     *      - categoryNick 和 username 可以为 null（即表示不参与查询条件）
      *
      * @param limit 每页显示数量
      * @param page 跳转到指定页数
-     * @param categoryNick 话题分类昵称
+     * @param categoryNick 话题分类昵称（英文）
      * @param username 用户名
-     * @return List<Map> 话题列表
+     * @return List 话题列表
      */
     List<Map<String, Object>> listTopics(int limit, int page, String categoryNick, String username);
 
     /**
      * 获取所有话题分类
-     *      - map 包含（id(过滤后)，name）
      *
      * @return List<String> 话题分类列表
      */
-    List<Map<String, Object>> listAllTopicCategorys();
+    List<Map<String, Object>> listAllTopicCategories();
 
     /**
      * 修改话题内容
+     *      - topicId，newCategoryNick 需验证存在性
      *
      * @param topicId 话题id
-     * @param categoryNick 话题分类昵称
+     * @param newCategoryNick 话题分类昵称
      * @param newTitle 新标题
      * @param newTopicContent 新话题内容
      */
-    void alterTopicContent(int topicId, String categoryNick, String newTitle, String newTopicContent);
+    void alterTopicContent(int topicId, String newCategoryNick, String newTitle, String newTopicContent);
 
     /**
      * 修改回复内容
+     *      - replyId 需验证存在性
      *
      * @param replyId 回复id
      * @param newReplyContent 新回复内容
@@ -160,11 +168,12 @@ public interface ITopicService {
     void alterReplyContent(int replyId, String newReplyContent);
 
     /**
-     * 修改话题回复数（+1）
+     * 增加话题阅读数（+1）
+     *      - topicId 需验证存在性
      *
      * @param topicId 话题id
      */
-    void alterTopicReadAddOne(int topicId);
+    void increaseTopicRead(int topicId);
 
     /**
      * （通过指令）修改话题喜欢人数（+1 or -1）
@@ -180,6 +189,7 @@ public interface ITopicService {
 
     /**
      * 修改话题分类描述
+     *      - categoryNic 需验证存在性
      *
      * @param categoryNick 话题分类昵称（英文）
      * @param newDescription 新的话题分类描述
@@ -188,6 +198,7 @@ public interface ITopicService {
 
     /**
      * 是否喜欢话题
+     *      - userId 和 topicId 需验证存在性
      *
      * @param userId 用户id
      * @param topicId 话题id
@@ -197,6 +208,7 @@ public interface ITopicService {
 
     /**
      * 判断用户是否收藏话题
+     *      - userId 和 topicId 需验证存在性
      *
      * @param userId 用户id
      * @param topicId 话题id
@@ -206,6 +218,7 @@ public interface ITopicService {
 
     /**
      * 判断用户是否关注话题
+     *      - userId 和 topicId 需验证存在性
      *
      * @param userId 用户id
      * @param topicId 话题id
@@ -216,6 +229,7 @@ public interface ITopicService {
     /**
      * 操作喜欢话题
      *      - 操作取反（已喜欢 -> 未喜欢，未喜欢 -> 已喜欢）
+     *      - controller 还要组装，所以返回 List
      *
      * @param userId　用户id
      * @param topicId 话题id
