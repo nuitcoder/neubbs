@@ -64,7 +64,7 @@ public class FileController {
 
         ftpService.uploadUserAvatar(cookieUser, avatarFile);
 
-        userService.alterUserAvatorImage(cookieUser.getName(), ftpService.generateServerAvatarFileName(avatarFile));
+        userService.alterUserAvatar(cookieUser.getName(), ftpService.generateServerAvatarFileName(avatarFile));
 
         return new ApiJsonDTO().success().message(ApiMessage.UPLOAD_SUCCESS);
     }

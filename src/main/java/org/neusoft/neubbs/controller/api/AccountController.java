@@ -107,7 +107,7 @@ public final class AccountController {
         }
 
         return userService.isUserExist(username, email)
-                ? new ApiJsonDTO().success().map(userService.getUserInfoToPageModelMap(username, email))
+                ? new ApiJsonDTO().success().map(userService.getUserInfoModelMap(username, email))
                 : new ApiJsonDTO().fail();
     }
 
@@ -133,8 +133,7 @@ public final class AccountController {
     @RequestMapping(value = "/following", method = RequestMethod.GET)
     public ApiJsonDTO listUserFollowingUsersInfo(@RequestParam(value = "userid", required = false) String userId) {
         validationService.check(ParamConst.USER_ID, userId);
-        return new ApiJsonDTO().success()
-                .list(userService.listAllFollowingUserInfoToPageModelList(Integer.valueOf(userId)));
+        return new ApiJsonDTO().success().list(userService.listAllFollowingUserInfoModelList(Integer.valueOf(userId)));
     }
 
     /**
@@ -146,8 +145,7 @@ public final class AccountController {
     @RequestMapping(value = "/followed", method = RequestMethod.GET)
     public ApiJsonDTO listUserFollowedUsersInfo(@RequestParam(value = "userid", required = false) String userId) {
         validationService.check(ParamConst.USER_ID, userId);
-        return new ApiJsonDTO().success()
-                .list(userService.listAllFollowedUserInfoToPageModelList(Integer.valueOf(userId)));
+        return new ApiJsonDTO().success().list(userService.listAllFollowedUserInfoModelList(Integer.valueOf(userId)));
     }
 
     /**
@@ -166,7 +164,7 @@ public final class AccountController {
                          .check(ParamConst.PASSWORD, password);
 
         //database login authenticate
-        UserDO user = userService.loginAuthenticate(username, password);
+        UserDO user = userService.loginVerification(username, password);
 
         //jwt secret user information, save authentication to cookie
         String authentication = secretService.generateUserInfoAuthentication(user);
@@ -218,7 +216,7 @@ public final class AccountController {
         //create user person directory on cloud ftp server
         ftpService.createUserPersonalDirectory(newRegisterUser);
 
-        return new ApiJsonDTO().success().map(userService.getUserInfoMapByUser(newRegisterUser));
+        return new ApiJsonDTO().success().map(userService.getUserInfoModelMap(newRegisterUser));
     }
 
     /**
@@ -347,7 +345,7 @@ public final class AccountController {
     public ApiJsonDTO validateActivateToken(@RequestParam(value = "token", required = false) String token) {
         validationService.check(ParamConst.TOKEN, token);
 
-        UserDO activatedUser = userService.alterUserActivateStateByToken(token);
+        UserDO activatedUser = userService.alterUserActivateStateByEmailToken(token);
 
         httpService.saveAuthenticationCookie(secretService.generateUserInfoAuthentication(activatedUser));
 

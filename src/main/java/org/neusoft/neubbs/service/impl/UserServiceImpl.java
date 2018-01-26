@@ -19,13 +19,13 @@ import org.neusoft.neubbs.service.IUserService;
 import org.neusoft.neubbs.utils.JsonUtil;
 import org.neusoft.neubbs.utils.MapFilterUtil;
 import org.neusoft.neubbs.utils.PatternUtil;
-import org.neusoft.neubbs.utils.RequestParamCheckUtil;
 import org.neusoft.neubbs.utils.SecretUtil;
 import org.neusoft.neubbs.utils.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,48 +57,48 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public UserDO registerUser(String username, String password, String email) {
-        //judge username and email params, whether occupied
+        //judge username, email is occupied
         this.confirmUserNotOccupiedByUsername(username);
         this.confirmUserNotOccupiedByEmail(email);
 
-        //build user
+        //build UserDO, UserActionDO
         UserDO user = new UserDO();
             user.setName(username);
             user.setEmail(email);
             user.setPassword(SecretUtil.encryptUserPassword(password));
 
-        //register user to database
+        UserActionDO userAction = new UserActionDO();
+            userAction.setUserId(user.getId());
+
+        //insert forum_user, forum_user_action
         if (userDAO.saveUser(user) == 0) {
             throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarnEnum.US1);
         }
 
-        //insert default user action record
-        UserActionDO userAction = new UserActionDO();
-            userAction.setUserId(user.getId());
         if (userActionDAO.saveUserAction(userAction) == 0) {
             throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarnEnum.US33);
         }
 
-        //update data user image filed, set default avator image
+        //update forum_user 'fu_avator', set default avatar
         if (userDAO.updateUserAvatorByName(user.getName(), ParamConst.USER_DEFAULT_IMAGE) == 0) {
             throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarnEnum.US2);
         }
 
-        //again select user information by new register user id
+        //re-query user information
         return this.getUserInfoById(user.getId());
     }
 
     @Override
-    public UserDO loginAuthenticate(String username, String password) {
+    public UserDO loginVerification(String username, String password) {
         //check username, get user information
         UserDO user;
         try {
             user = this.getUserInfoByName(username);
         } catch (AccountErrorException ae) {
+            //prevent user know real error message
             throw new AccountErrorException(ApiMessage.USERNAME_OR_PASSWORD_INCORRECT).log(ae.getLog());
         }
 
-        //judge user password whether correct
         String cipherText = SecretUtil.encryptUserPassword(password);
         if (!cipherText.equals(user.getPassword())) {
             throw new AccountErrorException(ApiMessage.USERNAME_OR_PASSWORD_INCORRECT).log(LogWarnEnum.US7);
@@ -109,14 +109,10 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public void confirmUserActivatedByEmail(String email) {
-        UserDO user = this.getUserInfoByEmail(email);
-
-        //judge user activate state
-        if (this.isUserActivatedByState(user.getState())) {
+        if (this.isUserActivatedByState(this.getUserInfoByEmail(email).getState())) {
             throw new AccountErrorException(ApiMessage.ACCOUNT_ACTIVATED).log(LogWarnEnum.US5);
         }
     }
-
 
     @Override
     public void confirmUserMatchCookieUser(String inputUsername, UserDO cookieUser) {
@@ -173,13 +169,14 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public Map<String, Object> getUserInfoToPageModelMap(String username, String email) {
-        //get user information
+    public Map<String, Object> getUserInfoModelMap(String username, String email) {
         UserDO user = username != null
                 ? this.isEmailType(username) ? userDAO.getUserByEmail(username) : userDAO.getUserByName(username)
                 : userDAO.getUserByEmail(email);
 
        Map<String, Object> userInfoMap = this.getUserInfoMap(user);
+
+            //append extra information
             userInfoMap.put(ParamConst.FOLLOWING, this.countUserFollowingTotals(user.getId()));
             userInfoMap.put(ParamConst.FOLLOWED, this.countUserFollowedTotals(user.getId()));
             userInfoMap.put(ParamConst.LIKE, this.countUserLikeTopicTotals(user.getId()));
@@ -187,6 +184,7 @@ public class UserServiceImpl implements IUserService {
             userInfoMap.put(ParamConst.ATTENTION, this.countUserAttentionTopicTotals(user.getId()));
             userInfoMap.put(ParamConst.TOPIC, this.countUserTopicTotals(user.getId()));
             userInfoMap.put(ParamConst.REPLY, this.countUserReplyTotals(user.getId()));
+
         return userInfoMap;
     }
 
@@ -203,7 +201,7 @@ public class UserServiceImpl implements IUserService {
     @Override
     public UserDO getUserInfoByName(String username) {
         UserDO user = userDAO.getUserByName(username);
-        if (isEmptyUser(user)) {
+        if (this.isEmptyUser(user)) {
             throwNoUserException();
         }
 
@@ -213,7 +211,7 @@ public class UserServiceImpl implements IUserService {
     @Override
     public UserDO getUserInfoByEmail(String email) {
         UserDO user = userDAO.getUserByEmail(email);
-        if (isEmptyUser(user)) {
+        if (this.isEmptyUser(user)) {
             throwNoUserException();
         }
 
@@ -221,9 +219,9 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public Map<String, Object> getUserInfoMapByUser(UserDO user) {
+    public Map<String, Object> getUserInfoModelMap(UserDO user) {
         if (user == null) {
-            return new LinkedHashMap<>(SetConst.SIZE_ONE);
+            return new HashMap<>(0);
         }
 
         Map<String, Object> userInfoMap = JsonUtil.toMapByObject(user);
@@ -237,35 +235,15 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public List<Map<String, Object>> listAllFollowingUserInfoToPageModelList(int userId) {
+    public List<Map<String, Object>> listAllFollowingUserInfoModelList(int userId) {
         UserActionDO userAction = this.getUserActionDONotNull(userId);
-
-        List<Integer> followingUserIdList = JsonUtil.changeJsonArrayStringToIntegerList(
-                userAction.getFollowingUserIdJsonArray()
-        );
-
-        List<Map<String, Object>> followingUserInfoMapList = new ArrayList<>(followingUserIdList.size());
-        for (int followingUserId: followingUserIdList) {
-            followingUserInfoMapList.add(this.getUserInfoMap(this.getUserInfoById(followingUserId)));
-        }
-
-        return followingUserInfoMapList;
+        return this.getUserInfoMapListByJsonArray(userAction.getFollowingUserIdJsonArray());
     }
 
     @Override
-    public List<Map<String, Object>> listAllFollowedUserInfoToPageModelList(int userId) {
+    public List<Map<String, Object>> listAllFollowedUserInfoModelList(int userId) {
         UserActionDO userAction = this.getUserActionDONotNull(userId);
-
-        List<Integer> followedUserIdList = JsonUtil.changeJsonArrayStringToIntegerList(
-                userAction.getFollowedUserIdJsonArray()
-        );
-
-        List<Map<String, Object>> followedUserInfoMapList = new ArrayList<>(followedUserIdList.size());
-        for (int followedUserId: followedUserIdList) {
-            followedUserInfoMapList.add(this.getUserInfoMap(this.getUserInfoById(userId)));
-        }
-
-        return followedUserInfoMapList;
+        return this.getUserInfoMapListByJsonArray(userAction.getFollowedUserIdJsonArray());
     }
 
     @Override
@@ -278,16 +256,13 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public boolean isUserActivatedByName(String username) {
-        //input username param get UserDO instance
-        UserDO user = PatternUtil.matchEmail(username)
-                ? this.getUserInfoByEmail(username) : this.getUserInfoByName(username);
-
+        UserDO user = this.isEmailType(username) ? this.getUserInfoByEmail(username) : this.getUserInfoByName(username);
         return this.isUserActivatedByState(user.getState());
     }
 
     @Override
-    public boolean isUserActivatedByState(int state) {
-        return state == SetConst.ACCOUNT_ACTIVATED_STATE;
+    public boolean isUserActivatedByState(int userCurrentState) {
+        return userCurrentState == SetConst.ACCOUNT_ACTIVATED_STATE;
     }
 
     @Override
@@ -295,7 +270,6 @@ public class UserServiceImpl implements IUserService {
         this.getUserDONotNull(userId);
 
         String userLikeTopicIdIntJsonArrayString = userActionDAO.getUserAction(userId).getLikeTopicIdJsonArray();
-
         return JsonUtil.isJsonArrayStringExistIntElement(userLikeTopicIdIntJsonArrayString, topicId);
     }
 
@@ -312,6 +286,8 @@ public class UserServiceImpl implements IUserService {
     @Override
     public Map<String, Object> alterUserProfile(String username, int sex, String birthday,
                                                 String position, String description) {
+        this.getUserInfoByName(username);
+
         UserDO updateUser = new UserDO();
             updateUser.setName(username);
             updateUser.setSex(sex);
@@ -319,40 +295,28 @@ public class UserServiceImpl implements IUserService {
             updateUser.setPosition(position);
             updateUser.setDescription(description);
 
+        //update forum_user by username, if 4 fields not null, will be updated
         if (userDAO.updateUser(updateUser) == 0) {
             throw new AccountErrorException(ApiMessage.DATABASE_EXCEPTION).log(LogWarnEnum.US2);
         }
 
-        return this.getUserInfoMapByUser(userDAO.getUserByName(username));
+        return this.getUserInfoModelMap(userDAO.getUserByName(username));
     }
 
     @Override
     public void alterUserPasswordByName(String username, String newPassword) {
-        Map<String, String> paramsMap = new LinkedHashMap<>(SetConst.SIZE_TWO);
-        paramsMap.put(ParamConst.USERNAME, username);
-        paramsMap.put(ParamConst.PASSWORD, newPassword);
-        RequestParamCheckUtil.check(paramsMap);
-
-        //secret new password, update user passowrd
-        if (userDAO.updateUserPasswordByName(username, SecretUtil.encryptUserPassword(newPassword)) == 0) {
-            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarnEnum.US2);
-        }
+        this.getUserInfoByName(username);
+        this.updateUserPasswordByName(username, newPassword);
     }
 
     @Override
     public void alterUserPasswordByEmail(String email, String newPassword) {
-        //get username by email
         String username = this.getUserInfoByEmail(email).getName();
-
-        //secret new password, update user passowrd
-        if (userDAO.updateUserPasswordByName(username, SecretUtil.encryptUserPassword(newPassword)) == 0) {
-            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarnEnum.US2);
-        }
+        this.updateUserPasswordByName(username, newPassword);
     }
 
     @Override
     public void alterUserEmail(String username, String newEmail) {
-        //judge new email, whether occupied
         this.getUserInfoByName(username);
         this.confirmUserNotOccupiedByEmail(newEmail);
 
@@ -362,16 +326,16 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public void alterUserAvatorImage(String username, String newImageName) {
-        if (userDAO.updateUserAvatorByName(username, newImageName) == 0) {
+    public void alterUserAvatar(String username, String avatarFileName) {
+        if (userDAO.updateUserAvatorByName(username, avatarFileName) == 0) {
             throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarnEnum.US2);
         }
     }
 
     @Override
-    public UserDO alterUserActivateStateByToken(String token) {
-        //解析 token
-        String plainText = SecretUtil.decryptBase64(token);
+    public UserDO alterUserActivateStateByEmailToken(String emailToken) {
+        //parse token
+        String plainText = SecretUtil.decryptBase64(emailToken);
         String[] array = plainText.split("-");
         if (array.length != SetConst.LENGTH_TWO) {
             throw new TokenErrorException(ApiMessage.INVALID_TOKEN).log(LogWarnEnum.US12);
@@ -396,7 +360,7 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public void alterUserActionLikeTopicIdArray(int userId, int topicId, String command) {
+    public void operateLikeTopic(int userId, int topicId, String command) {
         //input 'inc'
         int effectRow;
         if (command.equals(SetConst.COMMAND_INC)) {
@@ -443,7 +407,8 @@ public class UserServiceImpl implements IUserService {
     /*
      * ***********************************************
      * database operate method (update forum_user_action)
-     *      - user attention user
+     *      - (inc | dec) user attention user
+     *      - update user password
      * ***********************************************
      */
 
@@ -485,6 +450,20 @@ public class UserServiceImpl implements IUserService {
         }
     }
 
+    /**
+     * 更新用户密码
+     *
+     * @param username 用户名
+     * @param newPassword 新密码
+     */
+    private void updateUserPasswordByName(String username, String newPassword) {
+        //update forum_user 'fu_password'
+        if (userDAO.updateUserPasswordByName(username, SecretUtil.encryptUserPassword(newPassword)) == 0) {
+            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarnEnum.US2);
+        }
+    }
+
+
     /*
      * ***********************************************
      * filter information map (use util/MapFilter.java)
@@ -506,6 +485,17 @@ public class UserServiceImpl implements IUserService {
         MapFilterUtil.filterUserInfo(userInfoMap);
 
         return userInfoMap;
+    }
+
+    private List<Map<String, Object>> getUserInfoMapListByJsonArray(String userIdJsonArray) {
+        List<Integer> userIdList = JsonUtil.changeJsonArrayStringToIntegerList(userIdJsonArray);
+
+        List<Map<String, Object>> userInfoMapList = new ArrayList<>(userIdList.size());
+        for (int userId: userIdList) {
+            userInfoMapList.add(this.getUserInfoMap(this.getUserInfoById(userId)));
+        }
+
+        return userInfoMapList;
     }
 
      /*

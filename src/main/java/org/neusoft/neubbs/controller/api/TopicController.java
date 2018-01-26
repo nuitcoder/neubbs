@@ -328,7 +328,7 @@ public class TopicController {
 
        UserDO cookieUser = secretService.getUserInfoByAuthentication(httpService.getAuthenticationCookieValue());
        //record user like topic id array of user action
-       userService.alterUserActionLikeTopicIdArray(cookieUser.getId(), topicId, command);
+       userService.operateLikeTopic(cookieUser.getId(), topicId, command);
 
        //judge cuurent user like topic, according the command('inc', 'dec'), alter like of topic
        boolean isCurrentUserLikeTopic = userService.isUserLikeTopic(cookieUser.getId(), topicId);

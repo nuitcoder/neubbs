@@ -64,9 +64,7 @@ public final class SecretUtil {
      * @return String 密文
      */
     public static String encryptUserPassword(String password) {
-        String ciphertext = encryptMD5(password);
-
-        return encryptMD5(ciphertext + password);
+        return encryptMD5(encryptMD5(password) + password);
     }
 
     /**
