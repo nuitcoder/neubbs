@@ -43,7 +43,7 @@ public class ValidationServiceImpl implements IValidationService {
     }
 
     @Override
-    public void checkNotNullParam(String... params) {
+    public void checkOnlyNotNullParam(String... params) {
         int len = params.length;
         if (len == 0 || len % SetConst.LENGTH_TWO != 0) {
             throw new ParamsErrorException(ApiMessage.PARAM_ERROR).log(LogWarnEnum.US4);
@@ -53,7 +53,7 @@ public class ValidationServiceImpl implements IValidationService {
              String type = params[i];
              String value = params[i + 1];
 
-            //if value != null, to check param
+            //if value != null, check param
             if (value != null) {
                 this.check(type, value);
             }
@@ -61,16 +61,13 @@ public class ValidationServiceImpl implements IValidationService {
     }
 
     @Override
-    public void checkParamsNotNull(String... params) {
-        int count = 0;
+    public void checkParamsNotAllNull(String... params) {
         for (String param: params) {
-            if (param == null) {
-              count++;
+            if (param != null) {
+                return;
             }
         }
 
-        if (count == params.length) {
-            throw new ParamsErrorException(ApiMessage.PARAM_ERROR).log(LogWarnEnum.VS1);
-        }
+        throw new ParamsErrorException(ApiMessage.PARAM_ERROR).log(LogWarnEnum.VS1);
     }
 }

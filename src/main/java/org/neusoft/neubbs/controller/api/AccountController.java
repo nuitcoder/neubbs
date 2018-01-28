@@ -99,7 +99,7 @@ public final class AccountController {
     public ApiJsonDTO getUserInfo(@RequestParam(value = "username", required = false) String username,
                                   @RequestParam(value = "email", required = false) String email) {
 
-        validationService.checkParamsNotNull(username, email);
+        validationService.checkParamsNotAllNull(username, email);
         if (username != null) {
             validationService.checkUsername(username);
         } else {
@@ -236,7 +236,7 @@ public final class AccountController {
         String newDescription = (String) requestBodyParamsMap.get(ParamConst.DESCRIPTION);
 
         validationService.checkCommand(String.valueOf(newSex), "0", "1");
-        validationService.checkParamsNotNull(newBirthday, newPosition, newDescription);
+        validationService.checkParamsNotAllNull(newBirthday, newPosition, newDescription);
         validationService.check(ParamConst.BIRTHDAY, newBirthday)
                          .check(ParamConst.POSITION, newPosition)
                          .check(ParamConst.DESCRIPTION, newDescription);

@@ -145,7 +145,7 @@ public class TopicController {
                                       @RequestParam(value = "category", required = false) String category,
                                       @RequestParam(value = "username", required = false) String username) {
         validationService.check(ParamConst.NUMBER, page);
-        validationService.checkNotNullParam(
+        validationService.checkOnlyNotNullParam(
                 ParamConst.NUMBER, limit,
                 ParamConst.TOPIC_CATEGORY_NICK, category,
                 ParamConst.USERNAME, username
@@ -167,7 +167,7 @@ public class TopicController {
     public ApiJsonDTO countTopicTotalPages(@RequestParam(value = "limit", required = false) String limit,
                                             @RequestParam(value = "category", required = false) String category,
                                             @RequestParam(value = "username", required = false) String username) {
-        validationService.checkNotNullParam(
+        validationService.checkOnlyNotNullParam(
                 ParamConst.NUMBER, limit,
                 ParamConst.TOPIC_CATEGORY_NICK, category,
                 ParamConst.USERNAME, username
