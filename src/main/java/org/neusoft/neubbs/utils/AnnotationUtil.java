@@ -7,6 +7,8 @@ import java.lang.reflect.Method;
 
 /**
  * 注解工具类
+ *      - 方法是否存在指定注解
+ *      - 类是否存在指定注解r
  *
  * @author Suvan
  */
@@ -15,19 +17,19 @@ public final class AnnotationUtil {
     private AnnotationUtil() { }
 
     /**
-     * （方法级）（拦截器）是否存在指定注解
+     * 方法是否存在指定注解
+     *      - 针对方法级
+     *      - 拦截器
      *
      * @param handler 方法对象（拦截器内的 Object handler）
-     * @param c 注解的运行时Class
-     * @return boolean （true 存在，false-不存在）
+     * @param c 注解的运行时Class对象
+     * @return boolean 存在结果（true-存在，false-不存在）
      */
     public static boolean hasMethodAnnotation(Object handler, Class c) {
-         //must be at method
         if (!(handler instanceof HandlerMethod)) {
             return false;
         }
 
-        //get annotation
         HandlerMethod handlerMethod = (HandlerMethod) handler;
         Method method = handlerMethod.getMethod();
         Annotation annotation = method.getAnnotation(c);
@@ -36,15 +38,15 @@ public final class AnnotationUtil {
     }
 
     /**
-     * （类 or 接口级）是否存在指定注解
+     * 类是否存在指定注解
+     *      - 针对类，接口级
      *
-     * @param objClass 类.class
-     * @param annotationClass 注解.lass
-     * @return boolean 存在结果
+     * @param objClass 指定类对象
+     * @param annotationClass 指定注解的Class对象
+     * @return boolean 存在结果（true-存在，false-不存在）
      */
     public static boolean hasClassAnnotation(Class objClass, Class annotationClass) {
         Annotation annotation = objClass.getAnnotation(annotationClass);
-
         return annotation != null;
     }
 }
