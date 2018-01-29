@@ -8,6 +8,9 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * Cookie 工具类
+ *      - 保存 Cookie
+ *      - 删除 Cookie
+ *      - 获取指定 Cookie
  *
  * @author Suvan
  */
@@ -17,6 +20,10 @@ public final class CookieUtil {
 
     /**
      * 保存 Cookie
+     *      - 设置 Cookie key-value
+     *      - 设置 Cookie 保存时间
+     *      - 设置 Cookie 保存路径 “\”
+     *      - 设置 Cookie 的 HttpOnly 属性
      *
      * @param response http响应
      * @param cookieName Cookie名字
@@ -33,7 +40,8 @@ public final class CookieUtil {
     }
 
     /**
-     * 删除Cookie（有效时间设为0,即表示删除）
+     * 删除 Cookie
+     *      - 有效时间设为 0 (即表示删除)
      *
      * @param request http请求
      * @param response http响应
@@ -53,7 +61,8 @@ public final class CookieUtil {
     }
 
     /**
-     * 根据 Cookie 名，获取 Cookie 值
+     * 获取指定 Cookie
+     *      - 根据 Cookie 名，获取 Cookie 值
      *
      * @param request http请求
      * @param cookieName Cookie名
@@ -67,16 +76,5 @@ public final class CookieUtil {
         }
 
         return null;
-    }
-
-    /**
-     * 是否存在 Cookie
-     *
-     * @param request http请求
-     * @param cookieName Cookie名
-     * @return boolean 是否存在
-     */
-    public static boolean isExistCookie(HttpServletRequest request, String cookieName) {
-        return getCookieValue(request, cookieName) != null;
     }
 }

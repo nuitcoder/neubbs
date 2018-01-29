@@ -8,7 +8,7 @@ import java.lang.reflect.Method;
 /**
  * 注解工具类
  *      - 方法是否存在指定注解
- *      - 类是否存在指定注解r
+ *      - 类是否存在指定注解
  *
  * @author Suvan
  */
