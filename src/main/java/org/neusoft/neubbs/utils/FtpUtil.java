@@ -15,20 +15,11 @@ import java.util.Properties;
 
 /**
  * FTP 工具类
- *  private
- *      - 连接 FTP 服务器
- *      - 退出连接
- *      - 移动到服务器路径
- *
- *  public
  *      - 创建目录
- *      - 获取服务器路径文件名列表
+ *      - 获取指定路径文件名列表
  *      - 上传文件
- *      - 删除（文件 or 目录）
- *      - 删除目录（及内部子文件夹，文件）
- *
- * 注意：
- *      每次使用连接都要断开，否则线程会一直保持 ftp 连接，其余用户无法使用
+ *      - 删除
+ *      - 完全删除目录
  *
  * @author Suvan
  */
@@ -54,61 +45,14 @@ public final class FtpUtil {
                 ftpPort = Integer.parseInt(props.getProperty("ftp.port"));
                 ftpUsername = props.getProperty("ftp.username");
                 ftpPassword = props.getProperty("ftp.password");
-
-            //connect ftp server
-            connect();
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
     }
 
     /**
-     * 连接 FTP 服务器
-     *      - 连接 -> 登陆 -> 设置文件类型 -> 判断响应码
-     *
-     * @throws IOException IO异常
-     */
-    private static void connect() throws IOException {
-        ftpClient.connect(ftpIp, ftpPort);
-        ftpClient.login(ftpUsername, ftpPassword);
-
-        ftpClient.setFileType(FTPClient.BINARY_FILE_TYPE);
-
-        if (!FTPReply.isPositiveCompletion(ftpClient.getReplyCode())) {
-            throw new IOException("FTP 服务器连接失败!");
-        }
-    }
-
-    /**
-     * 退出连接
-     *
-     * @throws IOException IO异常
-     */
-    private static void destroy() throws IOException {
-        if (ftpClient != null) {
-            ftpClient.logout();
-            ftpClient.disconnect();
-        }
-    }
-
-    /**
-     * 移动到服务器路径
-     *      - 移动到指定目录，若不存在，则抛出异常
-     *
-     * @param serverDirectoryPath 服务器目录
-     * @throws IOException IO异常
-     */
-    private static void moveServerPath(String serverDirectoryPath) throws IOException {
-        //no exist directory, return false
-        if (!ftpClient.changeWorkingDirectory(serverDirectoryPath)) {
-            throw new IOException("FTP 服务器，不存在指定路径");
-        }
-    }
-
-
-    /**
      * 创建目录
-     *      -  /为分隔，支持创建层级目录（例：/user/userId-username/avatar）
+     *      - /为分隔，支持创建层级目录（例：/user/userId-username/avatar）
      *
      * @param serverDirectoryPath 服务器目录路径（默认以根节点为开始）
      */
@@ -132,20 +76,20 @@ public final class FtpUtil {
     }
 
     /**
-     * 获取服务器路径文件名列表
+     * 获取获取指定路径文件名列表
      *      - 指定目录下所有文件名
      *      - 不包含目录
      *
-     * @param serverDirectoryPath 服务器路径
-     * @return List<String> 文件名集合
+     * @param serverDirectoryPath 服务器目录路径
+     * @return List 文件名集合
      * @throws IOException IO异常
      */
     public static List<String> listServerPathFileName(String serverDirectoryPath) throws IOException {
         connect();
         moveServerPath(serverDirectoryPath);
 
-        List<String> fileNameList = new ArrayList<>();
         FTPFile[] files = ftpClient.listFiles();
+        List<String> fileNameList = new ArrayList<>(files.length);
         for (FTPFile file: files) {
             if (file.isFile()) {
                 fileNameList.add(file.getName());
@@ -153,17 +97,16 @@ public final class FtpUtil {
         }
 
         destroy();
-
         return fileNameList;
     }
 
     /**
      * 上传文件
-     *      - 创建文件目录，并切换文件目录准备上传
-     *      - 上传文件
+     *      - 若不存在，则创建文件目录，
+     *      - 切换指定目录，进行文件上传
      *
-     * @param serverDirectoryPath 服务器目录路径（根路径为: /）
-     * @param serverFileName 服务器文件名（上传后生成文件名）
+     * @param serverDirectoryPath 服务器目录路径（默认根路径为: /）
+     * @param serverFileName 服务器文件名（上传后的文件名）
      * @param uploadFileInputStream 待上传文件的输入流（可传入 new FileInputStream(File)）
      * @throws IOException IO异常
      */
@@ -181,29 +124,31 @@ public final class FtpUtil {
     /**
      * 删除
      *      - 删除文件
-     *      - 删除目录（不包含目录）
+     *      - 删除目录（第二参数 serverFileName 为 null，则删除目录）
      *
      * @param serverDirectoryPath 服务器目录路径
-     * @param serverFileName 服务器文件名（若删除目录，此字符串可为 null）
+     * @param serverFileName 服务器文件名
      * @throws IOException IO异常
      */
     public static void delete(String serverDirectoryPath, String serverFileName) throws IOException {
         connect();
         moveServerPath(serverDirectoryPath);
 
+        //complete before and after sprit
         serverDirectoryPath = StringUtil.completeBeforeAfterSprit(serverDirectoryPath);
+
         if (serverFileName == null) {
             ftpClient.removeDirectory(serverDirectoryPath);
-            return;
+        } else {
+            ftpClient.deleteFile(serverDirectoryPath + "/" + serverFileName);
         }
-        ftpClient.deleteFile(serverDirectoryPath + "/" + serverFileName);
 
         destroy();
     }
 
     /**
-     * 删除目录
-     *      - 及内部子文件夹，文件
+     * 完全删除目录
+     *      - 包括其内部子文件,子目录
      *
      * @param serverDirectoryPath 服务器目录路径
      * @throws IOException IO异常
@@ -236,5 +181,59 @@ public final class FtpUtil {
         ftpClient.removeDirectory(path);
 
         destroy();
+    }
+
+    /*
+     * ***********************************************
+     * private method
+     * ***********************************************
+     */
+
+    /**
+     * 连接 FTP 服务器
+     *      - 流程
+     *          1. 连接
+     *          2. 登陆
+     *          3. 设置文件类型
+     *          4. 判断响应码
+     *
+     * @throws IOException IO异常
+     */
+    private static void connect() throws IOException {
+        ftpClient.connect(ftpIp, ftpPort);
+        ftpClient.login(ftpUsername, ftpPassword);
+
+        ftpClient.setFileType(FTPClient.BINARY_FILE_TYPE);
+
+        if (!FTPReply.isPositiveCompletion(ftpClient.getReplyCode())) {
+            throw new IOException("FTP 服务器连接失败!");
+        }
+    }
+
+    /**
+     * 退出连接
+     *      - 【注意】每个工具方法，重新连接后，使用完毕，都需要断开连接，否则其余用户无法使用
+     *
+     * @throws IOException IO异常
+     */
+    private static void destroy() throws IOException {
+        if (ftpClient != null) {
+            ftpClient.logout();
+            ftpClient.disconnect();
+        }
+    }
+
+    /**
+     * 移动到服务器路径
+     *      - （定位）移动到指定目录，若不存在，则抛出异常
+     *
+     * @param serverDirectoryPath 服务器目录
+     * @throws IOException IO异常
+     */
+    private static void moveServerPath(String serverDirectoryPath) throws IOException {
+        //no exist directory, return false
+        if (!ftpClient.changeWorkingDirectory(serverDirectoryPath)) {
+            throw new IOException("FTP 服务器，不存在指定路径！");
+        }
     }
 }
