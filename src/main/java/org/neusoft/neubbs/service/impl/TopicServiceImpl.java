@@ -405,27 +405,21 @@ public class TopicServiceImpl implements ITopicService {
     public boolean isLikeTopic(int userId, int topicId) {
         this.confirmUserAndTopicNotNull(userId, topicId);
 
-        return JsonUtil.isJsonArrayStringExistIntElement(
-                this.getUserLikeTopicIdJsonArrayStringByUserId(userId), topicId
-        );
+        return JsonUtil.isExistIntElement(this.getUserLikeTopicIdJsonArrayStringByUserId(userId), topicId);
     }
 
     @Override
     public boolean isCollectTopic(int userId, int topicId) {
         this.confirmUserAndTopicNotNull(userId, topicId);
 
-        return JsonUtil.isJsonArrayStringExistIntElement(
-                this.getUserCollectTopicIdJsonArrayStringByUserId(userId), topicId
-        );
+        return JsonUtil.isExistIntElement(this.getUserCollectTopicIdJsonArrayStringByUserId(userId), topicId);
     }
 
     @Override
     public boolean isAttentionTopic(int userId, int topicId) {
         this.confirmUserAndTopicNotNull(userId, topicId);
 
-        return JsonUtil.isJsonArrayStringExistIntElement(
-                this.getUserAttentionTopicIdJsonArrayStringByUserId(userId), topicId
-        );
+        return JsonUtil.isExistIntElement(this.getUserAttentionTopicIdJsonArrayStringByUserId(userId), topicId);
     }
 
     @Override
@@ -439,7 +433,7 @@ public class TopicServiceImpl implements ITopicService {
             this.incUserLikeTopicToUpdateDatabase(userId, topicId);
         }
 
-        return JsonUtil.changeJsonArrayStringToIntegerList(this.getUserLikeTopicIdJsonArrayStringByUserId(userId));
+        return JsonUtil.toListByJsonArrayString(this.getUserLikeTopicIdJsonArrayStringByUserId(userId));
     }
 
     @Override
@@ -455,7 +449,7 @@ public class TopicServiceImpl implements ITopicService {
 
         return MapFilterUtil.generateMap(
                 ParamConst.USER_COLLECT_TOPIC_ID,
-                JsonUtil.changeJsonArrayStringToIntegerList(this.getUserCollectTopicIdJsonArrayStringByUserId(userId))
+                JsonUtil.toListByJsonArrayString(this.getUserCollectTopicIdJsonArrayStringByUserId(userId))
         );
     }
 
@@ -473,7 +467,7 @@ public class TopicServiceImpl implements ITopicService {
 
         return MapFilterUtil.generateMap(
                 ParamConst.USER_ATTENTION_TOPIC_ID,
-                JsonUtil.changeJsonArrayStringToIntegerList(this.getUserAttentionTopicIdJsonArrayStringByUserId(userId))
+                JsonUtil.toListByJsonArrayString(this.getUserAttentionTopicIdJsonArrayStringByUserId(userId))
         );
     }
 
@@ -520,13 +514,13 @@ public class TopicServiceImpl implements ITopicService {
      */
     private void decUserLikeTopicToUpdateDatabase(int userId, int topicId) {
         String likeTopicJsonArrayString = this.getUserLikeTopicIdJsonArrayStringByUserId(userId);
-        int topicIdIndex = JsonUtil.getJsonArrayStringForIntElementIndex(likeTopicJsonArrayString, topicId);
+        int topicIdIndex = JsonUtil.getIntElementIndex(likeTopicJsonArrayString, topicId);
         if (userActionDAO.updateLikeTopicIdJsonArrayByIndexToRemoveOneTopicId(userId, topicIdIndex) == 0) {
             this.throwUserOperateTopicFailException(SetConst.LIKE_DEC);
         }
 
         String likedUserJsonArrayString = this.getTopicLikeUserIdJsonArrayStringByTopicId(topicId);
-        int userIdIndex = JsonUtil.getJsonArrayStringForIntElementIndex(likedUserJsonArrayString, userId);
+        int userIdIndex = JsonUtil.getIntElementIndex(likedUserJsonArrayString, userId);
         if (topicActionDAO.updateLikeUserIdJsonArrayByIndexToRemoveOneUserId(topicId, userIdIndex) == 0) {
             this.throwTopicOperateFailException(SetConst.LIKE_USER_DEC);
         }
@@ -561,13 +555,13 @@ public class TopicServiceImpl implements ITopicService {
      */
     private void decUserCollectTopicToUpdateDatabase(int userId, int topicId) {
         String userCollectJsonArrayString = this.getUserCollectTopicIdJsonArrayStringByUserId(userId);
-        int topicIdIndex = JsonUtil.getJsonArrayStringForIntElementIndex(userCollectJsonArrayString, topicId);
+        int topicIdIndex = JsonUtil.getIntElementIndex(userCollectJsonArrayString, topicId);
         if (userActionDAO.updateCollectTopicIdJsonArrayByIndexToRemoveOneTopicId(userId, topicIdIndex) == 0) {
             this.throwUserOperateTopicFailException(SetConst.COLLECT_DEC);
         }
 
         String topicCollectJsonArrayString = this.getTopicCollectUserIdJsonArrayStringByTopicId(topicId);
-        int userIdIndex = JsonUtil.getJsonArrayStringForIntElementIndex(topicCollectJsonArrayString, userId);
+        int userIdIndex = JsonUtil.getIntElementIndex(topicCollectJsonArrayString, userId);
         if (topicActionDAO.updateCollectUserIdJsonArrayByIndexToRemoveOneUserId(topicId, userIdIndex) == 0) {
             this.throwTopicOperateFailException(SetConst.COLLECT_USER_DEC);
         }
@@ -597,13 +591,13 @@ public class TopicServiceImpl implements ITopicService {
      */
     private void decUserAttentionTopicToUpdateDatabase(int userId, int topicId) {
         String attentionTopicJsonArrayString = this.getUserAttentionTopicIdJsonArrayStringByUserId(userId);
-        int topicIdIndex = JsonUtil.getJsonArrayStringForIntElementIndex(attentionTopicJsonArrayString, topicId);
+        int topicIdIndex = JsonUtil.getIntElementIndex(attentionTopicJsonArrayString, topicId);
         if (userActionDAO.updateAttentionTopicIdJsonArrayByIndexToRemoveOneTopicId(userId, topicIdIndex) == 0) {
             this.throwUserOperateTopicFailException(SetConst.ATTENTION_DEC);
         }
 
         String attentionUserJsonArrayString = this.getTopicAttentionUserIdJsonArrayStringByTopicId(topicId);
-        int userIdIndex = JsonUtil.getJsonArrayStringForIntElementIndex(attentionUserJsonArrayString, userId);
+        int userIdIndex = JsonUtil.getIntElementIndex(attentionUserJsonArrayString, userId);
         if (topicActionDAO.updateAttentionUserIdJsonArrayByIndexToRemoveOneUserId(topicId, userIdIndex) == 0) {
             this.throwTopicOperateFailException(SetConst.ATTENTION_USER_DEC);
         }

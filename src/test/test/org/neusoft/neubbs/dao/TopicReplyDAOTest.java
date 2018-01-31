@@ -160,7 +160,7 @@ public class TopicReplyDAOTest {
         int replyCount = 1;
         for(TopicReplyDO topicReply: listTopicReply){
             System.out.println("ouput reply information (" + (replyCount++) + "): "
-                    + JsonUtil.toJSONStringByObject(topicReply));
+                    + JsonUtil.toJSONString(topicReply));
         }
 
         System.out.println("success get topicid=" + topicId + " all reply list");

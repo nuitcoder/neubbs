@@ -35,7 +35,7 @@ public final class ResponsePrintWriterUtil {
             map.put("message", failMessage);
             map.put("model", new HashMap<>(SetConst.SIZE_ONE));
 
-        String json = JsonUtil.toJSONStringByObject(map);
+        String json = JsonUtil.toJSONString(map);
 
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json;charset=UTF-8");

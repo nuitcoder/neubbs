@@ -151,7 +151,7 @@ public class UserDAOTest {
         UserDO user = this.getTestUserDO();
         Assert.assertEquals(1, userDAO.saveUser(user));
         System.out.println("old user information: " +
-                JsonUtil.toJSONStringByObject(userDAO.getUserByName(user.getName())));
+                JsonUtil.toJSONString(userDAO.getUserByName(user.getName())));
 
         String username = user.getName();
         int sex = 1;

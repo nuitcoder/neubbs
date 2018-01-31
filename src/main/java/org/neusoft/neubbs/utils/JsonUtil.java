@@ -12,6 +12,13 @@ import java.util.Map;
 
 /**
  * JSON 工具类
+ *      - 转换为 JSON 格式字符串
+ *      - 将 JSON 字符串，转换为 Map
+ *      - 将 Object 对象，转换成 Map
+ *      - 将 JSON 数组字符串，转换成 List
+ *      - 是否存在指定 int 元素
+ *      - 获取 int 元素索引位置
+ *      - 获取数组长度
  *
  * @author Suvan
  */
@@ -20,66 +27,73 @@ public final class JsonUtil {
     private JsonUtil() { }
 
     /**
-     * 将Object对象转换为JSON格式字符串
+     * 转换为 JSON 格式字符串
+     *      - 将任意对象
      *
      * @param obj Object对象
      * @return String JSON格式字符串
      */
-    public static String toJSONStringByObject(Object obj) {
-        ObjectMapper mapper = new ObjectMapper();
-
-        String json = null;
+    public static String toJSONString(Object obj) {
         try {
-            json = mapper.writeValueAsString(obj);
-        } catch (JsonProcessingException jpe) { }
-
-        return json;
+            return new ObjectMapper().writeValueAsString(obj);
+        } catch (JsonProcessingException jpe) {
+            return null;
+        }
     }
 
     /**
-     * 将JSON格式字符串，转为Map<String,String>
+     * 将 JSON 字符串，转换成 Map
+     *      - String -> Map<String, Object>
      *
      * @param json JSON格式字符串
-     * @return Map<String,Object>键值对
+     * @return Map 键值对
      */
     public static Map<String, Object> toMapByJSONString(String json) {
-        ObjectMapper mapper = new ObjectMapper();
-
-        Map<String, Object> map = null;
         try {
-            map = mapper.readValue(json, LinkedHashMap.class);
-        } catch (IOException ioe) { }
-
-        return map;
+            return new ObjectMapper().readValue(json, LinkedHashMap.class);
+        } catch (IOException ioe) {
+            return null;
+        }
     }
 
     /**
-     * 将 Object 对象转换成 Map<String, String> 格式
+     * 将 Object 对象，转换成 Map
+     *      - Object -> Map<String, Object>
      *
      * @param obj Object对象
-     * @return Map<Sttring,Object>键值对
+     * @return Map 键值对
      */
     public static Map<String, Object> toMapByObject(Object obj) {
-        ObjectMapper mapper = new ObjectMapper();
-        String json = null;
-        Map<String, Object> map = null;
-
         try {
-            json = mapper.writeValueAsString(obj);
-            map = mapper.readValue(json, LinkedHashMap.class);
-        } catch (IOException e) { }
-
-        return map;
+            ObjectMapper mapper = new ObjectMapper();
+            String json = mapper.writeValueAsString(obj);
+            return mapper.readValue(json, LinkedHashMap.class);
+        } catch (IOException e) {
+            return null;
+        }
     }
 
     /**
-     * 判断 JSON 数组是否存在指定 int 元素
+     * 将 JSON 数组字符串，转换成 List
+     *      - String -> List<Integer>
      *
      * @param jsonArrayString JSON数组字符串
-     * @param intElement 指定int元素
+     * @return List 列表
+     */
+    public static List<Integer> toListByJsonArrayString(String jsonArrayString) {
+        return JSON.parseArray(jsonArrayString, Integer.class);
+    }
+
+    /**
+     * 是否存在指定 int 元素
+     *      - 需输入 JSON 数组字符串和目标元素（int 类型）
+     *      - 用于从 forum_user_action（用户行为表）, forum_topic_action（话题行为表）去除相应 JSON 字符串
+     *
+     * @param jsonArrayString JSON数组字符串
+     * @param intElement 需判断存在性的int元素
      * @return boolean 判断结果（true-存在，false-不存在）
      */
-    public static boolean isJsonArrayStringExistIntElement(String jsonArrayString,  int intElement) {
+    public static boolean isExistIntElement(String jsonArrayString,  int intElement) {
         JSONArray jsonArray = JSON.parseArray(jsonArrayString);
 
         boolean result = false;
@@ -94,35 +108,25 @@ public final class JsonUtil {
     }
 
     /**
-     * 获取 JSON 数组 int 元素的 索引
+     * 获取 int 元素索引位置
+     *      - 需输入 JSON 数组字符串和目标元素（int 类型）
      *
      * @param jsonArrayString JSON数组字符串
-     * @param intElement int元素
-     * @return int int元素索引值（若未找到则为 -1）
+     * @param intElement 需获取索引值的int元素
+     * @return int 元素所在位置索引值（若未找到则为 -1）
      */
-    public static int getJsonArrayStringForIntElementIndex(String jsonArrayString, int intElement) {
-        JSONArray jsonArray = JSON.parseArray(jsonArrayString);
-
-        return jsonArray.indexOf(intElement);
+    public static int getIntElementIndex(String jsonArrayString, int intElement) {
+        return JSON.parseArray(jsonArrayString).indexOf(intElement);
     }
 
     /**
-     * 转换 JSON 数组字符串，变为 Integer List
-     *
-     * @param jsonArrayString JSON数组字符串
-     * @return List Integer类型列表
-     */
-    public static List<Integer> changeJsonArrayStringToIntegerList(String jsonArrayString) {
-        return JSON.parseArray(jsonArrayString, Integer.class);
-    }
-
-    /**
-     * 统计 JSON 数组字符串长度
+     * 获取数组长度
+     *      - 传入 JSON 数组字符串
      *
      * @param jsonArrayString　JSON数组字符串
      * @return int JSON数组字符串长度
      */
-    public static int countArrayLengthByJsonArrayString(String jsonArrayString) {
+    public static int getArrayLength(String jsonArrayString) {
         return JSON.parseArray(jsonArrayString).size();
     }
 }

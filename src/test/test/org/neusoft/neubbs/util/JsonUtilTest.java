@@ -24,7 +24,7 @@ public class JsonUtilTest {
             user.setName("hello");
             user.setRank("admin");
 
-        System.out.println(JsonUtil.toJSONStringByObject(user));
+        System.out.println(JsonUtil.toJSONString(user));
     }
 
     /**
@@ -36,7 +36,7 @@ public class JsonUtilTest {
             user.setName("suvan");
             user.setPassword("1345");
 
-        String json = JsonUtil.toJSONStringByObject(user);
+        String json = JsonUtil.toJSONString(user);
         Map<String, Object> map = JsonUtil.toMapByJSONString(json);
 
         for(Map.Entry<String, Object> entry : map.entrySet()) {
@@ -69,8 +69,8 @@ public class JsonUtilTest {
         int[] intArray = {1, 234, 28, 68, 89, 72};
         String jsonArrayString = JSON.toJSONString(intArray);
 
-        System.out.println("test number=5 result: " + JsonUtil.isJsonArrayStringExistIntElement(jsonArrayString, 5));
-        System.out.println("test number=234 result: " + JsonUtil.isJsonArrayStringExistIntElement(jsonArrayString, 234));
-        System.out.println("test number=3121 result: " + JsonUtil.isJsonArrayStringExistIntElement(jsonArrayString, 3121));
+        System.out.println("test number=5 result: " + JsonUtil.isExistIntElement(jsonArrayString, 5));
+        System.out.println("test number=234 result: " + JsonUtil.isExistIntElement(jsonArrayString, 234));
+        System.out.println("test number=3121 result: " + JsonUtil.isExistIntElement(jsonArrayString, 3121));
     }
 }

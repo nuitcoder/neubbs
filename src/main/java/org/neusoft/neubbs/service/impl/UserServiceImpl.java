@@ -140,32 +140,27 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public int countUserLikeTopicTotals(int userId) {
-        UserActionDO userAction = this.getUserActionDONotNull(userId);
-        return JsonUtil.countArrayLengthByJsonArrayString(userAction.getLikeTopicIdJsonArray());
+        return JsonUtil.getArrayLength(this.getUserActionDONotNull(userId).getLikeTopicIdJsonArray());
     }
 
     @Override
     public int countUserCollectTopicTotals(int userId) {
-        UserActionDO userAction = this.getUserActionDONotNull(userId);
-        return JsonUtil.countArrayLengthByJsonArrayString(userAction.getCollectTopicIdJsonArray());
+        return JsonUtil.getArrayLength(this.getUserActionDONotNull(userId).getCollectTopicIdJsonArray());
     }
 
     @Override
     public int countUserAttentionTopicTotals(int userId) {
-        UserActionDO userAction = this.getUserActionDONotNull(userId);
-        return JsonUtil.countArrayLengthByJsonArrayString(userAction.getAttentionTopicIdJsonArray());
+        return JsonUtil.getArrayLength(this.getUserActionDONotNull(userId).getAttentionTopicIdJsonArray());
     }
 
     @Override
     public int countUserFollowingTotals(int userId) {
-        UserActionDO userAction = this.getUserActionDONotNull(userId);
-        return JsonUtil.countArrayLengthByJsonArrayString(userAction.getFollowingUserIdJsonArray());
+        return JsonUtil.getArrayLength(this.getUserActionDONotNull(userId).getFollowingUserIdJsonArray());
     }
 
     @Override
     public int countUserFollowedTotals(int userId) {
-        UserActionDO userAction = this.getUserActionDONotNull(userId);
-        return JsonUtil.countArrayLengthByJsonArrayString(userAction.getFollowedUserIdJsonArray());
+        return JsonUtil.getArrayLength(this.getUserActionDONotNull(userId).getFollowedUserIdJsonArray());
     }
 
     @Override
@@ -236,14 +231,12 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public List<Map<String, Object>> listAllFollowingUserInfoModelList(int userId) {
-        UserActionDO userAction = this.getUserActionDONotNull(userId);
-        return this.getUserInfoMapListByJsonArray(userAction.getFollowingUserIdJsonArray());
+        return this.getUserInfoMapListByJsonArray(this.getUserActionDONotNull(userId).getFollowingUserIdJsonArray());
     }
 
     @Override
     public List<Map<String, Object>> listAllFollowedUserInfoModelList(int userId) {
-        UserActionDO userAction = this.getUserActionDONotNull(userId);
-        return this.getUserInfoMapListByJsonArray(userAction.getFollowedUserIdJsonArray());
+        return this.getUserInfoMapListByJsonArray(this.getUserActionDONotNull(userId).getFollowedUserIdJsonArray());
     }
 
     @Override
@@ -270,7 +263,7 @@ public class UserServiceImpl implements IUserService {
         this.getUserDONotNull(userId);
 
         String userLikeTopicIdIntJsonArrayString = userActionDAO.getUserAction(userId).getLikeTopicIdJsonArray();
-        return JsonUtil.isJsonArrayStringExistIntElement(userLikeTopicIdIntJsonArrayString, topicId);
+        return JsonUtil.isExistIntElement(userLikeTopicIdIntJsonArrayString, topicId);
     }
 
     @Override
@@ -278,7 +271,7 @@ public class UserServiceImpl implements IUserService {
         this.getUserDONotNull(currentUserId);
         this.getUserDONotNull(followingUserId);
 
-        return JsonUtil.isJsonArrayStringExistIntElement(
+        return JsonUtil.isExistIntElement(
                 this.getUserFollowingUserIdJsonArrayStringByUserId(currentUserId), followingUserId
         );
     }
@@ -392,9 +385,7 @@ public class UserServiceImpl implements IUserService {
             this.incUserFollowingToUpdateDatabase(currentUserId, followingUserId);
         }
 
-        return JsonUtil.changeJsonArrayStringToIntegerList(
-                this.getUserFollowingUserIdJsonArrayStringByUserId(currentUserId)
-        );
+        return JsonUtil.toListByJsonArrayString(this.getUserFollowingUserIdJsonArrayStringByUserId(currentUserId));
     }
 
 
@@ -438,13 +429,13 @@ public class UserServiceImpl implements IUserService {
      */
     private void decUserFollowingToUpdateDatabase(int currentUserId, int followingUserId) {
         String followingUserJsonArrayString = this.getUserFollowingUserIdJsonArrayStringByUserId(currentUserId);
-        int userIdIndex = JsonUtil.getJsonArrayStringForIntElementIndex(followingUserJsonArrayString, followingUserId);
+        int userIdIndex = JsonUtil.getIntElementIndex(followingUserJsonArrayString, followingUserId);
         if (userActionDAO.updateFollowingUserIdJsonArrayByIndexToRemoveOneUserId(currentUserId, userIdIndex) == 0) {
             throwUserActionUpdateFailException(SetConst.FOLLOWING_DEC);
         }
 
         String followedUserJsonArrayString = this.getUserFollowedUserIdJsonArrayStringByUserId(followingUserId);
-        userIdIndex = JsonUtil.getJsonArrayStringForIntElementIndex(followedUserJsonArrayString, currentUserId);
+        userIdIndex = JsonUtil.getIntElementIndex(followedUserJsonArrayString, currentUserId);
         if (userActionDAO.updateFollowedUserIdJsonArrayByIndexToRemoveOneUserId(followingUserId, userIdIndex) == 0) {
             throwUserActionUpdateFailException(SetConst.FOLLOWED_DEC);
         }
@@ -488,7 +479,7 @@ public class UserServiceImpl implements IUserService {
     }
 
     private List<Map<String, Object>> getUserInfoMapListByJsonArray(String userIdJsonArray) {
-        List<Integer> userIdList = JsonUtil.changeJsonArrayStringToIntegerList(userIdJsonArray);
+        List<Integer> userIdList = JsonUtil.toListByJsonArrayString(userIdJsonArray);
 
         List<Map<String, Object>> userInfoMapList = new ArrayList<>(userIdList.size());
         for (int userId: userIdList) {
