@@ -18,12 +18,12 @@
 + MySQL-5.7
 + Redis-3.0.503
 + ftp(windows service and FTPClient)
-+ nginx-1.13.7
++ Nginx-1.13.7
 + spring-4.1.7
 + mybatis-3.2.6
 + Json Web Token - jwt - 3.2.0
 + log4j-1.2.17
 + junit-4.12
 
-#### API
-+ 请参考[后端 API 交互协议](https://github.com/nuitcoder/neubbs/wiki/%E5%90%8E%E7%AB%AF-API-%E4%BA%A4%E4%BA%92%E5%8D%8F%E8%AE%AE)
+### API
++ [后端 API 交互协议](https://github.com/nuitcoder/neubbs/wiki/%E3%80%90%E5%90%8E%E7%AB%AF%E3%80%91-API-%E4%BA%A4%E4%BA%92%E5%8D%8F%E8%AE%AE)
