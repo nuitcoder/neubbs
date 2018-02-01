@@ -17,7 +17,7 @@ import org.neusoft.neubbs.exception.FtpServiceErrorException;
 import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.service.IUserService;
 import org.neusoft.neubbs.utils.FtpUtil;
-import org.neusoft.neubbs.utils.JwtTokenUtil;
+import org.neusoft.neubbs.utils.TokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ContextConfiguration;
@@ -96,7 +96,7 @@ public class FileControllerTest {
         };
 
         //build login token
-        String authentication = JwtTokenUtil.createToken(userService.getUserInfoByName("suvan"));
+        String authentication = TokenUtil.generateUserInfoToken(userService.getUserInfoByName("suvan"));
 
         //upload user image file
         for (MockMultipartFile file: files) {
@@ -175,7 +175,7 @@ public class FileControllerTest {
                 new MockMultipartFile(htmlInputName, fileName, fileType ,new byte[1024 * 1024 * 6])
         };
 
-        String authentication = JwtTokenUtil.createToken(userService.getUserInfoByName("suvan"));
+        String authentication = TokenUtil.generateUserInfoToken(userService.getUserInfoByName("suvan"));
 
         for (MockMultipartFile file: files) {
             try {

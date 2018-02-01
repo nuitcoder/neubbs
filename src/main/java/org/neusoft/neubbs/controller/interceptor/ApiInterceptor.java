@@ -11,7 +11,7 @@ import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.exception.AccountErrorException;
 import org.neusoft.neubbs.utils.AnnotationUtil;
 import org.neusoft.neubbs.utils.CookieUtil;
-import org.neusoft.neubbs.utils.JwtTokenUtil;
+import org.neusoft.neubbs.utils.TokenUtil;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -143,7 +143,7 @@ public class ApiInterceptor implements HandlerInterceptor {
          }
 
         //judge token validity
-        UserDO user = JwtTokenUtil.verifyToken(authentication, SetConst.JWT_TOKEN_SECRET_KEY);
+        UserDO user = TokenUtil.decryptUserInfoToken(authentication);
         if (user == null) {
             this.throwTokenExpiredException();
         }
