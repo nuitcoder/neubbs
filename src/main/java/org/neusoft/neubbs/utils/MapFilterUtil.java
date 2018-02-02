@@ -5,11 +5,17 @@ import org.neusoft.neubbs.constant.api.ParamConst;
 import org.neusoft.neubbs.constant.api.SetConst;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Map 过滤 工具类
+ * Map Filter 工具类
+ *       - 过滤用户信息 Map
+ *       - 过滤话题基本信息 Map
+ *       - 过滤话题基本内容信息 Map
+ *       - 过滤话题分类信息 Map
+ *       - 过滤话题用户信息 Map
+ *       - 过滤话题回复信息 Map
+ *       - 生成 Map
  *
  * @author Suvan
  */
@@ -18,67 +24,33 @@ public final class MapFilterUtil {
    private MapFilterUtil() { }
 
    /**
-    * 删除多个 Key
-    *
-    * @param map 传入键值对
-    * @param keys 要删除 Key 的字符串数组
-    */
-   public static void removeKeys(Map<String, Object> map, String[] keys) {
-      for (String key : keys) {
-         map.remove(key);
-      }
-   }
-
-   /**
-    * 生成 Map
-    *    - 构建新的 Map 对象，并入住唯一的 key，value
-    *
-    * @param key 键
-    * @param value 值
-    * @return Map 生成键值对
-    */
-   public static Map<String, Object> generateMap(String key, Object value) {
-      Map<String, Object> map = new HashMap<>(SetConst.SIZE_ONE);
-         map.put(key, value);
-
-      return map;
-   }
-
-   /**
-    * 过滤用户信息
-    *    - 仅用于 user service,
-    *    - 修改 name -> username
-    *    - 修改 avator，拼接图片链接（FTP 服务器上，Netty 代理访问）
-    *    - 修改 id -> userid
+    * 过滤用户信息 Map
+    *    - 仅用于 User Service,
+    *    - 修改 id -> userId, name -> username
+    *    - 拼接用户头像地址（key=avator)，包装成 HTTP 链接
     *    - 删除 id, name, password, rank
     *
     * @param userInfoMap 用户信息Map
     */
    public static void filterUserInfo(Map<String, Object> userInfoMap) {
-      //re-build username and avator field
-      userInfoMap.put(ParamConst.USERNAME, userInfoMap.get(ParamConst.NAME));
-      userInfoMap.put(ParamConst.AVATOR, StringUtil.spliceUserAvatorUrl(userInfoMap, ParamConst.HTTP));
       userInfoMap.put(ParamConst.USER_ID, userInfoMap.get(ParamConst.ID));
+      userInfoMap.put(ParamConst.USERNAME, userInfoMap.get(ParamConst.NAME));
 
-      removeKeys(userInfoMap,
-              new String[] {ParamConst.ID, ParamConst.NAME, ParamConst.PASSWORD, ParamConst.RANK});
+      userInfoMap.put(ParamConst.AVATOR, StringUtil.spliceUserAvatorUrl(userInfoMap, ParamConst.HTTP));
+
+      removeKeys(userInfoMap, new String[] {ParamConst.ID, ParamConst.NAME,
+              ParamConst.PASSWORD, ParamConst.RANK});
    }
 
    /**
     * 过滤话题基本信息 Map
-    *    - 修改 id -> topicid
-    *    - 如果最后回复时间为 null（无人回复，默认是发布时间）
-    *    - 删除 id, userid , categoryid, lastreplyuserid
+    *    - 修改 id -> topicId
+    *    - 删除 id, userId, categoryId, lastReplyUserId
     *
-    * @param topicInfoMap 话题基本信息 Map
+    * @param topicInfoMap 需过滤的话题基本信息 Map
     */
    public static void filterTopicInfo(Map<String, Object> topicInfoMap) {
       topicInfoMap.put(ParamConst.TOPIC_ID, topicInfoMap.get(ParamConst.ID));
-      Object topicLastReplyTime = topicInfoMap.get(ParamConst.LAST_REPLY_TIME);
-
-      if (topicLastReplyTime == null) {
-         topicInfoMap.put(ParamConst.LAST_REPLY_TIME, topicInfoMap.get(ParamConst.CREATETIME));
-      }
 
       removeKeys(topicInfoMap, new String[] {ParamConst.ID, ParamConst.USER_ID,
               ParamConst.CATEGORY_ID, ParamConst.LAST_REPLY_USER_ID});
@@ -86,9 +58,9 @@ public final class MapFilterUtil {
 
    /**
     * 过滤话题内容信息 Map
-    *    - 删除 id，topicid
+    *    - 删除 id，topicId
     *
-    * @param topicContentInfoMap 话题内容信息Map
+    * @param topicContentInfoMap 需过滤的话题内容信息Map
     */
    public static void filterTopicContentInfo(Map<String, Object> topicContentInfoMap) {
       removeKeys(topicContentInfoMap, new String[] {ParamConst.ID, ParamConst.TOPIC_ID});
@@ -96,48 +68,65 @@ public final class MapFilterUtil {
 
    /**
     * 过滤话题分类信息 Map
-    *    - 修改 nick -> id
+    *    - 修改 nick（英文昵称） -> id
     *    - 删除 id(原有)
     *
-    * @param topicCategoryInfoMap 话题分类信息Map
+    * @param topicCategoryInfoMap 需过滤的话题分类信息Map
     */
    public static void filterTopicCategory(Map<String, Object> topicCategoryInfoMap) {
       topicCategoryInfoMap.put(ParamConst.ID, topicCategoryInfoMap.get(ParamConst.NICK));
 
-      removeKeys(topicCategoryInfoMap, new String[] {ParamConst.NICK});
+      topicCategoryInfoMap.remove(ParamConst.NICK);
    }
 
    /**
     * 过滤话题用户信息 Map
-    *    - 只保留 name, image
+    *    - 仅用于 Topic Service
+    *    - 仅保留 name, image，avator
     *    - 修改 name -> username
-    *    - 修改 image -> avator
-    *    - 删除 name, image
+    *    - 拼接用户头像地址（key=avator)，包装成 HTTP 链接
+    *    - 删除 id， name
     *
-    * @param userInfoMap 用户信息Map
+    * @param userInfoMap 需过滤的话题用户信息Map
     */
    public static void filterTopicUserInfo(Map<String, Object> userInfoMap) {
-      keepKesy(userInfoMap, new String[] {ParamConst.ID, ParamConst.NAME, ParamConst.AVATOR});
+      keepKeys(userInfoMap, new String[] {ParamConst.ID, ParamConst.NAME, ParamConst.AVATOR});
 
       userInfoMap.put(ParamConst.USERNAME, userInfoMap.get(ParamConst.NAME));
+
       userInfoMap.put(ParamConst.AVATOR, StringUtil.spliceUserAvatorUrl(userInfoMap, ParamConst.HTTP));
 
       userInfoMap.remove(ParamConst.ID);
       userInfoMap.remove(ParamConst.NAME);
    }
 
-
    /**
     * 过滤话题回复信息 Map
-    *    - 修改 id -> replyid
-    *    - 删除 id，userid
+    *    - 修改 id -> replyId
+    *    - 删除 id，userId
     *
-    * @param topicReplyInfoMap 话题回复信息Map
+    * @param topicReplyInfoMap 需过滤的话题回复信息Map
     */
    public static void filterTopicReply(Map<String, Object> topicReplyInfoMap) {
       topicReplyInfoMap.put(ParamConst.REPLY_ID, topicReplyInfoMap.get(ParamConst.ID));
 
       removeKeys(topicReplyInfoMap, new String[] {ParamConst.ID, ParamConst.USER_ID});
+   }
+
+   /**
+    * 生成 Map
+    *    - 构建新的 Map 对象（长度为 1 ）
+    *    - 注入唯一的 key-value
+    *
+    * @param key 键
+    * @param value 值
+    * @return Map 生成键值对（HashMap）
+    */
+   public static HashMap<String, Object> generateMap(String key, Object value) {
+      HashMap<String, Object> map = new HashMap<>(SetConst.SIZE_ONE);
+         map.put(key, value);
+
+      return map;
    }
 
    /*
@@ -147,22 +136,34 @@ public final class MapFilterUtil {
     */
 
    /**
-    * 保留指定 key
+    * 仅保留指定的多个 Key
     *
     * @param map 键值队
     * @param keys 要保留的 key
     */
-   private static void keepKesy(Map<String, Object> map, String[] keys) {
-      Map<String, Object> tmpMap = new LinkedHashMap<>();
-
+   private static void keepKeys(Map<String, Object> map, String[] keys) {
+      //new map, temporary storage fo data
+      Map<String, Object> tmpMap = new HashMap<>(keys.length);
       for (String key: keys) {
          tmpMap.put(key, map.get(key));
       }
 
+      //put in data again
       map.clear();
-
       for (String key: keys) {
          map.put(key, tmpMap.get(key));
+      }
+   }
+
+   /**
+    * 删除多个 Key
+    *
+    * @param map 传入键值对
+    * @param keys 需删除键值对Key数组
+    */
+   private static void removeKeys(Map<String, Object> map, String[] keys) {
+      for (String key : keys) {
+         map.remove(key);
       }
    }
 }
