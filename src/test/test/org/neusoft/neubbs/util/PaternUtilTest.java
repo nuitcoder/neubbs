@@ -32,7 +32,7 @@ public class PaternUtilTest {
       };
 
       for (String param: params) {
-         System.out.println("input param=" + param + ": isPureEnglish() -> " + PatternUtil.isPureEngish(param));
+         System.out.println("input param=" + param + ": isPureEnglish() -> " + PatternUtil.isPureEnglish(param));
       }
    }
 

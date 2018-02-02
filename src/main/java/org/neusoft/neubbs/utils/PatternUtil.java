@@ -5,6 +5,14 @@ import java.util.regex.Pattern;
 
 /**
  * 正则匹配 工具类
+ *      - 是否为纯数字
+ *      - 是否为纯英文
+ *      - 匹配用户名
+ *      - 匹配邮箱
+ *      - 匹配图片类型
+ *      - 匹配话题类型
+ *
+ * 【注意】该类大部分函数，主要用于请求参数检查工具类（RequestParamCheckUtil.java）,反射调用
  *
  * @author Suvan
  */
@@ -12,45 +20,40 @@ public final class PatternUtil {
 
     private PatternUtil() { }
 
-    private static final String EXIST_NO_PURE_NUMBER = "[^0-9]";
-    private static final String PURE_ENGILISH = "^[A-Za-z]+$";
-    private static final String MATCH_USERNAME = "^[A-Za-z0-9]{3,20}$";
-    private static final String MATCH_EMAIL = "^([a-z0-9A-Z]+[-|\\.]?)+[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)"
+    private static final String NO_NUMBER = "[^0-9]";
+    private static final String NO_ENGLISH = "^[A-Za-z]+$";
+
+    private static final String USERNAME_FORMAT = "^[A-Za-z0-9]{3,20}$";
+    private static final String EMAIL_FORMAT = "^([a-z0-9A-Z]+[-|\\.]?)+[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)"
                                                 + "+[a-zA-Z]{2,}$";
-    private static final String MATCH_IMAGE_SUFFIX =  ".+(.JPEG|.jpeg|.JPG|.jpg|.GIF|.gif|.BMP|.bmp|.PNG|.png)$";
-    private static final String COVER_IMAGE_TYPE = ".+/(JPG|jpg|PNG|png|JPEG|jpeg)";
-    private static final String MATCH_CHINESE = "[\\u4e00-\\u9fa5]";
-    private static final String MATCH_CHINESE_AND_ENGLISH = "^[\\u4e00-\\u9fa5a-zA-Z]+$";
+    private static final String USER_AVATAR_FORMAT = ".+/(JPG|jpg|PNG|png|JPEG|jpeg)";
+
+    private static final String CHINESE_AND_ENGLISH_TYPE  = "^[\\u4e00-\\u9fa5a-zA-Z]+$";
 
 
     /**
-     * 是否为纯数字检测（检测是否存在非 0 ~ 9 字符）
+     * 是否为纯数字
+     *      - 检测是否存在非 0 ~ 9 字符
      *
      * @param str 纯数字类型字符串
      * @return boolean 检测结果
      */
     public static boolean isPureNumber(String str) {
-        Pattern pattern = Pattern.compile(EXIST_NO_PURE_NUMBER);
-        Matcher matcher = pattern.matcher(str);
-
-        //ther are other characters, no is pure number
-        return !matcher.find();
+        //there are other characters, no is pure number
+        return !Pattern.compile(NO_NUMBER).matcher(str).find();
     }
 
     /**
-     * 是否为全英文检测
+     * 是否为纯英文
      *      - 支持大小写
      *      - 匹配由 26 个英文字母组成的字符串
      *      - 不能存在空格，以及其他符号
      *
      * @param str 匹配结果
-     * @return boolean 匹配结果（true-是，false-否，存在非英文字符）
+     * @return boolean 匹配结果（true-是，false-否）
      */
-    public static boolean isPureEngish(String str) {
-        Pattern pattern = Pattern.compile(PURE_ENGILISH);
-        Matcher matcher = pattern.matcher(str);
-
-        return matcher.find();
+    public static boolean isPureEnglish(String str) {
+        return match(str, NO_ENGLISH);
     }
 
     /**
@@ -60,23 +63,17 @@ public final class PatternUtil {
      * @return boolean 匹配结果
      */
     public static boolean matchUsername(String username) {
-        Pattern pattern = Pattern.compile(MATCH_USERNAME);
-        Matcher matcher = pattern.matcher(username);
-
-        return matcher.matches();
+        return match(username, USERNAME_FORMAT);
     }
 
     /**
      * 匹配邮箱
      *
      * @param email 邮箱字符串
-     * @return Boolean 匹配结果
+     * @return boolean 匹配结果
      */
     public static boolean matchEmail(String email) {
-        Pattern pattern = Pattern.compile(MATCH_EMAIL);
-        Matcher matcher = pattern.matcher(email);
-
-        return matcher.matches();
+        return match(email, EMAIL_FORMAT);
     }
 
 
@@ -84,25 +81,39 @@ public final class PatternUtil {
      * 匹配图片类型
      *
      * @param imageType 图片类型字符串
-     * @return Boolean 匹配结果
+     * @return boolean 匹配结果
      */
     public static boolean matchUserImage(String imageType) {
-        Pattern pattern = Pattern.compile(COVER_IMAGE_TYPE);
-        Matcher matcher = pattern.matcher(imageType);
-
-        return matcher.matches();
+        return match(imageType, USER_AVATAR_FORMAT);
     }
 
     /**
      * 匹配话题类型
      *
      * @param category 话题分类
-     * @return Boolean 匹配结果
+     * @return boolean 匹配结果
      */
     public static boolean matchTopicCategory(String category) {
-       Pattern pattern = Pattern.compile(MATCH_CHINESE_AND_ENGLISH);
-       Matcher matcher = pattern.matcher(category);
+       return match(category, CHINESE_AND_ENGLISH_TYPE);
+    }
 
-       return matcher.matches();
+    /*
+     * ***********************************************
+     * private method
+     * ***********************************************
+     */
+
+    /**
+     * 匹配器
+     *      - 传入字符串与正则表达式，判断是否匹配
+     *
+     * @param str 需匹配字符串
+     * @param regexp 正则表达式（匹配规则）
+     * @return 匹配结果（true-成功匹配，false-不匹配）
+     */
+    private static boolean match(String str, String regexp) {
+        Pattern pattern = Pattern.compile(regexp);
+        Matcher matcher = pattern.matcher(str);
+        return matcher.matches();
     }
 }
