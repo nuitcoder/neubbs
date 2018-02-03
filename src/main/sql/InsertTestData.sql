@@ -1,31 +1,45 @@
 /*
-Navicat MySQL Data Transfer
+ * Source Server         : neubbs
+ * Source Server Version : 50711
+ * Source Host           : localhost:3306
+ * Source Database       : neubbs
 
-Source Server         :  neubbs
-Source Server Version : 50711
-Source Host           : 云数据库:3306
-Source Database       : neubbs
+ * Target Server Type    : MYSQL
+ * Target Server Version : 50711
 
-Target Server Type    : MYSQL
-Target Server Version : 50711
-File Encoding         : 65001
+ * Date: 2017-12-24 08:28:07
+ * Last Update Time： 2018-02-03 15:40:32
 
-Date: 2017-12-24 08:28:07
+ * forum_user               [用户基本信息]         6
+ * forum_user_action        [用户行为]            6
+ * forum_user_dynamic       [用户动态]            6
+ *
+ * forum_topic_category     [话题分类]            10
+ * forum_topic              [话题基本信息]        100
+ * forum_topic_content      [话题内容]            100
+ * forum_topic_action       [话题行为]            100
+ * forum_topic_reply        [话题回复]            2000
+ *
+ * forum_message            [消息记录]            0
+ */
 
-forum_user               [用户基本信息]         6
-forum_user_action        [用户行为]            6
-forum_user_dynamic       [用户动态]            6
 
-forum_topic_category     [话题分类]            10
-forum_topic              [话题基本信息]        100
-forum_topic_content      [话题内容]            100
-forum_topic_action       [话题行为]            100
-corum_topic_reply        [话题回复]            2000
+-- 使用 neubbs 数据库
+USE neubbs;
 
-*/
-
+-- 取消外键约束
 SET FOREIGN_KEY_CHECKS=0;
 
+-- 删除表中数据
+TRUNCATE TABLE forum_user;
+TRUNCATE TABLE forum_user_action;
+TRUNCATE TABLE forum_user_dynamic;
+TRUNCATE TABLE forum_topic_category;
+TRUNCATE TABLE forum_topic;
+TRUNCATE TABLE forum_topic_content;
+TRUNCATE TABLE forum_topic_action;
+TRUNCATE TABLE forum_topic_reply;
+TRUNCATE TABLE forum_message;
 
 -- ----------------------------
 -- Records of forum_user

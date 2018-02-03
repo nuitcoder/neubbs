@@ -1,29 +1,35 @@
 /*
-Navicat MySQL Data Transfer
+ * Source Server         : neubbs
+ * Source Server Version : 50711
+ * Source Host           : localhost:3306
+ * Source Database       : neubbs
 
-Source Server         : neubbs
-Source Server Version : 50711
-Source Host           : 云服务器:3306
-Source Database       : neubbs
+ * Target Server Type    : MYSQL
+ * Target Server Version : 50711
 
-Target Server Type    : MYSQL
-Target Server Version : 50711
-File Encoding         : 65001
-
-Date: 2017-12-07 17:26:30
+ * Date:              2017-12-07 17:26:30
+ * Last Update Time： 2018-02-03 15:26:05
 */
 
+-- 创建数据库
+CREATE DATABASE IF NOT EXISTS `neubbs` CHARACTER SET UTF8;
 
--- MySQL中取消外键约束
-SET FOREIGN_KEY_CHECKS=0;
+-- 使用 neubbs 数据库
+USE neubbs;
 
+-- 取消外键约束
+SET FOREIGN_KEY_CHECKS = 0;
 
--- 删除原有表
+-- 删除表（若存在，执行删除操作，重复执行脚本，可清空数据库）
 DROP TABLE IF EXISTS `forum_user`;
+DROP TABLE IF EXISTS `forum_user_action`;
+DROP TABLE IF EXISTS `forum_user_dynamic`;
+DROP TABLE IF EXISTS `forum_topic_category`;
 DROP TABLE IF EXISTS `forum_topic`;
 DROP TABLE IF EXISTS `forum_topic_content`;
+DROP TABLE IF EXISTS `forum_topic_action`;
 DROP TABLE IF EXISTS `forum_topic_reply`;
-
+DROP TABLE IF EXISTS `forum_message`;
 
 -- ----------------------------
 -- 论坛用户表
