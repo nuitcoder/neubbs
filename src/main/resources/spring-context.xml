@@ -92,16 +92,18 @@
         </property>
     </bean>
 
-	<!-- AOP配置 -->
+	<!-- AOP 事务配置 -->
 	<aop:config proxy-target-class="true">
 		<!-- service 包下所有 Bean 的所有方法拥有事务 -->
 		<aop:pointcut id = "serviceMethod" expression="execution(* org.neusoft.neubbs.service..*(..))" />
 		<!-- 声明事务切面 -->
 		<aop:advisor pointcut-ref="serviceMethod" advice-ref="txAdvice"/>
 	</aop:config>
-	<tx:advice id="txAdvice" transaction-manager="transactionManager"> <!-- 横切事务管理器 -->
+	<!-- TX 横切事务管理器 -->
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
 		<tx:attributes>
-			<tx:method name="*" rollback-for="Exception"/> <!-- 出现异常，事务回滚 -->
+			<!-- 出现异常，事务回滚 -->
+			<tx:method name="*" rollback-for="Exception"/>
 		</tx:attributes>
 	</tx:advice>
 </beans>

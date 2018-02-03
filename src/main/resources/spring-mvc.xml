@@ -15,16 +15,16 @@
 	<!-- 开启注解 -->
 	<mvc:annotation-driven />
 
-	<!-- Spring容器忽略静态资源（交给web容器处理）-->
+	<!-- Spring 容器忽略静态资源（交给 Web 容器处理）-->
 	<mvc:default-servlet-handler/>
 
-	<!-- 配置视图解析器,默认拼接URL -->
+	<!-- 配置视图解析器,默认拼接 URL -->
 	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
 		<property name="prefix" value="/WEB-INF/jsp/" />
 		<property name="suffix" value=".jsp" />
 	</bean>
 
-	<!-- 处理JSON数据,中文乱码 -->
+	<!-- 处理 JSON 数据,中文乱码 -->
 	<mvc:annotation-driven>
 		<mvc:message-converters>
 			<bean class="org.springframework.http.converter.StringHttpMessageConverter">
@@ -40,9 +40,9 @@
 	<!-- 配置拦截器 -->
 	<mvc:interceptors>
 		<mvc:interceptor>
-			<mvc:mapping path="/api/**" /><!-- 所有api均执行拦截 -->
+			<!-- 所有api均执行拦截 -->
+			<mvc:mapping path="/api/**" />
 			<bean class="org.neusoft.neubbs.controller.interceptor.ApiInterceptor"></bean>
 		</mvc:interceptor>
 	</mvc:interceptors>
-
 </beans>
