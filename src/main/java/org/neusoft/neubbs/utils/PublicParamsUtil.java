@@ -7,6 +7,17 @@ import javax.servlet.http.HttpSession;
 
 /**
  * 公共参数工具类
+ *      - 设置 http 请求
+ *      - 设置 http 响应
+ *
+ *      - 获取 http 请求
+ *      - 获取 http 响应
+ *      - 获取 session
+ *      - 获取上下文 context
+ *
+ *      - 清空所有信息
+ *
+ * 【注意】该工具类使用 ThreadLocal （线程局部对象）保存变量，隐藏参数的同时，确保线程安全
  *
  * @author Suvan
  */
