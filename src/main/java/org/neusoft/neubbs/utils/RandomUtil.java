@@ -1,9 +1,11 @@
 package org.neusoft.neubbs.utils;
 
-import java.util.Random;
+import org.neusoft.neubbs.constant.api.SetConst;
 
 /**
  * 随机数 工具类
+ *      - 生成随机数
+ *      - 生成随机字符串
  *
  * @author Suvan
  */
@@ -11,71 +13,51 @@ public final class RandomUtil {
 
     private RandomUtil() { }
 
-    private static final int ZERO = 0;
-    private static final int ONE = 1;
-    private static final int TWO = 2;
-    private static final int THREE = 3;
-    private static final int NINE = 9;
-    private static final int TEN = 10;
-    private static final int TWENTY_SIX = 26;
-    private static final int SIXTY_FIVE = 65;
-    private static final int NINETH_SEVEN = 97;
-    private static final int TEN_THOUSAND = 10000;
-
     /**
-     * 获取6位数随机数
+     * 生成随机数
+     *      - Math.random() 能生成 >= 0 且 < 1 的双精度伪随机数
+     *      - 指定 min（最小值），max（最大值）
+     *      - min <= random numbers <= max
+     *      - 参考公式：(随机数 * (max - min + 1)) + 1
      *
-     * @return Integer 整型6位数随机数
+     * @return int 生成随机数
      */
-    public static Integer getSixRandomNumber() {
-        return  (int) ((Math.random() * NINE + ONE) * TEN_THOUSAND);
+    public static int generateRandomNumbers(int min, int max) {
+        //return new Random().nextInt(max - min + 1) + min;
+        return  (int) ((Math.random() * (max - min + 1))) + min;
     }
 
     /**
-     * 获取指定范围的随机数
-     *      - .nextInt(可能出现的数字，从0开始的)，例如：.nextInt(99)  生成  0 <= number < 99
-     *      - 0~99区间.nextInt(100),  1~100区间.nextInt(99) + 1，64~128区间.nextInt(65) + 64
+     * 生成随机字符串
+     *      - 随机字符串取值（a ~ z, A ` Z, 0 ~ 9）
+     *      - 思路
+     *          1. 随机生成 1 ~ 3 范围内的数字
+     *          2. 根据生成数字，判断执行哪个流程（1 - 生成小写字母，2 - 生成大写字母，3 - 生成数字）
+     *          3. 执行流程中，随机生成指定范围的 ASCII 码（97 ~ 122 小写字母）（65 ~ 90 大写字母）
+     *          4. 将其转换成 char 类型，单个字符，追加至结果字符串
      *
-     * @param min 最小范围
-     * @param max 最大范围
-     * @return Integer 生成随机数
-     */
-    public static Integer getRandomNumberByScope(int min, int max) {
-        Random random = new Random();
-
-        return random.nextInt(max - min + ONE) + min;
-    }
-
-    /**
-     * 获取指定长度随机字符串（a-z, A-Z, 0-9）
-     *  - 【公式】 生成 “min <= 随机数 <= max ” 的随机数   int num = min + (int)(Math.random() * (max-min+1))
      *
      * @param len 字符串长度
      * @return String 随机字符串
      */
-    public static String getRandomString(int len) {
-        StringBuilder sb = new StringBuilder();
+    public static String generateRandomString(int len) {
+        StringBuilder resultString = new StringBuilder();
 
         int point;
-        int ascii;
-        for (int i = ZERO; i < len; i++) {
+        int tempASCII;
+        for (int i = 0; i < len; i++) {
+            point = (int) (Math.random() * SetConst.POINT_THREE) + SetConst.POINT_ONE;
 
-            point = ONE + (int) (Math.random() * THREE);
+            //lower case (97 ~ 122), upper case (65 ~ 90), number (0 ~ 9)
+            tempASCII = point == SetConst.POINT_ONE
+                    ? (int) (Math.random() * SetConst.ALL_LETTER_AMOUNT) + SetConst.LOWERCASE_ASCII_MIN
+                    : point == SetConst.POINT_TWO
+                        ? (int) (Math.random() * SetConst.ALL_LETTER_AMOUNT) + SetConst.UPPERCASE_ASCII_MIN
+                        : (int) (Math.random() * SetConst.FIGURE_MAX);
 
-            if (point == ONE) {
-                //number
-                sb.append((int) (Math.random() * TEN));
-            } else if (point == TWO) {
-                //lower case letters(97 - 122)
-                ascii = NINETH_SEVEN + (int) (Math.random() * TWENTY_SIX);
-                sb.append((char) ascii);
-            } else if (point == THREE) {
-                //upper case letter（65 - 90）
-                ascii = SIXTY_FIVE + (int) (Math.random() * TWENTY_SIX);
-                sb.append((char) ascii);
-            }
+            resultString.append(tempASCII <= SetConst.FIGURE_MAX ? String.valueOf(tempASCII) : (char) tempASCII);
         }
 
-        return sb.toString();
+        return resultString.toString();
     }
 }

@@ -15,6 +15,6 @@ public class RandomServiceImpl implements IRandomService {
 
     @Override
     public String generateSixDigitsRandomPassword() {
-        return RandomUtil.getRandomString(SetConst.TEMPORARY_PASSWORD_LENGTH);
+        return RandomUtil.generateRandomString(SetConst.TEMPORARY_PASSWORD_LENGTH);
     }
 }

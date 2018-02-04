@@ -17,9 +17,8 @@ public class RamdomUtilTest {
      * 测试生成各种随机数
      */
     @Test
-    public void testCreateRamdom() {
-        System.out.println("获取 6 位数随机数：" + RandomUtil.getSixRandomNumber());
-        System.out.println("获取指定返回随机数（5 ~ 18）：" + RandomUtil.getRandomNumberByScope(5, 18));
-        System.out.println("获取指定随机字符串（12位数）：" + RandomUtil.getRandomString(12));
+    public void testCreateRandom() {
+        System.out.println("生成随机数：" + RandomUtil.generateRandomNumbers(299, 300));
+        System.out.println("生成随机字符串：" + RandomUtil.generateRandomString(12));
     }
 }

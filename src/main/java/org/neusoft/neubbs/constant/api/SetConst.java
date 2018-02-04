@@ -62,7 +62,6 @@ public final class SetConst {
     public static final int NEGATIVE_ONE = -1;
     public static final int ZERO = 0;
     public static final int ONE = 1;
-    public static final int TWO = 2;
     public static final int FIVE = 5;
     public static final int THOUSAND = 1000;
     public static final int TWENTY_FOUR = 24;
@@ -71,7 +70,6 @@ public final class SetConst {
     /**
      * 长度
      */
-    public static final int LENGTH_ZERO = 0;
     public static final int LENGTH_TWO = 2;
 
     /**
@@ -81,6 +79,33 @@ public final class SetConst {
     public static final int SIZE_ONE = 1;
     public static final int SIZE_TWO = 2;
     public static final int SIZE_THREE = 3;
+
+    /**
+     * 范围
+     *      - 小写字母 ASCII 最小值，最大值
+     *      - 大写字母 ASCII 最小值，最大值
+     *      - 单个数字最小值，最大值
+     */
+    public static final int LOWERCASE_ASCII_MIN = 97;
+    public static final int LOWERCASE_ASCII_MAX = 122;
+    public static final int UPPERCASE_ASCII_MIN = 65;
+    public static final int UPPERCASE_ASCII_MAX = 90;
+    public static final int FIGURE_MIN = 0;
+    public static final int FIGURE_MAX = 10;
+
+    /**
+     * 字母
+     *      - 所有字母数量（26 个字母）
+     */
+    public static final int ALL_LETTER_AMOUNT = 26;
+
+    /**
+     * 指针
+     *      - 适用于流程判断
+     */
+    public static final int POINT_ONE = 1;
+    public static final int POINT_TWO = 2;
+    public static final int POINT_THREE = 3;
 
     /**
      * 用户头像最大面积
