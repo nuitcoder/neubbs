@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
  *      - 匹配图片类型
  *      - 匹配话题类型
  *
- * 【注意】该类大部分函数，主要用于请求参数检查工具类（RequestParamCheckUtil.java）,反射调用
+ * 【注意】该类大部分函数，主要用于请求参数检查工具类（ParamValidateUtil.java）,反射调用
  *
  * @author Suvan
  */

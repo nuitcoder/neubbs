@@ -4,6 +4,7 @@ package org.neusoft.neubbs.utils;
 import org.apache.log4j.Logger;
 import org.neusoft.neubbs.constant.api.ApiMessage;
 import org.neusoft.neubbs.constant.api.ParamConst;
+import org.neusoft.neubbs.constant.api.SetConst;
 import org.neusoft.neubbs.exception.ParamsErrorException;
 
 import java.lang.reflect.InvocationTargetException;
@@ -14,19 +15,23 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Request 请求参数检查 工具类
- *      使用到其余工具类
- *          1. StringUitls.log
- *          2. PatternUtil.log
+ * 参数验证工具类
+ *      - 检查器
  *
  *  @author Suvan
  */
-public final class RequestParamCheckUtil {
+public final class ParamValidateUtil {
 
-    private RequestParamCheckUtil() { }
+    private ParamValidateUtil() { }
+
+    /*
+     * ***********************************************
+     * 静态类变量
+     * ***********************************************
+     */
 
     /**
-     * 请求参数检查长度限制
+     * 请求参数检查长度限制（MIN - MAX）
      *      - 用户名
      *      - 用户密码
      *      - 用户性别
@@ -41,9 +46,8 @@ public final class RequestParamCheckUtil {
      *      - 话题内容
      *      - 回复内容
      *
-     *      - 日志打印 MAX 范围（当长度超过此瞄准，自动 ......）
+     *      - 日志打印 MAX 范围（当长度超过此值，后续内容自动缩略符 ......）
      */
-
      private static final int USERNAME_MIN = 1;
      private static final int USERNAME_MAX = 15;
      private static final int PASSWORD_MIN = 6;
@@ -73,51 +77,40 @@ public final class RequestParamCheckUtil {
 
      private static final int LOG_LENGTH_MAX = 5;
 
-     private static final String VALUE_NULL = "null";
-
+     /**
+      * 存储参数类型检查规则
+      *     - 函数通过 static{ } 静态块注册
+      *     - 仅作用一次，伴随类加载时加载
+      *     - 无需考虑线程安全
+      */
      private static Set<String> allowEmptyTypeSet = new HashSet<>();
      private static Map<String, Scope> typeScopeMap = new HashMap<>();
      private static Map<String, Pattern> typePatternMap = new HashMap<>();
 
-     private static Logger log = Logger.getRootLogger();
-
     /**
-     * 储存范围，最大值与最小值
+     * Log4j 日志
      */
-    static class Scope {
-        int min;
-        int max;
+    private static Logger log = Logger.getRootLogger();
 
-        Scope(int min, int max) {
-            this.min = min;
-            this.max = max;
-        }
-    }
 
-    /**
-     * 储存正则使用，PatternUtils 工具类中方法名 和 日志信息
+    /*
+     * ***********************************************
+     * 静态代码块
+     *      - 参数空检查
+     *          - （参数类型）
+     *      - 参数范围检查
+     *          - （参数类型，范围类（min，max））
+     *      - 参数正则检查
+     *          - （参数类型，正则类（'PattenUtil.java' 的函数名，报的日志信息））
+     *
+     * 【注意】
+     *      1. 参数类型，即是 constant\api\ParamConst.java 中的声明类型
+     *      2. 当需要添加新的规则，直接在静态代码块中，往相应的集合类型(存储参数类型检查规则)直接添加规则
+     *
+     * ***********************************************
      */
-    static class Pattern {
-        String methodName;
-        String logMessage;
-
-        Pattern(String methodName, String logMessage) {
-            this.methodName = methodName;
-            this.logMessage = logMessage;
-        }
-    }
 
     static {
-        /*
-         * 静态代码块
-         *      - 运行空类型集合（不进行空检查）
-         *      - 注册需 “范围检查” 的类型
-         *      - 注册需 “格式检查” 的类型
-         *
-         * 注意：
-         *      - int 类型长度最大 10 位数 （-2147483648 to 2147483648）
-         */
-
         allowEmptyTypeSet.add(ParamConst.BIRTHDAY);
         allowEmptyTypeSet.add(ParamConst.POSITION);
         allowEmptyTypeSet.add(ParamConst.DESCRIPTION);
@@ -137,16 +130,61 @@ public final class RequestParamCheckUtil {
         typeScopeMap.put(ParamConst.REPLY_CONTENT, new Scope(REPLY_CONTENT_MIN, REPLY_CONTENT_MAX));
 
         typePatternMap.put(ParamConst.ID, new Pattern("isPureNumber", " （类型）参数不符合规范，必须为纯数字（0 ~ 9）！"));
-        typePatternMap.put(ParamConst.TOPIC_CATEGORY_NICK,
-                new Pattern("isPureEngish", " （参数）话题分类昵称不符合规范，必须纯英文（a-zA-Z）"));
         typePatternMap.put(ParamConst.NUMBER, new Pattern("isPureNumber", " （类型）参数不符合规范，必须为纯数字(0 ~ 9)！"));
+        typePatternMap.put(ParamConst.TOPIC_CATEGORY_NICK,
+                new Pattern("isPureEnglish", " （参数）话题分类昵称不符合规范，必须纯英文（a-zA-Z）"));
         typePatternMap.put(ParamConst.USERNAME, new Pattern("matchUsername", "（类型）参数不符合规范（A-Z a-z 0-9）"));
         typePatternMap.put(ParamConst.EMAIL, new Pattern("matchEmail", " （类型）参数不符合规范（xxx@xx.xxx）"));
     }
 
 
+    /*
+     * ***********************************************
+     *  私有静态内部类
+     * ***********************************************
+     */
+
+    /**
+     * 范围类
+     */
+    private static class Scope {
+        int min;
+        int max;
+
+        Scope(int min, int max) {
+            this.min = min;
+            this.max = max;
+        }
+    }
+
+    /**
+     * 正则类
+     *  - methodName 对应 'PatternUntil.java' 中函数
+     *  - logMessage 若不满足匹配规则，则打印日志信息
+     */
+     private static class Pattern {
+        String methodName;
+        String logMessage;
+
+        Pattern(String methodName, String logMessage) {
+            this.methodName = methodName;
+            this.logMessage = logMessage;
+        }
+    }
+
+
+     /*
+     * ***********************************************
+     * public method
+     * ***********************************************
+     */
+
     /**
      * 检查器
+     *      - 唯一提供外部调用的公共函数
+     *          - 若类型不在 allowEmptyTypeSet 之中，则执行空检查（默认不进行空检查）
+     *          - 范围检查
+     *          - 正则检查
      *
      * @param type 参数类型
      * @param param 参数值
@@ -157,27 +195,14 @@ public final class RequestParamCheckUtil {
         }
 
         checkScope(type, param);
-
         checkPattern(type, param);
     }
 
-    /**
-     * 检查器
-     *      - 统一空检查
-     *      - 根据不同参数类型，进行相应格式检查
-     *
-     * @param typeParamMap 类型-参数，键值对
+    /*
+     * ***********************************************
+     * private method
+     * ***********************************************
      */
-    public static void check(Map<String, String> typeParamMap) {
-        for (Map.Entry<String, String> entry : typeParamMap.entrySet()) {
-            checkNull(entry.getKey(), entry.getValue());
-        }
-
-        for (Map.Entry<String, String> entry : typeParamMap.entrySet()) {
-            checkScope(entry.getKey(), entry.getValue());
-            checkPattern(entry.getKey(), entry.getValue());
-        }
-    }
 
     /**
      * 空检查
@@ -186,7 +211,7 @@ public final class RequestParamCheckUtil {
      * @param param 参数值
      */
     private static void checkNull(String type, String param) {
-        if (StringUtil.isEmpty(param) | VALUE_NULL.equals(param)) {
+        if (StringUtil.isEmpty(param) | SetConst.VALUE_NULL.equals(param)) {
             log.warn(param + " （" + type + " 类型）参数不能为空；");
             throw new ParamsErrorException(ApiMessage.PARAM_ERROR);
         }
@@ -217,9 +242,10 @@ public final class RequestParamCheckUtil {
     }
 
     /**
-     * 格式检查
+     * 正则检查
+     *      - 反射加载 PatternUtil.java 类实例
      *      - 反射执行类中方法（Class<?>-通配泛型，可代表任何类型，Class<T>在实例化的时候，T要替换成具体类）
-     *      - ethod.invoke(null, param) 静态方法不需要借助实例运行，所以为 null
+     *      - method.invoke(null, param) 静态方法不需要借助实例运行，所以为 null
      *
      * @param type 参数类型
      * @param param 参数值
@@ -232,7 +258,6 @@ public final class RequestParamCheckUtil {
 
         try {
             Class<?> clazz = Class.forName("org.neusoft.neubbs.utils.PatternUtil");
-
             Method method = clazz.getDeclaredMethod(pattern.methodName, String.class);
 
             if (!((boolean) method.invoke(null, param))) {
@@ -241,7 +266,8 @@ public final class RequestParamCheckUtil {
             }
         } catch (NoSuchMethodException | ClassNotFoundException
                 | IllegalAccessException |  InvocationTargetException e) {
-            e.printStackTrace();
+            log.warn("反射加载 PatternUtils.java 失败，异常出现！");
+            throw new ParamsErrorException(ApiMessage.PARAM_ERROR);
         }
     }
 }

@@ -4,11 +4,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.neusoft.neubbs.constant.api.ParamConst;
-import org.neusoft.neubbs.constant.api.SetConst;
-import org.neusoft.neubbs.utils.RequestParamCheckUtil;
-
-import java.util.HashMap;
-import java.util.Map;
+import org.neusoft.neubbs.utils.ParamValidateUtil;
 
 /**
  * 测试 reuqest 参数 检测工具类
@@ -20,11 +16,6 @@ public class RequestParamsCheckUtilTest {
      */
     @Test
     public void testRequestParamsMapCheckNoNull() throws Exception{
-        RequestParamCheckUtil.check(ParamConst.PASSWORD, "1234");
-
-        Map<String, String> typeParamMap = new HashMap<>(SetConst.SIZE_TWO);
-            typeParamMap.put(ParamConst.USERNAME, "sadfasf");
-            typeParamMap.put(ParamConst.EMAIL, "asdfasf");
-        RequestParamCheckUtil.check(typeParamMap);
+        ParamValidateUtil.check(ParamConst.PASSWORD, "1234");
     }
 }

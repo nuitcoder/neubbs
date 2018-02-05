@@ -6,6 +6,7 @@ package org.neusoft.neubbs.constant.api;
  *      - 密码与权限
  *      - HTTP
  *      - 数字类型
+ *      - 判断类型
  *      - 邮箱服务
  *      - 数据库
  *      - 指令
@@ -164,6 +165,15 @@ public final class SetConst {
      */
     public static final int ACCOUNT_ACTIVATED_STATE = 1;
     public static final int ACCOUNT_NO_ACTIVATED_STATE = 0;
+
+
+    /*
+     * ***********************************************
+     * 判断类型
+     * ***********************************************
+     */
+
+    public static final String VALUE_NULL = "null";
 
 
     /*

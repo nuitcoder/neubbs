@@ -21,7 +21,7 @@ public interface IValidationService {
 
     /**
      * 检查工具
-     *      - 使用自定定的 RequestParamCheckUtil.java
+     *      - 使用自定定的 ParamValidateUtil.java
      *      - 支持链式调用
      *
      * @param paramType 参数类型

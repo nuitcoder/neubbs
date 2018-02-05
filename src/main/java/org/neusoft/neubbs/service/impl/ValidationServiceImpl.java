@@ -6,8 +6,8 @@ import org.neusoft.neubbs.constant.api.SetConst;
 import org.neusoft.neubbs.constant.log.LogWarnEnum;
 import org.neusoft.neubbs.exception.ParamsErrorException;
 import org.neusoft.neubbs.service.IValidationService;
+import org.neusoft.neubbs.utils.ParamValidateUtil;
 import org.neusoft.neubbs.utils.PatternUtil;
-import org.neusoft.neubbs.utils.RequestParamCheckUtil;
 import org.springframework.stereotype.Service;
 
 /**
@@ -20,14 +20,14 @@ public class ValidationServiceImpl implements IValidationService {
 
     @Override
     public IValidationService check(String paramType, String paramValue) {
-        RequestParamCheckUtil.check(paramType, paramValue);
+        ParamValidateUtil.check(paramType, paramValue);
         return this;
     }
 
     @Override
     public IValidationService checkUsername(String username) {
         String paramType = PatternUtil.matchEmail(username) ? ParamConst.EMAIL : ParamConst.USERNAME;
-        RequestParamCheckUtil.check(paramType, username);
+        ParamValidateUtil.check(paramType, username);
         return this;
     }
 
