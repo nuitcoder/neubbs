@@ -11,7 +11,7 @@ import org.neusoft.neubbs.utils.RandomUtil;
  * @author Suvan
  */
 @RunWith(JUnit4.class)
-public class RamdomUtilTest {
+public class RandomUtilTest {
 
     /**
      * 测试生成各种随机数

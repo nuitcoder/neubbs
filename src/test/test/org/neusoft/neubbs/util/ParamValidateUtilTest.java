@@ -10,7 +10,7 @@ import org.neusoft.neubbs.utils.ParamValidateUtil;
  * 测试 reuqest 参数 检测工具类
  */
 @RunWith(JUnit4.class)
-public class RequestParamsCheckUtilTest {
+public class ParamValidateUtilTest {
     /**
      * 测试 参数集合的合法性检测（非空，长度，正则规范）
      */
