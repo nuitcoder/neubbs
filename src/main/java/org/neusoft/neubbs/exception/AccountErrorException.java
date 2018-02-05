@@ -5,7 +5,7 @@ import org.neusoft.neubbs.controller.annotation.ApiException;
 
 /**
  * 数据库异常
- *      1.声明 @ApiException ，表名被 ApiExceptinHandler处理
+ *      1. 声明 @ApiException ，表名被 ApiExceptionHandler处理
  *
  * @author Suvan
  */

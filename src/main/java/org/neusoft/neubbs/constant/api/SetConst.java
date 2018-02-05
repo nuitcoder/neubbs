@@ -1,8 +1,15 @@
 package org.neusoft.neubbs.constant.api;
 
 /**
- * 设置信息
- *      - 项目使用各项常量设置
+ * 设置常量
+ *      - 时间
+ *      - 密码与权限
+ *      - HTTP
+ *      - 数字类型
+ *      - 邮箱服务
+ *      - 数据库
+ *      - 指令
+ *      - 记录行为
  *
  * @author Suvan
  */
@@ -10,17 +17,29 @@ public final class SetConst {
 
     private SetConst() { }
 
-    /**
-     * Session 储存
-     *      - 图片验证码（储存在 Session）
+    /*
+     * ***********************************************
+     *  时间
+     * ***********************************************
      */
-    public static final String SESSION_CAPTCHA = "captcha";
 
     /**
-     * 权限
-     *      - 管理员权限
+     * 时间
+     *      1000 ms
+     *      24 小时
+     *      60 秒
+     *      60 分钟
      */
-    public static final String RANK_ADMIN = "admin";
+    public static final int TIME_THOUSAND_MS = 1000;
+    public static final int TIME_TWENTY_FOUR_HOUR = 24;
+    public static final int TIME_SIXTY_S = 60;
+    public static final int TIME_SIXTY_MIN = 60;
+
+    /**
+     * 日期时间
+     *      - 1 天（ms，毫秒）
+     */
+    public static final long ONE_DAY_MS = 86400000L;
 
     /**
      * 过期时间
@@ -32,11 +51,12 @@ public final class SetConst {
     public static final int EXPIRE_TIME_ZERO_S  = 0;
     public static final long EXPIRE_TIME_REDIS_NO_EXIST_KEY = -2L;
 
-    /**
-     * 日期时间
-     *      - 1 天（ms，毫秒）
+
+    /*
+     * ***********************************************
+     * 密码与权限
+     * ***********************************************
      */
-    public static final long ONE_DAY_MS = 86400000L;
 
     /**
      * 临时密码长度
@@ -49,23 +69,43 @@ public final class SetConst {
     public static final String JWT_TOKEN_SECRET_KEY = "this neubbs is best";
 
     /**
-     * 数据源类型
-     *      - 腾讯云 MySQL
-     *      - 本地 MySQL
+     * 权限
+     *      - 管理员权限
      */
-    public static final String CLOUD_DATA_SOURCE_MYSQL = "cloudDataSourceMysql";
-    public static final String LOCALHOST_DATA_SOURCE_MYSQL = "localDataSourceMysql";
+    public static final String RANK_ADMIN = "admin";
+
+
+    /*
+     * ***********************************************
+     * HTTP
+     * ***********************************************
+     */
 
     /**
-     * 数字
+     * Session 储存
+     *      - 图片验证码（储存在 Session）
      */
-    public static final int NEGATIVE_ONE = -1;
-    public static final int ZERO = 0;
-    public static final int ONE = 1;
-    public static final int FIVE = 5;
-    public static final int THOUSAND = 1000;
-    public static final int TWENTY_FOUR = 24;
-    public static final int SIXTY = 60;
+    public static final String SESSION_CAPTCHA = "captcha";
+
+
+    /*
+     * ***********************************************
+     * 数字类型
+     * ***********************************************
+     */
+
+    /**
+     * 性别
+     */
+    public static final int SEX_NO = -1;
+    public static final int SEX_GIRL = 0;
+    public static final int SEX_BOY = 1;
+
+    /**
+     * 索引
+     *      - 不存在字符（索引位置返回 -1）
+     */
+    public static final int INDEX_NO = -1;
 
     /**
      * 长度
@@ -79,9 +119,10 @@ public final class SetConst {
     public static final int SIZE_ONE = 1;
     public static final int SIZE_TWO = 2;
     public static final int SIZE_THREE = 3;
+    public static final int SIZE_SEVEN = 7;
 
     /**
-     * 范围
+     * 字符的 ASCII 码数字范围
      *      - 小写字母 ASCII 最小值，最大值
      *      - 大写字母 ASCII 最小值，最大值
      *      - 单个数字最小值，最大值
@@ -124,6 +165,13 @@ public final class SetConst {
     public static final int ACCOUNT_ACTIVATED_STATE = 1;
     public static final int ACCOUNT_NO_ACTIVATED_STATE = 0;
 
+
+    /*
+     * ***********************************************
+     * 邮箱服务
+     * ***********************************************
+     */
+
     /**
      * 邮箱服务
      *      - 邮件发送人
@@ -134,10 +182,32 @@ public final class SetConst {
     public static final String EMAIL_SUBJECT_ACTIVATE = "Neubbs 账户激活";
     public static final String EMAIL_SUBJECT_TEMPORARY_PASSWORD = "Neubbs 账户临时密码";
 
+
+    /*
+     * ***********************************************
+     * 数据库
+     * ***********************************************
+     */
+
+    /**
+     * 数据源类型
+     *      - 腾讯云 MySQL
+     *      - 本地 MySQL
+     */
+    public static final String CLOUD_DATA_SOURCE_MYSQL = "cloudDataSourceMysql";
+    public static final String LOCALHOST_DATA_SOURCE_MYSQL = "localDataSourceMysql";
+
     /**
      * Redis 数据库储存
      */
     public static final String VALUE_MAIL_SEMD_INTERVAL = "mail send interval";
+
+
+    /*
+     * ***********************************************
+     * 指令
+     * ***********************************************
+     */
 
     /**
      * 指令
@@ -150,6 +220,13 @@ public final class SetConst {
     public static final String COMMAND_DEC = "dec";
     public static final String COMMAND_ZERO = "0";
     public static final String COMMAND_ONE = "1";
+
+
+    /*
+     * ***********************************************
+     * 记录行为
+     * ***********************************************
+     */
 
     /**
      * 用户行为

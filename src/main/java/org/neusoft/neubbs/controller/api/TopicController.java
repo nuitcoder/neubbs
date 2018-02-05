@@ -100,8 +100,7 @@ public class TopicController {
         //read + 1 (default no add)
         if (isAddTopicRead) {
             topicService.increaseTopicRead(topicIdInt);
-            topicContentPageModelMap.put(ParamConst.READ,
-                    (int) topicContentPageModelMap.get(ParamConst.READ) + SetConst.ONE);
+            topicContentPageModelMap.put(ParamConst.READ, (int) topicContentPageModelMap.get(ParamConst.READ) + 1);
         }
 
         topicContentPageModelMap.put(ParamConst.IS_LIKE_TOPIC, isCurrentUserLikeThisTopic);

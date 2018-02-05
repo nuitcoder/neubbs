@@ -199,7 +199,7 @@ public class TopicServiceImpl implements ITopicService {
         int userId = username == null ? 0 : this.getUserNotNullByName(username).getId();
 
         int topicNumber = this.countTopicCount(categoryId, userId);
-        if (topicNumber == SetConst.ZERO) {
+        if (topicNumber == 0) {
             throw new TopicErrorException(ApiMessage.NO_QUERY_TOPICS).log(LogWarnEnum.TS17);
         }
 

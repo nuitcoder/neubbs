@@ -35,7 +35,7 @@ public class UserDO {
      * Constructor
      */
     public UserDO() {
-        this.sex = SetConst.NEGATIVE_ONE;
+        this.sex = SetConst.SEX_NO;
         this.birthday = "";
         this.position = "";
         this.description = "";

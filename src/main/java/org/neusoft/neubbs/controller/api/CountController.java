@@ -103,7 +103,7 @@ public class CountController {
         validationService.check(ParamConst.USER_ID, userId);
 
         int userIdInt = Integer.valueOf(userId);
-        Map<String, Object> modelMap = new LinkedHashMap<>(SetConst.FIVE);
+        Map<String, Object> modelMap = new LinkedHashMap<>(SetConst.SIZE_SEVEN);
             modelMap.put(ParamConst.FOLLOWING, userService.countUserFollowingTotals(userIdInt));
             modelMap.put(ParamConst.FOLLOWED, userService.countUserFollowedTotals(userIdInt));
             modelMap.put(ParamConst.LIKE, userService.countUserLikeTopicTotals(userIdInt));

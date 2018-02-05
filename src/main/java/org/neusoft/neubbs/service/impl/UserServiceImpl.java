@@ -362,7 +362,7 @@ public class UserServiceImpl implements IUserService {
             //input `dec`
             String likeTopicIdArrayString = userActionDAO.getUserAction(userId).getLikeTopicIdJsonArray();
             int indexTopicId = JSON.parseArray(likeTopicIdArrayString).indexOf(topicId);
-            if (indexTopicId == SetConst.NEGATIVE_ONE) {
+            if (indexTopicId == SetConst.INDEX_NO) {
                 throw new TopicErrorException(ApiMessage.USER_NO_LIKE_THIS_TOPIC).log(LogWarnEnum.TS21);
             }
 

@@ -316,7 +316,8 @@ public final class AccountController {
         long remainAllowSendEmailInterval = cacheService.getEmailKeyExpireTime(email);
         if (remainAllowSendEmailInterval != SetConst.EXPIRE_TIME_REDIS_NO_EXIST_KEY) {
             Map<String, Object> timerMap = new HashMap<>(SetConst.SIZE_ONE);
-                timerMap.put(ParamConst.TIMER, remainAllowSendEmailInterval / SetConst.THOUSAND);
+                timerMap.put(ParamConst.TIMER, remainAllowSendEmailInterval / SetConst.TIME_THOUSAND_MS);
+
             return new ApiJsonDTO().fail().message(ApiMessage.WAIT_TIMER).map(timerMap);
         }
 

@@ -87,7 +87,7 @@ public final class StringUtil {
      */
     public static String getTodayTwentyFourClockTimestamp() {
         Calendar calendar = Calendar.getInstance();
-            calendar.set(Calendar.HOUR_OF_DAY, SetConst.TWENTY_FOUR);
+            calendar.set(Calendar.HOUR_OF_DAY, SetConst.TIME_TWENTY_FOUR_HOUR);
             calendar.set(Calendar.SECOND, 0);
             calendar.set(Calendar.MINUTE, 0);
             calendar.set(Calendar.MILLISECOND, 0);

@@ -76,7 +76,8 @@ public class NeubbsConfigDO {
      */
     public Integer getCookieAutoLoginMaxAgeDay() {
         //day -> second
-        return cookieAutoLoginMaxAgeDay * SetConst.TWENTY_FOUR * SetConst.SIXTY * SetConst.SIXTY;
+        return cookieAutoLoginMaxAgeDay * SetConst.TIME_TWENTY_FOUR_HOUR
+                * SetConst.TIME_SIXTY_MIN * SetConst.TIME_SIXTY_S;
     }
 
     public Integer getTopicsApiRequestParamLimitDefault() {
