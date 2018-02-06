@@ -2,15 +2,21 @@ package org.neusoft.neubbs.controller.handler;
 
 import org.apache.log4j.Logger;
 import org.neusoft.neubbs.constant.api.ApiMessage;
+import org.neusoft.neubbs.constant.api.SetConst;
 import org.neusoft.neubbs.controller.annotation.ApiException;
 import org.neusoft.neubbs.exception.IPrintLog;
 import org.neusoft.neubbs.utils.AnnotationUtil;
-import org.neusoft.neubbs.utils.ResponsePrintWriterUtil;
+import org.neusoft.neubbs.utils.JsonUtil;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * api 异常处理器
@@ -28,14 +34,53 @@ public class ApiExceptionHandler implements HandlerExceptionResolver {
                                          Object o, Exception e) {
         //Exception had to statement @ApiException
         if (AnnotationUtil.hasClassAnnotation(e.getClass(), ApiException.class)) {
-            ResponsePrintWriterUtil.outFailJSONMessage(response, e.getMessage());
+            this.outFailJsonMessage(response, e.getMessage());
             this.printApiExceptionToLocalLog(e);
         } else {
             //output unknown error
-            ResponsePrintWriterUtil.outFailJSONMessage(response, ApiMessage.UNKNOWN_ERROR);
+            this.outFailJsonMessage(response, ApiMessage.UNKNOWN_ERROR);
             e.printStackTrace();
         }
         return null;
+    }
+
+
+    /*
+     * ***********************************************
+     * private method
+     * ***********************************************
+     */
+
+    /**
+     * 输出页面失败信息
+     *
+     * @param response http响应
+     * @param failMessage 页面”message“字段的失败信息
+     */
+    private void outFailJsonMessage(HttpServletResponse response, String failMessage) {
+        //set response headers
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("application/json;charset=UTF-8");
+
+        //build response page output json map
+        Map<String, Object> map = new LinkedHashMap<>(SetConst.SIZE_THREE);
+        map.put("success", false);
+        map.put("message", failMessage);
+        map.put("model", new HashMap<>(0));
+
+        //print writer output stream
+        PrintWriter writer = null;
+        try {
+            writer = response.getWriter();
+            writer.print(JsonUtil.toJSONString(map));
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        } finally {
+            if (writer != null) {
+                writer.flush();
+                writer.close();
+            }
+        }
     }
 
     /**
