@@ -101,7 +101,7 @@ public class InsertTestData {
         UserDynamicDO userDynamic = new UserDynamicDO();
         for(String adminName: administratorArray){
             user.setName(adminName);
-            user.setPassword(SecretUtil.encryptUserPassword(password));
+            user.setPassword(SecretUtil.encryptMd5(SecretUtil.encryptMd5(password) + password));
             user.setEmail(emailArray[count++]);
 
             //register user newUserId > 0

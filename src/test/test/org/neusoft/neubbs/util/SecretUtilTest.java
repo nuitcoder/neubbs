@@ -5,45 +5,36 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.neusoft.neubbs.utils.SecretUtil;
 
-import javax.crypto.SecretKey;
-
 /**
  * SecretUtil 测试类
  */
 @RunWith(JUnit4.class)
 public class SecretUtilTest {
+
     /**
      * 测试 MD5 加密
      */
     @Test
-    public void testMd5Encryp(){
-        System.out.println("密文：" + SecretUtil.encryptUserPassword("hello"));
+    public void testEncryptMd5() {
+        String plainText = "Hello World!";
+        System.out.println("MD5 encrypt \"" + plainText + "\" -> " + SecretUtil.encryptMd5(plainText));
     }
 
     /**
-     * 测试 Base64 邮箱加密与解密
+     * 测试 Base64 转码
      */
     @Test
-    public void testEmailBase64() throws Exception {
-        String plaintext = "liushuwei0925@gmail.com-" + System.currentTimeMillis();
-
-        String token = SecretUtil.encryptBase64(plaintext);
-        System.out.println("密文：" + token);
-        System.out.println("明文：" + SecretUtil.decryptBase64(token));
+    public void testEncodeBase64() {
+        String plainText = "Hello World!";
+        System.out.println("Base64 encode \"" + plainText + "\" -> " + SecretUtil.encodeBase64(plainText));
     }
 
     /**
-     * 测试 AES 加密解密
+     * 测试 Base64 解码
      */
     @Test
-    public void testAES(){
-        SecretKey secretKey = SecretUtil.getAESKey();
-        System.out.println("AES 密钥：" + secretKey.toString());
-
-        String cipherText = SecretUtil.encryptAES(secretKey, "明文");
-        System.out.println("AES 密文：" + cipherText);
-
-        String plainText = SecretUtil.decryptAES(secretKey, cipherText);
-        System.out.println("AES 明文：" + plainText);
+    public void testDecodeBase64() {
+        String cipherText = "SGVsbG8gV29ybGQh";
+        System.out.println("Base64 decode \"" + cipherText + "\" -> " + SecretUtil.decodeBase64(cipherText));
     }
 }

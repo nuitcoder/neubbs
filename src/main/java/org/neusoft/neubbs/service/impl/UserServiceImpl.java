@@ -65,7 +65,7 @@ public class UserServiceImpl implements IUserService {
         UserDO user = new UserDO();
             user.setName(username);
             user.setEmail(email);
-            user.setPassword(SecretUtil.encryptUserPassword(password));
+            user.setPassword(this.encryptUserPassword(password));
 
         UserActionDO userAction = new UserActionDO();
             userAction.setUserId(user.getId());
@@ -99,7 +99,7 @@ public class UserServiceImpl implements IUserService {
             throw new AccountErrorException(ApiMessage.USERNAME_OR_PASSWORD_INCORRECT).log(ae.getLog());
         }
 
-        String cipherText = SecretUtil.encryptUserPassword(password);
+        String cipherText = this.encryptUserPassword(password);
         if (!cipherText.equals(user.getPassword())) {
             throw new AccountErrorException(ApiMessage.USERNAME_OR_PASSWORD_INCORRECT).log(LogWarnEnum.US7);
         }
@@ -328,7 +328,7 @@ public class UserServiceImpl implements IUserService {
     @Override
     public UserDO alterUserActivateStateByEmailToken(String emailToken) {
         //parse token
-        String plainText = SecretUtil.decryptBase64(emailToken);
+        String plainText = SecretUtil.decodeBase64(emailToken);
         String[] array = plainText.split("-");
         if (array.length != SetConst.LENGTH_TWO) {
             throw new TokenErrorException(ApiMessage.INVALID_TOKEN).log(LogWarnEnum.US12);
@@ -449,7 +449,7 @@ public class UserServiceImpl implements IUserService {
      */
     private void updateUserPasswordByName(String username, String newPassword) {
         //update forum_user 'fu_password'
-        if (userDAO.updateUserPasswordByName(username, SecretUtil.encryptUserPassword(newPassword)) == 0) {
+        if (userDAO.updateUserPasswordByName(username, this.encryptUserPassword(newPassword)) == 0) {
             throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarnEnum.US2);
         }
     }
@@ -515,6 +515,22 @@ public class UserServiceImpl implements IUserService {
         if (userDAO.getUserByEmail(email) != null) {
             throw new AccountErrorException(ApiMessage.EMAIL_REGISTERED).log(LogWarnEnum.US6);
         }
+    }
+
+    /*
+     * ***********************************************
+     * encrypt method
+     * ***********************************************
+     */
+
+    /**
+     * 加密用户密码
+     *
+     * @param password 用户密码
+     * @return String MD5密文
+     */
+    private String encryptUserPassword(String password) {
+        return SecretUtil.encryptMd5(SecretUtil.encryptMd5(password) + password);
     }
 
     /*

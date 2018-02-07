@@ -19,7 +19,7 @@ import javax.transaction.Transactional;
 /**
  * 测试 IUserDAO 接口
  *      - inject the spring configuration file
- *      - by mehtod name（dictionary order） to do
+ *      - by method name（dictionary order） to do
  *      - class transaction statement, default execute finished rollback
  * @author Suvan
  */
@@ -40,7 +40,7 @@ public class UserDAOTest {
     private UserDO getTestUserDO() {
         UserDO user = new UserDO();
             user.setName("testUser");
-            user.setPassword(SecretUtil.encryptUserPassword("123456"));
+            user.setPassword(SecretUtil.encryptMd5(SecretUtil.encryptMd5("123456") + "123456"));
             user.setEmail("test@neubbs.com");
 
         return user;
@@ -187,7 +187,7 @@ public class UserDAOTest {
         Assert.assertEquals(1, userDAO.saveUser(user));
 
         String username = "testUser";
-        String newPassword = SecretUtil.encryptUserPassword("45678");
+        String newPassword = SecretUtil.encryptMd5(SecretUtil.encryptMd5("45678") + "45678");
         Assert.assertEquals(1, userDAO.updateUserPasswordByName(username, newPassword));
         Assert.assertEquals(newPassword, userDAO.getUserByName(username).getPassword());
 

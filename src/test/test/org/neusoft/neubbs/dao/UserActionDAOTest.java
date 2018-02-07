@@ -42,7 +42,7 @@ public class UserActionDAOTest {
     private UserActionDO saveTestUserActionDOToDatabase() {
         UserDO user = new UserDO();
             user.setName("testUser");
-            user.setPassword(SecretUtil.encryptUserPassword("123456"));
+            user.setPassword(SecretUtil.encryptMd5(SecretUtil.encryptMd5("123456") + "123456"));
             user.setEmail("testUser@neubbs.com");
 
         Assert.assertEquals(1, userDAO.saveUser(user));

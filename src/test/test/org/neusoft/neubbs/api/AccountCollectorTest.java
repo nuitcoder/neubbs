@@ -635,7 +635,10 @@ public class AccountCollectorTest {
         //database check
         UserDO user = userService.getUserInfoByName(inputUsername);
         Assert.assertEquals(user.getName(), inputUsername);
-        Assert.assertEquals(user.getPassword(), SecretUtil.encryptUserPassword(inputNewPassword));
+        Assert.assertEquals(
+                user.getPassword(),
+                SecretUtil.encryptMd5(SecretUtil.encryptMd5(inputNewPassword) + inputNewPassword)
+        );
 
         printSuccessPassTestMehtodMessage();
     }
@@ -945,7 +948,7 @@ public class AccountCollectorTest {
         UserDO user = userService.registerUser("testValidate", "123456", "testValidate@neubbs.com");
 
         //build token
-        String token = SecretUtil.encryptBase64(user.getEmail() + "-" + StringUtil.getTodayTwentyFourClockTimestamp());
+        String token = SecretUtil.encodeBase64(user.getEmail() + "-" + StringUtil.getTodayTwentyFourClockTimestamp());
 
         //validate token and activate user
         mockMvc.perform(
@@ -978,7 +981,7 @@ public class AccountCollectorTest {
         };
 
         for (String param: parmas) {
-            String token = param != null ? SecretUtil.encryptBase64(param) : null;
+            String token = param != null ? SecretUtil.encodeBase64(param) : null;
             System.out.println("input token=" + token);
 
             try {

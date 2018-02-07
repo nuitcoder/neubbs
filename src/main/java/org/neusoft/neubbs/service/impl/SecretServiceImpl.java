@@ -20,7 +20,7 @@ public class SecretServiceImpl implements ISecretService {
 
     @Override
     public String generateValidateEmailToken(String email) {
-        return SecretUtil.encryptBase64(email + "-" + StringUtil.getTodayTwentyFourClockTimestamp());
+        return SecretUtil.encodeBase64(email + "-" + StringUtil.getTodayTwentyFourClockTimestamp());
     }
 
     @Override

@@ -4,24 +4,24 @@ import org.neusoft.neubbs.constant.log.LogWarnEnum;
 import org.neusoft.neubbs.controller.annotation.ApiException;
 
 /**
- * token 错误异常
+ * 加密失败异常
  *
  * @author Suvan
  */
 @ApiException
-public class TokenErrorException extends RuntimeException implements IPrintLog {
+public class SecretFailException extends RuntimeException implements IPrintLog {
 
     private LogWarnEnum logWarnEnum;
 
     /**
      * Constructor
      */
-    public TokenErrorException(String message) {
+    public SecretFailException(String message) {
         super(message);
     }
 
     @Override
-    public TokenErrorException log(LogWarnEnum logWarnEnum) {
+    public SecretFailException log(LogWarnEnum logWarnEnum) {
         this.logWarnEnum = logWarnEnum;
         return this;
     }

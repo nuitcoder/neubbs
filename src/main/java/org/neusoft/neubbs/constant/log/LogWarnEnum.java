@@ -15,7 +15,7 @@ public enum LogWarnEnum {
      *      TS1 1- Topic Service
      *      FTPS - FTP Service
      *      VS - Validation Service
-     *
+     *      UC - util class
      */
     FS1(1, "用户没有选择上传文件"),
     FS2(2, " 文件类型不符合头像类型（jpg | png | jpeg）"),
@@ -46,7 +46,6 @@ public enum LogWarnEnum {
     US16(16, " 数据库中不存在该用户 "),
     US17(17, "账户未激活，无权调用 api"),
 
-
     TS1(1, " 话题保存失败"),
     TS2(2, " 话题内容保存失败"),
     TS3(3, " 话题回复保存失败"),
@@ -76,11 +75,14 @@ public enum LogWarnEnum {
     FTPS2(2, "用户头像图片，抛出 IO 异常"),
 
     VS1(1, " 需按规定输入相应参数，不能输入空参数"),
-    VS2(2, " 指令无效，请根据相应约定，输入运行范围内指令");
+    VS2(2, " 指令无效，请根据相应约定，输入运行范围内指令"),
+
+    UC1(1, " MD5 加密失败"),
+    UC2(2, " Base64 转码失败");
+
 
     private Integer errorCode;
     private String errorMessage;
-
 
     LogWarnEnum(int errorCode, String errorMessage) {
         this.errorCode = errorCode;

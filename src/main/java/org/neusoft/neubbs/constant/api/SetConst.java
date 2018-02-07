@@ -103,6 +103,12 @@ public final class SetConst {
     public static final int SEX_BOY = 1;
 
     /**
+     * 进制
+     *      - 16 进制
+     */
+    public static final int REDIX_SIXTEEN = 16;
+
+    /**
      * 索引
      *      - 不存在字符（索引位置返回 -1）
      */
