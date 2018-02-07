@@ -3,6 +3,9 @@ package org.neusoft.neubbs.utils;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
+import org.neusoft.neubbs.constant.api.ApiMessage;
+import org.neusoft.neubbs.constant.log.LogWarnEnum;
+import org.neusoft.neubbs.exception.UtilClassException;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
@@ -27,26 +30,32 @@ public final class FtpUtil {
 
     private FtpUtil() { }
 
+    private static volatile FTPClient ftpClient;
+
     private static String ftpIp;
     private static Integer ftpPort;
     private static String ftpUsername;
     private static String ftpPassword;
 
-    private static volatile FTPClient ftpClient;
-
+    /*
+     * ***********************************************
+     * 静态代码块
+     *     - 读取 src/main/resources/neubbs.properties
+     * ***********************************************
+     */
     static {
         ftpClient = new FTPClient();
 
         Resource resource = new ClassPathResource("/neubbs.properties");
         try {
-            //read /resources/neubbs.properties
             Properties props = PropertiesLoaderUtils.loadProperties(resource);
-                ftpIp = props.getProperty("ftp.ip");
-                ftpPort = Integer.parseInt(props.getProperty("ftp.port"));
-                ftpUsername = props.getProperty("ftp.username");
-                ftpPassword = props.getProperty("ftp.password");
+
+            ftpIp = props.getProperty("ftp.ip");
+            ftpPort = Integer.parseInt(props.getProperty("ftp.port"));
+            ftpUsername = props.getProperty("ftp.username");
+            ftpPassword = props.getProperty("ftp.password");
         } catch (IOException ioe) {
-            ioe.printStackTrace();
+            throw new UtilClassException(ApiMessage.UNKNOWN_ERROR).log(LogWarnEnum.UC3);
         }
     }
 
