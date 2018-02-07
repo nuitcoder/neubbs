@@ -43,7 +43,7 @@ public class EmailServiceImpl implements IEmailService {
     @Override
     public void send(String sendNickname, String receiveEmail, String sendSubject, String sendEmailContent) {
         taskExecutor.execute(
-                () -> SendEmailUtil.sendEmail(sendNickname, receiveEmail, sendSubject, sendEmailContent)
+                () -> SendEmailUtil.send(sendNickname, receiveEmail, sendSubject, sendEmailContent)
         );
     }
 }

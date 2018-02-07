@@ -1,5 +1,9 @@
 package org.neusoft.neubbs.utils;
 
+import org.neusoft.neubbs.constant.api.ApiMessage;
+import org.neusoft.neubbs.constant.api.SetConst;
+import org.neusoft.neubbs.constant.log.LogWarnEnum;
+import org.neusoft.neubbs.exception.UtilClassException;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
@@ -18,6 +22,7 @@ import java.util.Properties;
 
 /**
  * 发送邮件工具类
+ *      - 发送（邮件）
  *
  * @author Suvan
  */
@@ -26,45 +31,33 @@ public final class SendEmailUtil {
     private SendEmailUtil() { }
 
     /**
-     * 邮件格式
-     */
-    private static final String FROM_SUBJECT_ENCODING = "UTF-8";
-    private static final String FROM_CONTENT_TYPE = "text/html;charset=UTF-8";
-
-    /**
      * 腾讯企业邮箱
-     */
-    private static final String TO_HOST = "smtp.exmail.qq.com";
-    private static final String TO_SMTP = "smtp";
-    private static final String TO_AUTH = "mail.smtp.auth";
-    private static final String TO_AUTH_TRUE = "true";
-    private static final String TO_MAIL_SMTP_SOCKETFACTORY_CLASS = "mail.smtp.socketFactory.class";
-    private static final String TO_JAVAX_NET_SSL_SSLSOCKETFACTORY = "javax.net.ssl.SSLSocketFactory";
-    private static final String TO_MAIL_SMTP_SOCKETFACTORY_PORT = "mail.smtp.socketFactory.port";
-    private static final String TO_SMTP_SSL_PROT = "465";
-
-    /**
-     * 发送邮件的账户
+     *      - 帐户名
+     *      - 第三方授权码
      */
     private static final String FROM_USERNAME;
     private static final String FROM_AUTHORIZATION_CODE;
 
+    /*
+     * ***********************************************
+     * 静态代码块
+      *     - 读取 src/main/resources/neubbs.properties
+     * ***********************************************
+     */
     static {
         Resource resource = new ClassPathResource("/neubbs.properties");
-        Properties props = null;
         try {
-            //read '/resources/neubbs.properties'
-            props = PropertiesLoaderUtils.loadProperties(resource);
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
-        }
+            Properties props = PropertiesLoaderUtils.loadProperties(resource);
 
-        FROM_USERNAME = props.getProperty("email.service.send.account.username");
-        FROM_AUTHORIZATION_CODE = props.getProperty("email.service.send.account.authorization.code");
+            FROM_USERNAME = props.getProperty("email.service.send.account.username");
+            FROM_AUTHORIZATION_CODE = props.getProperty("email.service.send.account.authorization.code");
+        } catch (IOException ioe) {
+            throw new UtilClassException(ApiMessage.UNKNOWN_ERROR).log(LogWarnEnum.UC3);
+        }
     }
 
     /**
-     * 发送邮件
+     * 发送（邮件）
      *      - 构建邮件请求
      *      - 构建参数
      *      - 构建连接
@@ -80,19 +73,22 @@ public final class SendEmailUtil {
      * @param sendSubject 发送主题
      * @param sendEmailContent 发送内容
      */
-   public static void  sendEmail(String sendNickname, String receiveEmail,
-                                 String sendSubject, String sendEmailContent) {
+   public static void  send(String sendNickname, String receiveEmail,
+                            String sendSubject, String sendEmailContent) {
         JavaMailSenderImpl sender = new JavaMailSenderImpl();
             sender.setUsername(FROM_USERNAME);
             sender.setPassword(FROM_AUTHORIZATION_CODE);
-            sender.setHost(TO_HOST);
-            sender.setProtocol(TO_SMTP);
-            sender.setPort(Integer.parseInt(TO_SMTP_SSL_PROT));
+            sender.setHost(SetConst.TO_HOST);
+            sender.setProtocol(SetConst.TO_SMTP);
+            sender.setPort(Integer.parseInt(SetConst.TO_SMTP_SSL_PROT));
 
         Properties properties = new Properties();
-            properties.setProperty(TO_AUTH, TO_AUTH_TRUE);
-            properties.setProperty(TO_MAIL_SMTP_SOCKETFACTORY_CLASS, TO_JAVAX_NET_SSL_SSLSOCKETFACTORY);
-            properties.setProperty(TO_MAIL_SMTP_SOCKETFACTORY_PORT, TO_SMTP_SSL_PROT);
+            properties.setProperty(SetConst.TO_AUTH, SetConst.TO_AUTH_TRUE);
+            properties.setProperty(
+                    SetConst.TO_MAIL_SMTP_SOCKETFACTORY_CLASS,
+                    SetConst.TO_JAVAX_NET_SSL_SSLSOCKETFACTORY
+            );
+            properties.setProperty(SetConst.TO_MAIL_SMTP_SOCKETFACTORY_PORT, SetConst.TO_SMTP_SSL_PROT);
 
         sender.setJavaMailProperties(properties);
 
@@ -107,8 +103,8 @@ public final class SendEmailUtil {
             try {
                 message.setFrom(new InternetAddress(FROM_USERNAME, sendNickname));
 
-                message.setSubject(sendSubject, FROM_SUBJECT_ENCODING);
-                message.setContent(sendEmailContent, FROM_CONTENT_TYPE);
+                message.setSubject(sendSubject, SetConst.FROM_SUBJECT_ENCODING);
+                message.setContent(sendEmailContent, SetConst.FROM_CONTENT_TYPE);
 
                 message.addRecipient(Message.RecipientType.TO, new InternetAddress(receiveEmail));
 

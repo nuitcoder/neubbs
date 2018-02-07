@@ -27,7 +27,7 @@ public class SendEmailUtilTest {
                         + "<a href=\"" + url + "\">" + url + "</a>"
                         + "</body></html>";
 
-        SendEmailUtil.sendEmail("Neubbs 管理员" ,email, subject, content);
+        SendEmailUtil.send("Neubbs 管理员" ,email, subject, content);
 
         System.out.println("发送邮件成功");
     }

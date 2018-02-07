@@ -78,7 +78,8 @@ public enum LogWarnEnum {
     VS2(2, " 指令无效，请根据相应约定，输入运行范围内指令"),
 
     UC1(1, " MD5 加密失败"),
-    UC2(2, " Base64 转码失败");
+    UC2(2, " Base64 转码失败"),
+    UC3(3, " 读取 neubbs 配置文件异常");
 
 
     private Integer errorCode;

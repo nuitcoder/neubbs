@@ -198,6 +198,24 @@ public final class SetConst {
     public static final String EMAIL_SUBJECT_ACTIVATE = "Neubbs 账户激活";
     public static final String EMAIL_SUBJECT_TEMPORARY_PASSWORD = "Neubbs 账户临时密码";
 
+    /**
+     * 邮件格式
+     */
+    public static final String FROM_SUBJECT_ENCODING = "UTF-8";
+    public static final String FROM_CONTENT_TYPE = "text/html;charset=UTF-8";
+
+    /**
+     * 腾讯企业邮箱
+     */
+    public static final String TO_HOST = "smtp.exmail.qq.com";
+    public static final String TO_SMTP = "smtp";
+    public static final String TO_AUTH = "mail.smtp.auth";
+    public static final String TO_AUTH_TRUE = "true";
+    public static final String TO_MAIL_SMTP_SOCKETFACTORY_CLASS = "mail.smtp.socketFactory.class";
+    public static final String TO_JAVAX_NET_SSL_SSLSOCKETFACTORY = "javax.net.ssl.SSLSocketFactory";
+    public static final String TO_MAIL_SMTP_SOCKETFACTORY_PORT = "mail.smtp.socketFactory.port";
+    public static final String TO_SMTP_SSL_PROT = "465";
+
 
     /*
      * ***********************************************
