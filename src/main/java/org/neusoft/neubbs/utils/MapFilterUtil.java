@@ -36,7 +36,7 @@ public final class MapFilterUtil {
       userInfoMap.put(ParamConst.USER_ID, userInfoMap.get(ParamConst.ID));
       userInfoMap.put(ParamConst.USERNAME, userInfoMap.get(ParamConst.NAME));
 
-      userInfoMap.put(ParamConst.AVATOR, StringUtil.spliceUserAvatorUrl(userInfoMap, ParamConst.HTTP));
+      userInfoMap.put(ParamConst.AVATOR, StringUtil.generateUserAvatarUrl(userInfoMap));
 
       removeKeys(userInfoMap, new String[] {ParamConst.ID, ParamConst.NAME,
               ParamConst.PASSWORD, ParamConst.RANK});
@@ -94,7 +94,7 @@ public final class MapFilterUtil {
 
       userInfoMap.put(ParamConst.USERNAME, userInfoMap.get(ParamConst.NAME));
 
-      userInfoMap.put(ParamConst.AVATOR, StringUtil.spliceUserAvatorUrl(userInfoMap, ParamConst.HTTP));
+      userInfoMap.put(ParamConst.AVATOR, StringUtil.generateUserAvatarUrl(userInfoMap));
 
       userInfoMap.remove(ParamConst.ID);
       userInfoMap.remove(ParamConst.NAME);

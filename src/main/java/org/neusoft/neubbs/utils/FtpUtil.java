@@ -143,8 +143,8 @@ public final class FtpUtil {
         connect();
         moveServerPath(serverDirectoryPath);
 
-        //complete before and after sprit
-        serverDirectoryPath = StringUtil.completeBeforeAfterSprit(serverDirectoryPath);
+        //complete around(before-after) sprit
+        serverDirectoryPath = StringUtil.completeAroundSprit(serverDirectoryPath);
 
         if (serverFileName == null) {
             ftpClient.removeDirectory(serverDirectoryPath);
@@ -167,7 +167,7 @@ public final class FtpUtil {
         moveServerPath(serverDirectoryPath);
 
         //complete path(add '/')
-        String path = StringUtil.completeBeforeAfterSprit(serverDirectoryPath);
+        String path = StringUtil.completeAroundSprit(serverDirectoryPath);
 
         FTPFile[] files = ftpClient.listFiles(path);
         if (files != null) {

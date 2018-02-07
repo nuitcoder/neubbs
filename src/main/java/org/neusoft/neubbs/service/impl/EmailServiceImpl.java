@@ -32,7 +32,7 @@ public class EmailServiceImpl implements IEmailService {
             activateUrl = neubbsConfig.getAccountApiVaslidateUrl();
         }
 
-        return StringUtil.generateActivationMailHtmlContent(activateUrl + token);
+        return StringUtil.generateActivateMailHtmlContent(activateUrl + token);
     }
 
     @Override

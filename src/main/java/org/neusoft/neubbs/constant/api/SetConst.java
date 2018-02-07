@@ -8,6 +8,7 @@ package org.neusoft.neubbs.constant.api;
  *      - 数字类型
  *      - 判断类型
  *      - 邮箱服务
+ *      - 图片
  *      - 数据库
  *      - 指令
  *      - 记录行为
@@ -216,6 +217,14 @@ public final class SetConst {
     public static final String TO_MAIL_SMTP_SOCKETFACTORY_PORT = "mail.smtp.socketFactory.port";
     public static final String TO_SMTP_SSL_PROT = "465";
 
+
+    /*
+     * ***********************************************
+     * 图片
+     * ***********************************************
+     */
+
+    public static final String USER_DEFAULT_AVATAR = "default-avator-min.jpeg";
 
     /*
      * ***********************************************
