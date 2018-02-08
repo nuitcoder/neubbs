@@ -5,6 +5,7 @@ import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
 import org.neusoft.neubbs.constant.api.ApiMessage;
 import org.neusoft.neubbs.constant.log.LogWarnEnum;
+import org.neusoft.neubbs.exception.FtpException;
 import org.neusoft.neubbs.exception.UtilClassException;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -53,7 +54,7 @@ public final class FtpUtil {
             ftpIp = props.getProperty("ftp.ip");
             ftpPort = Integer.parseInt(props.getProperty("ftp.port"));
             ftpUsername = props.getProperty("ftp.username");
-            ftpPassword = props.getProperty("ftp.password");
+            ftpPassword = SecretUtil.decodeBase64(props.getProperty("ftp.password"));
         } catch (IOException ioe) {
             throw new UtilClassException(ApiMessage.UNKNOWN_ERROR).log(LogWarnEnum.UC3);
         }
@@ -97,7 +98,7 @@ public final class FtpUtil {
         connect();
         moveServerPath(serverDirectoryPath);
 
-        FTPFile[] files = ftpClient.listFiles();
+        FTPFile[] files = ftpClient.listFiles(serverDirectoryPath);
         List<String> fileNameList = new ArrayList<>(files.length);
         for (FTPFile file: files) {
             if (file.isFile()) {
@@ -113,6 +114,7 @@ public final class FtpUtil {
      * 上传文件
      *      - 若不存在，则创建文件目录，
      *      - 切换指定目录，进行文件上传
+     *      - 另起线程，从 20 端口进行传输，函数会先一步执行完毕
      *
      * @param serverDirectoryPath 服务器目录路径（默认根路径为: /）
      * @param serverFileName 服务器文件名（上传后的文件名）
@@ -124,7 +126,9 @@ public final class FtpUtil {
         connect();
 
         ftpClient.changeWorkingDirectory(serverDirectoryPath);
-        ftpClient.storeFile(serverFileName, uploadFileInputStream);
+        if (!ftpClient.storeFile(serverFileName, uploadFileInputStream)) {
+            throw new FtpException(ApiMessage.FTP_SERVER_ERROR).log(LogWarnEnum.UC4);
+        }
 
         uploadFileInputStream.close();
         destroy();
@@ -146,10 +150,12 @@ public final class FtpUtil {
         //complete around(before-after) sprit
         serverDirectoryPath = StringUtil.completeAroundSprit(serverDirectoryPath);
 
-        if (serverFileName == null) {
-            ftpClient.removeDirectory(serverDirectoryPath);
-        } else {
-            ftpClient.deleteFile(serverDirectoryPath + "/" + serverFileName);
+        boolean deleteResult = serverFileName == null
+                ? ftpClient.removeDirectory(serverDirectoryPath)
+                : ftpClient.deleteFile(serverDirectoryPath + "/" + serverFileName);
+
+        if (!deleteResult) {
+            throw new FtpException(ApiMessage.FTP_SERVER_ERROR).log(LogWarnEnum.UC5);
         }
 
         destroy();
@@ -158,6 +164,8 @@ public final class FtpUtil {
     /**
      * 完全删除目录
      *      - 包括其内部子文件,子目录
+     *      - / 默认是根目录
+     *      - 不存在目录则会抛出异常
      *
      * @param serverDirectoryPath 服务器目录路径
      * @throws IOException IO异常
@@ -204,7 +212,8 @@ public final class FtpUtil {
      *          1. 连接
      *          2. 登陆
      *          3. 设置文件类型
-     *          4. 判断响应码
+     *          4. 开通端口传输数据
+     *          5. 判断响应码
      *
      * @throws IOException IO异常
      */
@@ -214,8 +223,10 @@ public final class FtpUtil {
 
         ftpClient.setFileType(FTPClient.BINARY_FILE_TYPE);
 
+        ftpClient.enterLocalPassiveMode();
+
         if (!FTPReply.isPositiveCompletion(ftpClient.getReplyCode())) {
-            throw new IOException("FTP 服务器连接失败!");
+            throw new FtpException(ApiMessage.FTP_SERVER_ERROR).log(LogWarnEnum.UC6);
         }
     }
 
@@ -242,7 +253,7 @@ public final class FtpUtil {
     private static void moveServerPath(String serverDirectoryPath) throws IOException {
         //no exist directory, return false
         if (!ftpClient.changeWorkingDirectory(serverDirectoryPath)) {
-            throw new IOException("FTP 服务器，不存在指定路径！");
+            throw new FtpException(ApiMessage.FTP_SERVER_ERROR).log(LogWarnEnum.UC7);
         }
     }
 }

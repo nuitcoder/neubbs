@@ -4,24 +4,24 @@ import org.neusoft.neubbs.constant.log.LogWarnEnum;
 import org.neusoft.neubbs.controller.annotation.ApiException;
 
 /**
- * 文件上传错误异常
+ * FTP 异常
  *
  * @author Suvan
  */
 @ApiException
-public class FileUploadErrorException extends RuntimeException implements IPrintLog {
+public class FtpException extends RuntimeException implements IPrintLog {
 
     private LogWarnEnum logWarnEnum;
 
     /**
      * Constructor
      */
-    public FileUploadErrorException(String message) {
+    public FtpException(String message) {
         super(message);
     }
 
     @Override
-    public FileUploadErrorException log(LogWarnEnum logWarnEnum) {
+    public FtpException log(LogWarnEnum logWarnEnum) {
         this.logWarnEnum = logWarnEnum;
         return this;
     }

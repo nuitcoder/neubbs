@@ -79,8 +79,11 @@ public enum LogWarnEnum {
 
     UC1(1, " MD5 加密失败"),
     UC2(2, " Base64 转码失败"),
-    UC3(3, " 读取 neubbs 配置文件异常");
-
+    UC3(3, " 读取 neubbs 配置文件异常"),
+    UC4(4, " FTP　上传文件失败"),
+    UC5(5, " 删除 FTP 指定目录（or 文件）"),
+    UC6(6, " FTP 服务器连接失败"),
+    UC7(7, " FTP 服务器不存在指定路径！");
 
     private Integer errorCode;
     private String errorMessage;

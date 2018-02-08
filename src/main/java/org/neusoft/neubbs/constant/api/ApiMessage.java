@@ -37,6 +37,7 @@ public final class ApiMessage {
      * 错误
      */
     public static final String UNKNOWN_ERROR = "unknown error";
+    public static final String FTP_SERVER_ERROR = "ftp server error";
 
     /**
      * 计时器
@@ -65,7 +66,6 @@ public final class ApiMessage {
     public static final String NO_CHOICE_PICTURE = "no choice to upload picture";
     public static final String PICTURE_FORMAT_WRONG = "user upload picture type is wrong,"
             + " only *.jpg or *.png or *.jpeg";
-    public static final String NO_PARENT_DIRECTORY = "there is no parent directory";
     public static final String PICTURE_TOO_LARGE = "the picture too large";
     public static final String UPLOAD_FAIL = "upload fail";
     public static final String UPLOAD_SUCCESS = "upload success";
