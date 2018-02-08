@@ -33,7 +33,7 @@ public final class JsonUtil {
      * @param obj Object对象
      * @return String JSON格式字符串
      */
-    public static String toJSONString(Object obj) {
+    public static String toJsonString(Object obj) {
         try {
             return new ObjectMapper().writeValueAsString(obj);
         } catch (JsonProcessingException jpe) {
@@ -48,7 +48,7 @@ public final class JsonUtil {
      * @param json JSON格式字符串
      * @return Map 键值对
      */
-    public static Map<String, Object> toMapByJSONString(String json) {
+    public static Map<String, Object> toMapByJsonString(String json) {
         try {
             return new ObjectMapper().readValue(json, LinkedHashMap.class);
         } catch (IOException ioe) {
@@ -126,7 +126,7 @@ public final class JsonUtil {
      * @param jsonArrayString　JSON数组字符串
      * @return int JSON数组字符串长度
      */
-    public static int getArrayLength(String jsonArrayString) {
+    public static int getJsonArrayLength(String jsonArrayString) {
         return JSON.parseArray(jsonArrayString).size();
     }
 }

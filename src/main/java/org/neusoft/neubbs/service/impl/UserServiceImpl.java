@@ -137,27 +137,27 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public int countUserLikeTopicTotals(int userId) {
-        return JsonUtil.getArrayLength(this.getUserActionDONotNull(userId).getLikeTopicIdJsonArray());
+        return JsonUtil.getJsonArrayLength(this.getUserActionDONotNull(userId).getLikeTopicIdJsonArray());
     }
 
     @Override
     public int countUserCollectTopicTotals(int userId) {
-        return JsonUtil.getArrayLength(this.getUserActionDONotNull(userId).getCollectTopicIdJsonArray());
+        return JsonUtil.getJsonArrayLength(this.getUserActionDONotNull(userId).getCollectTopicIdJsonArray());
     }
 
     @Override
     public int countUserAttentionTopicTotals(int userId) {
-        return JsonUtil.getArrayLength(this.getUserActionDONotNull(userId).getAttentionTopicIdJsonArray());
+        return JsonUtil.getJsonArrayLength(this.getUserActionDONotNull(userId).getAttentionTopicIdJsonArray());
     }
 
     @Override
     public int countUserFollowingTotals(int userId) {
-        return JsonUtil.getArrayLength(this.getUserActionDONotNull(userId).getFollowingUserIdJsonArray());
+        return JsonUtil.getJsonArrayLength(this.getUserActionDONotNull(userId).getFollowingUserIdJsonArray());
     }
 
     @Override
     public int countUserFollowedTotals(int userId) {
-        return JsonUtil.getArrayLength(this.getUserActionDONotNull(userId).getFollowedUserIdJsonArray());
+        return JsonUtil.getJsonArrayLength(this.getUserActionDONotNull(userId).getFollowedUserIdJsonArray());
     }
 
     @Override

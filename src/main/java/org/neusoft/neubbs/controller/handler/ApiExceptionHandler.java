@@ -71,7 +71,7 @@ public class ApiExceptionHandler implements HandlerExceptionResolver {
         PrintWriter writer = null;
         try {
             writer = response.getWriter();
-            writer.print(JsonUtil.toJSONString(map));
+            writer.print(JsonUtil.toJsonString(map));
         } catch (IOException ioe) {
             ioe.printStackTrace();
         } finally {

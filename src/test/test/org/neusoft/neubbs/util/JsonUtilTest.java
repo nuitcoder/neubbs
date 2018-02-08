@@ -1,43 +1,51 @@
 package test.org.neusoft.neubbs.util;
 
-import com.alibaba.fastjson.JSON;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.utils.JsonUtil;
 
+import java.util.List;
 import java.util.Map;
 
 /**
- * JSON 工具类 测试用例
+ * JsonUtil 测试类
+ *      - 测试 toJsonString()
+ *      - 测试 toMapByJsonString()
+ *      - 测试 toMapByObject()
+ *      - 测试 toListByJsonArrayString()
+ *      - 测试 isExistIntElement()
+ *      - 测试 getIntElementIndex()
+ *      - 测试 getJsonArrayLength()
  */
 @RunWith(JUnit4.class)
 public class JsonUtilTest {
 
     /**
-     * 将 Object 对象转为字符串
+     * 测试 toJsonString()
      */
     @Test
-    public void testGetJSONStringByObject(){
+    public void testToJsonString() {
         UserDO user = new UserDO();
             user.setName("hello");
-            user.setRank("admin");
+            user.setPassword("123456");
 
-        System.out.println(JsonUtil.toJSONString(user));
+        System.out.println("UserDO Object -> " + JsonUtil.toJsonString(user));
     }
 
     /**
-     * 将 JSON 字符串转为 Map<String, Object>
+     * 测试 toMapByJsonString()
      */
     @Test
-    public void testGetMapByJSONString(){
+    public void testMapByJsonString() {
         UserDO user = new UserDO();
-            user.setName("suvan");
-            user.setPassword("1345");
+            user.setName("hello");
+            user.setPassword("13456");
 
-        String json = JsonUtil.toJSONString(user);
-        Map<String, Object> map = JsonUtil.toMapByJSONString(json);
+        String json = JsonUtil.toJsonString(user);
+        Map<String, Object> map = JsonUtil.toMapByJsonString(json);
 
         for(Map.Entry<String, Object> entry : map.entrySet()) {
             System.out.println(entry.getKey() + "：" + entry.getValue());
@@ -45,13 +53,13 @@ public class JsonUtilTest {
     }
 
     /**
-     * 将 Object 对象转为 Map<String, Object>
+     * 测试 toMapByObject()
      */
     @Test
     public void testGetMapByObject() {
         UserDO user = new UserDO();
-            user.setId(1);
-            user.setName("testoneuser");
+            user.setName("hello");
+            user.setName("123456");
 
         Map<String, Object> map = JsonUtil.toMapByObject(user);
 
@@ -61,16 +69,47 @@ public class JsonUtilTest {
      }
 
     /**
-     * 测试判断 JSON 数组是否存在指定 int 元素
+     * 测试 toListByJsonArrayString()
      */
     @Test
-    public void testIsJsonArrayStringExistIntElement() {
-        //if {}, also pass test
-        int[] intArray = {1, 234, 28, 68, 89, 72};
-        String jsonArrayString = JSON.toJSONString(intArray);
+    public void testToListByJsonArrayString() {
+        String idJsonArray = "[1, 2, 3, 4, 5, 6, 7]";
+        List<Integer> list = JsonUtil.toListByJsonArrayString(idJsonArray);
 
-        System.out.println("test number=5 result: " + JsonUtil.isExistIntElement(jsonArrayString, 5));
-        System.out.println("test number=234 result: " + JsonUtil.isExistIntElement(jsonArrayString, 234));
-        System.out.println("test number=3121 result: " + JsonUtil.isExistIntElement(jsonArrayString, 3121));
+        Assert.assertEquals(7, list.size());
+        for (Integer id: list) {
+            System.out.print(id + "\t");
+        }
+    }
+
+    /**
+     * 测试 isExistIntElement()
+     */
+    @Test
+    public void testIsExistIntElement() {
+        String idJsonArray = "[1, 2, 3, 4, 5, 6]";
+        Assert.assertTrue(JsonUtil.isExistIntElement(idJsonArray, 4));
+        Assert.assertFalse(JsonUtil.isExistIntElement(idJsonArray, 100));
+    }
+
+    /**
+     * 测试 getIntElementIndex()
+     */
+    @Test
+    public void testGetIntElementIndex() {
+        String idJsonArray = "[1, 2, 3, 4, 5, 6, 7]";
+
+        //the head index start from 0
+        Assert.assertEquals(4, JsonUtil.getIntElementIndex(idJsonArray, 5));
+        Assert.assertEquals(-1, JsonUtil.getIntElementIndex(idJsonArray, 100));
+    }
+
+    /**
+     * 测试 getJsonArrayLength()
+     */
+    @Test
+    public void testGetJsonArrayLength() {
+        String idJsonArray = "[1, 2, 3, 4, 5, 6]";
+        Assert.assertEquals(6, JsonUtil.getJsonArrayLength(idJsonArray));
     }
 }

@@ -93,7 +93,6 @@ public final class MapFilterUtil {
       keepKeys(userInfoMap, new String[] {ParamConst.ID, ParamConst.NAME, ParamConst.AVATOR});
 
       userInfoMap.put(ParamConst.USERNAME, userInfoMap.get(ParamConst.NAME));
-
       userInfoMap.put(ParamConst.AVATOR, StringUtil.generateUserAvatarUrl(userInfoMap));
 
       userInfoMap.remove(ParamConst.ID);
@@ -125,7 +124,6 @@ public final class MapFilterUtil {
    public static HashMap<String, Object> generateMap(String key, Object value) {
       HashMap<String, Object> map = new HashMap<>(SetConst.SIZE_ONE);
          map.put(key, value);
-
       return map;
    }
 

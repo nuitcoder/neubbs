@@ -129,7 +129,7 @@ public class TopicCategoryDAOTest {
         int categoryCount = 1;
         for (TopicCategoryDO topicCategory: categoryList) {
             System.out.println("output topic category information ( No." + (categoryCount++) + " records):"
-                    + JsonUtil.toJSONString(topicCategory));
+                    + JsonUtil.toJsonString(topicCategory));
         }
 
         System.out.println("get all category list success!");
