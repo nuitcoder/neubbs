@@ -5,7 +5,6 @@ import org.neusoft.neubbs.constant.api.ApiMessage;
 import org.neusoft.neubbs.constant.api.SetConst;
 import org.neusoft.neubbs.controller.annotation.ApiException;
 import org.neusoft.neubbs.exception.IPrintLog;
-import org.neusoft.neubbs.utils.AnnotationUtil;
 import org.neusoft.neubbs.utils.JsonUtil;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
@@ -33,7 +32,7 @@ public class ApiExceptionHandler implements HandlerExceptionResolver {
     public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response,
                                          Object o, Exception e) {
         //Exception had to statement @ApiException
-        if (AnnotationUtil.hasClassAnnotation(e.getClass(), ApiException.class)) {
+        if (e.getClass().getAnnotation(ApiException.class) != null) {
             this.outFailJsonMessage(response, e.getMessage());
             this.printApiExceptionToLocalLog(e);
         } else {

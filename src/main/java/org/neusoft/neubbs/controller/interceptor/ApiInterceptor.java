@@ -9,9 +9,9 @@ import org.neusoft.neubbs.controller.annotation.AdminRank;
 import org.neusoft.neubbs.controller.annotation.LoginAuthorization;
 import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.exception.AccountErrorException;
-import org.neusoft.neubbs.utils.AnnotationUtil;
 import org.neusoft.neubbs.utils.CookieUtil;
 import org.neusoft.neubbs.utils.TokenUtil;
+import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -70,8 +70,8 @@ public class ApiInterceptor implements HandlerInterceptor {
      * @param handler 接口方法对象
      */
     private void doLoginAuthorization(HttpServletRequest request, Object handler) throws AccountErrorException {
-
-        if (AnnotationUtil.hasMethodAnnotation(handler, LoginAuthorization.class)) {
+        HandlerMethod handlerMethod = (HandlerMethod) handler;
+        if (handlerMethod.getMethodAnnotation(LoginAuthorization.class) != null) {
             String authentication =  CookieUtil.getCookieValue(request, ParamConst.AUTHENTICATION);
             this.judgeAuthentication(authentication);
         }
@@ -88,8 +88,8 @@ public class ApiInterceptor implements HandlerInterceptor {
      * @param handler 方法对象
      */
     private void doAccountActivation(HttpServletRequest request, Object handler) throws AccountErrorException {
-
-        if (AnnotationUtil.hasMethodAnnotation(handler, AccountActivation.class)) {
+        HandlerMethod handlerMethod = (HandlerMethod) handler;
+        if (handlerMethod.getMethodAnnotation(AccountActivation.class) != null) {
             String authentication = CookieUtil.getCookieValue(request, ParamConst.AUTHENTICATION);
             UserDO currentUser = this.judgeAuthentication(authentication);
 
@@ -111,8 +111,8 @@ public class ApiInterceptor implements HandlerInterceptor {
      * @param handler 方法对象
      */
     private void doAdminRank(HttpServletRequest request, Object handler) throws AccountErrorException {
-
-        if (AnnotationUtil.hasMethodAnnotation(handler, AdminRank.class)) {
+        HandlerMethod handlerMethod = (HandlerMethod) handler;
+        if (((HandlerMethod) handler).getMethodAnnotation(AdminRank.class) != null) {
             String authentication = CookieUtil.getCookieValue(request, ParamConst.AUTHENTICATION);
             UserDO currentUser = this.judgeAuthentication(authentication);
 
