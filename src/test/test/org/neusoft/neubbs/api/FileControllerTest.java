@@ -12,7 +12,7 @@ import org.neusoft.neubbs.constant.api.SetConst;
 import org.neusoft.neubbs.controller.handler.DynamicSwitchDataSourceHandler;
 import org.neusoft.neubbs.exception.AccountErrorException;
 import org.neusoft.neubbs.exception.DatabaseOperationFailException;
-import org.neusoft.neubbs.exception.FileUploadErrorException;
+import org.neusoft.neubbs.exception.FtpException;
 import org.neusoft.neubbs.exception.FtpServiceErrorException;
 import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.service.IUserService;
@@ -191,7 +191,7 @@ public class FileControllerTest {
             } catch (NestedServletException ne) {
                 Assert.assertThat(ne.getRootCause(),
                         CoreMatchers.anyOf(
-                                CoreMatchers.instanceOf(FileUploadErrorException.class),
+                                CoreMatchers.instanceOf(FtpException.class),
                                 CoreMatchers.instanceOf(AccountErrorException.class),
                                 CoreMatchers.instanceOf(DatabaseOperationFailException.class),
                                 CoreMatchers.instanceOf(FtpServiceErrorException.class)
