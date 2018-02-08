@@ -18,9 +18,7 @@ import org.neusoft.neubbs.entity.TopicDO;
 import org.neusoft.neubbs.entity.TopicReplyDO;
 import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.entity.properties.NeubbsConfigDO;
-import org.neusoft.neubbs.exception.AccountErrorException;
-import org.neusoft.neubbs.exception.DatabaseOperationFailException;
-import org.neusoft.neubbs.exception.TopicErrorException;
+import org.neusoft.neubbs.exception.ServiceException;
 import org.neusoft.neubbs.service.ITopicService;
 import org.neusoft.neubbs.utils.JsonUtil;
 import org.neusoft.neubbs.utils.MapFilterUtil;
@@ -87,15 +85,15 @@ public class TopicServiceImpl implements ITopicService {
 
         //insert forum_topic, forum_topic_content, forum_topic_action
         if (topicDAO.saveTopic(topic) == 0) {
-            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarnEnum.TS1);
+            throw new ServiceException(ApiMessage.DATABASE_EXCEPTION).log(LogWarnEnum.TS1);
         }
 
         if (topicContentDAO.saveTopicContent(topicContentDO) == 0) {
-            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarnEnum.TS2);
+            throw new ServiceException(ApiMessage.DATABASE_EXCEPTION).log(LogWarnEnum.TS2);
         }
 
         if (topicActionDAO.saveTopicAction(topicAction) == 0) {
-            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarnEnum.TS24);
+            throw new ServiceException(ApiMessage.DATABASE_EXCEPTION).log(LogWarnEnum.TS24);
         }
 
         return MapFilterUtil.generateMap(ParamConst.TOPIC_ID, topic.getId());
@@ -112,7 +110,7 @@ public class TopicServiceImpl implements ITopicService {
             topicReply.setContent(replyContent);
 
         if (topicReplyDAO.saveTopicReply(topicReply) == 0) {
-            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarnEnum.TS3);
+            throw new ServiceException(ApiMessage.DATABASE_EXCEPTION).log(LogWarnEnum.TS3);
         }
 
         //update forum_topic 'replies', 'lastReplyUserId', 'lastReplyTime'
@@ -120,7 +118,7 @@ public class TopicServiceImpl implements ITopicService {
         if (topicDAO.updateRepliesAddOneById(topicId) == 0
                 ||  topicDAO.updateLastReplyUserIdById(topicId, userId) == 0
                 || topicDAO.updateLastReplyTimeById(topicId, topicLastReplyTime) == 0) {
-            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarnEnum.TS3);
+            throw new ServiceException(ApiMessage.DATABASE_EXCEPTION).log(LogWarnEnum.TS3);
         }
 
         return MapFilterUtil.generateMap(ParamConst.REPLY_ID, topicReply.getId());
@@ -129,11 +127,11 @@ public class TopicServiceImpl implements ITopicService {
     @Override
     public Map<String, Object> saveCategory(String categoryNick, String categoryName) {
         if (topicCategoryDAO.getTopicCategoryByNick(categoryNick) != null) {
-            throw new TopicErrorException(ApiMessage.ALREAD_EXIST_CATEGORY_NICK).log(LogWarnEnum.TS14);
+            throw new ServiceException(ApiMessage.ALREAD_EXIST_CATEGORY_NICK).log(LogWarnEnum.TS14);
         }
 
         if (topicCategoryDAO.getTopicCategoryByName(categoryName) != null) {
-            throw new TopicErrorException(ApiMessage.ALREAD_EXIST_CATEGORY_NAME).log(LogWarnEnum.TS15);
+            throw new ServiceException(ApiMessage.ALREAD_EXIST_CATEGORY_NAME).log(LogWarnEnum.TS15);
         }
 
         TopicCategoryDO category = new TopicCategoryDO();
@@ -151,15 +149,15 @@ public class TopicServiceImpl implements ITopicService {
 
         //delete forum_topic_reply, forum_topic_content, forum_topic
         if (topicReplyDAO.removeTopicAllReplyByTopicId(topicId) == 0) {
-            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarnEnum.TS6);
+            throw new ServiceException(ApiMessage.DATABASE_EXCEPTION).log(LogWarnEnum.TS6);
         }
 
         if (topicContentDAO.removeTopicContentByTopicId(topicId) == 0) {
-            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarnEnum.TS5);
+            throw new ServiceException(ApiMessage.DATABASE_EXCEPTION).log(LogWarnEnum.TS5);
         }
 
         if (topicDAO.removeTopicById(topicId) == 0) {
-            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarnEnum.TS4);
+            throw new ServiceException(ApiMessage.DATABASE_EXCEPTION).log(LogWarnEnum.TS4);
         }
     }
 
@@ -169,12 +167,12 @@ public class TopicServiceImpl implements ITopicService {
 
         //delete reply
         if (topicReplyDAO.removeTopicReplyById(replyId) == 0) {
-            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarnEnum.TS5);
+            throw new ServiceException(ApiMessage.DATABASE_EXCEPTION).log(LogWarnEnum.TS5);
         }
 
         //update replies -1 from forum_topic (but lastReplyTime no update)
         if (topicDAO.updateRepliesCutOneById(reply.getTopicid()) == 0) {
-            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarnEnum.TS7);
+            throw new ServiceException(ApiMessage.DATABASE_EXCEPTION).log(LogWarnEnum.TS7);
         }
     }
 
@@ -200,7 +198,7 @@ public class TopicServiceImpl implements ITopicService {
 
         int topicNumber = this.countTopicCount(categoryId, userId);
         if (topicNumber == 0) {
-            throw new TopicErrorException(ApiMessage.NO_QUERY_TOPICS).log(LogWarnEnum.TS17);
+            throw new ServiceException(ApiMessage.NO_QUERY_TOPICS).log(LogWarnEnum.TS17);
         }
 
         //count totalPages by limit by topicNumber
@@ -294,7 +292,7 @@ public class TopicServiceImpl implements ITopicService {
         //get database query results
         List<TopicDO> dbQueryTopicList = this.getTopicList(limit, page, categoryId, userId);
         if (dbQueryTopicList.size() == 0) {
-            throw new TopicErrorException(ApiMessage.NO_QUERY_TOPICS).log(LogWarnEnum.TS16);
+            throw new ServiceException(ApiMessage.NO_QUERY_TOPICS).log(LogWarnEnum.TS16);
         }
 
         List<Map<String, Object>> resultTopicList = new ArrayList<>(dbQueryTopicList.size());
@@ -340,12 +338,12 @@ public class TopicServiceImpl implements ITopicService {
         //update forum_topic 'fucg_id', 'ft_title'
         if (topicDAO.updateCategoryById(topicId, category.getId()) == 0
                 || topicDAO.updateTitleById(topicId, newTitle) == 0) {
-            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarnEnum.TS7);
+            throw new ServiceException(ApiMessage.DATABASE_EXCEPTION).log(LogWarnEnum.TS7);
         }
 
         //update forum_topic_content 'ftc_content'
         if (topicContentDAO.updateContentByTopicId(topicId, newTopicContent) == 0) {
-            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarnEnum.TS8);
+            throw new ServiceException(ApiMessage.DATABASE_EXCEPTION).log(LogWarnEnum.TS8);
         }
     }
 
@@ -355,7 +353,7 @@ public class TopicServiceImpl implements ITopicService {
 
         //update forum_topic_reply 'ftr_content'
         if (topicReplyDAO.updateContentByIdByContent(replyId, newReplyContent) == 0) {
-            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarnEnum.TS9);
+            throw new ServiceException(ApiMessage.DATABASE_EXCEPTION).log(LogWarnEnum.TS9);
         }
     }
 
@@ -364,7 +362,7 @@ public class TopicServiceImpl implements ITopicService {
         this.getTopicNotNull(topicId);
 
         if (topicContentDAO.updateReadAddOneByTopicId(topicId) == 0) {
-            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarnEnum.TS7);
+            throw new ServiceException(ApiMessage.DATABASE_EXCEPTION).log(LogWarnEnum.TS7);
         }
     }
 
@@ -374,9 +372,9 @@ public class TopicServiceImpl implements ITopicService {
         //judge current user whether repeat operation(no repeat input 'inc' or 'dec')
         boolean isIncOfInstruction = command.equals(SetConst.COLLECT_INC);
         if (isCurrentUserLikeTopic && isIncOfInstruction) {
-            throw new TopicErrorException(ApiMessage.NO_REPEAT_INC_TOPIC_LIKE).log(LogWarnEnum.TS19);
+            throw new ServiceException(ApiMessage.NO_REPEAT_INC_TOPIC_LIKE).log(LogWarnEnum.TS19);
         } else if (!isCurrentUserLikeTopic && !isIncOfInstruction) {
-            throw new TopicErrorException(ApiMessage.NO_REPEAT_DEC_TOPIC_LIKE).log(LogWarnEnum.TS20);
+            throw new ServiceException(ApiMessage.NO_REPEAT_DEC_TOPIC_LIKE).log(LogWarnEnum.TS20);
         }
 
         //update forum_topic_content 'like'
@@ -385,7 +383,7 @@ public class TopicServiceImpl implements ITopicService {
                 ? topicContentDAO.updateLikeAddOneByTopicId(topicId)
                 : topicContentDAO.updateLikeCutOneByTopicId(topicId);
         if (effectRow == 0) {
-            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarnEnum.TS7);
+            throw new ServiceException(ApiMessage.DATABASE_EXCEPTION).log(LogWarnEnum.TS7);
         }
 
         int currentTopicLike = isIncOfInstruction ? topicContent.getLike() + 1 : topicContent.getLike() - 1;
@@ -397,7 +395,7 @@ public class TopicServiceImpl implements ITopicService {
         this.getTopicCategoryNotNullByNick(categoryNick);
 
         if (topicCategoryDAO.updateDescriptionByNick(categoryNick, newDescription) == 0) {
-            throw new DatabaseOperationFailException(ApiMessage.DATABASE_EXCEPTION).log(LogWarnEnum.TS18);
+            throw new ServiceException(ApiMessage.DATABASE_EXCEPTION).log(LogWarnEnum.TS18);
         }
     }
 
@@ -654,7 +652,7 @@ public class TopicServiceImpl implements ITopicService {
                 ? allTopicTotals / limit : allTopicTotals / limit + 1;
 
         if (limit > allTopicTotals || page > maxPage) {
-            throw new TopicErrorException(ApiMessage.QUERY_EXCEED_TOPIC_NUMBER).log(LogWarnEnum.TS12);
+            throw new ServiceException(ApiMessage.QUERY_EXCEED_TOPIC_NUMBER).log(LogWarnEnum.TS12);
              //"（话题总数 = allTopicTotals，若 limit = limit，最多跳转至 maxPage 页）")
         }
     }
@@ -813,7 +811,7 @@ public class TopicServiceImpl implements ITopicService {
     private TopicReplyDO getTopicReplyNotNull(int replyId) {
         TopicReplyDO reply = topicReplyDAO.getTopicReplyById(replyId);
         if (reply == null) {
-            throw new TopicErrorException(ApiMessage.NO_REPLY).log(LogWarnEnum.TS11);
+            throw new ServiceException(ApiMessage.NO_REPLY).log(LogWarnEnum.TS11);
         }
 
         return reply;
@@ -1019,7 +1017,7 @@ public class TopicServiceImpl implements ITopicService {
      * @param topicId 话题id
      */
     private void throwNoTopicException(int topicId) {
-        throw new TopicErrorException(ApiMessage.NO_TOPIC).log(LogWarnEnum.TS10);
+        throw new ServiceException(ApiMessage.NO_TOPIC).log(LogWarnEnum.TS10);
     }
 
     /**
@@ -1029,7 +1027,7 @@ public class TopicServiceImpl implements ITopicService {
      */
     private void throwNoTopicContentException(int topicId) {
         //"topic content topicId=" + topicId +
-        throw new TopicErrorException(ApiMessage.NO_TOPIC).log(LogWarnEnum.TS10);
+        throw new ServiceException(ApiMessage.NO_TOPIC).log(LogWarnEnum.TS10);
     }
 
     /**
@@ -1038,7 +1036,7 @@ public class TopicServiceImpl implements ITopicService {
      * @param userId 用户id
      */
     private void throwNoUserExceptionById(int userId) {
-        throw new AccountErrorException(ApiMessage.NO_USER).log(LogWarnEnum.US1);
+        throw new ServiceException(ApiMessage.NO_USER).log(LogWarnEnum.US1);
     }
 
     /**
@@ -1047,21 +1045,21 @@ public class TopicServiceImpl implements ITopicService {
      * @param username 用户名
      */
     private void throwNoUserExceptionByName(String username) {
-        throw new AccountErrorException(ApiMessage.NO_USER).log(LogWarnEnum.US1);
+        throw new ServiceException(ApiMessage.NO_USER).log(LogWarnEnum.US1);
     }
 
     /**
      * （id）抛出不存话题分类异常
      */
     private void throwNotCategoryExceptionById(int categoryId) {
-        throw new TopicErrorException(ApiMessage.NO_CATEGORY).log(LogWarnEnum.TS13);
+        throw new ServiceException(ApiMessage.NO_CATEGORY).log(LogWarnEnum.TS13);
     }
 
     /**
      * （nick）抛出不存话题分类异常
      */
     private void throwNotCategoryExceptionByNick(String nick) {
-        throw new TopicErrorException(ApiMessage.NO_CATEGORY).log(LogWarnEnum.TS13);
+        throw new ServiceException(ApiMessage.NO_CATEGORY).log(LogWarnEnum.TS13);
     }
 
     /**
@@ -1070,7 +1068,7 @@ public class TopicServiceImpl implements ITopicService {
      * @param userOperate 用户操作
      */
     private void throwUserOperateTopicFailException(String userOperate) {
-        throw new TopicErrorException(ApiMessage.USER_OPERATE_TOPIC_FAIL).log(LogWarnEnum.TS22);
+        throw new ServiceException(ApiMessage.USER_OPERATE_TOPIC_FAIL).log(LogWarnEnum.TS22);
     }
 
     /**
@@ -1079,6 +1077,6 @@ public class TopicServiceImpl implements ITopicService {
      * @param topicOperate 话题操作
      */
     private void throwTopicOperateFailException(String topicOperate) {
-        throw new TopicErrorException(ApiMessage.TOPIC_RECORD_OPERATE_FAIL).log(LogWarnEnum.TS23);
+        throw new ServiceException(ApiMessage.TOPIC_RECORD_OPERATE_FAIL).log(LogWarnEnum.TS23);
     }
 }

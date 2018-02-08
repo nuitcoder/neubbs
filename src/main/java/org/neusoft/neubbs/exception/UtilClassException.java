@@ -5,6 +5,7 @@ import org.neusoft.neubbs.controller.annotation.ApiException;
 
 /**
  * 工具类异常
+ *      - 仅用在工具层
  *
  * @author Suvan
  */

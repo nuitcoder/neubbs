@@ -3,7 +3,7 @@ package org.neusoft.neubbs.service.impl;
 import org.neusoft.neubbs.constant.api.ApiMessage;
 import org.neusoft.neubbs.constant.log.LogWarnEnum;
 import org.neusoft.neubbs.entity.UserDO;
-import org.neusoft.neubbs.exception.AccountErrorException;
+import org.neusoft.neubbs.exception.ServiceException;
 import org.neusoft.neubbs.service.ISecretService;
 import org.neusoft.neubbs.utils.TokenUtil;
 import org.neusoft.neubbs.utils.SecretUtil;
@@ -33,7 +33,7 @@ public class SecretServiceImpl implements ISecretService {
         //input authentication and key
         UserDO user = TokenUtil.decryptUserInfoToken(authentication);
         if (user == null) {
-            throw new AccountErrorException(ApiMessage.TOKEN_EXPIRED).log(LogWarnEnum.US4);
+            throw new ServiceException(ApiMessage.TOKEN_EXPIRED).log(LogWarnEnum.US4);
         }
 
         return user;

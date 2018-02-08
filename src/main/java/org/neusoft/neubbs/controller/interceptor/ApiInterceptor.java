@@ -8,7 +8,7 @@ import org.neusoft.neubbs.controller.annotation.AccountActivation;
 import org.neusoft.neubbs.controller.annotation.AdminRank;
 import org.neusoft.neubbs.controller.annotation.LoginAuthorization;
 import org.neusoft.neubbs.entity.UserDO;
-import org.neusoft.neubbs.exception.AccountErrorException;
+import org.neusoft.neubbs.exception.ServiceException;
 import org.neusoft.neubbs.utils.CookieUtil;
 import org.neusoft.neubbs.utils.TokenUtil;
 import org.springframework.web.method.HandlerMethod;
@@ -69,7 +69,7 @@ public class ApiInterceptor implements HandlerInterceptor {
      * @param request http请求
      * @param handler 接口方法对象
      */
-    private void doLoginAuthorization(HttpServletRequest request, Object handler) throws AccountErrorException {
+    private void doLoginAuthorization(HttpServletRequest request, Object handler) throws ServiceException {
         HandlerMethod handlerMethod = (HandlerMethod) handler;
         if (handlerMethod.getMethodAnnotation(LoginAuthorization.class) != null) {
             String authentication =  CookieUtil.getCookieValue(request, ParamConst.AUTHENTICATION);
@@ -87,7 +87,7 @@ public class ApiInterceptor implements HandlerInterceptor {
      * @param request http请求
      * @param handler 方法对象
      */
-    private void doAccountActivation(HttpServletRequest request, Object handler) throws AccountErrorException {
+    private void doAccountActivation(HttpServletRequest request, Object handler) throws ServiceException {
         HandlerMethod handlerMethod = (HandlerMethod) handler;
         if (handlerMethod.getMethodAnnotation(AccountActivation.class) != null) {
             String authentication = CookieUtil.getCookieValue(request, ParamConst.AUTHENTICATION);
@@ -95,7 +95,7 @@ public class ApiInterceptor implements HandlerInterceptor {
 
             //judge user state
             if (currentUser.getState() == SetConst.ACCOUNT_NO_ACTIVATED_STATE) {
-                throw new AccountErrorException(ApiMessage.NO_ACTIVATE).log(LogWarnEnum.US17);
+                throw new ServiceException(ApiMessage.NO_ACTIVATE).log(LogWarnEnum.US17);
             }
         }
     }
@@ -110,7 +110,7 @@ public class ApiInterceptor implements HandlerInterceptor {
      * @param request http请求
      * @param handler 方法对象
      */
-    private void doAdminRank(HttpServletRequest request, Object handler) throws AccountErrorException {
+    private void doAdminRank(HttpServletRequest request, Object handler) throws ServiceException {
         HandlerMethod handlerMethod = (HandlerMethod) handler;
         if (((HandlerMethod) handler).getMethodAnnotation(AdminRank.class) != null) {
             String authentication = CookieUtil.getCookieValue(request, ParamConst.AUTHENTICATION);
@@ -118,7 +118,7 @@ public class ApiInterceptor implements HandlerInterceptor {
 
             //judge user rank
             if (!SetConst.RANK_ADMIN.equals(currentUser.getRank())) {
-                throw new AccountErrorException(ApiMessage.NO_PERMISSION).log(LogWarnEnum.AT3);
+                throw new ServiceException(ApiMessage.NO_PERMISSION).log(LogWarnEnum.AT3);
             }
         }
     }
@@ -161,13 +161,13 @@ public class ApiInterceptor implements HandlerInterceptor {
      * 抛出无权限异常
      */
     private void throwNoPermissionException() {
-        throw new AccountErrorException(ApiMessage.NO_PERMISSION).log(LogWarnEnum.AT2);
+        throw new ServiceException(ApiMessage.NO_PERMISSION).log(LogWarnEnum.AT2);
     }
 
     /**
      * 抛出 token 过期异常
      */
     private void throwTokenExpiredException() {
-        throw new AccountErrorException(ApiMessage.TOKEN_EXPIRED).log(LogWarnEnum.AT1);
+        throw new ServiceException(ApiMessage.TOKEN_EXPIRED).log(LogWarnEnum.AT1);
     }
 }

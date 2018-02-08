@@ -23,9 +23,8 @@ import org.neusoft.neubbs.entity.TopicContentDO;
 import org.neusoft.neubbs.entity.TopicDO;
 import org.neusoft.neubbs.entity.TopicReplyDO;
 import org.neusoft.neubbs.entity.UserDO;
-import org.neusoft.neubbs.exception.AccountErrorException;
+import org.neusoft.neubbs.exception.ServiceException;
 import org.neusoft.neubbs.exception.ParamsErrorException;
-import org.neusoft.neubbs.exception.TopicErrorException;
 import org.neusoft.neubbs.service.ITopicService;
 import org.neusoft.neubbs.utils.TokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -278,8 +277,7 @@ public class TopicControllerTest {
                 Assert.assertThat(ne.getRootCause(),
                         CoreMatchers.anyOf(
                                 CoreMatchers.instanceOf(ParamsErrorException.class),
-                                CoreMatchers.instanceOf(TopicErrorException.class),
-                                CoreMatchers.instanceOf(AccountErrorException.class)
+                                CoreMatchers.instanceOf(ServiceException.class)
                         )
                 );
             }
@@ -341,7 +339,7 @@ public class TopicControllerTest {
                 Assert.assertThat(ne.getRootCause(),
                         CoreMatchers.anyOf(
                                 CoreMatchers.instanceOf(ParamsErrorException.class),
-                                CoreMatchers.instanceOf(AccountErrorException.class)
+                                CoreMatchers.instanceOf(ServiceException.class)
                         )
                 );
             }
@@ -475,7 +473,7 @@ public class TopicControllerTest {
                 Assert.assertThat(ne.getRootCause(),
                         CoreMatchers.anyOf(
                                 CoreMatchers.instanceOf(ParamsErrorException.class),
-                                CoreMatchers.instanceOf(TopicErrorException.class)
+                                CoreMatchers.instanceOf(ServiceException.class)
                         )
                 );
             }
@@ -579,7 +577,7 @@ public class TopicControllerTest {
              .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
 
         } catch (NestedServletException ne) {
-            Assert.assertTrue(ne.getRootCause() instanceof TopicErrorException);
+            Assert.assertTrue(ne.getRootCause() instanceof ServiceException);
             Assert.assertEquals(ne.getRootCause().getMessage(), ApiMessage.NO_CATEGORY);
         }
 
@@ -592,7 +590,7 @@ public class TopicControllerTest {
              .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
 
         } catch (NestedServletException ne) {
-            Assert.assertTrue(ne.getRootCause() instanceof AccountErrorException);
+            Assert.assertTrue(ne.getRootCause() instanceof ServiceException);
             Assert.assertEquals(ne.getRootCause().getMessage(), ApiMessage.NO_USER);
         }
 
@@ -699,7 +697,7 @@ public class TopicControllerTest {
              .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(ApiMessage. NO_PERMISSION));
 
         } catch (NestedServletException ne) {
-            Assert.assertTrue(ne.getRootCause() instanceof AccountErrorException);
+            Assert.assertTrue(ne.getRootCause() instanceof ServiceException);
             Assert.assertEquals(ne.getRootCause().getMessage(), ApiMessage.NO_PERMISSION);
         }
 

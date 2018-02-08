@@ -10,7 +10,7 @@ import org.neusoft.neubbs.constant.api.ParamConst;
 import org.neusoft.neubbs.constant.api.SetConst;
 import org.neusoft.neubbs.constant.log.LogWarnEnum;
 import org.neusoft.neubbs.entity.UserDO;
-import org.neusoft.neubbs.exception.TokenErrorException;
+import org.neusoft.neubbs.exception.UtilClassException;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
@@ -57,7 +57,7 @@ public final class TokenUtil {
                                .sign(Algorithm.HMAC256(SetConst.JWT_TOKEN_SECRET_KEY));
 
         } catch (UnsupportedEncodingException e) {
-            throw new TokenErrorException(ApiMessage.INVALID_TOKEN).log(LogWarnEnum.US13);
+            throw new UtilClassException(ApiMessage.INVALID_TOKEN).log(LogWarnEnum.US13);
         }
     }
 

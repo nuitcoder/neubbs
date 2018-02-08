@@ -4,24 +4,25 @@ import org.neusoft.neubbs.constant.log.LogWarnEnum;
 import org.neusoft.neubbs.controller.annotation.ApiException;
 
 /**
- * 加密失败异常
+ * 业务异常
+ *      - 仅用在业务层
  *
  * @author Suvan
  */
 @ApiException
-public class SecretFailException extends RuntimeException implements IPrintLog {
+public class ServiceException extends RuntimeException implements IPrintLog {
 
-    private LogWarnEnum logWarnEnum;
+   private LogWarnEnum logWarnEnum;
 
     /**
      * Constructor
      */
-    public SecretFailException(String message) {
+    public ServiceException(String message) {
         super(message);
     }
 
     @Override
-    public SecretFailException log(LogWarnEnum logWarnEnum) {
+    public ServiceException log(LogWarnEnum logWarnEnum) {
         this.logWarnEnum = logWarnEnum;
         return this;
     }

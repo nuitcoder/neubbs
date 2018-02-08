@@ -5,7 +5,7 @@ import org.neusoft.neubbs.constant.api.ParamConst;
 import org.neusoft.neubbs.constant.api.SetConst;
 import org.neusoft.neubbs.constant.log.LogWarnEnum;
 import org.neusoft.neubbs.entity.properties.NeubbsConfigDO;
-import org.neusoft.neubbs.exception.AccountErrorException;
+import org.neusoft.neubbs.exception.ServiceException;
 import org.neusoft.neubbs.service.IHttpService;
 import org.neusoft.neubbs.utils.CookieUtil;
 import org.neusoft.neubbs.utils.PublicParamsUtil;
@@ -53,7 +53,7 @@ public class HttpServiceImpl implements IHttpService {
             outputStream.flush();
             outputStream.close();
         } catch (IOException e) {
-            throw new AccountErrorException(ApiMessage.GENERATE_CAPTCHA_FAIL).log(LogWarnEnum.US17);
+            throw new ServiceException(ApiMessage.GENERATE_CAPTCHA_FAIL).log(LogWarnEnum.US17);
         }
     }
 

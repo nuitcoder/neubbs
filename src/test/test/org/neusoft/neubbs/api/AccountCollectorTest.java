@@ -15,10 +15,8 @@ import org.neusoft.neubbs.controller.handler.DynamicSwitchDataSourceHandler;
 import org.neusoft.neubbs.dao.IUserActionDAO;
 import org.neusoft.neubbs.dao.IUserDAO;
 import org.neusoft.neubbs.entity.UserDO;
-import org.neusoft.neubbs.exception.AccountErrorException;
-import org.neusoft.neubbs.exception.DatabaseOperationFailException;
+import org.neusoft.neubbs.exception.ServiceException;
 import org.neusoft.neubbs.exception.ParamsErrorException;
-import org.neusoft.neubbs.exception.TokenErrorException;
 import org.neusoft.neubbs.service.ICacheService;
 import org.neusoft.neubbs.service.ICaptchaService;
 import org.neusoft.neubbs.service.IUserService;
@@ -261,7 +259,7 @@ public class AccountCollectorTest {
              .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""));
         } catch (NestedServletException ne) {
             Throwable throwable = ne.getRootCause();
-            Assert.assertThat(throwable, CoreMatchers.is(CoreMatchers.instanceOf(AccountErrorException.class)));
+            Assert.assertThat(throwable, CoreMatchers.is(CoreMatchers.instanceOf(ServiceException.class)));
             Assert.assertEquals(throwable.getMessage(), ApiMessage.NO_USER);
         }
 
@@ -299,7 +297,7 @@ public class AccountCollectorTest {
                 Assert.assertThat(ne.getRootCause(),
                         CoreMatchers.anyOf(
                                 CoreMatchers.is(CoreMatchers.instanceOf(ParamsErrorException.class)),
-                                CoreMatchers.is(CoreMatchers.instanceOf(AccountErrorException.class))
+                                CoreMatchers.is(CoreMatchers.instanceOf(ServiceException.class))
                         )
                 );
             }
@@ -346,7 +344,7 @@ public class AccountCollectorTest {
                 Assert.assertThat(ne.getRootCause(),
                         CoreMatchers.anyOf(
                                 CoreMatchers.is(CoreMatchers.instanceOf(ParamsErrorException.class)),
-                                CoreMatchers.is(CoreMatchers.instanceOf(AccountErrorException.class))
+                                CoreMatchers.is(CoreMatchers.instanceOf(ServiceException.class))
                         )
                 );
             }
@@ -420,8 +418,7 @@ public class AccountCollectorTest {
             } catch (NestedServletException ne) {
                 Assert.assertThat(ne.getRootCause(),
                         CoreMatchers.anyOf(CoreMatchers.is(CoreMatchers.instanceOf(ParamsErrorException.class)),
-                                CoreMatchers.is(CoreMatchers.instanceOf(AccountErrorException.class)),
-                                CoreMatchers.is(CoreMatchers.instanceOf(TokenErrorException.class))
+                                CoreMatchers.is(CoreMatchers.instanceOf(ServiceException.class))
                         )
                 );
             }
@@ -474,7 +471,7 @@ public class AccountCollectorTest {
 
         } catch (NestedServletException ne) {
             Throwable throwable = ne.getRootCause();
-            Assert.assertTrue(throwable instanceof AccountErrorException);
+            Assert.assertTrue(throwable instanceof ServiceException);
             Assert.assertEquals(throwable.getMessage(), ApiMessage.NO_PERMISSION);
         }
     }
@@ -554,8 +551,8 @@ public class AccountCollectorTest {
                 Assert.assertThat(ne.getRootCause(),
                         CoreMatchers.anyOf(
                                 CoreMatchers.instanceOf(ParamsErrorException.class),
-                                CoreMatchers.instanceOf(AccountErrorException.class),
-                                CoreMatchers.instanceOf(DatabaseOperationFailException.class)
+                                CoreMatchers.instanceOf(ServiceException.class),
+                                CoreMatchers.instanceOf(ServiceException.class)
                         )
                 );
             }
@@ -665,7 +662,7 @@ public class AccountCollectorTest {
 
         } catch (NestedServletException ne) {
             Throwable throwable = ne.getRootCause();
-            Assert.assertThat(throwable, (CoreMatchers.instanceOf(AccountErrorException.class)));
+            Assert.assertThat(throwable, (CoreMatchers.instanceOf(ServiceException.class)));
             Assert.assertEquals(throwable.getMessage(), ApiMessage.NO_PERMISSION);
         }
 
@@ -686,7 +683,7 @@ public class AccountCollectorTest {
 
         } catch (NestedServletException ne) {
             Throwable throwable = ne.getRootCause();
-            Assert.assertTrue(throwable instanceof AccountErrorException);
+            Assert.assertTrue(throwable instanceof ServiceException);
             Assert.assertEquals(throwable.getMessage(), ApiMessage.NO_ACTIVATE);
         }
 
@@ -731,8 +728,8 @@ public class AccountCollectorTest {
                 Assert.assertThat(ne.getRootCause(),
                         CoreMatchers.anyOf(
                                 CoreMatchers.instanceOf(ParamsErrorException.class),
-                                CoreMatchers.instanceOf(AccountErrorException.class),
-                                CoreMatchers.instanceOf(DatabaseOperationFailException.class)
+                                CoreMatchers.instanceOf(ServiceException.class),
+                                CoreMatchers.instanceOf(ServiceException.class)
                         )
                 );
             }
@@ -792,7 +789,7 @@ public class AccountCollectorTest {
              .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
 
         } catch (NestedServletException ne) {
-            Assert.assertTrue(ne.getRootCause() instanceof AccountErrorException);
+            Assert.assertTrue(ne.getRootCause() instanceof ServiceException);
             Assert.assertEquals(ne.getRootCause().getMessage(), ApiMessage.NO_PERMISSION);
         }
 
@@ -836,7 +833,7 @@ public class AccountCollectorTest {
                 Assert.assertThat(ne.getRootCause(),
                         CoreMatchers.anyOf(
                                 CoreMatchers.instanceOf(ParamsErrorException.class),
-                                CoreMatchers.instanceOf(AccountErrorException.class)
+                                CoreMatchers.instanceOf(ServiceException.class)
                         )
                 );
             }
@@ -910,7 +907,7 @@ public class AccountCollectorTest {
                 Assert.assertThat(ne.getRootCause(),
                         CoreMatchers.anyOf(
                                 CoreMatchers.instanceOf(ParamsErrorException.class),
-                                CoreMatchers.instanceOf(AccountErrorException.class)
+                                CoreMatchers.instanceOf(ServiceException.class)
                         )
                 );
             }
@@ -995,8 +992,7 @@ public class AccountCollectorTest {
                 Assert.assertThat(ne.getRootCause(),
                         CoreMatchers.anyOf(
                                 CoreMatchers.instanceOf(ParamsErrorException.class),
-                                CoreMatchers.instanceOf(TokenErrorException.class),
-                                CoreMatchers.instanceOf(AccountErrorException.class)
+                                CoreMatchers.instanceOf(ServiceException.class)
                         )
                 );
             }
@@ -1067,7 +1063,7 @@ public class AccountCollectorTest {
                Assert.assertThat(ne.getRootCause(),
                        CoreMatchers.anyOf(
                                CoreMatchers.instanceOf(ParamsErrorException.class),
-                               CoreMatchers.instanceOf(AccountErrorException.class)
+                               CoreMatchers.instanceOf(ServiceException.class)
                        )
                );
            }
@@ -1093,7 +1089,7 @@ public class AccountCollectorTest {
                         .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
 
        } catch (NestedServletException ne) {
-           Assert.assertSame(ne.getRootCause().getClass(), AccountErrorException.class);
+           Assert.assertSame(ne.getRootCause().getClass(), ServiceException.class);
            Assert.assertEquals(ne.getRootCause().getMessage(), ApiMessage.CAPTCHA_INCORRECT);
        }
 
@@ -1156,7 +1152,7 @@ public class AccountCollectorTest {
                 Assert.assertThat(ne.getRootCause(),
                         CoreMatchers.anyOf(
                                 CoreMatchers.instanceOf(ParamsErrorException.class),
-                                CoreMatchers.instanceOf(AccountErrorException.class)
+                                CoreMatchers.instanceOf(ServiceException.class)
                         )
                 );
             }

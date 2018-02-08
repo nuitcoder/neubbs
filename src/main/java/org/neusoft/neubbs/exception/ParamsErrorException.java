@@ -5,6 +5,7 @@ import org.neusoft.neubbs.controller.annotation.ApiException;
 
 /**
  * 参数异常
+ *      - 针对参数校验
  *
  * @author Suvan
  */

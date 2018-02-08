@@ -10,10 +10,8 @@ import org.neusoft.neubbs.constant.api.ApiMessage;
 import org.neusoft.neubbs.constant.api.ParamConst;
 import org.neusoft.neubbs.constant.api.SetConst;
 import org.neusoft.neubbs.controller.handler.DynamicSwitchDataSourceHandler;
-import org.neusoft.neubbs.exception.AccountErrorException;
-import org.neusoft.neubbs.exception.DatabaseOperationFailException;
+import org.neusoft.neubbs.exception.ServiceException;
 import org.neusoft.neubbs.exception.FtpException;
-import org.neusoft.neubbs.exception.FtpServiceErrorException;
 import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.service.IUserService;
 import org.neusoft.neubbs.utils.FtpUtil;
@@ -158,7 +156,7 @@ public class FileControllerTest {
              .andExpect(MockMvcResultMatchers.jsonPath("$.success").exists());
 
         }catch (NestedServletException ne) {
-            Assert.assertThat(ne.getRootCause(), CoreMatchers.instanceOf(AccountErrorException.class));
+            Assert.assertThat(ne.getRootCause(), CoreMatchers.instanceOf(ServiceException.class));
             Assert.assertEquals(ne.getRootCause().getMessage(), ApiMessage.NO_PERMISSION);
         }
 
@@ -192,9 +190,7 @@ public class FileControllerTest {
                 Assert.assertThat(ne.getRootCause(),
                         CoreMatchers.anyOf(
                                 CoreMatchers.instanceOf(FtpException.class),
-                                CoreMatchers.instanceOf(AccountErrorException.class),
-                                CoreMatchers.instanceOf(DatabaseOperationFailException.class),
-                                CoreMatchers.instanceOf(FtpServiceErrorException.class)
+                                CoreMatchers.instanceOf(ServiceException.class)
                         )
                 );
             }

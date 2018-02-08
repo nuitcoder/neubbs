@@ -5,6 +5,7 @@ import org.neusoft.neubbs.controller.annotation.ApiException;
 
 /**
  * FTP 异常
+ *      - 针对 FTP 服务器的连接与操作
  *
  * @author Suvan
  */

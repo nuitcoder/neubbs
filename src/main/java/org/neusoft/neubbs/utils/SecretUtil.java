@@ -3,7 +3,7 @@ package org.neusoft.neubbs.utils;
 import org.neusoft.neubbs.constant.api.ApiMessage;
 import org.neusoft.neubbs.constant.api.SetConst;
 import org.neusoft.neubbs.constant.log.LogWarnEnum;
-import org.neusoft.neubbs.exception.SecretFailException;
+import org.neusoft.neubbs.exception.UtilClassException;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
@@ -37,7 +37,7 @@ public final class SecretUtil {
 
             return new BigInteger(1, md.digest()).toString(SetConst.REDIX_SIXTEEN);
         } catch (NoSuchAlgorithmException noe) {
-            throw new SecretFailException(ApiMessage.UNKNOWN_ERROR).log(LogWarnEnum.UC1);
+            throw new UtilClassException(ApiMessage.UNKNOWN_ERROR).log(LogWarnEnum.UC1);
         }
     }
 
@@ -51,7 +51,7 @@ public final class SecretUtil {
         try {
             return Base64.getUrlEncoder().encodeToString(plainText.getBytes("utf-8"));
         } catch (UnsupportedEncodingException ue) {
-            throw new SecretFailException(ApiMessage.UNKNOWN_ERROR).log(LogWarnEnum.UC2);
+            throw new UtilClassException(ApiMessage.UNKNOWN_ERROR).log(LogWarnEnum.UC2);
         }
     }
 
