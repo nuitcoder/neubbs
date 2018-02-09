@@ -1,4 +1,4 @@
-# Neubbs
+![Neubbs Logo](./src/main/webapp/resources/images/neubbs.jpg)
 
 ## 前端
 + WebPack 1.13.2
