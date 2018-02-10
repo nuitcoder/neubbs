@@ -1,88 +1,105 @@
 package test.org.neusoft.neubbs.util;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.neusoft.neubbs.utils.PatternUtil;
 
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+
 /**
- * 正则匹配 测试类
+ * PatternUtil 测试类
+ *    - 测试 isPureNumber()
+ *    - 测试 isPureEnglish()
+ *    - 测试 matchUsername()
+ *    - 测试 matchEmail()
+ *    - 测试 matchUserAvatar()
+ *    - 测试 matchTopicCategory()
  */
 @RunWith(JUnit4.class)
 public class PatternUtilTest {
+
    /**
-    * 测试 纯数字检测
+    * 测试 isPureNumber()
     */
    @Test
    public void testIsPureNumber() {
-      System.out.println(PatternUtil.isPureNumber("___213132"));
-      System.out.println(PatternUtil.isPureNumber("222"));
-      System.out.println(PatternUtil.isPureNumber("&^@#$sfgqwre1123"));
-      System.out.println(PatternUtil.isPureNumber("12312!"));
+      Assert.assertTrue(PatternUtil.isPureNumber("123"));
+      Assert.assertTrue(PatternUtil.isPureNumber("99999"));
+
+      Assert.assertFalse(PatternUtil.isPureNumber("_***"));
+      Assert.assertFalse(PatternUtil.isPureNumber("123*"));
+      Assert.assertFalse(PatternUtil.isPureNumber("k12"));
    }
 
    /**
-    * 测试 纯英文检测
+    * 测试 isPureEnglish()
     */
    @Test
    public void testIsPureEnglish() {
-      String[] params = {
-         "safde", "ADRTX", "sdfABVA", "asd...", "++_%saf", "---ABCD", "AS--..123asdf", "a-B",
-         "=-=-=-", "123123123", "测试", "count1", "hello123", "no ooo", "cate"
-      };
+      Assert.assertTrue(PatternUtil.isPureEnglish("hello"));
 
-      for (String param: params) {
-         System.out.println("input param=" + param + ": isPureEnglish() -> " + PatternUtil.isPureEnglish(param));
-      }
+      Assert.assertFalse(PatternUtil.isPureEnglish("hello world"));
+      Assert.assertFalse(PatternUtil.isPureEnglish("hello123"));
+      Assert.assertFalse(PatternUtil.isPureEnglish("hello_"));
    }
 
    /**
-    * 测试 匹配用户名
+    * 测试 matchUsername()
     */
    @Test
    public void testMatchUsername() {
-      String [] usrenameArray = {"1","a","*","kk","*as","asdfasf___","aaaaaaaaaaaaaaaaaaaaaaa","ABCk"};
+      List<String> trueUsername = Arrays.asList("12345", "suvan", "ABCD", "1suvanA", "suvanLLLLLLLLLLLLLLL");
+      for (String username: trueUsername) {
+         Assert.assertTrue(PatternUtil.matchUsername(username));
+      }
 
-      for(String name: usrenameArray){
-         System.out.println(name + " 匹配结果：" + PatternUtil.matchUsername(name));
+      List<String> falseUsername = Arrays.asList("a", "1a", "Aa", "suvansuvansuvansuvansuvan", "test@qq.com");
+      Iterator iterator = falseUsername.iterator();
+      while (iterator.hasNext()) {
+         Assert.assertFalse(PatternUtil.matchUsername((String) iterator.next()));
       }
    }
 
    /**
-    * 测试 匹配邮箱
+    * 测试 matchEmail()
     */
    @Test
    public void testMatchEmail() {
-      String [] emailArray = {"asdfasdf","ss@","@asdfa.com","asdfas@qq.com","fasadf@suvan.net.cn",
-                              "asf_**@qq.com","1231%2312^31321@qq.com","hello@suvan.liushuwei.cn.net",
-                              "liushuwei@gmail.com","313123123@qq.com","suvan@liushuwei.cn"};
+      Assert.assertTrue(PatternUtil.matchEmail("liushuwei0925@gmail.com"));
+      Assert.assertTrue(PatternUtil.matchEmail("test@email.com"));
 
-      for(String email : emailArray){
-         System.out.println(email + " 匹配结果：" + PatternUtil.matchEmail(email));
-      }
+      Assert.assertFalse(PatternUtil.matchEmail("123@.com"));
+      Assert.assertFalse(PatternUtil.matchEmail("hello@word"));
    }
 
    /**
-    * 匹配图片
+    * 测试 matchUserAvatarType()
     */
    @Test
-   public void testMatchUserImage() {
-      String [] imageType = {"image/jpg", "image/JPG" ,"image/png", "image/PNG", "image/asdffsda", "image/gif"};
+   public void testUserAvatarType() {
+      String[] truePictureType = {"image/jpg", "image/jpeg", "text/PNG"};
+      for (String pictureType: truePictureType) {
+         Assert.assertTrue("error param: " + pictureType, PatternUtil.matchUserAvatarType(pictureType));
+      }
 
-      for (String type: imageType) {
-         System.out.println(type + "匹配结果：" + PatternUtil.matchUserImage(type));
+      String[] falsePictureType = {".jpg", "/.PNG", "image/", "image/txt"};
+      for (String pictureType: falsePictureType) {
+         Assert.assertFalse("error param: ", PatternUtil.matchUserAvatarType(pictureType));
       }
    }
 
    /**
-    * 匹配话题类型
+    * 测试 matchTopicCategory()
     */
    @Test
    public void testMatchTopicCategory() {
-      String [] categoryArray = {"java", "132aa","_qwerq","你好","你好study","学习!234_+"};
-
-      for(String category: categoryArray){
-         System.out.println(category + " 匹配结果：" + PatternUtil.matchTopicCategory(category));
-      }
+      Assert.assertTrue(PatternUtil.matchTopicCategory("音乐"));
+      Assert.assertTrue(PatternUtil.matchTopicCategory("music"));
+      Assert.assertFalse(PatternUtil.matchTopicCategory("123music"));
+      Assert.assertFalse(PatternUtil.matchTopicCategory("音乐music***"));
    }
 }

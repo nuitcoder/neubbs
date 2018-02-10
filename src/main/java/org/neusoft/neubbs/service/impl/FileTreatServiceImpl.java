@@ -25,7 +25,7 @@ public class FileTreatServiceImpl implements IFileTreatService {
         }
 
         //match file type(.xxx)
-        if (!PatternUtil.matchUserImage(avatarFile.getContentType())) {
+        if (!PatternUtil.matchUserAvatarType(avatarFile.getContentType())) {
             throw new FtpException(ApiMessage.PICTURE_FORMAT_WRONG).log(LogWarnEnum.FS2);
         }
 

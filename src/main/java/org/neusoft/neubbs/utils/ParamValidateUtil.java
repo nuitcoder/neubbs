@@ -135,6 +135,8 @@ public final class ParamValidateUtil {
                 new Pattern("isPureEnglish", " （参数）话题分类昵称不符合规范，必须纯英文（a-zA-Z）"));
         typePatternMap.put(ParamConst.USERNAME, new Pattern("matchUsername", "（类型）参数不符合规范（A-Z a-z 0-9）"));
         typePatternMap.put(ParamConst.EMAIL, new Pattern("matchEmail", " （类型）参数不符合规范（xxx@xx.xxx）"));
+        typePatternMap.put(ParamConst.AVATOR,
+                new Pattern("matchUserAvatarType", " （类型）用户头像文件类型不符合规范（content-type/subtype）"));
     }
 
 

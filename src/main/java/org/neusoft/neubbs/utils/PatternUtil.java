@@ -26,7 +26,7 @@ public final class PatternUtil {
     private static final String USERNAME_FORMAT = "^[A-Za-z0-9]{3,20}$";
     private static final String EMAIL_FORMAT = "^([a-z0-9A-Z]+[-|\\.]?)+[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)"
                                                 + "+[a-zA-Z]{2,}$";
-    private static final String USER_AVATAR_FORMAT = ".+/(JPG|jpg|PNG|png|JPEG|jpeg)";
+    private static final String USER_AVATAR_FORMAT = "(.*)/(jpg|png|jpeg)";
 
     private static final String CHINESE_AND_ENGLISH_TYPE  = "^[\\u4e00-\\u9fa5a-zA-Z]+$";
 
@@ -78,17 +78,19 @@ public final class PatternUtil {
 
 
     /**
-     * 匹配图片类型
+     * 匹配用户头像类型
+     *      - 匹配 MIMI type（格式: content-type/subtype）
      *
-     * @param imageType 图片类型字符串
+     * @param pictureType 图片类型
      * @return boolean 匹配结果
      */
-    public static boolean matchUserImage(String imageType) {
-        return match(imageType, USER_AVATAR_FORMAT);
+    public static boolean matchUserAvatarType(String pictureType) {
+        return match(pictureType.toLowerCase(), USER_AVATAR_FORMAT);
     }
 
     /**
-     * 匹配话题类型
+     * 匹配话题分类
+     *      - 中文英文
      *
      * @param category 话题分类
      * @return boolean 匹配结果
