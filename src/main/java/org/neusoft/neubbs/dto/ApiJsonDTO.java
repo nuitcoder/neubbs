@@ -20,15 +20,15 @@ public class ApiJsonDTO {
 
     /**
      * Constructor
-     *      - 未知（输入：Ajax 请求状态）
-     *      - 失败（输入：错误信息）
-     *      - 成功（输入：模型参数）
-     *      - 未知（输入：Ajax 请求状态，错误信息，模型参数）
+     *      - 设置默认值
+     *          - success = false
+     *          - message = ""
+     *          - model = { }
      */
     public ApiJsonDTO() {
-       this.success = false;
-       this.message = "";
-       this.model = new Object();
+        this.setSuccess(AjaxRequestStatus.FAIL);
+        this.setMessage("");
+        this.setModel(new HashMap<>(0));
     }
 
     public ApiJsonDTO success() {

@@ -112,7 +112,7 @@ public class ApiInterceptor implements HandlerInterceptor {
      */
     private void doAdminRank(HttpServletRequest request, Object handler) throws ServiceException {
         HandlerMethod handlerMethod = (HandlerMethod) handler;
-        if (((HandlerMethod) handler).getMethodAnnotation(AdminRank.class) != null) {
+        if (handlerMethod.getMethodAnnotation(AdminRank.class) != null) {
             String authentication = CookieUtil.getCookieValue(request, ParamConst.AUTHENTICATION);
             UserDO currentUser = this.judgeAuthentication(authentication);
 

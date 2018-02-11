@@ -84,7 +84,8 @@ public enum LogWarnEnum {
     UC5(5, " 删除 FTP 指定目录（or 文件）"),
     UC6(6, " FTP 服务器连接失败"),
     UC7(7, " FTP 服务器不存在指定路径！"),
-    UC8(8, " 生成指定范围随机数，min > max，无法执行生成");
+    UC8(8, " 生成指定范围随机数，min > max，无法执行生成"),
+    UC9(9, " 请求获取 Cookie 失败，未能从客户端 Request Headers 获取 Cookie");
 
     private Integer errorCode;
     private String errorMessage;

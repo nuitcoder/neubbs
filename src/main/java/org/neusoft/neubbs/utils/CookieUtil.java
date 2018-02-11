@@ -1,6 +1,9 @@
 package org.neusoft.neubbs.utils;
 
+import org.neusoft.neubbs.constant.api.ApiMessage;
 import org.neusoft.neubbs.constant.api.SetConst;
+import org.neusoft.neubbs.constant.log.LogWarnEnum;
+import org.neusoft.neubbs.exception.UtilClassException;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -69,6 +72,10 @@ public final class CookieUtil {
      * @return String Cookie值
      */
     public static String getCookieValue(HttpServletRequest request, String cookieName) {
+        if (request.getCookies() == null) {
+            throw new UtilClassException(ApiMessage.UNKNOWN_ERROR).log(LogWarnEnum.UC9);
+        }
+
         for (Cookie cookie: request.getCookies()) {
             if (cookieName.equals(cookie.getName())) {
                 return cookie.getValue();
