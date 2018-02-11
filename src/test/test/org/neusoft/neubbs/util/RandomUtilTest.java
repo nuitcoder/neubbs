@@ -1,12 +1,17 @@
 package test.org.neusoft.neubbs.util;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+import org.neusoft.neubbs.constant.log.LogWarnEnum;
+import org.neusoft.neubbs.exception.UtilClassException;
 import org.neusoft.neubbs.utils.RandomUtil;
 
 /**
- * 测试 RandomUtil
+ * RandomUtil 工具类
+ *      - 测试 generateRandomNumbers()
+ *      - 测试 generateRandomString()
  *
  * @author Suvan
  */
@@ -14,11 +19,34 @@ import org.neusoft.neubbs.utils.RandomUtil;
 public class RandomUtilTest {
 
     /**
-     * 测试生成各种随机数
+     * 测试 generateRandomNumbers()
      */
     @Test
-    public void testCreateRandom() {
-        System.out.println("生成随机数：" + RandomUtil.generateRandomNumbers(299, 300));
-        System.out.println("生成随机字符串：" + RandomUtil.generateRandomString(12));
+    public void testGenerateRandomNumbers() {
+        int min;
+        int max;
+        for (int i = 0; i < 10000; i++) {
+            min = i;
+            max = i * i;
+            try {
+                int random = RandomUtil.generateRandomNumbers(min, max);
+                Assert.assertTrue((min <= random) && (random <= max));
+            } catch (UtilClassException uce) {
+                Assert.assertEquals(LogWarnEnum.UC8, uce.getLog());
+            }
+        }
+    }
+
+    /**
+     * 测试 generateRandomString()
+     */
+    @Test
+    public void testGenerateRandomString() {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i <= 1000; i++) {
+            sb.append(RandomUtil.generateRandomString(i));
+            Assert.assertEquals(i, sb.length());
+            sb.setLength(0);
+        }
     }
 }

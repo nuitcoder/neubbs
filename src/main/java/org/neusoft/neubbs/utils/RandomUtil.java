@@ -1,6 +1,9 @@
 package org.neusoft.neubbs.utils;
 
+import org.neusoft.neubbs.constant.api.ApiMessage;
 import org.neusoft.neubbs.constant.api.SetConst;
+import org.neusoft.neubbs.constant.log.LogWarnEnum;
+import org.neusoft.neubbs.exception.UtilClassException;
 
 /**
  * 随机数 工具类
@@ -16,13 +19,19 @@ public final class RandomUtil {
     /**
      * 生成随机数
      *      - Math.random() 能生成 >= 0 且 < 1 的双精度伪随机数
-     *      - 指定 min（最小值），max（最大值）
-     *      - min <= random numbers <= max
+     *      - 指定 min（最小值），max（最大值）min <= random numbers <= max
      *      - 参考公式：(随机数 * (max - min + 1)) + 1
+     *      - 需满足 min > max，否则抛出异常
+     *      - int 极限值范围
+     *          - 最大值：Integer.MAX_VALUE = 0x7fffffff = 2147483647
+     *          - 最小值：Integer.MIN_VALUE = 0x80000000 =-2147483648
      *
      * @return int 生成随机数
      */
     public static int generateRandomNumbers(int min, int max) {
+        if (min > max) {
+            throw new UtilClassException(ApiMessage.UNKNOWN_ERROR).log(LogWarnEnum.UC8);
+        }
         //return new Random().nextInt(max - min + 1) + min;
         return  (int) ((Math.random() * (max - min + 1))) + min;
     }
@@ -35,7 +44,6 @@ public final class RandomUtil {
      *          2. 根据生成数字，判断执行哪个流程（1 - 生成小写字母，2 - 生成大写字母，3 - 生成数字）
      *          3. 执行流程中，随机生成指定范围的 ASCII 码（97 ~ 122 小写字母）（65 ~ 90 大写字母）
      *          4. 将其转换成 char 类型，单个字符，追加至结果字符串
-     *
      *
      * @param len 字符串长度
      * @return String 随机字符串
