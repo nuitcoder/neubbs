@@ -5,30 +5,31 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.neusoft.neubbs.utils.SecretUtil;
 import org.neusoft.neubbs.utils.SendEmailUtil;
+import org.neusoft.neubbs.utils.StringUtil;
 
 /**
  * SendEmailUtil 测试类
+ *      - 测试 send()
  */
 @RunWith(JUnit4.class)
 public class SendEmailUtilTest {
+
     /**
-     * 测试发送激活邮件
+     * 测试 send()
      */
     @Test
     public void testSendEmail(){
-       String email = "13202405189@163.com";
-       String subject = "Neubbs 帐号激活";
+        String sendNickName = "Neubbs";
+        String receiveEmail = "liushuwei0925@gmail.com";
+        String sendSubject = "Neubbs 账户激活";
 
-       String token = SecretUtil.encodeBase64(email);
+        //splice mail content（activateUrl + token）
+        String token = SecretUtil.encodeBase64(receiveEmail + "-" + StringUtil.getTodayTwentyFourClockTimestamp());
+        String activateUrl = "http://localhost:8080/account/validate?token=";
+        String sendEmailContent = StringUtil.generateActivateMailHtmlContent(activateUrl + token);
 
-       String url  = "http://localhost:8080/neubbs?token = " + token;
-
-       String content = "<html><head></head><body><h1>Neubbs 帐号活邮件，点击激活帐号</h1><br>"
-                        + "<a href=\"" + url + "\">" + url + "</a>"
-                        + "</body></html>";
-
-        SendEmailUtil.send("Neubbs 管理员" ,email, subject, content);
-
-        System.out.println("发送邮件成功");
+        //need to go 'receiveEmail' to validate
+        SendEmailUtil.send(sendNickName, receiveEmail, sendSubject, sendEmailContent);
+        System.out.println("already send to " + receiveEmail);
     }
 }
