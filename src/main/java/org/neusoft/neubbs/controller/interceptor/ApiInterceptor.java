@@ -10,7 +10,7 @@ import org.neusoft.neubbs.controller.annotation.LoginAuthorization;
 import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.exception.ServiceException;
 import org.neusoft.neubbs.utils.CookieUtil;
-import org.neusoft.neubbs.utils.TokenUtil;
+import org.neusoft.neubbs.utils.SecretUtil;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -143,7 +143,7 @@ public class ApiInterceptor implements HandlerInterceptor {
          }
 
         //judge token validity
-        UserDO user = TokenUtil.decryptUserInfoToken(authentication);
+        UserDO user = SecretUtil.decryptUserInfoToken(authentication);
         if (user == null) {
             this.throwTokenExpiredException();
         }

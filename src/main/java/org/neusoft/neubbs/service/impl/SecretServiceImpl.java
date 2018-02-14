@@ -5,7 +5,6 @@ import org.neusoft.neubbs.constant.log.LogWarnEnum;
 import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.exception.ServiceException;
 import org.neusoft.neubbs.service.ISecretService;
-import org.neusoft.neubbs.utils.TokenUtil;
 import org.neusoft.neubbs.utils.SecretUtil;
 import org.neusoft.neubbs.utils.StringUtil;
 import org.springframework.stereotype.Service;
@@ -25,13 +24,13 @@ public class SecretServiceImpl implements ISecretService {
 
     @Override
     public String generateUserInfoAuthentication(UserDO user) {
-        return TokenUtil.generateUserInfoToken(user);
+        return SecretUtil.generateUserInfoToken(user);
     }
 
     @Override
     public UserDO getUserInfoByAuthentication(String authentication) {
         //input authentication and key
-        UserDO user = TokenUtil.decryptUserInfoToken(authentication);
+        UserDO user = SecretUtil.decryptUserInfoToken(authentication);
         if (user == null) {
             throw new ServiceException(ApiMessage.TOKEN_EXPIRED).log(LogWarnEnum.US4);
         }

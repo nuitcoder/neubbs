@@ -26,7 +26,7 @@ import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.exception.ServiceException;
 import org.neusoft.neubbs.exception.ParamsErrorException;
 import org.neusoft.neubbs.service.ITopicService;
-import org.neusoft.neubbs.utils.TokenUtil;
+import org.neusoft.neubbs.utils.SecretUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
@@ -126,7 +126,7 @@ public class TopicControllerTest {
             user.setRank("admin");
             user.setState(1);
 
-        return new Cookie(ParamConst.AUTHENTICATION, TokenUtil.generateUserInfoToken(user));
+        return new Cookie(ParamConst.AUTHENTICATION, SecretUtil.generateUserInfoToken(user));
     }
 
     /**
@@ -1012,7 +1012,7 @@ public class TopicControllerTest {
         System.out.println("input request-body: "  + requestBody);
 
         Cookie cookie = this.getAlreadLoginUserCookie();
-        int userId = TokenUtil.decryptUserInfoToken(cookie.getValue()).getId();
+        int userId = SecretUtil.decryptUserInfoToken(cookie.getValue()).getId();
         int beforeTopicContentLike = topicContentDAO.getTopicContentByTopicId(topicId).getLike();
 
         mockMvc.perform(
@@ -1050,7 +1050,7 @@ public class TopicControllerTest {
 
         //set user already like, get userId from cookie user
         Cookie cookie = this.getAlreadLoginUserCookie();
-        int userId = TokenUtil.decryptUserInfoToken(cookie.getValue()).getId();
+        int userId = SecretUtil.decryptUserInfoToken(cookie.getValue()).getId();
 
         Assert.assertEquals(1, topicContentDAO.updateLikeAddOneByTopicId(topicId));
         Assert.assertEquals(1, userActionDAO.updateLikeTopicIdJsonArrayByOneTopicIdToAppendEnd(userId, topicId));

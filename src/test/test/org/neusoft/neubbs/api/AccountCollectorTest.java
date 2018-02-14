@@ -21,7 +21,6 @@ import org.neusoft.neubbs.service.ICacheService;
 import org.neusoft.neubbs.service.ICaptchaService;
 import org.neusoft.neubbs.service.IUserService;
 import org.neusoft.neubbs.utils.FtpUtil;
-import org.neusoft.neubbs.utils.TokenUtil;
 import org.neusoft.neubbs.utils.SecretUtil;
 import org.neusoft.neubbs.utils.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -124,7 +123,7 @@ public class AccountCollectorTest {
             user.setRank("admin");
             user.setState(1);
 
-        return new Cookie(ParamConst.AUTHENTICATION, TokenUtil.generateUserInfoToken(user));
+        return new Cookie(ParamConst.AUTHENTICATION, SecretUtil.generateUserInfoToken(user));
     }
 
     /**
@@ -220,7 +219,7 @@ public class AccountCollectorTest {
             user.setRank("admin");
             user.setState(1);
 
-        Cookie autoLoginCookie = new Cookie(ParamConst.AUTHENTICATION, TokenUtil.generateUserInfoToken(user));
+        Cookie autoLoginCookie = new Cookie(ParamConst.AUTHENTICATION, SecretUtil.generateUserInfoToken(user));
 
         for (Param param : paramList) {
             System.out.println("input: key=" + param.key + ", value=" + param.value);
@@ -442,7 +441,7 @@ public class AccountCollectorTest {
             user.setName("suvan");
             user.setRank("admin");
             user.setState(1);
-        String authentication = TokenUtil.generateUserInfoToken(user);
+        String authentication = SecretUtil.generateUserInfoToken(user);
 
         mockMvc.perform(
                 MockMvcRequestBuilders.get(API_ACCOUNT_LOGOUT)
@@ -618,7 +617,7 @@ public class AccountCollectorTest {
         String requestBody = "{\"username\":\"" + inputUsername + "\",\"password\":\"" + inputNewPassword + "\"}";
         System.out.println("input request-body:" + requestBody);
 
-        String authentication = TokenUtil.generateUserInfoToken(userService.getUserInfoByName(inputUsername));
+        String authentication = SecretUtil.generateUserInfoToken(userService.getUserInfoByName(inputUsername));
 
         mockMvc.perform(
                 MockMvcRequestBuilders.post(API_ACCOUNT_UPDATE_PASSWORD)
@@ -674,7 +673,7 @@ public class AccountCollectorTest {
         try {
             mockMvc.perform(
                     MockMvcRequestBuilders.post(API_ACCOUNT_UPDATE_PASSWORD)
-                            .cookie(new Cookie(ParamConst.AUTHENTICATION, TokenUtil.generateUserInfoToken(noActivationUser)))
+                            .cookie(new Cookie(ParamConst.AUTHENTICATION, SecretUtil.generateUserInfoToken(noActivationUser)))
                             .contentType(MediaType.APPLICATION_JSON)
                             .content("{}")
             ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
@@ -696,7 +695,7 @@ public class AccountCollectorTest {
                 {"noExist", "123456"}
         };
 
-        String authentication = TokenUtil.generateUserInfoToken(userService.getUserInfoByName("suvan"));
+        String authentication = SecretUtil.generateUserInfoToken(userService.getUserInfoByName("suvan"));
         Cookie cookie = new Cookie(ParamConst.AUTHENTICATION, authentication);
 
         for (String[] param : params) {
@@ -711,7 +710,7 @@ public class AccountCollectorTest {
                     noExistUser.setName("noExist");
                     noExistUser.setState(1);
 
-                cookie.setValue(TokenUtil.generateUserInfoToken(noExistUser));
+                cookie.setValue(SecretUtil.generateUserInfoToken(noExistUser));
             }
 
             try {
@@ -750,7 +749,7 @@ public class AccountCollectorTest {
         String reqeustBody = "{\"username\":\"" + inputUsername + "\",\"email\":\"" + inputEmail + "\"}";
         System.out.println("input reqeust-body: " + reqeustBody);
 
-        String authentication = TokenUtil.generateUserInfoToken(userService.getUserInfoByName(inputUsername));
+        String authentication = SecretUtil.generateUserInfoToken(userService.getUserInfoByName(inputUsername));
 
         mockMvc.perform(
                 MockMvcRequestBuilders.post(API_ACCOUNT_UPDATE_EMAIL)
@@ -803,7 +802,7 @@ public class AccountCollectorTest {
                 {"noExist", "test@test.com"}
         };
 
-        String authentication = TokenUtil.generateUserInfoToken(userService.getUserInfoByName("suvan"));
+        String authentication = SecretUtil.generateUserInfoToken(userService.getUserInfoByName("suvan"));
         Cookie userCookie = new Cookie(ParamConst.AUTHENTICATION, authentication);
 
         for (String[] param: params) {
@@ -816,7 +815,7 @@ public class AccountCollectorTest {
                 UserDO noExistUser = new UserDO();
                     noExistUser.setName("noExist");
 
-                userCookie.setValue(TokenUtil.generateUserInfoToken(noExistUser));
+                userCookie.setValue(SecretUtil.generateUserInfoToken(noExistUser));
             }
 
             try {
