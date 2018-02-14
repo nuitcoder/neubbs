@@ -182,6 +182,12 @@ public final class SetConst {
 
     public static final String VALUE_NULL = "null";
 
+    /**
+     * hashCode 值（用于在重写 hashCode() 参与递进式运算）
+     *      - UserDo 的常数值
+     */
+    public static final int USERDO_HASH_CONSTANT = 89;
+
 
     /*
      * ***********************************************

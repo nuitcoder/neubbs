@@ -138,4 +138,48 @@ public class UserDO {
                 + ", createtime=" + createtime
                 + '}';
     }
+
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass() || !(o instanceof UserDO)) {
+            return false;
+        }
+
+        UserDO u = (UserDO) o;
+        return !(id != null ? !id.equals(u.id) : u.id != null
+                || name != null ? !name.equals(u.name) : u.name != null
+                || sex != null ? !sex.equals(u.sex) : u.sex != null
+                || birthday != null ? !birthday.equals(u.birthday) : u.birthday != null
+                || position != null ? !position.equals(u.position) : u.position != null
+                || description != null ? !description.equals(u.description) : u.description != null
+                || avator != null ? !avator.equals(u.avator) : u.avator != null
+                || rank != null ? !rank.equals(u.rank) : u.rank != null
+                || state != null ? !state.equals(u.state) : u.state != null
+                || createtime != null ? !createtime.equals(u.createtime) : u.createtime != null);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        int hash = SetConst.USERDO_HASH_CONSTANT;
+
+        result = hash * result + (name != null ? name.hashCode() : 0);
+        result = hash * result + (password != null ? password.hashCode() : 0);
+        result = hash * result + (email != null ? email.hashCode() : 0);
+        result = hash * result + (sex != null ? sex.hashCode() : 0);
+        result = hash * result + (birthday != null ? birthday.hashCode() : 0);
+        result = hash * result + (position != null ? position.hashCode() : 0);
+        result = hash * result + (description != null ? description.hashCode() : 0);
+        result = hash * result + (avator != null ? avator.hashCode() : 0);
+        result = hash * result + (rank != null ? rank.hashCode() : 0);
+        result = hash * result + (state != null ? state.hashCode() : 0);
+        result = hash * result + (createtime != null ? createtime.hashCode() : 0);
+
+        return result;
+    }
 }
