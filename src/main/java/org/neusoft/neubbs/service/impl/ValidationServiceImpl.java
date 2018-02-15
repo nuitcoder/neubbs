@@ -26,6 +26,10 @@ public class ValidationServiceImpl implements IValidationService {
 
     @Override
     public IValidationService checkUsername(String username) {
+        if (username == null) {
+            throw new ParamsErrorException(ApiMessage.PARAM_ERROR).log(LogWarnEnum.VS2);
+        }
+
         String paramType = PatternUtil.matchEmail(username) ? ParamConst.EMAIL : ParamConst.USERNAME;
         ParamValidateUtil.check(paramType, username);
         return this;
