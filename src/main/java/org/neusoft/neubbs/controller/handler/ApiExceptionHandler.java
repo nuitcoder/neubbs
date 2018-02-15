@@ -3,6 +3,7 @@ package org.neusoft.neubbs.controller.handler;
 import org.apache.log4j.Logger;
 import org.neusoft.neubbs.constant.api.ApiMessage;
 import org.neusoft.neubbs.constant.api.SetConst;
+import org.neusoft.neubbs.constant.log.LogWarnEnum;
 import org.neusoft.neubbs.controller.annotation.ApiException;
 import org.neusoft.neubbs.exception.IPrintLog;
 import org.neusoft.neubbs.utils.JsonUtil;
@@ -90,7 +91,9 @@ public class ApiExceptionHandler implements HandlerExceptionResolver {
     private void printApiExceptionToLocalLog(Exception e) {
         //print api exception to local log
         if (e instanceof IPrintLog) {
-            String logMessage = ((IPrintLog) e).getLog().getErrorMessage();
+
+            LogWarnEnum logWarnEnum = ((IPrintLog) e).getLog();
+            String logMessage = logWarnEnum != null ? logWarnEnum.getErrorMessage() : null;
 
             if (logMessage != null) {
                 //get exception stack root element (pass stacktrace)
