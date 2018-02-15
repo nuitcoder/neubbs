@@ -11,12 +11,14 @@ import org.junit.runner.RunWith;
 import org.neusoft.neubbs.constant.api.ApiMessage;
 import org.neusoft.neubbs.constant.api.ParamConst;
 import org.neusoft.neubbs.constant.api.SetConst;
+import org.neusoft.neubbs.controller.api.AccountController;
+import org.neusoft.neubbs.controller.filter.ApiFilter;
 import org.neusoft.neubbs.controller.handler.DynamicSwitchDataSourceHandler;
 import org.neusoft.neubbs.dao.IUserActionDAO;
 import org.neusoft.neubbs.dao.IUserDAO;
 import org.neusoft.neubbs.entity.UserDO;
-import org.neusoft.neubbs.exception.ServiceException;
 import org.neusoft.neubbs.exception.ParamsErrorException;
+import org.neusoft.neubbs.exception.ServiceException;
 import org.neusoft.neubbs.service.ICacheService;
 import org.neusoft.neubbs.service.ICaptchaService;
 import org.neusoft.neubbs.service.IUserService;
@@ -43,21 +45,24 @@ import org.springframework.web.util.NestedServletException;
 import javax.servlet.http.Cookie;
 import javax.transaction.Transactional;
 import javax.ws.rs.HttpMethod;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
 
 /**
  * Account api 测试
- *      - 声明 Spring
- *      - 开启 web 服务
- *      - 设置配置文件(需设置 applicatonContext.xml 和 mvc.xm,否则会报错)
+ *      - 测试 /api/account
+ *      - 测试 /api/account/state
+ *      - 测试 /api/account/login
+ *
+ * 【注意】 设置配置文件(需设置 ApplicationContext.xml 和 mvc.xm,否则会报错)
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
 @ContextHierarchy({
         @ContextConfiguration(locations = {"classpath:spring-context.xml"}),
-        @ContextConfiguration(locations = {"classpath:spring-mvc.xml"})
+        @ContextConfiguration(locations = {"classpath:spring-mvc.xml"}),
 })
 public class AccountCollectorTest {
 
@@ -65,6 +70,9 @@ public class AccountCollectorTest {
     private WebApplicationContext webApplicationContext;
 
     private MockMvc mockMvc;
+
+    @Autowired
+    private AccountController accountController;
 
     @Autowired
     private IUserService userService;
@@ -75,16 +83,12 @@ public class AccountCollectorTest {
     @Autowired
     private IUserActionDAO userActionDAO;
 
-    private final String API_ACCOUNT = "/api/account";
-    private final String API_ACCOUNT_STATE = "/api/account/state";
-    private final String API_ACCOUNT_LOGIN = "/api/account/login";
     private final String API_ACCOUNT_LOGOUT = "/api/account/logout";
     private final String API_ACCOUNT_REGISTER = "/api/account/register";
     private final String API_ACCOUNT_UPDATE_PASSWORD = "/api/account/update-password";
     private final String API_ACCOUNT_UPDATE_EMAIL = "/api/account/update-email";
     private final String API_ACCOUNT_ACTIVATE = "/api/account/activate";
     private final String API_ACCOUNT_VALIDATE = "/api/account/validate";
-    private final String API_ACCOUNT_CAPTCHA = "/api/account/captcha";
     private final String API_ACCOUNT_CHECK_CAPTCHA = "/api/account/check-captcha";
     private final String API_ACCOUNT_FORGET_PASSWORD = "/api/account/forget-password";
 
@@ -92,193 +96,121 @@ public class AccountCollectorTest {
         String key;
         Object value;
 
-        Param(String key, Object value) {
+        Param (String key, Object value) {
             this.key = key;
             this.value = value;
         }
     }
 
-
-    /**
-     * 打印成功通过 Test 函数消息
+    /*
+     * ***********************************************
+     * init method
+     * ***********************************************
      */
-    public void printSuccessPassTestMehtodMessage() {
-        //current executing mehtod
-        String currentDoingMethod = Thread.currentThread().getStackTrace()[2].getMethodName();
-
-        System.out.println("*************************** 【"
-                + currentDoingMethod + "()】 "
-                + " pass all the tests ****************************");
-    }
-
-    /**
-     * 获取已经登陆用户 Cookie
-     *
-     * @return Cookie 已经登录用户Cookie
-     */
-    public Cookie getAlreadLoginUserCookie() {
-        UserDO user = new UserDO();
-            user.setId(6);
-            user.setName("suvan");
-            user.setRank("admin");
-            user.setState(1);
-
-        return new Cookie(ParamConst.AUTHENTICATION, SecretUtil.generateUserInfoToken(user));
-    }
-
-    /**
-     * 生成 JSON 字段
-     *
-     * @param key 字符串键
-     * @param value Object值
-     * @return String JSON字段
-     */
-    public String getJsonField(String key, Object value) {
-        if (value == null) {
-            value = null;
-        } else if (value instanceof String) {
-            value = "\"" + value + "\"";
-        }
-        return "\"" + key + "\":" + value;
-    }
-
-    /**
-     * 确认结果集 Model Map 应该拥有以下 Key 选项
-     *
-     * @param result MvcResult 结果集
-     * @param keyItems key选项
-     * @throws Exception 所有异常
-     */
-    private void confirmMvcResultModelMapShouldHavaKeyItems(MvcResult result, String... keyItems) throws Exception {
-        Map resultMap = (Map) JSON.parse(result.getResponse().getContentAsString());
-        Map modelMap = (Map) resultMap.get("model");
-
-        //compare length and judge exist item
-        Assert.assertEquals(keyItems.length, modelMap.size());
-        Assert.assertThat((Set<String>) modelMap.keySet(), CoreMatchers.hasItems(keyItems));
-    }
-
 
     @BeforeClass
     public static void init() {
-        //use local MySQL DataBase
         DynamicSwitchDataSourceHandler.setDataSource(SetConst.LOCALHOST_DATA_SOURCE_MYSQL);
     }
 
+    /**
+     * api 测试执行前构建
+     * - 方式1：依赖 Spring 上下文，需加入 @ContextConfiguration 类注解，加载配置文件
+     * - 方式2：自主构建控制器，可加入拦截器，过滤器之类
+     */
     @Before
     public void setup() {
-        //方式1：依赖 Spring 上下文，需加入 @ContextConfiguration 类注解，加载配置文件
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
+        //method 1
+        this.webApplicationContext.getServletContext().setAttribute(ParamConst.LOGIN_USER, 0);
+        this.mockMvc = MockMvcBuilders
+                .webAppContextSetup(this.webApplicationContext)
+                .addFilter(new ApiFilter())
+                .build();
 
-        //方式2: 自主构建控制器，可加入拦截器，过滤器之类
-//        StandaloneMockMvcBuilder standBuild = MockMvcBuilders.standaloneSetup(accountController);
-//            standBuild.addFilter(new ApiFilter());
-//            standBuild.addInterceptors(new ApiInterceptor());
-//        this.mockMvc = standBuild.build();
+        //method 2, custom default environment
+        //StandaloneMockMvcBuilder standBuild = MockMvcBuilders.standaloneSetup(accountController);
+        //    standBuild.addFilter(new ApiFilter());
+        //    standBuild.addInterceptors(new ApiInterceptor());
+        //this.mockMvc = standBuild.build();
     }
 
+    /*
+     * ***********************************************
+     * api test method
+     * ***********************************************
+     */
+
     /**
-     * 【/api/account】test no login get user information success
+     * 测试 /api/account
+     *      - 获取用户信息成功
      */
     @Test
-    public void testNoLoginGetUserInformationSuccess() throws Exception {
+    public void testGetUserInfoSuccess() throws Exception {
         ArrayList<Param> paramList = new ArrayList<>();
             paramList.add(new Param("username", "suvan"));
             paramList.add(new Param("username", "liushuwei0925@gmail.com"));
             paramList.add(new Param("email", "liushuwei0925@gmail.com"));
-
-        for (Param param : paramList) {
-            System.out.println("input: key=" + param.key + ", value=" + param.value);
-
-            mockMvc.perform(
-                    MockMvcRequestBuilders.get(API_ACCOUNT)
-                            .param(param.key, (String) param.value)
-            ).andExpect(MockMvcResultMatchers.status().is(200))
-             .andExpect(MockMvcResultMatchers.content().contentType("application/json;charset=UTF-8"))
-             .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
-             .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
-             .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
-        }
-
-        printSuccessPassTestMehtodMessage();
-    }
-
-    /**
-     * 【/api/account】test already login get user information success
-     */
-    @Test
-    public void testAreadyLoginGetUserInfoSuccess() throws Exception {
-        ArrayList<Param> paramList = new ArrayList<>();
-            paramList.add(new Param("username", "suvan"));
-            paramList.add(new Param("username", "liushuwei0925@gmail.com"));
-            paramList.add(new Param("email", "liushuwei0925@gmail.com"));
-
-        UserDO user = new UserDO();
-            user.setId(6);
-            user.setName("suvan");
-            user.setRank("admin");
-            user.setState(1);
-
-        Cookie autoLoginCookie = new Cookie(ParamConst.AUTHENTICATION, SecretUtil.generateUserInfoToken(user));
 
         for (Param param : paramList) {
             System.out.println("input: key=" + param.key + ", value=" + param.value);
 
             MvcResult result = mockMvc.perform(
-                    MockMvcRequestBuilders.get(API_ACCOUNT)
+                    MockMvcRequestBuilders.get("/api/account")
                             .param(param.key, (String) param.value)
-                            .cookie(autoLoginCookie)
-            ).andExpect(MockMvcResultMatchers.status().isOk())
+            ).andExpect(MockMvcResultMatchers.status().is(200))
              .andExpect(MockMvcResultMatchers.content().contentType("application/json;charset=UTF-8"))
              .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
-             .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists())
+             .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
                     .andReturn();
 
-            this.confirmMvcResultModelMapShouldHavaKeyItems(result,
+            this.isExistKeyItems(result,
                     "email", "sex", "birthday", "position", "description",
-                    "createtime", "username", "avator", "state");
+                    "avator", "state", "createtime", "userid", "username",
+                    "following", "followed", "like", "collect", "attention", "topic", "reply");
         }
 
-        printSuccessPassTestMehtodMessage();
+        this.printSuccessMessage();
     }
 
     /**
-     * 【/api/account】 test same time input two param get user information throw exception
-     *      - database exception
-     *          - no exist username, exist email
+     * 测试 /api/account
+     *      - 获取用户信息，常同时输入两个不同参数，其中一个错误异常
      */
     @Test
-    public void testSameTimeInputTwoParamGetUserInformationThrowException() throws Exception {
+    public void testGetUserInfoSameInputTwoParamException() throws Exception {
         try {
             mockMvc.perform(
-                    MockMvcRequestBuilders.get(API_ACCOUNT)
-                            .param("username", "failsuvan")
+                    MockMvcRequestBuilders.get("/api/account")
+                            .param("username", "noUser")
                             .param("email", "liushuwei0925@gmail.com")
             ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
-             .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""));
+             .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
+             .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
+
         } catch (NestedServletException ne) {
             Throwable throwable = ne.getRootCause();
-            Assert.assertThat(throwable, CoreMatchers.is(CoreMatchers.instanceOf(ServiceException.class)));
+            Assert.assertThat(throwable, CoreMatchers.instanceOf(ServiceException.class));
             Assert.assertEquals(throwable.getMessage(), ApiMessage.NO_USER);
         }
 
-        printSuccessPassTestMehtodMessage();
+        this.printSuccessMessage();
     }
 
     /**
-     * 【/api/account】 test get user information throws exception
-     *      - request param error, no norm
-     *      - database exception
+     * 测试 /api/account
+     *      - 获取用户信息异常
+     *          - request param error, no norm
+     *          - database exception
      */
     @Test
-    public void testGetUserInfoThrowsException() throws Exception {
+    public void testGetUserInfoException () throws Exception {
         ArrayList<Param> alist = new ArrayList<>();
             alist.add(new Param("username", null));
             alist.add(new Param("username", "a"));
             alist.add(new Param("username", "*asdf-="));
             alist.add(new Param("username", "12312311111111111111111"));
             alist.add(new Param("username", "suvanaa"));
-            alist.add(new Param("emial", null));
+            alist.add(new Param("email", null));
             alist.add(new Param("email", "asdfasfsfaasf@"));
             alist.add(new Param("email", "suvan@liushuwei.cn"));
 
@@ -287,9 +219,10 @@ public class AccountCollectorTest {
 
             try {
                 mockMvc.perform(
-                        MockMvcRequestBuilders.get(API_ACCOUNT).param(param.key, (String) param.value)
+                        MockMvcRequestBuilders.get("/api/account")
+                                .param(param.key, (String) param.value)
                 ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
-                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists())
+                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
                  .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
 
             } catch (NestedServletException ne) {
@@ -302,76 +235,112 @@ public class AccountCollectorTest {
             }
         }
 
-        printSuccessPassTestMehtodMessage();
+        this.printSuccessMessage();
     }
 
     /**
-     * 【/api/account/state】test get user activate state success
+     * 测试 /api/account/state
+     *      - 获取用户状态成功
      */
     @Test
-    public void testGetUserActivateStateSuccess() throws Exception {
+    public void testGetActivateState() throws Exception {
         mockMvc.perform(
-                MockMvcRequestBuilders.get(API_ACCOUNT_STATE).param("username", "suvan")
+                MockMvcRequestBuilders.get("/api/account/state")
+                        .param("username", "suvan")
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
          .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
          .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
 
-        printSuccessPassTestMehtodMessage();
+        this.printSuccessMessage();
     }
 
     /**
-     * 【/api/account/state】test get user activate state throw exception
-     *      - request param error, no norm
-     *      - database exception
+     * 测试 /api/account/state
+     *      - 获取用户激活状态异常
+     *          - request param error, no norm
+     *          - database exception
      */
     @Test
-    public void testGetUserActivateStateThrowException() throws Exception {
+    public void testGetUserActivateStateException() throws Exception {
         String key = "username";
-        String[] values = {null, "a", "12**+-3123", "hello"};
+        String[] values = {null, "h", "123", "hello"};
 
         for (String value : values) {
             System.out.println("input param: " + key + " = " + value);
 
             try {
                 mockMvc.perform(
-                        MockMvcRequestBuilders.get(API_ACCOUNT_STATE).param(key, value)
+                        MockMvcRequestBuilders.get("/api/account/state")
+                                .param(key, value)
                 ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
-                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists())
+                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
                  .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
 
             } catch (NestedServletException ne) {
                 Assert.assertThat(ne.getRootCause(),
                         CoreMatchers.anyOf(
-                                CoreMatchers.is(CoreMatchers.instanceOf(ParamsErrorException.class)),
-                                CoreMatchers.is(CoreMatchers.instanceOf(ServiceException.class))
+                                CoreMatchers.instanceOf(ParamsErrorException.class),
+                                CoreMatchers.instanceOf(ServiceException.class)
                         )
                 );
             }
         }
 
-        printSuccessPassTestMehtodMessage();
+        this.printSuccessMessage();
     }
 
     /**
-     * 【/api/account/login】 test login success
+     * 测试 /api/account/following
+     *      - 获取用户所有主动关注人信息列表成功
      */
     @Test
-    public void testLoginSuccess() throws Exception {
-        //设置 ServletContext，统计登录人数
-        this.webApplicationContext.getServletContext().setAttribute(ParamConst.LOGIN_USER, 0);
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
+    public void testListUserFollowingUserInfoSuccess() {
 
-        //输入参数
-        String inputUsername = "suvan";
-        String inputPassword = "123456";
+    }
 
-        String reuqesetBody = "{\"username\":\"" + inputUsername + "\", \"password\":\"" + inputPassword + "\"}";
-        System.out.println("input reqeust-body: " + reuqesetBody);
+    /**
+     * 测试 /api/account/following
+     *      - 获取用户所有主动关注人信息列表异常
+     */
+    @Test
+    public void testListUserFollowingUserInfoException() {
+
+    }
+
+    /**
+     * 测试 /api/account/followed
+     *      - 获取用户所有被关注信息列表成功
+     */
+    @Test
+    public void testListUserFollowedUserInfoSuccess() {
+
+    }
+
+    /**
+     * 测试 /api/account/followed
+     *      - 获取所有用户所有被关注人信息列表异常
+     */
+    @Test
+    public void testListUserFollowedUserInfoException() {
+
+    }
+
+    /**
+     * 测试 /api/account/login
+     *      - 账户登陆成功
+     */
+    @Test
+    public void testLoginAccountSuccess() throws Exception {
+        //build request-body
+        String username = "suvan";
+        String password = "123456";
+        String requestBody = "{\"username\":\"" + username + "\", \"password\":\"" + password + "\"}";
+        System.out.println("input request-body: " + requestBody);
 
         MvcResult result = mockMvc.perform(
-                MockMvcRequestBuilders.post(API_ACCOUNT_LOGIN)
+                MockMvcRequestBuilders.post("/api/account/login")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(reuqesetBody)
+                        .content(requestBody)
                         .accept(MediaType.APPLICATION_JSON)
         ).andExpect(MockMvcResultMatchers.cookie().exists(ParamConst.AUTHENTICATION))
          .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
@@ -379,27 +348,26 @@ public class AccountCollectorTest {
          .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
             .andReturn();
 
-        this.confirmMvcResultModelMapShouldHavaKeyItems(result, "state", "authentication");
-
-        printSuccessPassTestMehtodMessage();
+        this.isExistKeyItems(result, "state", "authentication");
+        this.printSuccessMessage();
     }
 
     /**
-     * 【/api/account/login】 test login throw Exception
-     *      - request param error, no norm
-     *      - database exception
+     * 测试 /api/account/login
+     *      - 账户登陆异常
+     *          - request param error, no norm
+     *          - database exception
      */
     @Test
-    public void testLoginThrowException() throws Exception {
-        this.webApplicationContext.getServletContext().setAttribute(ParamConst.LOGIN_USER, 0);
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
+    public void testLoginAccountException() throws Exception {
+        String[][] params = {
+                {null, null}, {"suvan", null}, {null, "123456"},
+                {"s", "123456"}, {"suvan*-=", "123456"}, {"noUser", "123456"},
+                {"test@gmail.com", "123456"}, {"liushuwei0925@gmail.com", "xxxxxxx"},
+                {"suvan", "123"}, {"suvan", "xxxxx"}};
 
-        String[][] params = {{null, null}
-                , {null, "123456"}, {"s", "123456"}, {"suvan*-=", "123456"}, {"hello", "123456"}
-                , {"test@gmail.com", "123456"}, {"liushuwei0925@gmail.com", "asdfasf"}
-                , {"suvan", null}, {"suvan", "123"}, {"suvan", "asdfasfa"}};
-
-        for (String[] param: params) {
+        for (String[] param : params) {
+            //build request-body
             String username = param[0];
             String password = param[1];
             String requestBody = "{\"username\":\"" + username + "\"," + "\"password\":\"" + password + "\"}";
@@ -407,40 +375,42 @@ public class AccountCollectorTest {
 
             try {
                 mockMvc.perform(
-                        MockMvcRequestBuilders.post(API_ACCOUNT_LOGIN)
+                        MockMvcRequestBuilders.post("/api/account/login")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(requestBody)
+                                .accept(MediaType.APPLICATION_JSON)
                 ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
-                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists())
+                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
                  .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
 
             } catch (NestedServletException ne) {
                 Assert.assertThat(ne.getRootCause(),
-                        CoreMatchers.anyOf(CoreMatchers.is(CoreMatchers.instanceOf(ParamsErrorException.class)),
+                        CoreMatchers.anyOf(
+                                CoreMatchers.is(CoreMatchers.instanceOf(ParamsErrorException.class)),
                                 CoreMatchers.is(CoreMatchers.instanceOf(ServiceException.class))
                         )
                 );
             }
         }
 
-        printSuccessPassTestMehtodMessage();
+        this.printSuccessMessage();
     }
 
     /**
      * 【/api/account/logout】 test logout success
-     *      - set session
-     *      - add already login user cookie
+     * - set session
+     * - add already login user cookie
      */
     @Test
-    public void testLogoutSuccess() throws Exception {
+    public void testLogoutSuccess () throws Exception {
         this.webApplicationContext.getServletContext().setAttribute(ParamConst.LOGIN_USER, 0);
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
 
         UserDO user = new UserDO();
-            user.setId(5);
-            user.setName("suvan");
-            user.setRank("admin");
-            user.setState(1);
+        user.setId(5);
+        user.setName("suvan");
+        user.setRank("admin");
+        user.setState(1);
         String authentication = SecretUtil.generateUserInfoToken(user);
 
         mockMvc.perform(
@@ -448,25 +418,25 @@ public class AccountCollectorTest {
                         .cookie(new Cookie(ParamConst.AUTHENTICATION, authentication))
                         .accept(MediaType.APPLICATION_JSON)
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
-         .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
-         .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
 
-        printSuccessPassTestMehtodMessage();
+        this.printSuccessMessage();
     }
 
     /**
      * 【/api/account/logout】 test logout throw Exception
-     *      - no login, test @LogintAuthorization
+     * - no login, test @LogintAuthorization
      */
     @Test
-    public void testLogoutThrowException() throws Exception {
+    public void testLogoutThrowException () throws Exception {
         try {
             //no Cookie, do ApiInterceptor do interceptor
             mockMvc.perform(
                     MockMvcRequestBuilders.get(API_ACCOUNT_LOGOUT)
             ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
-             .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists())
-             .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists())
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
 
         } catch (NestedServletException ne) {
             Throwable throwable = ne.getRootCause();
@@ -480,7 +450,7 @@ public class AccountCollectorTest {
      */
     @Test
     @Transactional
-    public void testRegisterUserSuccess() throws Exception {
+    public void testRegisterUserSuccess () throws Exception {
         String username = "apiTestUser";
         String password = "apiTestPassword";
         String email = "apiTestEmail@neubBs.com";
@@ -495,11 +465,11 @@ public class AccountCollectorTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody)
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
-         .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
-         .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
                 .andReturn();
 
-        this.confirmMvcResultModelMapShouldHavaKeyItems(result,
+        this.isExistKeyItems(result,
                 "username", "email", "sex", "birthday", "position", "description", "avator", "state", "createtime");
 
         //confirm forum_user_action
@@ -510,17 +480,17 @@ public class AccountCollectorTest {
         userId = userDAO.getMaxUserId();
         FtpUtil.deleteDirectory("/user/" + userId + "-" + username);
 
-        printSuccessPassTestMehtodMessage();
+        this.printSuccessMessage();
     }
 
     /**
      * 【/api/account/register】test register user throw exception
-     *      - request param error, no norm
-     *      - database exception
+     * - request param error, no norm
+     * - database exception
      */
     @Test
     @Transactional
-    public void testRegisterUserThrowException() throws Exception {
+    public void testRegisterUserThrowException () throws Exception {
         String[][] params = {
                 {null, null, null},
                 {null, "123456", "only@neubbs.com"}, {"only", null, "only@neubbs.com"}, {"only", "123456", null},
@@ -543,8 +513,8 @@ public class AccountCollectorTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(requestBody)
                 ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
-                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists())
-                 .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
+                        .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists())
+                        .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
 
             } catch (NestedServletException ne) {
                 Assert.assertThat(ne.getRootCause(),
@@ -557,16 +527,17 @@ public class AccountCollectorTest {
             }
         }
 
-        printSuccessPassTestMehtodMessage();
+        this.printSuccessMessage();
     }
+
 
     /**
      * 【/api/account/update-profile】 test user update personal profile success
-     *      - @LoginAuthorization @AccountActivation
+     * - @LoginAuthorization @AccountActivation
      */
     @Test
     @Transactional
-    public void testUserUpdatePersonalProfileSuccess() throws Exception {
+    public void testUserUpdatePersonalProfileSuccess () throws Exception {
         Integer newSex = 1;
         String newBirthday = "1996-09-25";
         String newPosition = "Neusoft School";
@@ -579,16 +550,16 @@ public class AccountCollectorTest {
 
         MvcResult result = mockMvc.perform(
                 MockMvcRequestBuilders.post("/api/account/update-profile")
-                    .cookie(this.getAlreadLoginUserCookie())
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(requestBody)
+                        .cookie(this.getAlreadyLoginUserCookie())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody)
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
-         .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
-         .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
                 .andReturn();
 
         //judge $.model
-        this.confirmMvcResultModelMapShouldHavaKeyItems(result,
+        this.isExistKeyItems(result,
                 "email", "sex", "birthday", "position", "description",
                 "avator", "state", "createtime", "username");
 
@@ -601,7 +572,7 @@ public class AccountCollectorTest {
         Assert.assertEquals(newPosition, updatedUser.getPosition());
         Assert.assertEquals(newDescription, updatedUser.getDescription());
 
-        printSuccessPassTestMehtodMessage();
+        this.printSuccessMessage();
     }
 
 
@@ -636,7 +607,7 @@ public class AccountCollectorTest {
                 SecretUtil.encryptMd5(SecretUtil.encryptMd5(inputNewPassword) + inputNewPassword)
         );
 
-        printSuccessPassTestMehtodMessage();
+        this.printSuccessMessage();
     }
 
     /**
@@ -734,7 +705,7 @@ public class AccountCollectorTest {
             }
         }
 
-        printSuccessPassTestMehtodMessage();
+        this.printSuccessMessage();
     }
 
     /**
@@ -765,7 +736,7 @@ public class AccountCollectorTest {
         Assert.assertNotNull(user);
         Assert.assertEquals(user.getEmail(), inputEmail);
 
-        printSuccessPassTestMehtodMessage();
+        this.printSuccessMessage();
     }
 
     /**
@@ -838,7 +809,7 @@ public class AccountCollectorTest {
             }
         }
 
-        printSuccessPassTestMehtodMessage();
+        this.printSuccessMessage();
     }
 
     /**
@@ -875,7 +846,7 @@ public class AccountCollectorTest {
         }
         System.out.println("send eamil success !");
 
-        printSuccessPassTestMehtodMessage();
+        this.printSuccessMessage();
     }
 
     /**
@@ -931,7 +902,7 @@ public class AccountCollectorTest {
 
         System.out.println("send email timer limit effective!");
 
-        printSuccessPassTestMehtodMessage();
+        this.printSuccessMessage();
     }
 
     /**
@@ -956,7 +927,7 @@ public class AccountCollectorTest {
         //confirm database user activated
         Assert.assertTrue(userService.getUserInfoByEmail(user.getEmail()).getState() == 1);
 
-        printSuccessPassTestMehtodMessage();
+        this.printSuccessMessage();
     }
 
     /**
@@ -997,7 +968,7 @@ public class AccountCollectorTest {
             }
         }
 
-        printSuccessPassTestMehtodMessage();
+        this.printSuccessMessage();
     }
 
     /**
@@ -1008,14 +979,14 @@ public class AccountCollectorTest {
     @Test
     public void testGerneatePictureCaptchaSuccess() throws Exception {
         MvcResult result = mockMvc.perform(
-                MockMvcRequestBuilders.get(API_ACCOUNT_CAPTCHA).accept(MediaType.IMAGE_JPEG_VALUE)
+                MockMvcRequestBuilders.get("/api/account/captch").accept(MediaType.IMAGE_JPEG_VALUE)
         ).andExpect(MockMvcResultMatchers.status().isOk())
          .andExpect(MockMvcResultMatchers.content().contentType("image/jpeg"))
          .andReturn();
 
         Assert.assertNotNull(result.getRequest().getSession().getAttribute(SetConst.SESSION_CAPTCHA));
 
-        printSuccessPassTestMehtodMessage();
+        this.printSuccessMessage();
     }
 
     /**
@@ -1036,7 +1007,7 @@ public class AccountCollectorTest {
          .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
          .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
 
-        printSuccessPassTestMehtodMessage();
+        this.printSuccessMessage();
     }
 
     /**
@@ -1092,7 +1063,7 @@ public class AccountCollectorTest {
            Assert.assertEquals(ne.getRootCause().getMessage(), ApiMessage.CAPTCHA_INCORRECT);
        }
 
-       printSuccessPassTestMehtodMessage();
+       this.printSuccessMessage();
     }
 
     /**
@@ -1121,7 +1092,7 @@ public class AccountCollectorTest {
             System.out.println("already wait " + (timer++) + "s");
         }
 
-        printSuccessPassTestMehtodMessage();
+        this.printSuccessMessage();
     }
 
     /**
@@ -1157,6 +1128,70 @@ public class AccountCollectorTest {
             }
         }
 
-        printSuccessPassTestMehtodMessage();
+        this.printSuccessMessage();
+    }
+
+    /*
+     * ***********************************************
+     * private method
+     * ***********************************************
+     */
+
+    /**
+     * 打印成功通过 Test 函数消息
+     */
+    public void printSuccessMessage() {
+        String currentExecuteMethod = Thread.currentThread().getStackTrace()[2].getMethodName();
+        System.out.println("***************** 【" + currentExecuteMethod + "()】 " + " pass the test ****************");
+    }
+
+    /**
+     * 获取已经登陆用户 Cookie
+     *      - 设置 Suvan 账户
+     *
+     * @return Cookie 已经登录用户Cookie
+     */
+    public Cookie getAlreadyLoginUserCookie() {
+        UserDO user = new UserDO();
+            user.setId(6);
+            user.setName("suvan");
+            user.setRank("admin");
+            user.setState(1);
+
+        return new Cookie(ParamConst.AUTHENTICATION, SecretUtil.generateUserInfoToken(user));
+    }
+
+    /**
+     * 生成 JSON 字段
+     *      - 传入单个 key-value，生成 JSON 格式字符串
+     *      - 字符串对象需加 ""， 其他 Object 对象不用
+     *
+     * @param key 键
+     * @param value 值
+     * @return String JSON字段
+     */
+    public String getJsonField(String key, Object value) {
+        if (value == null) {
+            value = null;
+        } else if (value instanceof String) {
+            value = "\"" + value + "\"";
+        }
+        return "\"" + key + "\":" + value;
+    }
+
+    /**
+     * 检查存在 Key 选项
+     *      - 检测 MvcResult 的 mode 字段，存在指定 Key items
+     *
+     * @param result MvcResult 结果集
+     * @param keyItems 多个 Key Item（可变参数）
+     * @throws UnsupportedEncodingException 不支持编码异常
+     */
+    private void isExistKeyItems(MvcResult result, String... keyItems) throws UnsupportedEncodingException {
+        Map resultMap = (Map) JSON.parse(result.getResponse().getContentAsString());
+        Map resultModelMap = (Map) resultMap.get("model");
+
+        Assert.assertEquals(keyItems.length, resultModelMap.size());
+        Assert.assertThat((Set<String>) resultModelMap.keySet(), CoreMatchers.hasItems(keyItems));
     }
 }

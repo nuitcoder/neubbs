@@ -113,13 +113,12 @@ public final class AccountController {
 
     /**
      * 获取用户激活状态
-     *      - username
      *
      * @param username 用户名
      * @return ApiJsonDTO 接口JSON传输对象
      */
     @RequestMapping(value = "/state", method = RequestMethod.GET)
-    public ApiJsonDTO getUserState(@RequestParam(value = "username", required = false) String username) {
+    public ApiJsonDTO getUserActivateState(@RequestParam(value = "username", required = false) String username) {
         validationService.checkUsername(username);
         return new ApiJsonDTO().success().map(userService.isUserActivatedByName(username));
     }
