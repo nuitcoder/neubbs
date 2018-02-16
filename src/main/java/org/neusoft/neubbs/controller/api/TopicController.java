@@ -126,7 +126,7 @@ public class TopicController {
      */
     @RequestMapping(value = "/topics/hot", method = RequestMethod.GET)
     public ApiJsonDTO listTopicsInfo() {
-        return new ApiJsonDTO().success().list(topicService.listHotTopics());
+        return new ApiJsonDTO().success().model(topicService.listHotTopics());
     }
 
     /**
@@ -152,7 +152,7 @@ public class TopicController {
 
         int limitParam = limit == null ? 0 : Integer.parseInt(limit);
         return new ApiJsonDTO().success()
-                .list(topicService.listTopics(limitParam, Integer.parseInt(page), category, username));
+                .model(topicService.listTopics(limitParam, Integer.parseInt(page), category, username));
     }
 
 

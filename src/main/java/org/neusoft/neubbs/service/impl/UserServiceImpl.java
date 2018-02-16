@@ -224,12 +224,12 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public List<Map<String, Object>> listAllFollowingUserInfoModelList(int userId) {
-        return this.getUserInfoMapListByJsonArray(this.getUserActionDONotNull(userId).getFollowingUserIdJsonArray());
+        return this.getManyUsersInfoMapList(this.getUserActionDONotNull(userId).getFollowingUserIdJsonArray());
     }
 
     @Override
     public List<Map<String, Object>> listAllFollowedUserInfoModelList(int userId) {
-        return this.getUserInfoMapListByJsonArray(this.getUserActionDONotNull(userId).getFollowedUserIdJsonArray());
+        return this.getManyUsersInfoMapList(this.getUserActionDONotNull(userId).getFollowedUserIdJsonArray());
     }
 
     @Override
@@ -471,7 +471,13 @@ public class UserServiceImpl implements IUserService {
         return userInfoMap;
     }
 
-    private List<Map<String, Object>> getUserInfoMapListByJsonArray(String userIdJsonArray) {
+    /**
+     * 获取多个用户的基本信息集合
+     *
+     * @param userIdJsonArray 用户id的JSON数组（关注，收藏，点赞）
+     * @return List 根据用户id数组，获取各个用户基本信息集合
+     */
+    private List<Map<String, Object>> getManyUsersInfoMapList(String userIdJsonArray) {
         List<Integer> userIdList = JsonUtil.toListByJsonArrayString(userIdJsonArray);
 
         List<Map<String, Object>> userInfoMapList = new ArrayList<>(userIdList.size());

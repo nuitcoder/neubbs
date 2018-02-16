@@ -132,7 +132,7 @@ public final class AccountController {
     @RequestMapping(value = "/following", method = RequestMethod.GET)
     public ApiJsonDTO listUserFollowingUsersInfo(@RequestParam(value = "userid", required = false) String userId) {
         validationService.check(ParamConst.USER_ID, userId);
-        return new ApiJsonDTO().success().list(userService.listAllFollowingUserInfoModelList(Integer.valueOf(userId)));
+        return new ApiJsonDTO().success().model(userService.listAllFollowingUserInfoModelList(Integer.valueOf(userId)));
     }
 
     /**
@@ -144,7 +144,7 @@ public final class AccountController {
     @RequestMapping(value = "/followed", method = RequestMethod.GET)
     public ApiJsonDTO listUserFollowedUsersInfo(@RequestParam(value = "userid", required = false) String userId) {
         validationService.check(ParamConst.USER_ID, userId);
-        return new ApiJsonDTO().success().list(userService.listAllFollowedUserInfoModelList(Integer.valueOf(userId)));
+        return new ApiJsonDTO().success().model(userService.listAllFollowedUserInfoModelList(Integer.valueOf(userId)));
     }
 
     /**

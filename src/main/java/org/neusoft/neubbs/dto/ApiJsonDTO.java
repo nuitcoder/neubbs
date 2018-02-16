@@ -53,10 +53,6 @@ public class ApiJsonDTO {
         this.setModel(tmpMap);
         return this;
     }
-    public ApiJsonDTO list(Object list) {
-        this.model = list;
-        return this;
-    }
 
 
     /**
