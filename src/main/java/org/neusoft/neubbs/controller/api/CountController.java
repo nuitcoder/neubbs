@@ -71,7 +71,7 @@ public class CountController {
             modelMap.put(ParamConst.USER, userService.countUserTotals());
             modelMap.put(ParamConst.TOPIC, topicService.countTopicTotals());
             modelMap.put(ParamConst.REPLY, topicService.countReplyTotals());
-        return new ApiJsonDTO().success().map(modelMap);
+        return new ApiJsonDTO().success().model(modelMap);
     }
 
     /**
@@ -111,6 +111,6 @@ public class CountController {
             modelMap.put(ParamConst.ATTENTION, userService.countUserAttentionTopicTotals(userIdInt));
             modelMap.put(ParamConst.TOPIC, userService.countUserTopicTotals(userIdInt));
             modelMap.put(ParamConst.REPLY, userService.countUserReplyTotals(userIdInt));
-        return new ApiJsonDTO().success().map(modelMap);
+        return new ApiJsonDTO().success().model(modelMap);
     }
 }

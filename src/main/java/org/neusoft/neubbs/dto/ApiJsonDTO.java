@@ -43,8 +43,8 @@ public class ApiJsonDTO {
         this.setMessage(message);
         return this;
     }
-    public ApiJsonDTO map(Object map) {
-        this.setModel(map);
+    public ApiJsonDTO model(Object mode) {
+        this.setModel(mode);
         return this;
     }
     public ApiJsonDTO buildMap(String key, Object value) {

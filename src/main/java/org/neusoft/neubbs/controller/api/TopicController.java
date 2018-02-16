@@ -104,7 +104,7 @@ public class TopicController {
         }
 
         topicContentPageModelMap.put(ParamConst.IS_LIKE_TOPIC, isCurrentUserLikeThisTopic);
-        return new ApiJsonDTO().success().map(topicContentPageModelMap);
+        return new ApiJsonDTO().success().model(topicContentPageModelMap);
     }
 
     /**
@@ -116,7 +116,7 @@ public class TopicController {
     @RequestMapping(value = "/topic/reply", method = RequestMethod.GET)
     public ApiJsonDTO getTopicReplyInfo(@RequestParam(value = "replyid", required = false) String replyId) {
         validationService.check(ParamConst.ID, replyId);
-        return new ApiJsonDTO().success().map(topicService.getTopicReplyModelMap(Integer.parseInt(replyId)));
+        return new ApiJsonDTO().success().model(topicService.getTopicReplyModelMap(Integer.parseInt(replyId)));
     }
 
     /**
@@ -173,7 +173,7 @@ public class TopicController {
         );
 
         int limitParam = limit == null ? 0 : Integer.parseInt(limit);
-        return new ApiJsonDTO().success().map(topicService.countTopicTotalPages(limitParam, category, username));
+        return new ApiJsonDTO().success().model(topicService.countTopicTotalPages(limitParam, category, username));
     }
 
     /**
@@ -183,7 +183,7 @@ public class TopicController {
      */
     @RequestMapping(value = "/topics/categorys", method = RequestMethod.GET)
     public ApiJsonDTO listTopicCategories() {
-        return new ApiJsonDTO().success().map(topicService.listAllTopicCategories());
+        return new ApiJsonDTO().success().model(topicService.listAllTopicCategories());
     }
 
     /**
@@ -206,7 +206,7 @@ public class TopicController {
         UserDO cookieUser = secretService.getUserInfoByAuthentication(httpService.getAuthenticationCookieValue());
 
         return new ApiJsonDTO().success()
-                .map(topicService.saveTopic(cookieUser.getId(), category, title, topicContent));
+                .model(topicService.saveTopic(cookieUser.getId(), category, title, topicContent));
     }
 
     /**
@@ -226,7 +226,7 @@ public class TopicController {
 
         UserDO cookieUser = secretService.getUserInfoByAuthentication(httpService.getAuthenticationCookieValue());
 
-        return new ApiJsonDTO().success().map(topicService.saveReply(cookieUser.getId(), topicId, replyContent));
+        return new ApiJsonDTO().success().model(topicService.saveReply(cookieUser.getId(), topicId, replyContent));
     }
 
     /**
@@ -333,7 +333,7 @@ public class TopicController {
        boolean isCurrentUserLikeTopic = userService.isUserLikeTopic(cookieUser.getId(), topicId);
 
        return new ApiJsonDTO().success()
-               .map(topicService.alterTopicLikeByInstruction(isCurrentUserLikeTopic, topicId, command));
+               .model(topicService.alterTopicLikeByInstruction(isCurrentUserLikeTopic, topicId, command));
    }
 
     /**
@@ -355,7 +355,7 @@ public class TopicController {
         Map<String, Object> resultMap = new LinkedHashMap<>(SetConst.SIZE_TWO);
             resultMap.put(ParamConst.USER_LIKE_TOPIC_ID, topicService.operateLikeTopic(cookieUser.getId(), topicId));
             resultMap.put(ParamConst.LIKE, topicService.countTopicContentLike(topicId));
-        return new ApiJsonDTO().success().map(resultMap);
+        return new ApiJsonDTO().success().model(resultMap);
     }
 
     /**
@@ -373,7 +373,7 @@ public class TopicController {
 
         UserDO cookieUser = secretService.getUserInfoByAuthentication(httpService.getAuthenticationCookieValue());
 
-        return new ApiJsonDTO().success().map(topicService.operateCollectTopic(cookieUser.getId(), topicId));
+        return new ApiJsonDTO().success().model(topicService.operateCollectTopic(cookieUser.getId(), topicId));
     }
 
     /**
@@ -391,6 +391,6 @@ public class TopicController {
 
         UserDO cookieUser = secretService.getUserInfoByAuthentication(httpService.getAuthenticationCookieValue());
 
-        return new ApiJsonDTO().success().map(topicService.operateAttentionTopic(cookieUser.getId(), topicId));
+        return new ApiJsonDTO().success().model(topicService.operateAttentionTopic(cookieUser.getId(), topicId));
     }
 }

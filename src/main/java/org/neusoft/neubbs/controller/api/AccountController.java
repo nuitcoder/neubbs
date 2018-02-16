@@ -107,7 +107,7 @@ public final class AccountController {
         }
 
         return userService.isUserExist(username, email)
-                ? new ApiJsonDTO().success().map(userService.getUserInfoModelMap(username, email))
+                ? new ApiJsonDTO().success().model(userService.getUserInfoModelMap(username, email))
                 : new ApiJsonDTO().fail();
     }
 
@@ -120,7 +120,7 @@ public final class AccountController {
     @RequestMapping(value = "/state", method = RequestMethod.GET)
     public ApiJsonDTO getUserActivateState(@RequestParam(value = "username", required = false) String username) {
         validationService.checkUsername(username);
-        return new ApiJsonDTO().success().map(userService.isUserActivatedByName(username));
+        return userService.isUserActivatedByName(username) ? new ApiJsonDTO().success() : new ApiJsonDTO().fail();
     }
 
     /**
@@ -175,7 +175,7 @@ public final class AccountController {
         Map<String, Object> modelMap = new LinkedHashMap<>(SetConst.LENGTH_TWO);
             modelMap.put(ParamConst.AUTHENTICATION, authentication);
             modelMap.put(ParamConst.STATE, userService.isUserActivatedByState(user.getState()));
-        return new ApiJsonDTO().success().map(modelMap);
+        return new ApiJsonDTO().success().model(modelMap);
     }
 
     /**
@@ -215,7 +215,7 @@ public final class AccountController {
         //create user person directory on cloud ftp server
         ftpService.createUserPersonalDirectory(newRegisterUser);
 
-        return new ApiJsonDTO().success().map(userService.getUserInfoModelMap(newRegisterUser));
+        return new ApiJsonDTO().success().model(userService.getUserInfoModelMap(newRegisterUser));
     }
 
     /**
@@ -244,7 +244,7 @@ public final class AccountController {
         UserDO user = secretService.getUserInfoByAuthentication(httpService.getAuthenticationCookieValue());
 
         return new ApiJsonDTO().success()
-                .map(userService.alterUserProfile(user.getName(), newSex, newBirthday, newPosition, newDescription));
+                .model(userService.alterUserProfile(user.getName(), newSex, newBirthday, newPosition, newDescription));
     }
 
     /**
@@ -317,7 +317,7 @@ public final class AccountController {
             Map<String, Object> timerMap = new HashMap<>(SetConst.SIZE_ONE);
                 timerMap.put(ParamConst.TIMER, remainAllowSendEmailInterval / SetConst.TIME_THOUSAND_MS);
 
-            return new ApiJsonDTO().fail().message(ApiMessage.WAIT_TIMER).map(timerMap);
+            return new ApiJsonDTO().fail().message(ApiMessage.WAIT_TIMER).model(timerMap);
         }
 
         //start another thread to send mail
