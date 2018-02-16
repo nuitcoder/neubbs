@@ -161,6 +161,7 @@ public class AccountCollectorTest {
              .andExpect(MockMvcResultMatchers.content().contentType("application/json;charset=UTF-8"))
              .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
              .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
+             .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
                     .andReturn();
 
             this.isExistKeyItems(result,
@@ -185,7 +186,7 @@ public class AccountCollectorTest {
                             .param("email", "liushuwei0925@gmail.com")
             ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
              .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
-             .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
+             .andExpect(MockMvcResultMatchers.jsonPath("$.model").value(CoreMatchers.notNullValue()));
 
         } catch (NestedServletException ne) {
             Throwable throwable = ne.getRootCause();
@@ -200,7 +201,7 @@ public class AccountCollectorTest {
      * 测试 /api/account
      *      - 获取用户信息异常
      *          - request param error, no norm
-     *          - database exception
+     *          - service exception
      */
     @Test
     public void testGetUserInfoException () throws Exception {
@@ -223,7 +224,7 @@ public class AccountCollectorTest {
                                 .param(param.key, (String) param.value)
                 ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
                  .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
-                 .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
+                 .andExpect(MockMvcResultMatchers.jsonPath("$.model").value(CoreMatchers.notNullValue()));
 
             } catch (NestedServletException ne) {
                 Assert.assertThat(ne.getRootCause(),
@@ -244,6 +245,7 @@ public class AccountCollectorTest {
      */
     @Test
     public void testGetActivateState() throws Exception {
+        //already exist user
         mockMvc.perform(
                 MockMvcRequestBuilders.get("/api/account/state")
                         .param("username", "suvan")
@@ -258,7 +260,7 @@ public class AccountCollectorTest {
      * 测试 /api/account/state
      *      - 获取用户激活状态异常
      *          - request param error, no norm
-     *          - database exception
+     *          - service exception
      */
     @Test
     public void testGetUserActivateStateException() throws Exception {
@@ -294,40 +296,107 @@ public class AccountCollectorTest {
      *      - 获取用户所有主动关注人信息列表成功
      */
     @Test
-    public void testListUserFollowingUserInfoSuccess() {
+    public void testListUserFollowingUserInfoSuccess() throws Exception {
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/api/account/following")
+                    .param("userid", "6")
+        ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model").value(CoreMatchers.notNullValue()));
 
+        this.printSuccessMessage();
     }
 
     /**
      * 测试 /api/account/following
      *      - 获取用户所有主动关注人信息列表异常
+     *          - request param error, no norm
+     *          - service exception
      */
     @Test
-    public void testListUserFollowingUserInfoException() {
+    public void testListUserFollowingUserInfoException() throws Exception {
+        String key = "userid";
+        String[] values = {null, "abc", "123*", "100000000000", "88888"};
 
+        for (String value: values) {
+            try {
+                mockMvc.perform(
+                        MockMvcRequestBuilders.get("/api/account/following")
+                            .param(key, value)
+                ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
+                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
+                 .andExpect(MockMvcResultMatchers.jsonPath("$.model").value(CoreMatchers.notNullValue()));
+
+            } catch (NestedServletException ne) {
+                Assert.assertThat(ne.getRootCause(),
+                        CoreMatchers.anyOf(
+                                CoreMatchers.instanceOf(ParamsErrorException.class),
+                                CoreMatchers.instanceOf(ServiceException.class)
+                        )
+                );
+            }
+        }
+
+        this.printSuccessMessage();
     }
 
     /**
      * 测试 /api/account/followed
      *      - 获取用户所有被关注信息列表成功
+     *      - 列表字段
+     *          - email, sex, birthday, position, description,
+     *          - avator, state, create, userid, username
      */
     @Test
-    public void testListUserFollowedUserInfoSuccess() {
+    public void testListUserFollowedUserInfoSuccess() throws Exception {
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/api/account/followed")
+                    .param("userid", "6")
+        ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model").value(CoreMatchers.notNullValue()));
 
+        this.printSuccessMessage();
     }
 
     /**
      * 测试 /api/account/followed
      *      - 获取所有用户所有被关注人信息列表异常
+     *          - request param error, no norm
+     *          - service exception
      */
     @Test
-    public void testListUserFollowedUserInfoException() {
+    public void testListUserFollowedUserInfoException() throws Exception {
+        String key = "userid";
+        String[] values = {null, "abc", "123*", "100000000000", "88888"};
 
+        for (String value: values) {
+            try {
+                mockMvc.perform(
+                        MockMvcRequestBuilders.get("/api/account/followed")
+                            .param(key, value)
+                ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value("false"))
+                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
+                 .andExpect(MockMvcResultMatchers.jsonPath("$.model").value(CoreMatchers.notNullValue()));
+            } catch (NestedServletException ne) {
+                Assert.assertThat(ne.getRootCause(),
+                        CoreMatchers.anyOf(
+                                CoreMatchers.instanceOf(ParamsErrorException.class),
+                                CoreMatchers.instanceOf(ServiceException.class)
+                        )
+                );
+            }
+        }
+
+        this.printSuccessMessage();
     }
 
     /**
      * 测试 /api/account/login
      *      - 账户登陆成功
+     *      - 列表字段
+     *          - email, sex, birthday, position, description,
+     *          - avator, state, create, userid, username
      */
     @Test
     public void testLoginAccountSuccess() throws Exception {
