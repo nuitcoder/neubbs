@@ -219,10 +219,6 @@ public class UserServiceImpl implements IUserService {
         Map<String, Object> userInfoMap = JsonUtil.toMapByObject(user);
         MapFilterUtil.filterUserInfo(userInfoMap);
 
-        //alter state type: int -> boolean
-        Integer stateInt = (Integer) userInfoMap.get(ParamConst.STATE);
-        userInfoMap.put(ParamConst.STATE, this.isUserActivatedByState(stateInt));
-
         return userInfoMap;
     }
 

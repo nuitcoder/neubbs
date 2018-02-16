@@ -27,7 +27,8 @@ public final class MapFilterUtil {
     * 过滤用户信息 Map
     *    - 仅用于 User Service,
     *    - 修改 id -> userId, name -> username
-    *    - 拼接用户头像地址（key=avator)，包装成 HTTP 链接
+    *    - 修改用户激活状态 1 -> true, 0 -> false
+    *    - 拼接用户头像地址（key = avator)，包装成 HTTP 链接
     *    - 删除 id, name, password, rank
     *
     * @param userInfoMap 用户信息Map
@@ -35,6 +36,8 @@ public final class MapFilterUtil {
    public static void filterUserInfo(Map<String, Object> userInfoMap) {
       userInfoMap.put(ParamConst.USER_ID, userInfoMap.get(ParamConst.ID));
       userInfoMap.put(ParamConst.USERNAME, userInfoMap.get(ParamConst.NAME));
+
+      userInfoMap.put(ParamConst.STATE, (int) userInfoMap.get(ParamConst.STATE) == SetConst.ACCOUNT_ACTIVATED_STATE);
 
       userInfoMap.put(ParamConst.AVATOR, StringUtil.generateUserAvatarUrl(userInfoMap));
 
