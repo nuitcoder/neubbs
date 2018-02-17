@@ -83,7 +83,6 @@ public class AccountCollectorTest {
     @Autowired
     private IUserActionDAO userActionDAO;
 
-    private final String API_ACCOUNT_LOGOUT = "/api/account/logout";
     private final String API_ACCOUNT_REGISTER = "/api/account/register";
     private final String API_ACCOUNT_UPDATE_PASSWORD = "/api/account/update-password";
     private final String API_ACCOUNT_UPDATE_EMAIL = "/api/account/update-email";
@@ -466,52 +465,44 @@ public class AccountCollectorTest {
     }
 
     /**
-     * 【/api/account/logout】 test logout success
-     * - set session
-     * - add already login user cookie
+     * 测试 /api/account/logout
+     *      - 注销账户成功
      */
     @Test
-    public void testLogoutSuccess () throws Exception {
-        this.webApplicationContext.getServletContext().setAttribute(ParamConst.LOGIN_USER, 0);
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
-
-        UserDO user = new UserDO();
-        user.setId(5);
-        user.setName("suvan");
-        user.setRank("admin");
-        user.setState(1);
-        String authentication = SecretUtil.generateUserInfoToken(user);
-
+    public void testLogoutAccountSuccess () throws Exception {
         mockMvc.perform(
-                MockMvcRequestBuilders.get(API_ACCOUNT_LOGOUT)
-                        .cookie(new Cookie(ParamConst.AUTHENTICATION, authentication))
+                MockMvcRequestBuilders.get("/api/account/logout")
+                        .cookie(this.getAlreadyLoginUserCookie())
                         .accept(MediaType.APPLICATION_JSON)
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
+         .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
 
         this.printSuccessMessage();
     }
 
     /**
-     * 【/api/account/logout】 test logout throw Exception
-     * - no login, test @LogintAuthorization
+     * 测试 /api/account/logout
+     *      - 注销账户异常
+     *          - no login, test @LoginAuthorization
      */
     @Test
     public void testLogoutThrowException () throws Exception {
         try {
-            //no Cookie, do ApiInterceptor do interceptor
+            //no Cookie, to do ApiInterceptor validate
             mockMvc.perform(
-                    MockMvcRequestBuilders.get(API_ACCOUNT_LOGOUT)
+                    MockMvcRequestBuilders.get("/api/account/logout")
             ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists())
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
+             .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
+             .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
 
         } catch (NestedServletException ne) {
             Throwable throwable = ne.getRootCause();
             Assert.assertTrue(throwable instanceof ServiceException);
             Assert.assertEquals(throwable.getMessage(), ApiMessage.NO_PERMISSION);
         }
+
+        this.printSuccessMessage();
     }
 
     /**
