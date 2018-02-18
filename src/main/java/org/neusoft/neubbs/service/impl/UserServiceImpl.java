@@ -65,13 +65,13 @@ public class UserServiceImpl implements IUserService {
             user.setPassword(this.encryptUserPassword(password));
 
         UserActionDO userAction = new UserActionDO();
-            userAction.setUserId(user.getId());
 
         //insert forum_user, forum_user_action
         if (userDAO.saveUser(user) == 0) {
             throw new ServiceException(ApiMessage.DATABASE_EXCEPTION).log(LogWarnEnum.US1);
         }
 
+        userAction.setUserId(user.getId());
         if (userActionDAO.saveUserAction(userAction) == 0) {
             throw new ServiceException(ApiMessage.DATABASE_EXCEPTION).log(LogWarnEnum.US33);
         }
