@@ -165,37 +165,15 @@ public final class FtpUtil {
      * 完全删除目录
      *      - 包括其内部子文件,子目录
      *      - / 默认是根目录
-     *      - 不存在目录则会抛出异常
+     *      - 不存在目录（会自动补全前后 “/”）则会抛出异常
      *
      * @param serverDirectoryPath 服务器目录路径
      * @throws IOException IO异常
      */
     public static void deleteDirectory(String serverDirectoryPath) throws IOException {
         connect();
-        moveServerPath(serverDirectoryPath);
 
-        //complete path(add '/')
-        String path = StringUtil.completeAroundSprit(serverDirectoryPath);
-
-        FTPFile[] files = ftpClient.listFiles(path);
-        if (files != null) {
-            for (FTPFile file: files) {
-                if (file.isDirectory()) {
-                    //recursive remove all directory
-                    deleteDirectory(path + "/" + file.getName());
-
-                    //must switch to father directory (otherwise can not delete)
-                    ftpClient.changeWorkingDirectory(path.substring(0, path.lastIndexOf("/")));
-                    ftpClient.removeDirectory(path);
-                } else {
-                    //remove file
-                    ftpClient.deleteFile(path + "/" + file.getName());
-                }
-            }
-        }
-
-        ftpClient.changeWorkingDirectory(path.substring(0, path.lastIndexOf("/")));
-        ftpClient.removeDirectory(path);
+        remove(StringUtil.completeAroundSprit(serverDirectoryPath));
 
         destroy();
     }
@@ -254,6 +232,34 @@ public final class FtpUtil {
         //no exist directory, return false
         if (!ftpClient.changeWorkingDirectory(serverDirectoryPath)) {
             throw new FtpException(ApiMessage.FTP_SERVER_ERROR).log(LogWarnEnum.UC7);
+        }
+    }
+
+    /**
+     * 完全删除
+     *      - 递归操作
+     *      - 删除指定路径的子文件，及子目录
+     *
+     * @param path 删除路径
+     * @throws IOException IO异常
+     */
+    private static void remove(String path) throws IOException {
+        moveServerPath(path);
+
+        FTPFile[] files = ftpClient.listFiles();
+        if (files.length == 0) {
+            //there are no sub-files, to remove directory
+            ftpClient.removeDirectory(path);
+            return;
+        }
+
+        for (FTPFile ftpFile: ftpClient.listFiles(path)) {
+            if (ftpFile.isFile()) {
+                ftpClient.deleteFile(path + "/" + ftpFile.getName());
+            } else if (ftpFile.isDirectory()) {
+                //recursion
+                remove(path + "/" + ftpFile.getName() + "/");
+            }
         }
     }
 }
