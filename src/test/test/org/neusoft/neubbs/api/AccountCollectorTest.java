@@ -83,7 +83,6 @@ public class AccountCollectorTest {
     @Autowired
     private IUserActionDAO userActionDAO;
 
-    private final String API_ACCOUNT_REGISTER = "/api/account/register";
     private final String API_ACCOUNT_UPDATE_PASSWORD = "/api/account/update-password";
     private final String API_ACCOUNT_UPDATE_EMAIL = "/api/account/update-email";
     private final String API_ACCOUNT_ACTIVATE = "/api/account/activate";
@@ -506,51 +505,56 @@ public class AccountCollectorTest {
     }
 
     /**
-     * 【/api/account/register】test register user success
+     * 测试 /api/account/register
+     *      - 注册账户成功
+     *      - 执行完事务回滚
      */
     @Test
     @Transactional
-    public void testRegisterUserSuccess () throws Exception {
+    public void testRegisterAccountSuccess() throws Exception {
+        //build params -> request-body
         String username = "apiTestUser";
         String password = "apiTestPassword";
         String email = "apiTestEmail@neubBs.com";
-
         String requestBody = "{\"username\":\"" + username + "\","
                 + "\"password\":\"" + password + "\","
                 + "\"email\":\"" + email + "\"}";
         System.out.println("input request-body: " + requestBody);
 
         MvcResult result = mockMvc.perform(
-                MockMvcRequestBuilders.post(API_ACCOUNT_REGISTER)
+                MockMvcRequestBuilders.post("/api/account/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody)
+                        .accept(MediaType.APPLICATION_JSON)
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
-                .andReturn();
+         .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
+            .andReturn();
 
         this.isExistKeyItems(result,
-                "username", "email", "sex", "birthday", "position", "description", "avator", "state", "createtime");
+                "email", "sex", "birthday", "position", "description",
+                "avator", "state", "createtime", "userid", "username"
+        );
 
-        //confirm forum_user_action
-        int userId = userDAO.getUserByName(username).getId();
-        Assert.assertNotNull(userActionDAO.getUserAction(userId));
+        //validate 'forum_user_action'
+        UserDO user = userDAO.getUserByName(username);
+        Assert.assertNotNull(userActionDAO.getUserAction(user.getId()));
 
-        //becasue register will create personal directory on ftp server, so need to remove
-        userId = userDAO.getMaxUserId();
-        FtpUtil.deleteDirectory("/user/" + userId + "-" + username);
+        //so need to remove user personal directory in ftp server, because register account automatic create
+        FtpUtil.deleteDirectory("/user/" + user.getId() + "-" + username);
 
         this.printSuccessMessage();
     }
 
     /**
-     * 【/api/account/register】test register user throw exception
-     * - request param error, no norm
-     * - database exception
+     * 测试 /api/account/register
+     *      - 注册账户异常
+     *          - request param error, no norm
+     *          - service exception
      */
     @Test
     @Transactional
-    public void testRegisterUserThrowException () throws Exception {
+    public void testRegisterAccountException() throws Exception {
         String[][] params = {
                 {null, null, null},
                 {null, "123456", "only@neubbs.com"}, {"only", null, "only@neubbs.com"}, {"only", "123456", null},
@@ -565,13 +569,14 @@ public class AccountCollectorTest {
             String requestBody = "{\"username\":\"" + arr[0] + "\","
                     + "\"password\":\"" + arr[1] + "\","
                     + "\"email\":\"" + arr[2] + "\"}";
-            System.out.println("requestbody: " + requestBody);
+            System.out.println("request-body: " + requestBody);
 
             try {
                 mockMvc.perform(
-                        MockMvcRequestBuilders.post(API_ACCOUNT_REGISTER)
+                        MockMvcRequestBuilders.post("/api/account/register")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(requestBody)
+                                .accept(MediaType.APPLICATION_JSON)
                 ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
                         .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists())
                         .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
@@ -580,7 +585,6 @@ public class AccountCollectorTest {
                 Assert.assertThat(ne.getRootCause(),
                         CoreMatchers.anyOf(
                                 CoreMatchers.instanceOf(ParamsErrorException.class),
-                                CoreMatchers.instanceOf(ServiceException.class),
                                 CoreMatchers.instanceOf(ServiceException.class)
                         )
                 );

@@ -261,5 +261,8 @@ public final class FtpUtil {
                 remove(path + "/" + ftpFile.getName() + "/");
             }
         }
+
+        //finally delete the initial directory
+        ftpClient.removeDirectory(path);
     }
 }
