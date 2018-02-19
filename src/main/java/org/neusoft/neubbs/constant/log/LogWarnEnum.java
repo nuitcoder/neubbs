@@ -86,7 +86,8 @@ public enum LogWarnEnum {
     UC7(7, " FTP 服务器不存在指定路径！"),
     UC8(8, " 生成指定范围随机数，min > max，无法执行生成"),
     UC9(9, " 请求获取 Cookie 失败，未能从客户端 Request Headers 获取 Cookie"),
-    UC10(10, " 解密用户信息 Token 失败（JWT 加密）");
+    UC10(10, " 解密用户信息 Token 失败（JWT 加密）"),
+    UC11(11, " 用户对象转为 Authentication Token String 失败，缺少部分用户信息");
 
     private Integer errorCode;
     private String errorMessage;

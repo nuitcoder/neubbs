@@ -8,6 +8,7 @@ import org.neusoft.neubbs.controller.annotation.AccountActivation;
 import org.neusoft.neubbs.controller.annotation.AdminRank;
 import org.neusoft.neubbs.controller.annotation.LoginAuthorization;
 import org.neusoft.neubbs.entity.UserDO;
+import org.neusoft.neubbs.exception.PermissionException;
 import org.neusoft.neubbs.exception.ServiceException;
 import org.neusoft.neubbs.utils.CookieUtil;
 import org.neusoft.neubbs.utils.SecretUtil;
@@ -95,7 +96,7 @@ public class ApiInterceptor implements HandlerInterceptor {
 
             //judge user state
             if (currentUser.getState() == SetConst.ACCOUNT_NO_ACTIVATED_STATE) {
-                throw new ServiceException(ApiMessage.NO_ACTIVATE).log(LogWarnEnum.US17);
+                throw new PermissionException(ApiMessage.NO_ACTIVATE).log(LogWarnEnum.US17);
             }
         }
     }
@@ -118,7 +119,7 @@ public class ApiInterceptor implements HandlerInterceptor {
 
             //judge user rank
             if (!SetConst.RANK_ADMIN.equals(currentUser.getRank())) {
-                throw new ServiceException(ApiMessage.NO_PERMISSION).log(LogWarnEnum.AT3);
+                throw new PermissionException(ApiMessage.NO_PERMISSION).log(LogWarnEnum.AT3);
             }
         }
     }
@@ -139,35 +140,15 @@ public class ApiInterceptor implements HandlerInterceptor {
     private UserDO judgeAuthentication(String authentication) {
          //judge whether login
          if (authentication == null) {
-                this.throwNoPermissionException();
+             throw new PermissionException(ApiMessage.NO_PERMISSION).log(LogWarnEnum.AT2);
          }
 
-        //judge token validity
+        //judge token validity, throw token expired exception
         UserDO user = SecretUtil.decryptUserInfoToken(authentication);
         if (user == null) {
-            this.throwTokenExpiredException();
+            throw new PermissionException(ApiMessage.TOKEN_EXPIRED).log(LogWarnEnum.AT1);
         }
 
         return user;
-    }
-
-    /*
-     * ***********************************************
-     * throw exception method
-     * ***********************************************
-     */
-
-    /**
-     * 抛出无权限异常
-     */
-    private void throwNoPermissionException() {
-        throw new ServiceException(ApiMessage.NO_PERMISSION).log(LogWarnEnum.AT2);
-    }
-
-    /**
-     * 抛出 token 过期异常
-     */
-    private void throwTokenExpiredException() {
-        throw new ServiceException(ApiMessage.TOKEN_EXPIRED).log(LogWarnEnum.AT1);
     }
 }
