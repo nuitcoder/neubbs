@@ -277,9 +277,9 @@ public class UserServiceImpl implements IUserService {
         UserDO updateUser = new UserDO();
             updateUser.setName(username);
             updateUser.setSex(sex);
-            updateUser.setBirthday(birthday);
-            updateUser.setPosition(position);
-            updateUser.setDescription(description);
+            updateUser.setBirthday(birthday == null ? "" : birthday);
+            updateUser.setPosition(position == null ? "" : position);
+            updateUser.setDescription(description == null ? "" : description);
 
         //update forum_user by username, if 4 fields not null, will be updated
         if (userDAO.updateUser(updateUser) == 0) {
