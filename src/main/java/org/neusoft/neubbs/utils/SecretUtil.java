@@ -86,6 +86,11 @@ public final class SecretUtil {
      * @return String 密文token
      */
     public static String generateUserInfoToken(UserDO user) {
+        if (user == null || user.getId() == null || user.getName() == null
+                || user.getRank() == null || user.getState() == null) {
+            throw new UtilClassException(ApiMessage.UNKNOWN_ERROR).log(LogWarnEnum.UC11);
+        }
+
         Map<String, Object> headerMap = new HashMap<>(SetConst.SIZE_TWO);
             headerMap.put("alg", "HS256");
             headerMap.put("typ", "JWT");
