@@ -18,6 +18,7 @@ import java.util.List;
  *    - 测试 matchEmail()
  *    - 测试 matchUserAvatar()
  *    - 测试 matchTopicCategory()
+ *    - 测试 matchDate()
  */
 @RunWith(JUnit4.class)
 public class PatternUtilTest {
@@ -101,5 +102,17 @@ public class PatternUtilTest {
       Assert.assertTrue(PatternUtil.matchTopicCategory("music"));
       Assert.assertFalse(PatternUtil.matchTopicCategory("123music"));
       Assert.assertFalse(PatternUtil.matchTopicCategory("音乐music***"));
+   }
+
+   /**
+    * 测试 matchDate()
+    *
+    */
+   @Test
+   public void testMatchDate() {
+      Assert.assertTrue(PatternUtil.matchDate("1996-09-25"));
+
+      Assert.assertFalse(PatternUtil.matchDate("1996-09-25 错误时间"));
+      Assert.assertFalse(PatternUtil.matchDate("123***"));
    }
 }

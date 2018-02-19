@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
  *      - 匹配邮箱
  *      - 匹配图片类型
  *      - 匹配话题类型
+ *      - 匹配日期类型
  *
  * 【注意】该类大部分函数，主要用于请求参数检查工具类（ParamValidateUtil.java）,反射调用
  *
@@ -29,6 +30,8 @@ public final class PatternUtil {
     private static final String USER_AVATAR_FORMAT = "(.*)/(jpg|png|jpeg)";
 
     private static final String CHINESE_AND_ENGLISH_TYPE  = "^[\\u4e00-\\u9fa5a-zA-Z]+$";
+
+    private static final String DATE_TYPE = "\\d{4}-\\d{2}-\\d{2}";
 
 
     /**
@@ -97,6 +100,17 @@ public final class PatternUtil {
      */
     public static boolean matchTopicCategory(String category) {
        return match(category, CHINESE_AND_ENGLISH_TYPE);
+    }
+
+    /**
+     * 匹配日期
+     *      - 日期格式：yyyy-MM-dd
+     *
+     * @param date 日期字符串
+     * @return boolean 匹配结果
+     */
+    public static boolean matchDate(String date) {
+        return match(date, DATE_TYPE);
     }
 
     /*

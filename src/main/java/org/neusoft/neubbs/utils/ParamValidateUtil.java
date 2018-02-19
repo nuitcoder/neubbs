@@ -137,6 +137,7 @@ public final class ParamValidateUtil {
         typePatternMap.put(ParamConst.EMAIL, new Pattern("matchEmail", " （类型）参数不符合规范（xxx@xx.xxx）"));
         typePatternMap.put(ParamConst.AVATOR,
                 new Pattern("matchUserAvatarType", " （类型）用户头像文件类型不符合规范（content-type/subtype）"));
+        typePatternMap.put(ParamConst.BIRTHDAY, new Pattern("matchDate", "（类型）参数不符合日期格式（yyyy-MM-dd）"));
     }
 
 
@@ -187,15 +188,17 @@ public final class ParamValidateUtil {
      *          - 若类型不在 allowEmptyTypeSet 之中，则执行空检查（默认不进行空检查）
      *          - 范围检查
      *          - 正则检查
+     *      - 若不允许为空，则执行三项检查
      *
      * @param type 参数类型
      * @param param 参数值
      */
     public static void check(String type, String param) {
-        if (!allowEmptyTypeSet.contains(type)) {
-            checkNull(type, param);
+        if (allowEmptyTypeSet.contains(type) && param == null) {
+            return;
         }
 
+        checkNull(type, param);
         checkScope(type, param);
         checkPattern(type, param);
     }
