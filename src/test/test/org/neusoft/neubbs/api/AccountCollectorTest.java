@@ -18,6 +18,7 @@ import org.neusoft.neubbs.dao.IUserActionDAO;
 import org.neusoft.neubbs.dao.IUserDAO;
 import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.exception.ParamsErrorException;
+import org.neusoft.neubbs.exception.PermissionException;
 import org.neusoft.neubbs.exception.ServiceException;
 import org.neusoft.neubbs.service.ICacheService;
 import org.neusoft.neubbs.service.ICaptchaService;
@@ -36,9 +37,11 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.util.NestedServletException;
 
@@ -507,7 +510,6 @@ public class AccountCollectorTest {
     /**
      * 测试 /api/account/register
      *      - 注册账户成功
-     *      - 执行完事务回滚
      */
     @Test
     @Transactional
@@ -596,12 +598,14 @@ public class AccountCollectorTest {
 
 
     /**
-     * 【/api/account/update-profile】 test user update personal profile success
-     * - @LoginAuthorization @AccountActivation
+     * 测试 /api/account/update-profile
+     *      - 修改用户基本信息成功
+     *      - 需要权限：@LoginAuthorization @AccountActivation
      */
     @Test
     @Transactional
-    public void testUserUpdatePersonalProfileSuccess () throws Exception {
+    public void testUpdateUserInfoSuccess() throws Exception {
+        //build request-body
         Integer newSex = 1;
         String newBirthday = "1996-09-25";
         String newPosition = "Neusoft School";
@@ -617,26 +621,81 @@ public class AccountCollectorTest {
                         .cookie(this.getAlreadyLoginUserCookie())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody)
+                        .accept(MediaType.APPLICATION_JSON)
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
+         .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model.sex").value(newSex))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model.birthday").value(newBirthday))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model.position").value(newPosition))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model.description").value(newDescription))
                 .andReturn();
 
-        //judge $.model
         this.isExistKeyItems(result,
                 "email", "sex", "birthday", "position", "description",
-                "avator", "state", "createtime", "username");
-
-        //check database data
-        Map resultMap = (Map) JSON.parse(result.getResponse().getContentAsString());
-        Map modelMap = (Map) resultMap.get("model");
-        UserDO updatedUser = userDAO.getUserByName((String) modelMap.get("username"));
-        Assert.assertEquals(newSex, updatedUser.getSex());
-        Assert.assertEquals(newBirthday, updatedUser.getBirthday());
-        Assert.assertEquals(newPosition, updatedUser.getPosition());
-        Assert.assertEquals(newDescription, updatedUser.getDescription());
+                "avator", "state", "createtime", "userid", "username");
 
         this.printSuccessMessage();
+    }
+
+    /**
+     * 测试 /api/account/update-profile
+     *      - 修改用户基本信息异常
+     *          - no permission（@LoginAuthorization, @AccountActivation）
+     *          - request param error, no norm
+     *          - service exception
+     */
+    @Test
+    @Transactional
+    public void testUpdateUserInfoException() throws Exception {
+        String apiUrl = "/api/account/update-profile";
+
+        //no permission, no need input param
+        this.testApiThrowNoPermissionException(apiUrl, RequestMethod.POST, null);
+        UserDO user = new UserDO();
+            user.setId(5);
+            user.setName("suvan");
+            user.setRank("user");
+            user.setState(SetConst.ACCOUNT_NO_ACTIVATED_STATE);
+        this.testApiThrowNoPermissionException(apiUrl, RequestMethod.POST, user);
+
+        //request
+        String[][] params = {
+                {null, null, null, null}, {null, "1996-09-25", "深圳", "描述"},
+                {"12", "1996-09-25", "深圳", "描述"}, {"1", "1996-02-25 错误的时间", "深圳", "描述"}
+        };
+
+        for (String[] param: params) {
+            Integer newSex = param[0] == null ? null : Integer.parseInt(param[0]);
+            String newBirthday = param[1];
+            String newPosition = param[2];
+            String newDescription = param[3];
+            String requestBody = "{" + this.getJsonField("sex", newSex) + ", "
+                    + this.getJsonField("birthday", newBirthday) + ", "
+                    + this.getJsonField("position", newPosition) + ", "
+                    + this.getJsonField("description", newDescription) + "}";
+            System.out.println("input request-body information: " + requestBody);
+
+            try {
+                mockMvc.perform(
+                        MockMvcRequestBuilders.post("/api/account/update-profile")
+                                .cookie(this.getAlreadyLoginUserCookie())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(requestBody)
+                                .accept(MediaType.APPLICATION_JSON)
+                ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
+                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(CoreMatchers.notNullValue()))
+                 .andExpect(MockMvcResultMatchers.jsonPath("$.model").value(CoreMatchers.notNullValue()));
+            } catch (NestedServletException ne) {
+                Throwable throwable = ne.getRootCause();
+                Assert.assertThat(throwable,
+                        CoreMatchers.anyOf(
+                                CoreMatchers.instanceOf(ParamsErrorException.class),
+                                CoreMatchers.instanceOf(ServiceException.class)
+                        )
+                );
+            }
+        }
     }
 
 
@@ -1257,5 +1316,44 @@ public class AccountCollectorTest {
 
         Assert.assertEquals(keyItems.length, resultModelMap.size());
         Assert.assertThat((Set<String>) resultModelMap.keySet(), CoreMatchers.hasItems(keyItems));
+    }
+
+    /**
+     * 访问 api，抛出用户无权限异常
+     *
+     * @param apiUrl api地址
+     * @param requestMethod http请求方式
+     * @param user 用户对象（用于构建Cookie）
+     */
+    private void testApiThrowNoPermissionException(String apiUrl, RequestMethod requestMethod, UserDO user) {
+        MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.get(apiUrl);
+        if (RequestMethod.POST.equals(requestMethod)) {
+            mockRequest = MockMvcRequestBuilders.post(apiUrl);
+        }
+
+        if (user != null) {
+            mockRequest.cookie(new Cookie(ParamConst.AUTHENTICATION, SecretUtil.generateUserInfoToken(user)));
+        }
+
+        try {
+            mockMvc.perform(
+                    mockRequest
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+            ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
+             .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(ApiMessage.NO_PERMISSION))
+             .andExpect(MockMvcResultMatchers.jsonPath("$.model").value(CoreMatchers.notNullValue()));
+        } catch (NestedServletException ne) {
+            Assert.assertTrue(ne.getRootCause() instanceof PermissionException);
+
+            if (user != null && user.getState() == SetConst.ACCOUNT_NO_ACTIVATED_STATE) {
+                Assert.assertEquals(ApiMessage.NO_ACTIVATE, ne.getRootCause().getMessage());
+            } else {
+                Assert.assertEquals(ApiMessage.NO_PERMISSION, ne.getRootCause().getMessage());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+           throw new RuntimeException("no throw expected exception");
+        }
     }
 }
