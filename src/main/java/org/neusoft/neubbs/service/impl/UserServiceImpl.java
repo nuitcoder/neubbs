@@ -11,6 +11,7 @@ import org.neusoft.neubbs.dao.IUserActionDAO;
 import org.neusoft.neubbs.dao.IUserDAO;
 import org.neusoft.neubbs.entity.UserActionDO;
 import org.neusoft.neubbs.entity.UserDO;
+import org.neusoft.neubbs.exception.PermissionException;
 import org.neusoft.neubbs.exception.ServiceException;
 import org.neusoft.neubbs.service.IUserService;
 import org.neusoft.neubbs.utils.JsonUtil;
@@ -114,7 +115,7 @@ public class UserServiceImpl implements IUserService {
     @Override
     public void confirmUserMatchCookieUser(String inputUsername, UserDO cookieUser) {
         if (cookieUser == null || !inputUsername.equals(cookieUser.getName())) {
-            throw new ServiceException(ApiMessage.NO_PERMISSION).log(LogWarnEnum.US10);
+            throw new PermissionException(ApiMessage.NO_PERMISSION).log(LogWarnEnum.US10);
         }
     }
 

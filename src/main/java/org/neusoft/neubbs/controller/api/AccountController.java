@@ -262,9 +262,8 @@ public final class AccountController {
         validationService.check(ParamConst.USERNAME, username)
                          .check(ParamConst.PASSWORD, newPassword);
 
-        //confirm input username match logged in user
+        //confirm input username, can to match cookie user
         UserDO cookieUser = secretService.getUserInfoByAuthentication(httpService.getAuthenticationCookieValue());
-
         userService.confirmUserMatchCookieUser(username, cookieUser);
 
         userService.alterUserPasswordByName(username, newPassword);

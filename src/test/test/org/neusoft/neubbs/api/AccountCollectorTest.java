@@ -39,6 +39,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -58,6 +59,10 @@ import java.util.Set;
  *      - 测试 /api/account
  *      - 测试 /api/account/state
  *      - 测试 /api/account/login
+ *      - 测速 /api/account/logout
+ *      - 测试 /api/account/register
+ *      - 测试 /api/account/update-profile
+ *      - 测试 /api/account/update-password
  *
  * 【注意】 设置配置文件(需设置 ApplicationContext.xml 和 mvc.xm,否则会报错)
  */
@@ -86,7 +91,6 @@ public class AccountCollectorTest {
     @Autowired
     private IUserActionDAO userActionDAO;
 
-    private final String API_ACCOUNT_UPDATE_PASSWORD = "/api/account/update-password";
     private final String API_ACCOUNT_UPDATE_EMAIL = "/api/account/update-email";
     private final String API_ACCOUNT_ACTIVATE = "/api/account/activate";
     private final String API_ACCOUNT_VALIDATE = "/api/account/validate";
@@ -650,14 +654,11 @@ public class AccountCollectorTest {
     public void testUpdateUserInfoException() throws Exception {
         String apiUrl = "/api/account/update-profile";
 
-        //no permission, no need input param
+        //no login
         this.testApiThrowNoPermissionException(apiUrl, RequestMethod.POST, null);
-        UserDO user = new UserDO();
-            user.setId(5);
-            user.setName("suvan");
-            user.setRank("user");
-            user.setState(SetConst.ACCOUNT_NO_ACTIVATED_STATE);
-        this.testApiThrowNoPermissionException(apiUrl, RequestMethod.POST, user);
+
+        //account no activated
+        this.testApiThrowNoPermissionException(apiUrl, RequestMethod.POST, this.getNoActivatedUserDO());
 
         //request
         String[][] params = {
@@ -700,131 +701,100 @@ public class AccountCollectorTest {
 
 
     /**
-     * 【/api/account/update-password】 test user update password success
-     *      - new user already login and activated (pass @LoginAuthorization @AccountActivation)
+     * 测试 /api/account/update-password
+     *      - 账户修改密码成功
+     *      - 需要权限：@LoginAuthorization @AccountActivation
      */
     @Test
     @Transactional
-    public void testUserUpdatePasswordSuccess() throws Exception {
-        String inputUsername = "suvan";
-        String inputNewPassword = "liushuwei";
-        String requestBody = "{\"username\":\"" + inputUsername + "\",\"password\":\"" + inputNewPassword + "\"}";
+    public void testUpdateUserPassword() throws Exception {
+        String username = "suvan";
+        String newPassword = "new123456";
+        String requestBody = "{\"username\":\"" + username + "\",\"password\":\"" + newPassword + "\"}";
         System.out.println("input request-body:" + requestBody);
 
-        String authentication = SecretUtil.generateUserInfoToken(userService.getUserInfoByName(inputUsername));
-
         mockMvc.perform(
-                MockMvcRequestBuilders.post(API_ACCOUNT_UPDATE_PASSWORD)
-                        .cookie(new Cookie(ParamConst.AUTHENTICATION, authentication))
+                MockMvcRequestBuilders.post("/api/account/update-password")
+                        .cookie(this.getAlreadyLoginUserCookie())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody)
+                        .accept(MediaType.APPLICATION_JSON)
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
          .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
-         .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists()));
 
-        //database check
-        UserDO user = userService.getUserInfoByName(inputUsername);
-        Assert.assertEquals(user.getName(), inputUsername);
-        Assert.assertEquals(
-                user.getPassword(),
-                SecretUtil.encryptMd5(SecretUtil.encryptMd5(inputNewPassword) + inputNewPassword)
-        );
+        //again validate database user
+        UserDO user = userService.getUserInfoByName(username);
+        String secretPassword = SecretUtil.encryptMd5(SecretUtil.encryptMd5(newPassword) + newPassword);
+        Assert.assertEquals(secretPassword, user.getPassword());
 
         this.printSuccessMessage();
     }
 
     /**
-     * 【/api/account/update-password】 test user update password throw exception
-     *      - no login
-     *      - account no activated
-     *      - request param error, no norm
-     *      - database exception
+     * 测试 /api/account/update-password
+     *      - 修改账户密码异常
+     *          - permission
+     *              - no login
+     *              - account no activated
+     *              - cookie no input user (Status Code: 200)
+     *          - request param error, no norm
      */
     @Test
     @Transactional
     public void testUserUpdatePasswordThrowException() throws Exception {
-        //no login
+
+        // no login
+        this.testApiThrowNoPermissionException("/api/account/update-password", RequestMethod.POST, null);
+
+        //account no activated
+        this.testApiThrowNoPermissionException("/api/account/update-password", RequestMethod.POST, this.getNoActivatedUserDO());
+
+        //input username no match cookie user
         try {
             mockMvc.perform(
-                    MockMvcRequestBuilders.post(API_ACCOUNT_UPDATE_PASSWORD)
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content("{}")
-            ).andExpect(MockMvcResultMatchers.jsonPath("$.success.").value(false))
-             .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(ApiMessage.NO_PERMISSION))
-             .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
-
-        } catch (NestedServletException ne) {
-            Throwable throwable = ne.getRootCause();
-            Assert.assertThat(throwable, (CoreMatchers.instanceOf(ServiceException.class)));
-            Assert.assertEquals(throwable.getMessage(), ApiMessage.NO_PERMISSION);
-        }
-
-        //account no activate
-        UserDO noActivationUser = new UserDO();
-            noActivationUser.setName("noActivationUser");
-            noActivationUser.setState(0);
-
-        try {
-            mockMvc.perform(
-                    MockMvcRequestBuilders.post(API_ACCOUNT_UPDATE_PASSWORD)
-                            .cookie(new Cookie(ParamConst.AUTHENTICATION, SecretUtil.generateUserInfoToken(noActivationUser)))
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content("{}")
+                    MockMvcRequestBuilders.post("/api/account/update-password")
+                        .cookie(this.getOtherAlreadyLoginUserCookie())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"username\":\"suvan\",\"password\":\"123456\"}")
+                        .accept(MediaType.APPLICATION_JSON)
             ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
-             .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(ApiMessage.NO_ACTIVATE))
-             .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
+             .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(ApiMessage.NO_PERMISSION))
+             .andExpect(MockMvcResultMatchers.jsonPath("$.mode").value(CoreMatchers.notNullValue()));
 
         } catch (NestedServletException ne) {
-            Throwable throwable = ne.getRootCause();
-            Assert.assertTrue(throwable instanceof ServiceException);
-            Assert.assertEquals(throwable.getMessage(), ApiMessage.NO_ACTIVATE);
+            Assert.assertTrue(ne.getRootCause() instanceof PermissionException);
+            Assert.assertEquals(ApiMessage.NO_PERMISSION, ne.getRootCause().getMessage());
         }
 
-        //reqeust param error, no norm and database exception
+        //request params error
         String[][] params = {
                 {null, null}, {null, "123456"}, {"suvan", null},
                 {"s", "123456"}, {"suvan*--0", "123456"},
-                {"suvan", "123"},
-                {"cookieNoSame", "123456"},
-                {"noExist", "123456"}
+                {"suvan", "123"}, {"suvan", "k"}
         };
 
-        String authentication = SecretUtil.generateUserInfoToken(userService.getUserInfoByName("suvan"));
-        Cookie cookie = new Cookie(ParamConst.AUTHENTICATION, authentication);
-
         for (String[] param : params) {
+            //build request-body
             String username = param[0];
             String newPassword = param[1];
             String requestBody = "{\"username\":\"" + username + "\",\"password\":\"" + newPassword + "\"}";
             System.out.println("input request-body: " + requestBody);
 
-            if ("noExist".equals(username)) {
-                //test database no exist user
-                UserDO noExistUser = new UserDO();
-                    noExistUser.setName("noExist");
-                    noExistUser.setState(1);
-
-                cookie.setValue(SecretUtil.generateUserInfoToken(noExistUser));
-            }
-
             try {
                 mockMvc.perform(
-                        MockMvcRequestBuilders.post(API_ACCOUNT_UPDATE_PASSWORD)
-                                .cookie(cookie)
+                        MockMvcRequestBuilders.post("/api/account/update-password")
+                                .cookie(this.getAlreadyLoginUserCookie())
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(requestBody)
                 ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
-                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists())
-                 .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
+                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(ApiMessage.PARAM_ERROR))
+                 .andExpect(MockMvcResultMatchers.jsonPath("$.model").value(CoreMatchers.notNullValue()));
 
             } catch (NestedServletException ne) {
-                Assert.assertThat(ne.getRootCause(),
-                        CoreMatchers.anyOf(
-                                CoreMatchers.instanceOf(ParamsErrorException.class),
-                                CoreMatchers.instanceOf(ServiceException.class),
-                                CoreMatchers.instanceOf(ServiceException.class)
-                        )
-                );
+                Throwable throwable = ne.getRootCause();
+                Assert.assertTrue(throwable instanceof ParamsErrorException);
+                Assert.assertEquals(throwable.getMessage(), ApiMessage.PARAM_ERROR);
             }
         }
 
@@ -1279,9 +1249,40 @@ public class AccountCollectorTest {
             user.setId(6);
             user.setName("suvan");
             user.setRank("admin");
-            user.setState(1);
+            user.setState(SetConst.ACCOUNT_ACTIVATED_STATE);
 
         return new Cookie(ParamConst.AUTHENTICATION, SecretUtil.generateUserInfoToken(user));
+    }
+
+    /**
+     * 获取未激活的用户对象
+     *
+     * @return UserDO 未激活的用户对象
+     */
+    public UserDO getNoActivatedUserDO() {
+        UserDO user = new UserDO();
+            user.setId(5);
+            user.setName("suvan");
+            user.setRank("user");
+            user.setState(SetConst.ACCOUNT_NO_ACTIVATED_STATE);
+
+        return user;
+    }
+
+    /**
+     * 获取其他已登陆用户的 Cookie
+     *      - 默认是 suvan 用户，则该函数获取获取另外一个用户对象
+     *
+     * @return Cookie 其他已登陆用户的Cookie
+     */
+    public Cookie getOtherAlreadyLoginUserCookie() {
+        UserDO otherUser = new UserDO();
+            otherUser.setId(123);
+            otherUser.setName("noMatchUser");
+            otherUser.setRank("user");
+            otherUser.setState(SetConst.ACCOUNT_ACTIVATED_STATE);
+
+        return new Cookie(ParamConst.AUTHENTICATION, SecretUtil.generateUserInfoToken(otherUser));
     }
 
     /**
@@ -1326,11 +1327,13 @@ public class AccountCollectorTest {
      * @param user 用户对象（用于构建Cookie）
      */
     private void testApiThrowNoPermissionException(String apiUrl, RequestMethod requestMethod, UserDO user) {
+        //set post | get
         MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.get(apiUrl);
         if (RequestMethod.POST.equals(requestMethod)) {
             mockRequest = MockMvcRequestBuilders.post(apiUrl);
         }
 
+        //no login
         if (user != null) {
             mockRequest.cookie(new Cookie(ParamConst.AUTHENTICATION, SecretUtil.generateUserInfoToken(user)));
         }
@@ -1346,6 +1349,7 @@ public class AccountCollectorTest {
         } catch (NestedServletException ne) {
             Assert.assertTrue(ne.getRootCause() instanceof PermissionException);
 
+            //account no activated
             if (user != null && user.getState() == SetConst.ACCOUNT_NO_ACTIVATED_STATE) {
                 Assert.assertEquals(ApiMessage.NO_ACTIVATE, ne.getRootCause().getMessage());
             } else {
