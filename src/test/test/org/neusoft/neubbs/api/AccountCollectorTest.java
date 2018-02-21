@@ -39,7 +39,6 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -721,7 +720,7 @@ public class AccountCollectorTest {
                         .accept(MediaType.APPLICATION_JSON)
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
          .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
-         .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists()));
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
 
         //again validate database user
         UserDO user = userService.getUserInfoByName(username);
