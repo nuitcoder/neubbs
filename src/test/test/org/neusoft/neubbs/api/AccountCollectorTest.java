@@ -62,6 +62,7 @@ import java.util.Set;
  *      - 测试 /api/account/register
  *      - 测试 /api/account/update-profile
  *      - 测试 /api/account/update-password
+ *      - 测试 /api/account/update-email
  *
  * 【注意】 设置配置文件(需设置 ApplicationContext.xml 和 mvc.xm,否则会报错)
  */
@@ -90,7 +91,6 @@ public class AccountCollectorTest {
     @Autowired
     private IUserActionDAO userActionDAO;
 
-    private final String API_ACCOUNT_UPDATE_EMAIL = "/api/account/update-email";
     private final String API_ACCOUNT_ACTIVATE = "/api/account/activate";
     private final String API_ACCOUNT_VALIDATE = "/api/account/validate";
     private final String API_ACCOUNT_CHECK_CAPTCHA = "/api/account/check-captcha";
@@ -179,7 +179,7 @@ public class AccountCollectorTest {
 
     /**
      * 测试 /api/account
-     *      - 获取用户信息，常同时输入两个不同参数，其中一个错误异常
+     *      - [✔] 获取用户信息，常同时输入两个不同参数，其中之一出现异常
      */
     @Test
     public void testGetUserInfoSameInputTwoParamException() throws Exception {
@@ -204,8 +204,8 @@ public class AccountCollectorTest {
     /**
      * 测试 /api/account
      *      - 获取用户信息异常
-     *          - request param error, no norm
-     *          - service exception
+     *          - [✔] request param error, no norm
+     *          - [✔] service exception
      */
     @Test
     public void testGetUserInfoException () throws Exception {
@@ -263,8 +263,8 @@ public class AccountCollectorTest {
     /**
      * 测试 /api/account/state
      *      - 获取用户激活状态异常
-     *          - request param error, no norm
-     *          - service exception
+     *          - [✔] request param error, no norm
+     *          - [✔] service exception
      */
     @Test
     public void testGetUserActivateStateException() throws Exception {
@@ -314,8 +314,8 @@ public class AccountCollectorTest {
     /**
      * 测试 /api/account/following
      *      - 获取用户所有主动关注人信息列表异常
-     *          - request param error, no norm
-     *          - service exception
+     *          - [✔] request param error, no norm
+     *          - [✔] service exception
      */
     @Test
     public void testListUserFollowingUserInfoException() throws Exception {
@@ -366,8 +366,8 @@ public class AccountCollectorTest {
     /**
      * 测试 /api/account/followed
      *      - 获取所有用户所有被关注人信息列表异常
-     *          - request param error, no norm
-     *          - service exception
+     *          - [✔] request param error, no norm
+     *          - [✔] service exception
      */
     @Test
     public void testListUserFollowedUserInfoException() throws Exception {
@@ -428,8 +428,8 @@ public class AccountCollectorTest {
     /**
      * 测试 /api/account/login
      *      - 账户登陆异常
-     *          - request param error, no norm
-     *          - database exception
+     *          - [✔] request param error, no norm
+     *          - [✔] service exception
      */
     @Test
     public void testLoginAccountException() throws Exception {
@@ -472,9 +472,10 @@ public class AccountCollectorTest {
     /**
      * 测试 /api/account/logout
      *      - 注销账户成功
+     *      - 需要权限：@LoginAuthorization
      */
     @Test
-    public void testLogoutAccountSuccess () throws Exception {
+    public void testLogoutAccountSuccess() throws Exception {
         mockMvc.perform(
                 MockMvcRequestBuilders.get("/api/account/logout")
                         .cookie(this.getAlreadyLoginUserCookie())
@@ -489,10 +490,10 @@ public class AccountCollectorTest {
     /**
      * 测试 /api/account/logout
      *      - 注销账户异常
-     *          - no login, test @LoginAuthorization
+     *          - [✔] no login
      */
     @Test
-    public void testLogoutThrowException () throws Exception {
+    public void testLogoutThrowException() throws Exception {
         try {
             //no Cookie, to do ApiInterceptor validate
             mockMvc.perform(
@@ -502,9 +503,8 @@ public class AccountCollectorTest {
              .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
 
         } catch (NestedServletException ne) {
-            Throwable throwable = ne.getRootCause();
-            Assert.assertTrue(throwable instanceof ServiceException);
-            Assert.assertEquals(throwable.getMessage(), ApiMessage.NO_PERMISSION);
+            Assert.assertTrue(ne.getRootCause() instanceof PermissionException);
+            Assert.assertEquals(ne.getRootCause().getMessage(), ApiMessage.NO_PERMISSION);
         }
 
         this.printSuccessMessage();
@@ -554,8 +554,8 @@ public class AccountCollectorTest {
     /**
      * 测试 /api/account/register
      *      - 注册账户异常
-     *          - request param error, no norm
-     *          - service exception
+     *          - [✔] request param error, no norm
+     *          - [✔] service exception
      */
     @Test
     @Transactional
@@ -564,7 +564,7 @@ public class AccountCollectorTest {
                 {null, null, null},
                 {null, "123456", "only@neubbs.com"}, {"only", null, "only@neubbs.com"}, {"only", "123456", null},
                 {null, null, "onlu@neubbs.com"}, {null, "123456", null}, {"only", null, null},
-                {"o", "123456", "only@neubbs.com"}, {"onlyw$*=", "123456", "only@neubbs.com"},
+                {"o", "123456", "only@neubbs.com"}, {"only$*=", "123456", "only@neubbs.com"},
                 {"only", "1", "only@neubbs.com"},
                 {"only", "123456", "only@"},
                 {"suvan", "123456", "only@neubbs.com"}, {"only", "123456", "liushuwei0925@gmail.com"}
@@ -644,9 +644,9 @@ public class AccountCollectorTest {
     /**
      * 测试 /api/account/update-profile
      *      - 修改用户基本信息异常
-     *          - no permission（@LoginAuthorization, @AccountActivation）
-     *          - request param error, no norm
-     *          - service exception
+     *          - [✔] no permission（@LoginAuthorization, @AccountActivation）
+     *          - [✔] request param error, no norm
+     *          - [✔] service exception
      */
     @Test
     @Transactional
@@ -686,6 +686,7 @@ public class AccountCollectorTest {
                 ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
                  .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(CoreMatchers.notNullValue()))
                  .andExpect(MockMvcResultMatchers.jsonPath("$.model").value(CoreMatchers.notNullValue()));
+
             } catch (NestedServletException ne) {
                 Throwable throwable = ne.getRootCause();
                 Assert.assertThat(throwable,
@@ -733,16 +734,15 @@ public class AccountCollectorTest {
     /**
      * 测试 /api/account/update-password
      *      - 修改账户密码异常
-     *          - permission
+     *          - [✔] no permission (@LoginAuthorization, @AccountActivation)
      *              - no login
      *              - account no activated
-     *              - cookie no input user (Status Code: 200)
-     *          - request param error, no norm
+     *              - input user not match cookie user
+     *          - [✔] request param error, no norm
      */
     @Test
     @Transactional
     public void testUserUpdatePasswordThrowException() throws Exception {
-
         // no login
         this.testApiThrowNoPermissionException("/api/account/update-password", RequestMethod.POST, null);
 
@@ -766,7 +766,7 @@ public class AccountCollectorTest {
             Assert.assertEquals(ApiMessage.NO_PERMISSION, ne.getRootCause().getMessage());
         }
 
-        //request params error
+        //request params error, no norm
         String[][] params = {
                 {null, null}, {null, "123456"}, {"suvan", null},
                 {"s", "123456"}, {"suvan*--0", "123456"},
@@ -774,7 +774,6 @@ public class AccountCollectorTest {
         };
 
         for (String[] param : params) {
-            //build request-body
             String username = param[0];
             String newPassword = param[1];
             String requestBody = "{\"username\":\"" + username + "\",\"password\":\"" + newPassword + "\"}";
@@ -791,9 +790,8 @@ public class AccountCollectorTest {
                  .andExpect(MockMvcResultMatchers.jsonPath("$.model").value(CoreMatchers.notNullValue()));
 
             } catch (NestedServletException ne) {
-                Throwable throwable = ne.getRootCause();
-                Assert.assertTrue(throwable instanceof ParamsErrorException);
-                Assert.assertEquals(throwable.getMessage(), ApiMessage.PARAM_ERROR);
+                Assert.assertTrue(ne.getRootCause() instanceof ParamsErrorException);
+                Assert.assertEquals(ApiMessage.PARAM_ERROR, ne.getRootCause().getMessage());
             }
         }
 
@@ -801,104 +799,93 @@ public class AccountCollectorTest {
     }
 
     /**
-     * 【/api/account/update-email】test user update email success
-     *      - @LoginAuthorization
+     * 测试 /api/account/update-email
+     *      - 测试修改邮箱成功
+     *      - 需要权限：@LoginAuthorization
      */
     @Test
     @Transactional
-    public void testUserUpdateEmailSuccess() throws Exception {
-        String inputUsername = "suvan";
-        String inputEmail = "newEmail@email.com";
-        String reqeustBody = "{\"username\":\"" + inputUsername + "\",\"email\":\"" + inputEmail + "\"}";
-        System.out.println("input reqeust-body: " + reqeustBody);
-
-        String authentication = SecretUtil.generateUserInfoToken(userService.getUserInfoByName(inputUsername));
+    public void testUpdateUserEmailSuccess() throws Exception {
+        String username = "suvan";
+        String newEmail = "newEmail@email.com";
+        String requestBody = "{\"username\":\"" + username + "\",\"email\":\"" + newEmail + "\"}";
+        System.out.println("input request-body: " + requestBody);
 
         mockMvc.perform(
-                MockMvcRequestBuilders.post(API_ACCOUNT_UPDATE_EMAIL)
-                        .cookie(new Cookie(ParamConst.AUTHENTICATION, authentication))
+                MockMvcRequestBuilders.post("/api/account/update-email")
+                        .cookie(this.getAlreadyLoginUserCookie())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(reqeustBody)
+                        .content(requestBody)
+                        .accept(MediaType.APPLICATION_JSON)
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
          .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
          .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
 
-        //database data check
-        UserDO user = userService.getUserInfoByName(inputUsername);
+        //again validate database user
+        UserDO user = userService.getUserInfoByName(username);
         Assert.assertNotNull(user);
-        Assert.assertEquals(user.getEmail(), inputEmail);
+        Assert.assertEquals(newEmail, user.getEmail());
 
         this.printSuccessMessage();
     }
 
     /**
-     * 【/api/account/update-email】test user update email throw exception
-     *      - no login
-     *      - request param error, no norm
-     *      - database exception
+     *  测试 /api/account/update-email
+     *      - 修改用户邮箱异常
+     *          - [✔] no permission
+     *              - no login
+     *              - input user not match cookie user
+     *          - [✔] request param error, no norm
      */
     @Test
     @Transactional
-    public void testUserUpdateEmailThrowException() throws Exception {
+    public void testUpdateUserEmailException() throws Exception {
         //no login
-        try {
-            mockMvc.perform(
-                    MockMvcRequestBuilders.post(API_ACCOUNT_UPDATE_EMAIL)
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content("{}")
-            ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
-             .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists())
-             .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
+        this.testApiThrowNoPermissionException("/api/account/update-email", RequestMethod.POST, null);
 
-        } catch (NestedServletException ne) {
-            Assert.assertTrue(ne.getRootCause() instanceof ServiceException);
-            Assert.assertEquals(ne.getRootCause().getMessage(), ApiMessage.NO_PERMISSION);
-        }
-
-        //request param error, no norm and database exception
+        //request param error, no norm
         String[][] params = {
                 {null, null}, {null, "test@test.com"}, {"test", null},
-                {"t", "test@test.com"}, {"test*~", "test@test.com"},
-                {"test", "test@"},
-                {"ahonn", "test@test.com"},
-                {"suvan", "liushuwei0925@gmail.com"},
-                {"noExist", "test@test.com"}
+                {"t", "test@test.com"}, {"test*~", "test@test.com"}, {"test", "test@"}
         };
-
-        String authentication = SecretUtil.generateUserInfoToken(userService.getUserInfoByName("suvan"));
-        Cookie userCookie = new Cookie(ParamConst.AUTHENTICATION, authentication);
 
         for (String[] param: params) {
             String username = param[0];
             String newEmail = param[1];
             String requestBody = "{\"username\":\"" + username + "\",\"email\":\"" + newEmail + "\"}";
 
-            if ("noExist".equals(username)) {
-                //if cookie exist user, but database user, will throw exception
-                UserDO noExistUser = new UserDO();
-                    noExistUser.setName("noExist");
-
-                userCookie.setValue(SecretUtil.generateUserInfoToken(noExistUser));
-            }
-
             try {
                 mockMvc.perform(
-                        MockMvcRequestBuilders.post(API_ACCOUNT_UPDATE_EMAIL)
-                            .cookie(userCookie)
+                        MockMvcRequestBuilders.post("/api/account/update-email")
+                            .cookie(this.getAlreadyLoginUserCookie())
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(requestBody)
+                            .accept(MediaType.APPLICATION_JSON)
                 ).andExpect(MockMvcResultMatchers.jsonPath("success").value(false))
-                 .andExpect(MockMvcResultMatchers.jsonPath("message").exists())
-                 .andExpect(MockMvcResultMatchers.jsonPath("model").exists());
+                 .andExpect(MockMvcResultMatchers.jsonPath("message").value(ApiMessage.PARAM_ERROR))
+                 .andExpect(MockMvcResultMatchers.jsonPath("model").value(CoreMatchers.notNullValue()));
 
             } catch (NestedServletException ne) {
-                Assert.assertThat(ne.getRootCause(),
-                        CoreMatchers.anyOf(
-                                CoreMatchers.instanceOf(ParamsErrorException.class),
-                                CoreMatchers.instanceOf(ServiceException.class)
-                        )
-                );
+                Assert.assertThat(ne.getRootCause(), CoreMatchers.instanceOf(ParamsErrorException.class));
+                Assert.assertEquals(ApiMessage.PARAM_ERROR, ne.getRootCause().getMessage());
             }
+        }
+
+        //input user not match cookie user
+        try {
+            mockMvc.perform(
+                    MockMvcRequestBuilders.post("/api/account/update-email")
+                        .cookie(this.getAlreadyLoginUserCookie())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"username\":\"otherUser\",\"email\":\"newUser@neubbs.com\"}")
+                        .accept(MediaType.APPLICATION_JSON)
+            ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
+             .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(ApiMessage.NO_PERMISSION))
+             .andExpect(MockMvcResultMatchers.jsonPath("$.model").value(CoreMatchers.notNullValue()));
+
+        } catch (NestedServletException ne) {
+            Assert.assertTrue(ne.getRootCause() instanceof PermissionException);
+            Assert.assertEquals(ApiMessage.NO_PERMISSION, ne.getRootCause().getMessage());
         }
 
         this.printSuccessMessage();
