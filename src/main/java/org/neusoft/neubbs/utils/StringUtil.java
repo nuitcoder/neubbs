@@ -89,7 +89,7 @@ public final class StringUtil {
      * @return String 激活邮件HTML内容
      */
     public static String generateActivateMailHtmlContent(String url) {
-        return "<html><head></head><body><h1>Neubbs 帐号活邮件，点击激活帐号</h1><br>"
+        return "<html><head></head><body><h1>Neubbs 帐号激活邮件，点击以下链接激活帐号</h1><br>"
                 + "<a href=\"" + url + "\">" + url + "</a></body></html>";
     }
 

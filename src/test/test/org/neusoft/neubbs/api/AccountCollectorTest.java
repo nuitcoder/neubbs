@@ -11,7 +11,6 @@ import org.junit.runner.RunWith;
 import org.neusoft.neubbs.constant.api.ApiMessage;
 import org.neusoft.neubbs.constant.api.ParamConst;
 import org.neusoft.neubbs.constant.api.SetConst;
-import org.neusoft.neubbs.controller.api.AccountController;
 import org.neusoft.neubbs.controller.filter.ApiFilter;
 import org.neusoft.neubbs.controller.handler.DynamicSwitchDataSourceHandler;
 import org.neusoft.neubbs.dao.IUserActionDAO;
@@ -63,6 +62,7 @@ import java.util.Set;
  *      - 测试 /api/account/update-profile
  *      - 测试 /api/account/update-password
  *      - 测试 /api/account/update-email
+ *      - 测试 /api/account/activate
  *
  * 【注意】 设置配置文件(需设置 ApplicationContext.xml 和 mvc.xm,否则会报错)
  */
@@ -80,9 +80,6 @@ public class AccountCollectorTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private AccountController accountController;
-
-    @Autowired
     private IUserService userService;
 
     @Autowired
@@ -91,7 +88,6 @@ public class AccountCollectorTest {
     @Autowired
     private IUserActionDAO userActionDAO;
 
-    private final String API_ACCOUNT_ACTIVATE = "/api/account/activate";
     private final String API_ACCOUNT_VALIDATE = "/api/account/validate";
     private final String API_ACCOUNT_CHECK_CAPTCHA = "/api/account/check-captcha";
     private final String API_ACCOUNT_FORGET_PASSWORD = "/api/account/forget-password";
@@ -132,6 +128,7 @@ public class AccountCollectorTest {
                 .build();
 
         //method 2, custom default environment
+        //AccountController accountController = (AccountController) webApplicationContext.getBean("accountController");
         //StandaloneMockMvcBuilder standBuild = MockMvcBuilders.standaloneSetup(accountController);
         //    standBuild.addFilter(new ApiFilter());
         //    standBuild.addInterceptors(new ApiInterceptor());
@@ -892,62 +889,70 @@ public class AccountCollectorTest {
     }
 
     /**
-     * 【/api/account/activate】 test send email to activate user success
-     *      - 主线程结束，守护线程也会放弃执行 taskEecutor.execute() 激活的都是守护线程
+     * 测试 /api/account/activate
+     *      - 测试激活账户成功
+     *          - 主线程结束，守护线程也会放弃执行
+     *              - 所以需要阻塞主线程，当发送邮件线程执行完毕后，再继续执行
+     *              - taskExecutor.execute() 激活的都是守护线程
      */
     @Test
     @Transactional
-    public void testSendEmailToActivateUserSuccess() throws Exception {
-        String email = "13202405189@163.com";
+    public void testActivateAccountSuccess() throws Exception {
+        String email = "suvan-liu@qq.com";
         String requestBody = "{\"email\":\"" + email + "\"}";
-        System.out.println("input reqeust-body: " + requestBody);
+        System.out.println("input request-body: " + requestBody);
 
-        //register new user, no accept return value, after rollback
-        userService.registerUser("activateUser", "123456", email);
+        //register new user, to test
+        userService.registerUser("testUser", "123456", email);
 
         mockMvc.perform(
-                MockMvcRequestBuilders.post(API_ACCOUNT_ACTIVATE)
+                MockMvcRequestBuilders.post("/api/account/activate")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(requestBody)
+                    .accept(MediaType.APPLICATION_JSON)
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
          .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
          .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
 
        /*
-        * need to blocking main thread, otherwise no do taskExecutor send eamil
-        * taskExecutor active thread count > 0, try blocking main thread 20s
+        * need to blocking main thread, otherwise not send mail
+        *   - loop to cyclic, active thread count > 0,
+        *   - most to block main thread 60s
         */
         ThreadPoolTaskExecutor taskExecutor = (ThreadPoolTaskExecutor) webApplicationContext.getBean("taskExecutor");
         int timer = 1;
-        while (taskExecutor.getActiveCount() != 0 && timer < 20) {
+        while (taskExecutor.getActiveCount() > 0 && timer < 60) {
             Thread.sleep(1000);
             System.out.println("already wait " + (timer++) + "s");
         }
-        System.out.println("send eamil success !");
+        System.out.println("send email '" + email + "'success !");
 
         this.printSuccessMessage();
     }
 
     /**
-     * 【/api/account/activate】test send eamil to activate user throw exception
-     *      - request param error, no norm
-     *      - database exception
+     * 测试 /api/account/activate
+     *      - 测试激活账户异常
+     *          - [✔] request param error, no norm
+     *          - [✔] service exception
+     *          - [✔] 60s send mail interval time for the same account
      */
     @Test
     @Transactional
-    public void testSendEmailToActivateUserThrowException() throws Exception{
+    public void testActivateAccountException() throws Exception{
         //request param error, no norm
-       String [] emailParams = {null, "test@","liushuwei0925@gmail.com"};
+       String [] params = {null, "123", "test@", "liushuwei0925@gmail.com"};
 
-        for (String email: emailParams) {
+        for (String email: params) {
             String requestBody = "{\"email\":\"" + email + "\"}";
             System.out.println("input post param request-body: " +requestBody);
 
             try {
                 mockMvc.perform(
-                        MockMvcRequestBuilders.post(API_ACCOUNT_ACTIVATE)
+                        MockMvcRequestBuilders.post("/api/account/activate")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(requestBody)
+                            .accept(MediaType.APPLICATION_JSON)
                 ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
                  .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists())
                  .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
@@ -962,24 +967,25 @@ public class AccountCollectorTest {
             }
        }
 
-       //new register user
-        String email = "alreadySend@neubbs.com";
-        userService.registerUser(email.substring(0, email.indexOf("@")), "123456", email);
+       //test again send mail, exist interval time（not sent repeatedly）
+       String email = "test@test.com";
+       userService.registerUser(email.substring(0, email.indexOf("@")), "123456", email);
 
-        //get redis service on web container
-        ICacheService redisService = (ICacheService) webApplicationContext.getBean("redisServiceImpl");
-        //redisService.saveUserEmailKey(email, "activate", SetConst.EXPIRE_TIME_SIXTY_SECOND_MS);
+       //cache server set 60s send mail interval time for the same account
+       ICacheService redisService = (ICacheService) webApplicationContext.getBean("redisServiceImpl");
+       redisService.saveUserEmailKey(email);
 
-        mockMvc.perform(
-                MockMvcRequestBuilders.post(API_ACCOUNT_ACTIVATE)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content("{\"email\":\"" + email + "\"}")
+       mockMvc.perform(
+               MockMvcRequestBuilders.post("/api/account/activate")
+                       .contentType(MediaType.APPLICATION_JSON)
+                       .content("{\"email\":\"" + email + "\"}")
+                       .accept(MediaType.APPLICATION_JSON)
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
          .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(ApiMessage.WAIT_TIMER))
          .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
-         .andExpect(MockMvcResultMatchers.jsonPath("$.model.timer").exists());
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model.timer").value(CoreMatchers.notNullValue()));
 
-        System.out.println("send email timer limit effective!");
+        System.out.println("send email exist interval time limit , test success!");
 
         this.printSuccessMessage();
     }
