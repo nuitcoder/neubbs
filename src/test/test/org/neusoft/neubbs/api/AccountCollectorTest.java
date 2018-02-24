@@ -63,6 +63,7 @@ import java.util.Set;
  *      - 测试 /api/account/update-password
  *      - 测试 /api/account/update-email
  *      - 测试 /api/account/activate
+ *      - 测试 /api/account/captcha
  *
  * 【注意】 设置配置文件(需设置 ApplicationContext.xml 和 mvc.xm,否则会报错)
  */
@@ -88,7 +89,6 @@ public class AccountCollectorTest {
     @Autowired
     private IUserActionDAO userActionDAO;
 
-    private final String API_ACCOUNT_VALIDATE = "/api/account/validate";
     private final String API_ACCOUNT_CHECK_CAPTCHA = "/api/account/check-captcha";
     private final String API_ACCOUNT_FORGET_PASSWORD = "/api/account/forget-password";
 
@@ -1064,18 +1064,20 @@ public class AccountCollectorTest {
     }
 
     /**
-     * 【/api/account/captcha】 test generate picture captcha success
-     *      - need judge session exist captcha text
-     *      - need judge page display content type is image/jpeg
+     * 测试 /api/account/captcha
+     *      - 自动生成图片验证码成功
      */
     @Test
-    public void testGerneatePictureCaptchaSuccess() throws Exception {
+    public void generateCaptchaPicture() throws Exception {
+        //generate web page captcha picture and validate
         MvcResult result = mockMvc.perform(
-                MockMvcRequestBuilders.get("/api/account/captch").accept(MediaType.IMAGE_JPEG_VALUE)
+                MockMvcRequestBuilders.get("/api/account/captcha")
+                        .accept(MediaType.IMAGE_JPEG_VALUE)
         ).andExpect(MockMvcResultMatchers.status().isOk())
          .andExpect(MockMvcResultMatchers.content().contentType("image/jpeg"))
          .andReturn();
 
+        //verify session attribute
         Assert.assertNotNull(result.getRequest().getSession().getAttribute(SetConst.SESSION_CAPTCHA));
 
         this.printSuccessMessage();
