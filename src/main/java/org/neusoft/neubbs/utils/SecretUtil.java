@@ -41,6 +41,8 @@ public final class SecretUtil {
      * @return String MD5密文
      */
     public static String encryptMd5(String plainText) {
+        checkParamNotNull(plainText);
+
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
             md.update(plainText.getBytes());
@@ -58,6 +60,8 @@ public final class SecretUtil {
      * @return String Base64编码密文
      */
     public static String encodeBase64(String plainText) {
+        checkParamNotNull(plainText);
+
         try {
             return Base64.getUrlEncoder().encodeToString(plainText.getBytes("utf-8"));
         } catch (UnsupportedEncodingException ue) {
@@ -72,7 +76,8 @@ public final class SecretUtil {
      * @return String 明文
      */
     public static String decodeBase64(String cipherText) {
-         return new String(Base64.getDecoder().decode(cipherText));
+        checkParamNotNull(cipherText);
+        return new String(Base64.getDecoder().decode(cipherText));
     }
 
 
@@ -86,8 +91,8 @@ public final class SecretUtil {
      * @return String 密文token
      */
     public static String generateUserInfoToken(UserDO user) {
-        if (user == null || user.getId() == null || user.getName() == null
-                || user.getRank() == null || user.getState() == null) {
+        checkParamNotNull(user);
+        if (user.getId() == null || user.getName() == null || user.getRank() == null || user.getState() == null) {
             throw new UtilClassException(ApiMessage.UNKNOWN_ERROR).log(LogWarnEnum.UC11);
         }
 
@@ -123,6 +128,8 @@ public final class SecretUtil {
      * @return UserDO 用户信息对象（包含 id，name，rank，state 属性）
      */
     public static UserDO decryptUserInfoToken(String token) {
+        checkParamNotNull(token);
+
         DecodedJWT decodedJWT;
         try {
             //decrypt HS256
@@ -142,5 +149,23 @@ public final class SecretUtil {
             user.setState(decodedJWT.getClaim(ParamConst.STATE).asInt());
 
         return user;
+    }
+
+    /*
+     * ***********************************************
+     * private method
+     * ***********************************************
+     */
+
+    /**
+     * 检擦参数不为空
+     *      - 若为空则抛出异常
+     *
+     * @param param 参数
+     */
+    private static <T> void checkParamNotNull(T param) {
+        if (param == null) {
+            throw new UtilClassException(ApiMessage.UNKNOWN_ERROR).log(LogWarnEnum.UC12);
+        }
     }
 }
