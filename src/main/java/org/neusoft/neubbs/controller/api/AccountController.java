@@ -354,7 +354,7 @@ public final class AccountController {
     /**
      * 图片验证码
      *      - 页面生成验证码图片, 刷新重新生成
-     *      - 目前 Session 储存验证码
+     *      - 当前 Session 储存验证码
      */
     @RequestMapping(value = "/captcha", method = RequestMethod.GET)
     public void generateCaptchaPicture() {

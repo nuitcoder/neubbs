@@ -91,7 +91,7 @@ public class HttpServiceImpl implements IHttpService {
 
     @Override
     public void saveCaptchaText(String captchaText) {
-        PublicParamsUtil.getRequest().setAttribute(SetConst.SESSION_CAPTCHA, captchaText);
+        PublicParamsUtil.getSession().setAttribute(SetConst.SESSION_CAPTCHA, captchaText);
     }
 
     @Override
