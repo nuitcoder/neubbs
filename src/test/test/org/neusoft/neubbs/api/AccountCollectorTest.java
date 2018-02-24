@@ -991,57 +991,64 @@ public class AccountCollectorTest {
     }
 
     /**
-     * 【/api/account/validate】 test validate token activate user success
+     * 测试 /api/account/validate
+     *      - 验证 Token（来自激活邮件），激活用户成功
      */
     @Test
     @Transactional
-    public void testValidateTokenActivateUserSuccess() throws Exception {
-       //register new user
-        UserDO user = userService.registerUser("testValidate", "123456", "testValidate@neubbs.com");
+    public void testValidateActivateTokenSuccess() throws Exception {
+        //register new user
+        UserDO testUser = userService.registerUser("testUser", "123456", "testUser@test.com");
 
         //build token
-        String token = SecretUtil.encodeBase64(user.getEmail() + "-" + StringUtil.getTodayTwentyFourClockTimestamp());
+        //String token = ((ISecretService) webApplicationContext.getBean("secretServiceImpl")).generateValidateEmailToken(testUser.getEmail());
+        String token = SecretUtil.encodeBase64(testUser.getEmail() + "-" + StringUtil.getTodayTwentyFourClockTimestamp());
 
         //validate token and activate user
         mockMvc.perform(
-                MockMvcRequestBuilders.get(API_ACCOUNT_VALIDATE).param("token", token)
+                MockMvcRequestBuilders.get("/api/account/validate")
+                        .param("token", token)
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
          .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
          .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
 
-        //confirm database user activated
-        Assert.assertTrue(userService.getUserInfoByEmail(user.getEmail()).getState() == 1);
+        //again validate database user activated state
+        Assert.assertTrue(userService.getUserInfoByEmail(testUser.getEmail()).getState() == 1);
 
         this.printSuccessMessage();
     }
 
     /**
-     * 【/api/account/validate】test validate token activate user throw exception
-     *      - request param error, no norm
-     *      - database exception
+     * 测试 /api/account/validate
+     *      - 验证 Token（来自激活邮件），激活用户出现异常
+     *          - [✔] util class exception
+     *              - encode Base64 failure
+     *          - [✔] request param error, no norm
+     *          - [✔] service exception
      */
     @Test
     @Transactional
-    public void testValidateTokenActivateUserThrowException() throws Exception {
+    public void testValidateActivateToken() throws Exception {
+        //build request param token
         String [] parmas = {
-                 null,
                 "1234", "awsfasdf", "asdfasdf-qweqwe", "13412-ASDFAF-qqqq",
-                "aasdfasf-" + StringUtil.getTodayTwentyFourClockTimestamp(),
+                "abcdefg-" + StringUtil.getTodayTwentyFourClockTimestamp(),
                 "test@neubs.com-" + System.currentTimeMillis(),
                 "test@nuebbs.com-" + StringUtil.getTodayTwentyFourClockTimestamp(),
                 "liushuwei0925@gmail.com-" + StringUtil.getTodayTwentyFourClockTimestamp(),
         };
 
         for (String param: parmas) {
-            String token = param != null ? SecretUtil.encodeBase64(param) : null;
-            System.out.println("input token=" + token);
-
             try {
-               mockMvc.perform(
-                       MockMvcRequestBuilders.get(API_ACCOUNT_VALIDATE).param("token", token)
-               ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
+                String token = SecretUtil.encodeBase64(param);
+                System.out.println("input token = " + token);
+
+                mockMvc.perform(
+                           MockMvcRequestBuilders.get("/api/account/validate")
+                                   .param("token", token)
+                   ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists())
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.model").value(CoreMatchers.notNullValue()));
 
             } catch (NestedServletException ne) {
                 Assert.assertThat(ne.getRootCause(),
@@ -1059,7 +1066,7 @@ public class AccountCollectorTest {
     /**
      * 【/api/account/captcha】 test generate picture captcha success
      *      - need judge session exist captcha text
-     *      - nedd judge page display content type is image/jpeg
+     *      - need judge page display content type is image/jpeg
      */
     @Test
     public void testGerneatePictureCaptchaSuccess() throws Exception {
