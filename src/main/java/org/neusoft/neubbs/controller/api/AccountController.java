@@ -320,9 +320,7 @@ public final class AccountController {
         }
 
         //start another thread to send mail
-        String token = secretService.generateValidateEmailToken(email);
-        String emailContent = emailService.getActivationMailContent(null, token);
-        emailService.send(SetConst.EMAIL_SENDER_NAME, email, SetConst.EMAIL_SUBJECT_ACTIVATE, emailContent);
+        emailService.sendAccountActivateMail(email, secretService.generateValidateEmailToken(email));
 
         //set user send email 60s interval
         cacheService.saveUserEmailKey(email);
@@ -405,14 +403,12 @@ public final class AccountController {
 
         validationService.check(ParamConst.EMAIL, email);
 
-        String randomPassword = randomService.generateSixDigitsRandomPassword();
-        userService.alterUserPasswordByEmail(email, randomPassword);
+        String temporaryRandomPassword = randomService.generateSixDigitsRandomPassword();
+        userService.alterUserPasswordByEmail(email, temporaryRandomPassword);
 
-        String emailContent = emailService.getPasswordChangeMailContent(email, randomPassword);
-        emailService.send(
-                SetConst.EMAIL_SENDER_NAME, email,
-                SetConst.EMAIL_SUBJECT_TEMPORARY_PASSWORD, emailContent
-        );
+        //send warn account reset temporary password mail
+        emailService.sendResetTemporaryPasswordMail(email, temporaryRandomPassword);
+
 
         return new ApiJsonDTO().success();
     }

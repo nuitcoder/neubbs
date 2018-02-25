@@ -67,7 +67,6 @@ public final class ApiMessage {
     public static final String PICTURE_FORMAT_WRONG = "user upload picture type is wrong,"
             + " only *.jpg or *.png or *.jpeg";
     public static final String PICTURE_TOO_LARGE = "the picture too large";
-    public static final String UPLOAD_FAIL = "upload fail";
     public static final String UPLOAD_SUCCESS = "upload success";
 
     /**
@@ -91,8 +90,8 @@ public final class ApiMessage {
      * 话题
      */
     public static final String NO_CATEGORY = "no category";
-    public static final String ALREAD_EXIST_CATEGORY_NICK = "already exist category id, no repeat save";
-    public static final String ALREAD_EXIST_CATEGORY_NAME = "already exist category name, no repeat save";
+    public static final String ALREADY_EXIST_CATEGORY_NICK = "already exist category id, no repeat save";
+    public static final String ALREADY_EXIST_CATEGORY_NAME = "already exist category name, no repeat save";
 
     /**
      * ftp 服务

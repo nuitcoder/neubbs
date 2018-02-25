@@ -963,7 +963,7 @@ public class AccountCollectorTest {
        }
 
        //test again send mail, exist interval time（not sent repeatedly）
-       String email = "test@test.com";
+       String email = "testActivate@test.com";
        userService.registerUser(email.substring(0, email.indexOf("@")), "123456", email);
 
        //cache server set 60s send mail interval time for the same account

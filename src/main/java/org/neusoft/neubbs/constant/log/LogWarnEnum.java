@@ -12,6 +12,7 @@ public enum LogWarnEnum {
      *      FS - File Treat Service
      *      AI - Api Interceptor
      *      US - User Service
+     *      ES - Email Service
      *      TS1 1- Topic Service
      *      FTPS - FTP Service
      *      VS - Validation Service
@@ -45,6 +46,8 @@ public enum LogWarnEnum {
     US15(15, " （用户）行为失败"),
     US16(16, " 数据库中不存在该用户 "),
     US17(17, "账户未激活，无权调用 api"),
+
+    ES1(1, " 配置文件 'account.api.validate.url' 字段为空，请补充完整！"),
 
     TS1(1, " 话题保存失败"),
     TS2(2, " 话题内容保存失败"),

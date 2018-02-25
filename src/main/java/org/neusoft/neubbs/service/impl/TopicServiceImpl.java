@@ -127,11 +127,11 @@ public class TopicServiceImpl implements ITopicService {
     @Override
     public Map<String, Object> saveCategory(String categoryNick, String categoryName) {
         if (topicCategoryDAO.getTopicCategoryByNick(categoryNick) != null) {
-            throw new ServiceException(ApiMessage.ALREAD_EXIST_CATEGORY_NICK).log(LogWarnEnum.TS14);
+            throw new ServiceException(ApiMessage.ALREADY_EXIST_CATEGORY_NICK).log(LogWarnEnum.TS14);
         }
 
         if (topicCategoryDAO.getTopicCategoryByName(categoryName) != null) {
-            throw new ServiceException(ApiMessage.ALREAD_EXIST_CATEGORY_NAME).log(LogWarnEnum.TS15);
+            throw new ServiceException(ApiMessage.ALREADY_EXIST_CATEGORY_NAME).log(LogWarnEnum.TS15);
         }
 
         TopicCategoryDO category = new TopicCategoryDO();
