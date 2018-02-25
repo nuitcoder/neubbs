@@ -44,7 +44,7 @@ import java.util.Map;
  *      + 激活账户
  *      + 激活 token 验证
  *      + 图片验证码
- *      + 验证用户输入的验证码
+ *      + 校验验证码
  *      + 忘记密码
  *      + 关注用户
  *
@@ -375,17 +375,17 @@ public final class AccountController {
     }
 
     /**
-     * 验证用户输入的验证码
-     *      - 比较用户输入验证，是否匹配 session 中已随机生成的验证码
+     * 校验验证码
+     *      - 比较用户输入验证，是否匹配 session 中储存 5 位随机验证码
      *
      * @param captcha 用户输入验证码
      * @return ApiJsonDTO 接口JSON字符串
      */
-    @RequestMapping(value = "/check-captcha", method = RequestMethod.GET)
+    @RequestMapping(value = "/validate-captcha", method = RequestMethod.GET)
     public ApiJsonDTO validateCaptcha(@RequestParam(value = "captcha", required = false)String captcha) {
         validationService.check(ParamConst.CAPTCHA, captcha);
 
-        captchaService.compareCaptcha(captcha, httpService.getCaptchaText());
+        captchaService.validate(captcha, httpService.getCaptchaText());
 
         return new ApiJsonDTO().success();
     }

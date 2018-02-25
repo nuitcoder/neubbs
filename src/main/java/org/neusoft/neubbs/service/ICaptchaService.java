@@ -6,7 +6,7 @@ import java.awt.image.BufferedImage;
  * 验证码业务接口
  *      - 获取验证码文本
  *      - 获取验证码图片
- *      - 比较验证码
+ *      - 校验（验证码）
  *
  * @author Suvan
  */
@@ -31,11 +31,11 @@ public interface ICaptchaService {
     BufferedImage getCaptchaImage(String captchaText);
 
     /**
-     * 比较验证码
+     * 校验（验证码）
      *      - 判断验输入验证码，是否匹配已生成的 session 验证码
      *
      * @param inputCaptcha 输入验证码
      * @param sessionCaptcha session验证码
      */
-    void compareCaptcha(String inputCaptcha, String sessionCaptcha);
+    void validate(String inputCaptcha, String sessionCaptcha);
 }

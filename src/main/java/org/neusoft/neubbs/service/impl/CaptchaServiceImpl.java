@@ -36,13 +36,13 @@ public class CaptchaServiceImpl implements ICaptchaService {
     }
 
     @Override
-    public void compareCaptcha(String inputCaptcha, String sessionCaptcha) {
-        //no generate captcha, session does not exist
+    public void validate(String inputCaptcha, String sessionCaptcha) {
+        //no generate captcha, session not exist captcha text
         if (sessionCaptcha == null) {
             throw new ServiceException(ApiMessage.NO_GENERATE_CAPTCHA).log(LogWarnEnum.US8);
         }
 
-        //captcha does not match
+        //input captcha not match session captcha(user input error)
         if (!inputCaptcha.equals(sessionCaptcha)) {
             throw new ServiceException(ApiMessage.CAPTCHA_INCORRECT).log(LogWarnEnum.US9);
         }

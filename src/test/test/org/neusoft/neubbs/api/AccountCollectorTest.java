@@ -1,7 +1,6 @@
 package test.org.neusoft.neubbs.api;
 
 import com.alibaba.fastjson.JSON;
-import com.google.code.kaptcha.Producer;
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Before;
@@ -27,7 +26,6 @@ import org.neusoft.neubbs.utils.SecretUtil;
 import org.neusoft.neubbs.utils.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.ContextHierarchy;
@@ -35,7 +33,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -46,7 +43,6 @@ import org.springframework.web.util.NestedServletException;
 
 import javax.servlet.http.Cookie;
 import javax.transaction.Transactional;
-import javax.ws.rs.HttpMethod;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Map;
@@ -64,6 +60,7 @@ import java.util.Set;
  *      - 测试 /api/account/update-email
  *      - 测试 /api/account/activate
  *      - 测试 /api/account/captcha
+ *      - 测试 /api/account/validate-captcha
  *
  * 【注意】 设置配置文件(需设置 ApplicationContext.xml 和 mvc.xm,否则会报错)
  */
@@ -89,7 +86,6 @@ public class AccountCollectorTest {
     @Autowired
     private IUserActionDAO userActionDAO;
 
-    private final String API_ACCOUNT_CHECK_CAPTCHA = "/api/account/check-captcha";
     private final String API_ACCOUNT_FORGET_PASSWORD = "/api/account/forget-password";
 
     static class Param {
@@ -1028,7 +1024,7 @@ public class AccountCollectorTest {
      */
     @Test
     @Transactional
-    public void testValidateActivateToken() throws Exception {
+    public void testValidateActivateTokenException() throws Exception {
         //build request param token
         String [] parmas = {
                 "1234", "awsfasdf", "asdfasdf-qweqwe", "13412-ASDFAF-qqqq",
@@ -1068,7 +1064,7 @@ public class AccountCollectorTest {
      *      - 自动生成图片验证码成功
      */
     @Test
-    public void generateCaptchaPicture() throws Exception {
+    public void generateCaptchaPictureSuccess() throws Exception {
         //generate web page captcha picture and validate
         MvcResult result = mockMvc.perform(
                 MockMvcRequestBuilders.get("/api/account/captcha")
@@ -1084,19 +1080,20 @@ public class AccountCollectorTest {
     }
 
     /**
-     * 【/api/account/check-captcha】 test check user input captcha match success
-     *      - need session save key-value
+     * 测试 /api/account/check-captcha
+     *      - 检查用户输入验证码匹配成功
+     *          - 设置 session 属性，再传入用户输入验证码
      */
     @Test
-    public void testCheckUserInputCaptchaMatchSuccess() throws Exception {
-        //web container get captcha service
+    public void testValidateCaptchaSuccess() throws Exception {
+        //get captcha service bean object
         ICaptchaService captchaService = (ICaptchaService) this.webApplicationContext.getBean("captchaServiceImpl");
         String captcha = captchaService.getCaptchaText();
 
         mockMvc.perform(
-                MockMvcRequestBuilders.get(API_ACCOUNT_CHECK_CAPTCHA)
+                MockMvcRequestBuilders.get("/api/account/validate-captcha")
                     .sessionAttr(SetConst.SESSION_CAPTCHA, captcha)
-                    .param("captcha", captcha)
+                    .param(ParamConst.CAPTCHA, captcha)
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
          .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
          .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
@@ -1105,56 +1102,53 @@ public class AccountCollectorTest {
     }
 
     /**
-     * 【/api/account/check-captcha】 test check user input captcha match throw exception
-     *      - request param error, no norm
-     *      - no to generate captcha picture, session no captcha text
+     * 测试 /api/account/check-captcha
+     *      - 检查用户输入验证码匹配异常
+     *          - [✔] request param error, no norm
+     *          - [✔] not pass '/api/account/captcha' api to generate captcha picture, session not exist captcha text
      */
     @Test
-    public void testCheckUserInputCaptchaMatchThrowException() throws Exception {
-       String[] params = {null, "123", "abs", "ABC", "12asdfABN", "*0-=123", "55555"};
+    public void testValidateCaptchaException() throws Exception {
+        //build captcha
+        ICaptchaService captchaService = (ICaptchaService) webApplicationContext.getBean("captchaServiceImpl");
+        String captcha = captchaService.getCaptchaText();
 
-       for (String param: params) {
-           System.out.println("input captcha=" + param);
+        //1. request param error and 2. input captcha error
+        String[] params = {null, "123", "abc", "ABC", "123abcABC", "0*=123", "55555"};
+        for (String param: params) {
+            System.out.println("input captcha = " + param);
 
-           try {
-               mockMvc.perform(
-                       MockMvcRequestBuilders.get(API_ACCOUNT_CHECK_CAPTCHA).param("captcha", param)
-               ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(ApiMessage.CAPTCHA_INCORRECT))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
+            try {
+                mockMvc.perform(
+                        MockMvcRequestBuilders.get("/api/account/validate-captcha")
+                                .sessionAttr(SetConst.SESSION_CAPTCHA, captcha)
+                                .param(ParamConst.CAPTCHA, param)
+                   ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(ApiMessage.CAPTCHA_INCORRECT))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.model").value(CoreMatchers.notNullValue()));
 
-           } catch (NestedServletException ne) {
-               Assert.assertThat(ne.getRootCause(),
-                       CoreMatchers.anyOf(
-                               CoreMatchers.instanceOf(ParamsErrorException.class),
-                               CoreMatchers.instanceOf(ServiceException.class)
-                       )
-               );
-           }
+               } catch (NestedServletException ne) {
+                   Assert.assertThat(ne.getRootCause(),
+                           CoreMatchers.anyOf(
+                                   CoreMatchers.instanceOf(ParamsErrorException.class),
+                                   CoreMatchers.instanceOf(ServiceException.class)
+                           )
+                   );
+               }
        }
 
-       //test no to generate captcha picture, session no captcha text
-       Producer captchaProducer = (Producer) webApplicationContext.getBean("captchaProducer");
-       RequestBuilder request = servletContext -> {
-           MockHttpServletRequest mockRequest = new MockHttpServletRequest();
-
-           mockRequest.setMethod(HttpMethod.GET);
-           mockRequest.setRequestURI(API_ACCOUNT_CHECK_CAPTCHA);
-           mockRequest.getSession().setAttribute(SetConst.SESSION_CAPTCHA, captchaProducer.createText());
-           mockRequest.setParameter("captcha", "ksA23");
-
-           return mockRequest;
-       };
-
+       //not pass '/api/account/validate' api to generate captcha picture, session not exist captcha text
        try {
-           mockMvc.perform(request)
-                        .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
-                        .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(ApiMessage.CAPTCHA_INCORRECT))
-                        .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
+           mockMvc.perform(
+                   MockMvcRequestBuilders.get("/api/account/validate-captcha")
+                        .param(ParamConst.CAPTCHA, captcha)
+           ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(ApiMessage.CAPTCHA_INCORRECT))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.model").value(CoreMatchers.notNullValue()));
 
        } catch (NestedServletException ne) {
-           Assert.assertSame(ne.getRootCause().getClass(), ServiceException.class);
-           Assert.assertEquals(ne.getRootCause().getMessage(), ApiMessage.CAPTCHA_INCORRECT);
+           Assert.assertSame(ServiceException.class, ne.getRootCause().getClass());
+           Assert.assertEquals(ApiMessage.NO_GENERATE_CAPTCHA, ne.getRootCause().getMessage());
        }
 
        this.printSuccessMessage();
