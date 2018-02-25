@@ -61,6 +61,7 @@ import java.util.Set;
  *      - 测试 /api/account/activate
  *      - 测试 /api/account/captcha
  *      - 测试 /api/account/validate-captcha
+ *      - 测试 /api/account/forget-password
  *
  * 【注意】 设置配置文件(需设置 ApplicationContext.xml 和 mvc.xm,否则会报错)
  */
@@ -85,8 +86,6 @@ public class AccountCollectorTest {
 
     @Autowired
     private IUserActionDAO userActionDAO;
-
-    private final String API_ACCOUNT_FORGET_PASSWORD = "/api/account/forget-password";
 
     static class Param {
         String key;
@@ -921,7 +920,7 @@ public class AccountCollectorTest {
             Thread.sleep(1000);
             System.out.println("already wait " + (timer++) + "s");
         }
-        System.out.println("send email '" + email + "'success !");
+        System.out.println("send activate mail to '" + email + "'success !");
 
         this.printSuccessMessage();
     }
@@ -1155,56 +1154,63 @@ public class AccountCollectorTest {
     }
 
     /**
-     * 【/api/account/forget-password】 test user forget password send email update new temp password success
+     * 测试 /api/account/forget-password
+     *      - 忘记密码成功
+     *          - 重新设置临时密码，并发送邮件提示
+     *          - 主线程等待，邮件线程发送完毕再继续执行
      */
     @Test
     @Transactional
-    public void testUserForgetPasswordSendEmailUpdateNewTempPasswordSuccess() throws Exception {
+    public void testForgetPasswordSuccess() throws Exception {
         String email = "liushuwei0925@gmail.com";
         String requestBody = "{\"email\":\"" + email + "\"}";
         System.out.println("input request-body:" + requestBody);
 
         mockMvc.perform(
-                MockMvcRequestBuilders.post(API_ACCOUNT_FORGET_PASSWORD)
+                MockMvcRequestBuilders.post("/api/account/forget-password")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(requestBody)
+                    .accept(MediaType.APPLICATION_JSON)
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
          .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
          .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
 
-        //web container get thread poor executor object
+        //wait send mail thread send success
         ThreadPoolTaskExecutor taskExecutor = (ThreadPoolTaskExecutor) webApplicationContext.getBean("taskExecutor");
         int timer = 1;
-        while (taskExecutor.getActiveCount() != 0 || timer < 20) {
+        while (taskExecutor.getActiveCount() > 0 && timer < 60) {
             Thread.sleep(1000);
             System.out.println("already wait " + (timer++) + "s");
         }
+        System.out.println("send alter temporary password mail to '" + email + "' success!");
 
         this.printSuccessMessage();
     }
 
     /**
-     * 【/api/account/forget-password】 test user forget password send email update new temp password throw exception
-     *      - request param error, no norm
-     *      - database exception
+     * 测试 /api/account/forget-password
+     *      - 测试忘记密码异常
+     *          - request param error, no norm
+     *          - service exception
      */
     @Test
     @Transactional
-    public void testUserForgetPasswordSendEmailUpdateNewTempPasswordThrowException() throws Exception {
-        String[] parmas = {null, "test@", "test@neubbs.com"};
+    public void testForgetPasswordException() throws Exception {
+        String[] params = {null, "test@", "test@neubbs.com"};
 
-        for (String param: parmas) {
-            String requestBody = "{\"email\":\"" + param + "\"}";
+        for (String email: params) {
+            String requestBody = "{\"email\":\"" + email + "\"}";
             System.out.println("input request-body: " + requestBody);
 
             try {
                 mockMvc.perform(
-                        MockMvcRequestBuilders.post(API_ACCOUNT_FORGET_PASSWORD)
+                        MockMvcRequestBuilders.post("/api/account/forget-password")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(requestBody)
+                                .accept(MediaType.APPLICATION_JSON)
                 ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
                  .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists())
-                 .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
+                 .andExpect(MockMvcResultMatchers.jsonPath("$.model").value(CoreMatchers.notNullValue()));
 
             } catch (NestedServletException ne) {
                 Assert.assertThat(ne.getRootCause(),
