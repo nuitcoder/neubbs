@@ -40,48 +40,48 @@ public interface IUserActionDAO {
 
     /**
      * 获取用户喜欢话题 id 数组
-     *      - UserActionDO 对象的 likeTopicIdJsonArray 属性
+     *      - 'fua_like_ft_id_array' 字段
      *
      * @param userId 用户id
-     * @return UserActionDO 用户行为对象
+     * @return String 用户喜欢话题id，JSON数组字符串
      */
-    UserActionDO getUserActionLikeTopicIdJsonArray(int userId);
+    String getUserActionLikeTopicIdJsonArray(int userId);
 
     /**
      * 获取用户收藏话题 id 数组
-     *      - UserActionDO 对象的 collectTopicIdJsonArray 属性
+     *      - 'fua_collect_ft_id_array' 字段
      *
      * @param userId 用户id
-     * @return UserActionDO 用户行为对象
+     * @return String 用户收藏话题id，JSON数组字符串
      */
-    UserActionDO getUserActionCollectTopicIdJsonArray(int userId);
+    String getUserActionCollectTopicIdJsonArray(int userId);
 
     /**
      * 获取用户关注话题 id 数组
-     *      - UserActionDO 对象的 attentionTopicIdJsonArray 属性
+     *      - 'fua_attention_ft_id_array' 字段
      *
      * @param userId 用户id
-     * @return UserActionDO 用户行为对象
+     * @return String 用户关注话题id，JSON数组字符串
      */
-    UserActionDO getUserActionAttentionTopicIdJsonArray(int userId);
+    String getUserActionAttentionTopicIdJsonArray(int userId);
 
     /**
      * 获取用户主动关注用户 id 数组
-     *      - UserActionDO 对象的 followingUserIdJsonArray 属性
+     *      - 'fua_following_fu_id_array' 字段
      *
      * @param userId 用户id
-     * @return UserActionDO 用户行为对象
+     * @return String 主动关注用户id，JSON数组字符串
      */
-    UserActionDO getUserActionFollowingUserIdJsonArray(int userId);
+    String getUserActionFollowingUserIdJsonArray(int userId);
 
     /**
      * 获取用户被关注用户 id 数组
-     *      - UserActionDO 对象的 followedUserIdJsonArray 属性
+     *      - 'fua_followed_fu_id_array' 字段
      *
      * @param userId 用户id
-     * @return UserActionDO 用户行为对象
+     * @return String 被关注用户id，JSON数组字符串
      */
-    UserActionDO getUserActionFollowedUserIdJsonArray(int userId);
+    String getUserActionFollowedUserIdJsonArray(int userId);
 
     /**
      * 更新用户喜欢话题 id 数组，JSON 数组末尾追加 1 个话题 id

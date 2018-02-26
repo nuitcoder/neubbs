@@ -22,20 +22,20 @@
                fua_attention_ft_id_array, fua_following_fu_id_array, fua_followed_fu_id_array
         FROM forum_user_action WHERE fu_id = #{param1, jdbcType = INTEGER}
     </select>
-    <select id="getUserActionLikeTopicIdJsonArray" parameterType="java.lang.Integer" resultMap="UserActionMap">
-        SELECT fu_id, fua_like_ft_id_array FROM forum_user_action WHERE fu_id = #{param1, jdbcType = INTEGER}
+    <select id="getUserActionLikeTopicIdJsonArray" parameterType="java.lang.Integer" resultType="java.lang.String">
+        SELECT fua_like_ft_id_array FROM forum_user_action WHERE fu_id = #{param1, jdbcType = INTEGER}
     </select>
-    <select id="getUserActionCollectTopicIdJsonArray" parameterType="java.lang.Integer" resultMap="UserActionMap">
-        SELECT fu_id, fua_collect_ft_id_array FROM forum_user_action WHERE fu_id = #{param1, jdbcType = INTEGER}
+    <select id="getUserActionCollectTopicIdJsonArray" parameterType="java.lang.Integer" resultType="java.lang.String">
+        SELECT fua_collect_ft_id_array FROM forum_user_action WHERE fu_id = #{param1, jdbcType = INTEGER}
     </select>
-    <select id="getUserActionAttentionTopicIdJsonArray" parameterType="java.lang.Integer" resultMap="UserActionMap">
-        SELECT fu_id, fua_attention_ft_id_array FROM forum_user_action WHERE fu_id = #{param1, jdbcType = INTEGER}
+    <select id="getUserActionAttentionTopicIdJsonArray" parameterType="java.lang.Integer" resultType="java.lang.String">
+        SELECT fua_attention_ft_id_array FROM forum_user_action WHERE fu_id = #{param1, jdbcType = INTEGER}
     </select>
-    <select id="getUserActionFollowingUserIdJsonArray" parameterType="java.lang.Integer" resultMap="UserActionMap">
-        SELECT fu_id, fua_following_fu_id_array FROM forum_user_action WHERE fu_id = #{param1, jdbcType = INTEGER}
+    <select id="getUserActionFollowingUserIdJsonArray" parameterType="java.lang.Integer" resultType="java.lang.String">
+        SELECT fua_following_fu_id_array FROM forum_user_action WHERE fu_id = #{param1, jdbcType = INTEGER}
     </select>
-    <select id="getUserActionFollowedUserIdJsonArray" parameterType="java.lang.Integer" resultMap="UserActionMap">
-        SELECT fu_id, fua_followed_fu_id_array FROM forum_user_action WHERE fu_id = #{param1, jdbcType = INTEGER}
+    <select id="getUserActionFollowedUserIdJsonArray" parameterType="java.lang.Integer" resultType="java.lang.String">
+        SELECT fua_followed_fu_id_array FROM forum_user_action WHERE fu_id = #{param1, jdbcType = INTEGER}
     </select>
 
     <update id="updateLikeTopicIdJsonArrayByOneTopicIdToAppendEnd">

@@ -855,7 +855,7 @@ public class TopicServiceImpl implements ITopicService {
      * @return String 用户喜欢话题idJSON数组字符串
      */
     private String getUserLikeTopicIdJsonArrayStringByUserId(int userId) {
-        return userActionDAO.getUserActionLikeTopicIdJsonArray(userId).getLikeTopicIdJsonArray();
+        return userActionDAO.getUserActionLikeTopicIdJsonArray(userId);
     }
 
     /**
@@ -865,7 +865,7 @@ public class TopicServiceImpl implements ITopicService {
      * @return String 用户收藏话题idJSON数组字符串
      */
     private String getUserCollectTopicIdJsonArrayStringByUserId(int userId) {
-        return userActionDAO.getUserActionCollectTopicIdJsonArray(userId).getCollectTopicIdJsonArray();
+        return userActionDAO.getUserActionCollectTopicIdJsonArray(userId);
     }
 
     /**
@@ -875,7 +875,7 @@ public class TopicServiceImpl implements ITopicService {
      * @return String 用户关注话题idJSON数组字符串
      */
     private String getUserAttentionTopicIdJsonArrayStringByUserId(int userId) {
-        return userActionDAO.getUserActionAttentionTopicIdJsonArray(userId).getAttentionTopicIdJsonArray();
+        return userActionDAO.getUserActionAttentionTopicIdJsonArray(userId);
     }
 
     /**

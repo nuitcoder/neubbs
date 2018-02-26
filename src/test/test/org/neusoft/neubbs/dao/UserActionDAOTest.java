@@ -90,7 +90,7 @@ public class UserActionDAOTest {
         UserActionDO userActionDO = this.saveTestUserActionDOToDatabase();
 
         int userId = userActionDO.getUserId();
-        Assert.assertNotNull(userActionDAO.getUserActionLikeTopicIdJsonArray(userId).getLikeTopicIdJsonArray());
+        Assert.assertEquals("[]" ,userActionDAO.getUserActionLikeTopicIdJsonArray(userId));
 
         System.out.println("get userId=" + userId + " like topic json array success!");
     }
@@ -104,7 +104,7 @@ public class UserActionDAOTest {
         UserActionDO userActionDO = this.saveTestUserActionDOToDatabase();
 
         int userId = userActionDO.getUserId();
-        Assert.assertNotNull(userActionDAO.getUserActionCollectTopicIdJsonArray(userId).getCollectTopicIdJsonArray());
+        Assert.assertEquals("[]", userActionDAO.getUserActionCollectTopicIdJsonArray(userId));
 
         System.out.println("get userId=" + userId + "collect topic json array success!");
     }
@@ -119,7 +119,7 @@ public class UserActionDAOTest {
         UserActionDO userActionDO = this.saveTestUserActionDOToDatabase();
 
         int userId = userActionDO.getUserId();
-        Assert.assertNotNull(userActionDAO.getUserActionAttentionTopicIdJsonArray(userId).getAttentionTopicIdJsonArray());
+        Assert.assertEquals("[]", userActionDAO.getUserActionAttentionTopicIdJsonArray(userId));
 
         System.out.println("get userId=" + userId + " attention topic json array success!");
     }
@@ -133,7 +133,7 @@ public class UserActionDAOTest {
         UserActionDO userActionDO = this.saveTestUserActionDOToDatabase();
 
         int userId = userActionDO.getUserId();
-        Assert.assertNotNull(userActionDAO.getUserActionFollowingUserIdJsonArray(userId).getFollowingUserIdJsonArray());
+        Assert.assertEquals("[]" ,userActionDAO.getUserActionFollowingUserIdJsonArray(userId));
 
         System.out.println("get userId=" + userId + " following user json array success!");
     }
@@ -147,7 +147,7 @@ public class UserActionDAOTest {
         UserActionDO userActionDO = this.saveTestUserActionDOToDatabase();
 
         int userId = userActionDO.getUserId();
-        Assert.assertNotNull(userActionDAO.getUserActionFollowedUserIdJsonArray(userId).getFollowedUserIdJsonArray());
+        Assert.assertEquals("[]", userActionDAO.getUserActionFollowedUserIdJsonArray(userId));
 
         System.out.println("get userId=" + userId + " followed user json array success!");
     }

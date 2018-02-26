@@ -1120,7 +1120,7 @@ public class TopicControllerTest {
 
         //database
         int cookieUserId = 6;
-        String userCollectTopicIdJsonArrayString = userActionDAO.getUserActionCollectTopicIdJsonArray(cookieUserId).getCollectTopicIdJsonArray();
+        String userCollectTopicIdJsonArrayString = userActionDAO.getUserActionCollectTopicIdJsonArray(cookieUserId);
         String topicCollectUserIdJsonArrayString = topicActionDAO.getTopicActionCollectUserIdJsonArray(topicId).getCollectUserIdJsonArray();
 
         Assert.assertNotEquals(-1 , JSON.parseArray(userCollectTopicIdJsonArrayString).indexOf(topicId));

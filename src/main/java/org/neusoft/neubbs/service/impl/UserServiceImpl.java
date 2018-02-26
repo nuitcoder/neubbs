@@ -622,7 +622,7 @@ public class UserServiceImpl implements IUserService {
      * @return String 主动关注用户idJSON数组字符串
      */
     private String getUserFollowingUserIdJsonArrayStringByUserId(int userId) {
-        return userActionDAO.getUserActionFollowingUserIdJsonArray(userId).getFollowingUserIdJsonArray();
+        return userActionDAO.getUserActionFollowingUserIdJsonArray(userId);
     }
 
     /**
@@ -633,7 +633,7 @@ public class UserServiceImpl implements IUserService {
      * @return String 被关注用户idJSON数组字符串
      */
     private String getUserFollowedUserIdJsonArrayStringByUserId(int userId) {
-        return userActionDAO.getUserActionFollowedUserIdJsonArray(userId).getFollowedUserIdJsonArray();
+        return userActionDAO.getUserActionFollowedUserIdJsonArray(userId);
     }
 
     /*
