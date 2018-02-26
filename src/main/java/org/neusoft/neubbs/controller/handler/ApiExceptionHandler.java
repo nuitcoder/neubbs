@@ -32,15 +32,20 @@ public class ApiExceptionHandler implements HandlerExceptionResolver {
     @Override
     public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response,
                                          Object o, Exception e) {
+
         //Exception had to statement @ApiException
         if (e.getClass().getAnnotation(ApiException.class) != null) {
             this.outFailJsonMessage(response, e.getMessage());
             this.printApiExceptionToLocalLog(e);
+        } else if (e instanceof ClassCastException) {
+            this.outFailJsonMessage(response, ApiMessage.PARAM_ERROR);
+            logger.warn("访问 " + request.getRequestURI() + " 接口，传入参数类型错误！请参考《后端 API 交互协议》文档！");
         } else {
             //output unknown error
             this.outFailJsonMessage(response, ApiMessage.UNKNOWN_ERROR);
-            e.printStackTrace();
+            logger.warn("服务端出现我未知错误, 已邮件通知开发人员开发人员尽快处理！");
         }
+
         return null;
     }
 
