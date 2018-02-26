@@ -62,6 +62,7 @@ import java.util.Set;
  *      - 测试 /api/account/captcha
  *      - 测试 /api/account/validate-captcha
  *      - 测试 /api/account/forget-password
+ *      - 测试 /api/account/following
  *
  * 【注意】 设置配置文件(需设置 ApplicationContext.xml 和 mvc.xm,否则会报错)
  */
@@ -1190,8 +1191,8 @@ public class AccountCollectorTest {
     /**
      * 测试 /api/account/forget-password
      *      - 测试忘记密码异常
-     *          - request param error, no norm
-     *          - service exception
+     *          - [✔] request param error, no norm
+     *          - [✔] service exception
      */
     @Test
     @Transactional
@@ -1220,6 +1221,120 @@ public class AccountCollectorTest {
                         )
                 );
             }
+        }
+
+        this.printSuccessMessage();
+    }
+
+    /**
+     * 测试 /api/account/following
+     *      - 测试关注用户成功
+     *          - 【自动变化】未关注 -> 关注，关注 -> 未关注
+     *      - 需要权限：@LoginAuthorization，@AccountActivation
+     */
+    @Test
+    @Transactional
+    public void testFollowingUserSuccess() throws Exception {
+        int userId = 1;
+        String requestBody = "{" + this.getJsonField("userid", userId) + "}";
+        System.out.println("input request-body = " + requestBody);
+
+        //get IUserActionDAO Object bean
+        IUserActionDAO userActionDAO = (IUserActionDAO) webApplicationContext.getBean("IUserActionDAO");
+
+        mockMvc.perform(
+               MockMvcRequestBuilders.post("/api/account/following")
+                       .cookie(this.getAlreadyLoginUserCookie())
+                       .contentType(MediaType.APPLICATION_JSON)
+                       .content(requestBody)
+                       .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model.followingUserId").isArray());
+
+        //validate database(id = 6 -> following -> id = 1)
+        Assert.assertEquals("[1]", userActionDAO.getUserActionFollowingUserIdJsonArray(6));
+        Assert.assertEquals("[6]", userActionDAO.getUserActionFollowedUserIdJsonArray(1));
+
+         mockMvc.perform(
+               MockMvcRequestBuilders.post("/api/account/following")
+                       .cookie(this.getAlreadyLoginUserCookie())
+                       .contentType(MediaType.APPLICATION_JSON)
+                       .content(requestBody)
+                       .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model.followingUserId").isArray());
+
+        //validate database(id = 6 -> cancel following -> id = 1)
+        Assert.assertEquals("[]", userActionDAO.getUserActionFollowingUserIdJsonArray(6));
+        Assert.assertEquals("[]", userActionDAO.getUserActionFollowedUserIdJsonArray(1));
+
+        this.printSuccessMessage();
+    }
+
+    /**
+     * 测试 /api/account/following
+     *      - 测试关注用户异常
+     *          - [✔] no permission
+     *              - no login
+     *              - the account not activated
+     *          - [✔] request param error, no norm
+     *          - [✔] server exception
+     *              - following user no exist
+     */
+    @Test
+    @Transactional
+    public void testFollowingUserException() throws Exception {
+        //no login
+        this.testApiThrowNoPermissionException("/api/account/following", RequestMethod.POST, null);
+
+        //the account not activate
+        this.testApiThrowNoPermissionException("/api/account/following", RequestMethod.POST, this.getNoActivatedUserDO());
+
+        //request param error, no norm
+        String[] params = {null, "kkk", "****", "123test", "888888888888888888"};
+        for (String userId: params) {
+            String requestBody = "{" + this.getJsonField("userid", userId) + "}";
+            System.out.println("input request-body = " + requestBody);
+
+            try {
+                mockMvc.perform(
+                        MockMvcRequestBuilders.post("/api/account/following")
+                                .cookie(this.getAlreadyLoginUserCookie())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(requestBody)
+                                .accept(MediaType.APPLICATION_JSON)
+                ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
+                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(ApiMessage.PARAM_ERROR))
+                 .andExpect(MockMvcResultMatchers.jsonPath("$.model").value(CoreMatchers.notNullValue()));
+
+            } catch (NestedServletException ne) {
+                Assert.assertThat(ne.getRootCause(),
+                        CoreMatchers.anyOf(
+                                CoreMatchers.instanceOf(ParamsErrorException.class),
+                                CoreMatchers.instanceOf(ClassCastException.class)
+                        )
+                );
+            }
+        }
+
+        //service exception
+        try {
+            mockMvc.perform(
+                    MockMvcRequestBuilders.post("/api/account/following")
+                            .cookie(this.getAlreadyLoginUserCookie())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("{\"userid\":111111}")
+                            .accept(MediaType.APPLICATION_JSON)
+            ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
+             .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(ApiMessage.NO_USER))
+             .andExpect(MockMvcResultMatchers.jsonPath("$.model").value(CoreMatchers.notNullValue()));
+        } catch (NestedServletException ne) {
+            Assert.assertTrue(ne.getRootCause() instanceof ServiceException);
+            Assert.assertEquals(ApiMessage.NO_USER, ne.getRootCause().getMessage());
         }
 
         this.printSuccessMessage();
