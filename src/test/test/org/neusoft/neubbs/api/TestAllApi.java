@@ -10,7 +10,7 @@ import org.junit.runners.Suite;
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        AccountCollectorTest.class,
+        AccountControllerTest.class,
         CountControllerTest.class,
         FileControllerTest.class,
         TopicControllerTest.class

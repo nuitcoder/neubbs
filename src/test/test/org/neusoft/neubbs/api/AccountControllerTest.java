@@ -1,6 +1,5 @@
 package test.org.neusoft.neubbs.api;
 
-import com.alibaba.fastjson.JSON;
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Before;
@@ -33,7 +32,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -41,12 +39,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.util.NestedServletException;
 
-import javax.servlet.http.Cookie;
 import javax.transaction.Transactional;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Account api 测试
@@ -72,12 +66,14 @@ import java.util.Set;
         @ContextConfiguration(locations = {"classpath:spring-context.xml"}),
         @ContextConfiguration(locations = {"classpath:spring-mvc.xml"}),
 })
-public class AccountCollectorTest {
+public class AccountControllerTest {
 
     @Autowired
     private WebApplicationContext webApplicationContext;
 
     private MockMvc mockMvc;
+
+    private ApiTestUtil util;
 
     @Autowired
     private IUserService userService;
@@ -116,12 +112,17 @@ public class AccountCollectorTest {
      */
     @Before
     public void setup() {
+        //prevent execute this api test class, appear unexpected exception
+        DynamicSwitchDataSourceHandler.setDataSource(SetConst.LOCALHOST_DATA_SOURCE_MYSQL);
+
         //method 1
         this.webApplicationContext.getServletContext().setAttribute(ParamConst.LOGIN_USER, 0);
         this.mockMvc = MockMvcBuilders
                 .webAppContextSetup(this.webApplicationContext)
                 .addFilter(new ApiFilter())
                 .build();
+
+        this.util = ApiTestUtil.getInstance(mockMvc);
 
         //method 2, custom default environment
         //AccountController accountController = (AccountController) webApplicationContext.getBean("accountController");
@@ -161,13 +162,13 @@ public class AccountCollectorTest {
              .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
                     .andReturn();
 
-            this.isExistKeyItems(result,
+            util.isExistKeyItems(result,
                     "email", "sex", "birthday", "position", "description",
                     "avator", "state", "createtime", "userid", "username",
                     "following", "followed", "like", "collect", "attention", "topic", "reply");
         }
 
-        this.printSuccessMessage();
+        util.printSuccessMessage();
     }
 
     /**
@@ -191,7 +192,7 @@ public class AccountCollectorTest {
             Assert.assertEquals(throwable.getMessage(), ApiMessage.NO_USER);
         }
 
-        this.printSuccessMessage();
+        util.printSuccessMessage();
     }
 
     /**
@@ -233,7 +234,7 @@ public class AccountCollectorTest {
             }
         }
 
-        this.printSuccessMessage();
+        util.printSuccessMessage();
     }
 
     /**
@@ -250,7 +251,7 @@ public class AccountCollectorTest {
          .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
          .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
 
-        this.printSuccessMessage();
+        util.printSuccessMessage();
     }
 
     /**
@@ -285,7 +286,7 @@ public class AccountCollectorTest {
             }
         }
 
-        this.printSuccessMessage();
+        util.printSuccessMessage();
     }
 
     /**
@@ -301,7 +302,7 @@ public class AccountCollectorTest {
          .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
          .andExpect(MockMvcResultMatchers.jsonPath("$.model").value(CoreMatchers.notNullValue()));
 
-        this.printSuccessMessage();
+        util.printSuccessMessage();
     }
 
     /**
@@ -334,7 +335,7 @@ public class AccountCollectorTest {
             }
         }
 
-        this.printSuccessMessage();
+        util.printSuccessMessage();
     }
 
     /**
@@ -353,7 +354,7 @@ public class AccountCollectorTest {
          .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
          .andExpect(MockMvcResultMatchers.jsonPath("$.model").value(CoreMatchers.notNullValue()));
 
-        this.printSuccessMessage();
+        util.printSuccessMessage();
     }
 
     /**
@@ -385,7 +386,7 @@ public class AccountCollectorTest {
             }
         }
 
-        this.printSuccessMessage();
+        util.printSuccessMessage();
     }
 
     /**
@@ -414,8 +415,8 @@ public class AccountCollectorTest {
          .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
             .andReturn();
 
-        this.isExistKeyItems(result, "state", "authentication");
-        this.printSuccessMessage();
+        util.isExistKeyItems(result, "state", "authentication");
+        util.printSuccessMessage();
     }
 
     /**
@@ -459,7 +460,7 @@ public class AccountCollectorTest {
             }
         }
 
-        this.printSuccessMessage();
+        util.printSuccessMessage();
     }
 
     /**
@@ -471,13 +472,13 @@ public class AccountCollectorTest {
     public void testLogoutAccountSuccess() throws Exception {
         mockMvc.perform(
                 MockMvcRequestBuilders.get("/api/account/logout")
-                        .cookie(this.getAlreadyLoginUserCookie())
+                        .cookie(util.getAlreadyLoginUserCookie())
                         .accept(MediaType.APPLICATION_JSON)
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
          .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
          .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
 
-        this.printSuccessMessage();
+        util.printSuccessMessage();
     }
 
     /**
@@ -500,7 +501,7 @@ public class AccountCollectorTest {
             Assert.assertEquals(ne.getRootCause().getMessage(), ApiMessage.NO_PERMISSION);
         }
 
-        this.printSuccessMessage();
+        util.printSuccessMessage();
     }
 
     /**
@@ -529,7 +530,7 @@ public class AccountCollectorTest {
          .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
             .andReturn();
 
-        this.isExistKeyItems(result,
+        util.isExistKeyItems(result,
                 "email", "sex", "birthday", "position", "description",
                 "avator", "state", "createtime", "userid", "username"
         );
@@ -541,7 +542,7 @@ public class AccountCollectorTest {
         //so need to remove user personal directory in ftp server, because register account automatic create
         FtpUtil.deleteDirectory("/user/" + user.getId() + "-" + username);
 
-        this.printSuccessMessage();
+        util.printSuccessMessage();
     }
 
     /**
@@ -589,7 +590,7 @@ public class AccountCollectorTest {
             }
         }
 
-        this.printSuccessMessage();
+        util.printSuccessMessage();
     }
 
 
@@ -606,15 +607,15 @@ public class AccountCollectorTest {
         String newBirthday = "1996-09-25";
         String newPosition = "Neusoft School";
         String newDescription = "hello neubbs";
-        String requestBody = "{" + this.getJsonField("sex", newSex) + ", "
-                + this.getJsonField("birthday", newBirthday) + ", "
-                + this.getJsonField("position", newPosition) + ", "
-                + this.getJsonField("description", newDescription) + "}";
+        String requestBody = "{" + util.getJsonField("sex", newSex) + ", "
+                + util.getJsonField("birthday", newBirthday) + ", "
+                + util.getJsonField("position", newPosition) + ", "
+                + util.getJsonField("description", newDescription) + "}";
         System.out.println("input request-body information: " + requestBody);
 
         MvcResult result = mockMvc.perform(
                 MockMvcRequestBuilders.post("/api/account/update-profile")
-                        .cookie(this.getAlreadyLoginUserCookie())
+                        .cookie(util.getAlreadyLoginUserCookie())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody)
                         .accept(MediaType.APPLICATION_JSON)
@@ -627,11 +628,11 @@ public class AccountCollectorTest {
          .andExpect(MockMvcResultMatchers.jsonPath("$.model.description").value(newDescription))
                 .andReturn();
 
-        this.isExistKeyItems(result,
+        util.isExistKeyItems(result,
                 "email", "sex", "birthday", "position", "description",
                 "avator", "state", "createtime", "userid", "username");
 
-        this.printSuccessMessage();
+        util.printSuccessMessage();
     }
 
     /**
@@ -647,10 +648,10 @@ public class AccountCollectorTest {
         String apiUrl = "/api/account/update-profile";
 
         //no login
-        this.testApiThrowNoPermissionException(apiUrl, RequestMethod.POST, null);
+        util.testApiThrowNoPermissionException(apiUrl, RequestMethod.POST, null);
 
         //account no activated
-        this.testApiThrowNoPermissionException(apiUrl, RequestMethod.POST, this.getNoActivatedUserDO());
+        util.testApiThrowNoPermissionException(apiUrl, RequestMethod.POST, util.getNoActivatedUserDO());
 
         //request
         String[][] params = {
@@ -663,16 +664,16 @@ public class AccountCollectorTest {
             String newBirthday = param[1];
             String newPosition = param[2];
             String newDescription = param[3];
-            String requestBody = "{" + this.getJsonField("sex", newSex) + ", "
-                    + this.getJsonField("birthday", newBirthday) + ", "
-                    + this.getJsonField("position", newPosition) + ", "
-                    + this.getJsonField("description", newDescription) + "}";
+            String requestBody = "{" + util.getJsonField("sex", newSex) + ", "
+                    + util.getJsonField("birthday", newBirthday) + ", "
+                    + util.getJsonField("position", newPosition) + ", "
+                    + util.getJsonField("description", newDescription) + "}";
             System.out.println("input request-body information: " + requestBody);
 
             try {
                 mockMvc.perform(
                         MockMvcRequestBuilders.post("/api/account/update-profile")
-                                .cookie(this.getAlreadyLoginUserCookie())
+                                .cookie(util.getAlreadyLoginUserCookie())
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(requestBody)
                                 .accept(MediaType.APPLICATION_JSON)
@@ -708,7 +709,7 @@ public class AccountCollectorTest {
 
         mockMvc.perform(
                 MockMvcRequestBuilders.post("/api/account/update-password")
-                        .cookie(this.getAlreadyLoginUserCookie())
+                        .cookie(util.getAlreadyLoginUserCookie())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody)
                         .accept(MediaType.APPLICATION_JSON)
@@ -721,7 +722,7 @@ public class AccountCollectorTest {
         String secretPassword = SecretUtil.encryptMd5(SecretUtil.encryptMd5(newPassword) + newPassword);
         Assert.assertEquals(secretPassword, user.getPassword());
 
-        this.printSuccessMessage();
+        util.printSuccessMessage();
     }
 
     /**
@@ -737,16 +738,16 @@ public class AccountCollectorTest {
     @Transactional
     public void testUserUpdatePasswordThrowException() throws Exception {
         // no login
-        this.testApiThrowNoPermissionException("/api/account/update-password", RequestMethod.POST, null);
+        util.testApiThrowNoPermissionException("/api/account/update-password", RequestMethod.POST, null);
 
         //account no activated
-        this.testApiThrowNoPermissionException("/api/account/update-password", RequestMethod.POST, this.getNoActivatedUserDO());
+        util.testApiThrowNoPermissionException("/api/account/update-password", RequestMethod.POST, util.getNoActivatedUserDO());
 
         //input username no match cookie user
         try {
             mockMvc.perform(
                     MockMvcRequestBuilders.post("/api/account/update-password")
-                        .cookie(this.getOtherAlreadyLoginUserCookie())
+                        .cookie(util.getOtherAlreadyLoginUserCookie())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"username\":\"suvan\",\"password\":\"123456\"}")
                         .accept(MediaType.APPLICATION_JSON)
@@ -775,7 +776,7 @@ public class AccountCollectorTest {
             try {
                 mockMvc.perform(
                         MockMvcRequestBuilders.post("/api/account/update-password")
-                                .cookie(this.getAlreadyLoginUserCookie())
+                                .cookie(util.getAlreadyLoginUserCookie())
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(requestBody)
                 ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
@@ -788,7 +789,7 @@ public class AccountCollectorTest {
             }
         }
 
-        this.printSuccessMessage();
+        util.printSuccessMessage();
     }
 
     /**
@@ -806,7 +807,7 @@ public class AccountCollectorTest {
 
         mockMvc.perform(
                 MockMvcRequestBuilders.post("/api/account/update-email")
-                        .cookie(this.getAlreadyLoginUserCookie())
+                        .cookie(util.getAlreadyLoginUserCookie())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody)
                         .accept(MediaType.APPLICATION_JSON)
@@ -819,7 +820,7 @@ public class AccountCollectorTest {
         Assert.assertNotNull(user);
         Assert.assertEquals(newEmail, user.getEmail());
 
-        this.printSuccessMessage();
+        util.printSuccessMessage();
     }
 
     /**
@@ -834,7 +835,7 @@ public class AccountCollectorTest {
     @Transactional
     public void testUpdateUserEmailException() throws Exception {
         //no login
-        this.testApiThrowNoPermissionException("/api/account/update-email", RequestMethod.POST, null);
+        util.testApiThrowNoPermissionException("/api/account/update-email", RequestMethod.POST, null);
 
         //request param error, no norm
         String[][] params = {
@@ -850,7 +851,7 @@ public class AccountCollectorTest {
             try {
                 mockMvc.perform(
                         MockMvcRequestBuilders.post("/api/account/update-email")
-                            .cookie(this.getAlreadyLoginUserCookie())
+                            .cookie(util.getAlreadyLoginUserCookie())
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(requestBody)
                             .accept(MediaType.APPLICATION_JSON)
@@ -868,7 +869,7 @@ public class AccountCollectorTest {
         try {
             mockMvc.perform(
                     MockMvcRequestBuilders.post("/api/account/update-email")
-                        .cookie(this.getAlreadyLoginUserCookie())
+                        .cookie(util.getAlreadyLoginUserCookie())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"username\":\"otherUser\",\"email\":\"newUser@neubbs.com\"}")
                         .accept(MediaType.APPLICATION_JSON)
@@ -881,7 +882,7 @@ public class AccountCollectorTest {
             Assert.assertEquals(ApiMessage.NO_PERMISSION, ne.getRootCause().getMessage());
         }
 
-        this.printSuccessMessage();
+        util.printSuccessMessage();
     }
 
     /**
@@ -923,7 +924,7 @@ public class AccountCollectorTest {
         }
         System.out.println("send activate mail to '" + email + "'success !");
 
-        this.printSuccessMessage();
+        util.printSuccessMessage();
     }
 
     /**
@@ -983,7 +984,7 @@ public class AccountCollectorTest {
 
         System.out.println("send email exist interval time limit , test success!");
 
-        this.printSuccessMessage();
+        util.printSuccessMessage();
     }
 
     /**
@@ -1011,7 +1012,7 @@ public class AccountCollectorTest {
         //again validate database user activated state
         Assert.assertTrue(userService.getUserInfoByEmail(testUser.getEmail()).getState() == 1);
 
-        this.printSuccessMessage();
+        util.printSuccessMessage();
     }
 
     /**
@@ -1056,7 +1057,7 @@ public class AccountCollectorTest {
             }
         }
 
-        this.printSuccessMessage();
+        util.printSuccessMessage();
     }
 
     /**
@@ -1076,7 +1077,7 @@ public class AccountCollectorTest {
         //verify session attribute
         Assert.assertNotNull(result.getRequest().getSession().getAttribute(SetConst.SESSION_CAPTCHA));
 
-        this.printSuccessMessage();
+        util.printSuccessMessage();
     }
 
     /**
@@ -1098,7 +1099,7 @@ public class AccountCollectorTest {
          .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
          .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
 
-        this.printSuccessMessage();
+        util.printSuccessMessage();
     }
 
     /**
@@ -1151,7 +1152,7 @@ public class AccountCollectorTest {
            Assert.assertEquals(ApiMessage.NO_GENERATE_CAPTCHA, ne.getRootCause().getMessage());
        }
 
-       this.printSuccessMessage();
+       util.printSuccessMessage();
     }
 
     /**
@@ -1185,7 +1186,7 @@ public class AccountCollectorTest {
         }
         System.out.println("send alter temporary password mail to '" + email + "' success!");
 
-        this.printSuccessMessage();
+        util.printSuccessMessage();
     }
 
     /**
@@ -1223,7 +1224,7 @@ public class AccountCollectorTest {
             }
         }
 
-        this.printSuccessMessage();
+        util.printSuccessMessage();
     }
 
     /**
@@ -1236,7 +1237,7 @@ public class AccountCollectorTest {
     @Transactional
     public void testFollowingUserSuccess() throws Exception {
         int userId = 1;
-        String requestBody = "{" + this.getJsonField("userid", userId) + "}";
+        String requestBody = "{" + util.getJsonField("userid", userId) + "}";
         System.out.println("input request-body = " + requestBody);
 
         //get IUserActionDAO Object bean
@@ -1244,7 +1245,7 @@ public class AccountCollectorTest {
 
         mockMvc.perform(
                MockMvcRequestBuilders.post("/api/account/following")
-                       .cookie(this.getAlreadyLoginUserCookie())
+                       .cookie(util.getAlreadyLoginUserCookie())
                        .contentType(MediaType.APPLICATION_JSON)
                        .content(requestBody)
                        .accept(MediaType.APPLICATION_JSON)
@@ -1259,7 +1260,7 @@ public class AccountCollectorTest {
 
          mockMvc.perform(
                MockMvcRequestBuilders.post("/api/account/following")
-                       .cookie(this.getAlreadyLoginUserCookie())
+                       .cookie(util.getAlreadyLoginUserCookie())
                        .contentType(MediaType.APPLICATION_JSON)
                        .content(requestBody)
                        .accept(MediaType.APPLICATION_JSON)
@@ -1272,7 +1273,7 @@ public class AccountCollectorTest {
         Assert.assertEquals("[]", userActionDAO.getUserActionFollowingUserIdJsonArray(6));
         Assert.assertEquals("[]", userActionDAO.getUserActionFollowedUserIdJsonArray(1));
 
-        this.printSuccessMessage();
+        util.printSuccessMessage();
     }
 
     /**
@@ -1289,21 +1290,21 @@ public class AccountCollectorTest {
     @Transactional
     public void testFollowingUserException() throws Exception {
         //no login
-        this.testApiThrowNoPermissionException("/api/account/following", RequestMethod.POST, null);
+        util.testApiThrowNoPermissionException("/api/account/following", RequestMethod.POST, null);
 
         //the account not activate
-        this.testApiThrowNoPermissionException("/api/account/following", RequestMethod.POST, this.getNoActivatedUserDO());
+        util.testApiThrowNoPermissionException("/api/account/following", RequestMethod.POST, util.getNoActivatedUserDO());
 
         //request param error, no norm
         String[] params = {null, "kkk", "****", "123test", "888888888888888888"};
         for (String userId: params) {
-            String requestBody = "{" + this.getJsonField("userid", userId) + "}";
+            String requestBody = "{" + util.getJsonField("userid", userId) + "}";
             System.out.println("input request-body = " + requestBody);
 
             try {
                 mockMvc.perform(
                         MockMvcRequestBuilders.post("/api/account/following")
-                                .cookie(this.getAlreadyLoginUserCookie())
+                                .cookie(util.getAlreadyLoginUserCookie())
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(requestBody)
                                 .accept(MediaType.APPLICATION_JSON)
@@ -1325,7 +1326,7 @@ public class AccountCollectorTest {
         try {
             mockMvc.perform(
                     MockMvcRequestBuilders.post("/api/account/following")
-                            .cookie(this.getAlreadyLoginUserCookie())
+                            .cookie(util.getAlreadyLoginUserCookie())
                             .contentType(MediaType.APPLICATION_JSON)
                             .content("{\"userid\":111111}")
                             .accept(MediaType.APPLICATION_JSON)
@@ -1337,143 +1338,6 @@ public class AccountCollectorTest {
             Assert.assertEquals(ApiMessage.NO_USER, ne.getRootCause().getMessage());
         }
 
-        this.printSuccessMessage();
-    }
-
-    /*
-     * ***********************************************
-     * private method
-     * ***********************************************
-     */
-
-    /**
-     * 打印成功通过 Test 函数消息
-     */
-    public void printSuccessMessage() {
-        String currentExecuteMethod = Thread.currentThread().getStackTrace()[2].getMethodName();
-        System.out.println("***************** 【" + currentExecuteMethod + "()】 " + " pass the test ****************");
-    }
-
-    /**
-     * 获取已经登陆用户 Cookie
-     *      - 设置 Suvan 账户
-     *
-     * @return Cookie 已经登录用户Cookie
-     */
-    public Cookie getAlreadyLoginUserCookie() {
-        UserDO user = new UserDO();
-            user.setId(6);
-            user.setName("suvan");
-            user.setRank("admin");
-            user.setState(SetConst.ACCOUNT_ACTIVATED_STATE);
-
-        return new Cookie(ParamConst.AUTHENTICATION, SecretUtil.generateUserInfoToken(user));
-    }
-
-    /**
-     * 获取未激活的用户对象
-     *
-     * @return UserDO 未激活的用户对象
-     */
-    public UserDO getNoActivatedUserDO() {
-        UserDO user = new UserDO();
-            user.setId(5);
-            user.setName("suvan");
-            user.setRank("user");
-            user.setState(SetConst.ACCOUNT_NO_ACTIVATED_STATE);
-
-        return user;
-    }
-
-    /**
-     * 获取其他已登陆用户的 Cookie
-     *      - 默认是 suvan 用户，则该函数获取获取另外一个用户对象
-     *
-     * @return Cookie 其他已登陆用户的Cookie
-     */
-    public Cookie getOtherAlreadyLoginUserCookie() {
-        UserDO otherUser = new UserDO();
-            otherUser.setId(123);
-            otherUser.setName("noMatchUser");
-            otherUser.setRank("user");
-            otherUser.setState(SetConst.ACCOUNT_ACTIVATED_STATE);
-
-        return new Cookie(ParamConst.AUTHENTICATION, SecretUtil.generateUserInfoToken(otherUser));
-    }
-
-    /**
-     * 生成 JSON 字段
-     *      - 传入单个 key-value，生成 JSON 格式字符串
-     *      - 字符串对象需加 ""， 其他 Object 对象不用
-     *
-     * @param key 键
-     * @param value 值
-     * @return String JSON字段
-     */
-    public String getJsonField(String key, Object value) {
-        if (value == null) {
-            value = null;
-        } else if (value instanceof String) {
-            value = "\"" + value + "\"";
-        }
-        return "\"" + key + "\":" + value;
-    }
-
-    /**
-     * 检查存在 Key 选项
-     *      - 检测 MvcResult 的 mode 字段，存在指定 Key items
-     *
-     * @param result MvcResult 结果集
-     * @param keyItems 多个 Key Item（可变参数）
-     * @throws UnsupportedEncodingException 不支持编码异常
-     */
-    private void isExistKeyItems(MvcResult result, String... keyItems) throws UnsupportedEncodingException {
-        Map resultMap = (Map) JSON.parse(result.getResponse().getContentAsString());
-        Map resultModelMap = (Map) resultMap.get("model");
-
-        Assert.assertEquals(keyItems.length, resultModelMap.size());
-        Assert.assertThat((Set<String>) resultModelMap.keySet(), CoreMatchers.hasItems(keyItems));
-    }
-
-    /**
-     * 访问 api，抛出用户无权限异常
-     *
-     * @param apiUrl api地址
-     * @param requestMethod http请求方式
-     * @param user 用户对象（用于构建Cookie）
-     */
-    private void testApiThrowNoPermissionException(String apiUrl, RequestMethod requestMethod, UserDO user) {
-        //set post | get
-        MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.get(apiUrl);
-        if (RequestMethod.POST.equals(requestMethod)) {
-            mockRequest = MockMvcRequestBuilders.post(apiUrl);
-        }
-
-        //no login
-        if (user != null) {
-            mockRequest.cookie(new Cookie(ParamConst.AUTHENTICATION, SecretUtil.generateUserInfoToken(user)));
-        }
-
-        try {
-            mockMvc.perform(
-                    mockRequest
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-            ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
-             .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(ApiMessage.NO_PERMISSION))
-             .andExpect(MockMvcResultMatchers.jsonPath("$.model").value(CoreMatchers.notNullValue()));
-        } catch (NestedServletException ne) {
-            Assert.assertTrue(ne.getRootCause() instanceof PermissionException);
-
-            //account no activated
-            if (user != null && user.getState() == SetConst.ACCOUNT_NO_ACTIVATED_STATE) {
-                Assert.assertEquals(ApiMessage.NO_ACTIVATE, ne.getRootCause().getMessage());
-            } else {
-                Assert.assertEquals(ApiMessage.NO_PERMISSION, ne.getRootCause().getMessage());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-           throw new RuntimeException("no throw expected exception");
-        }
+        util.printSuccessMessage();
     }
 }
