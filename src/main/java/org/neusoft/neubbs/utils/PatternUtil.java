@@ -53,7 +53,7 @@ public final class PatternUtil {
      *      - 不能存在空格，以及其他符号
      *
      * @param str 匹配结果
-     * @return boolean 匹配结果（true-是，false-否）
+     * @return boolean 匹配结果（true - 是，false - 否）
      */
     public static boolean isPureEnglish(String str) {
         return match(str, NO_ENGLISH);
@@ -125,7 +125,7 @@ public final class PatternUtil {
      *
      * @param str 需匹配字符串
      * @param regexp 正则表达式（匹配规则）
-     * @return 匹配结果（true-成功匹配，false-不匹配）
+     * @return 匹配结果（true - 成功匹配，false - 不匹配）
      */
     private static boolean match(String str, String regexp) {
         Pattern pattern = Pattern.compile(regexp);

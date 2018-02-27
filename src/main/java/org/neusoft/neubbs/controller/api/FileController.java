@@ -53,7 +53,7 @@ public class FileController {
      *      - 修改数据库用户个人信息（头像名）
      *
      * @param avatarFile 用户上传的文件对象
-     * @return ApiJsonDTO 接口JSON传输对象
+     * @return ApiJsonDTO 接口 JSON 传输对象
      */
     @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/avator", method = RequestMethod.POST)

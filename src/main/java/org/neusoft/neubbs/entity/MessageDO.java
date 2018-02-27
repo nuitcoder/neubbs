@@ -3,7 +3,7 @@ package org.neusoft.neubbs.entity;
 import java.util.Date;
 
 /**
- * forum_message 领域模型
+ * forum_message 领域对象
  *
  * @author Suvan
  */

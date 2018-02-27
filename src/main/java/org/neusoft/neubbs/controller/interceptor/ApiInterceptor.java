@@ -67,7 +67,7 @@ public class ApiInterceptor implements HandlerInterceptor {
      *      - 判断是否存在 authentication Cookie（不存在表明未登陆, 未登录无权操作）
      *      - 判断 authentication Cookie 是否解密成功（解密失败，表示认证信息已经过期）
      *
-     * @param request http请求
+     * @param request http 请求
      * @param handler 接口方法对象
      */
     private void doLoginAuthorization(HttpServletRequest request, Object handler) throws ServiceException {
@@ -85,7 +85,7 @@ public class ApiInterceptor implements HandlerInterceptor {
      *      - 判断 authentication Cookie 是否解密成功（解密失败，表示认认证信息已经过期）
      *      - 从认证信息内获取用户信息，判断用户激活状态
      *
-     * @param request http请求
+     * @param request http 请求
      * @param handler 方法对象
      */
     private void doAccountActivation(HttpServletRequest request, Object handler) throws ServiceException {
@@ -108,7 +108,7 @@ public class ApiInterceptor implements HandlerInterceptor {
      *      - 判断 authentication Cookie 是否解密成功（解密失败，表示认认证信息已经过期）
      *      - 从认证信息内获取用户信息，判断用户权限
      *
-     * @param request http请求
+     * @param request http 请求
      * @param handler 方法对象
      */
     private void doAdminRank(HttpServletRequest request, Object handler) throws ServiceException {
@@ -134,7 +134,7 @@ public class ApiInterceptor implements HandlerInterceptor {
      * 判断 authentication 认证信息函数
      *      - 若出错则抛出异常
      *
-     * @param authentication Cookie内认证信息
+     * @param authentication Cookie 内认证信息
      * @return UserDO 用户信息对象实例
      */
     private UserDO judgeAuthentication(String authentication) {

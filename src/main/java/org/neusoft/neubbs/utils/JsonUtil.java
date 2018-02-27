@@ -30,8 +30,8 @@ public final class JsonUtil {
      * 转换为 JSON 格式字符串
      *      - 将任意对象
      *
-     * @param obj Object对象
-     * @return String JSON格式字符串
+     * @param obj 任意 Object 对象
+     * @return String JSON 格式字符串
      */
     public static String toJsonString(Object obj) {
         try {
@@ -45,7 +45,7 @@ public final class JsonUtil {
      * 将 JSON 字符串，转换成 Map
      *      - String -> Map<String, Object>
      *
-     * @param json JSON格式字符串
+     * @param json JSON 格式字符串
      * @return Map 键值对
      */
     public static Map<String, Object> toMapByJsonString(String json) {
@@ -60,7 +60,7 @@ public final class JsonUtil {
      * 将 Object 对象，转换成 Map
      *      - Object -> Map<String, Object>
      *
-     * @param obj Object对象
+     * @param obj 任意 Object 对象
      * @return Map 键值对
      */
     public static Map<String, Object> toMapByObject(Object obj) {
@@ -77,7 +77,7 @@ public final class JsonUtil {
      * 将 JSON 数组字符串，转换成 List
      *      - String -> List<Integer>
      *
-     * @param jsonArrayString JSON数组字符串
+     * @param jsonArrayString JSON 数组字符串
      * @return List 列表
      */
     public static List<Integer> toListByJsonArrayString(String jsonArrayString) {
@@ -89,9 +89,9 @@ public final class JsonUtil {
      *      - 需输入 JSON 数组字符串和目标元素（int 类型）
      *      - 用于从 forum_user_action（用户行为表）, forum_topic_action（话题行为表）去除相应 JSON 字符串
      *
-     * @param jsonArrayString JSON数组字符串
-     * @param intElement 需判断存在性的int元素
-     * @return boolean 判断结果（true-存在，false-不存在）
+     * @param jsonArrayString JSON 数组字符串
+     * @param intElement 需判断存在性的 int 元素
+     * @return boolean 判断结果（true - 存在，false - 不存在）
      */
     public static boolean isExistIntElement(String jsonArrayString,  int intElement) {
         JSONArray jsonArray = JSON.parseArray(jsonArrayString);
@@ -111,8 +111,8 @@ public final class JsonUtil {
      * 获取 int 元素索引位置
      *      - 需输入 JSON 数组字符串和目标元素（int 类型）
      *
-     * @param jsonArrayString JSON数组字符串
-     * @param intElement 需获取索引值的int元素
+     * @param jsonArrayString JSON 数组字符串
+     * @param intElement 需获取索引值的 int 元素
      * @return int 元素所在位置索引值（若未找到则为 -1）
      */
     public static int getIntElementIndex(String jsonArrayString, int intElement) {
@@ -123,8 +123,8 @@ public final class JsonUtil {
      * 获取数组长度
      *      - 传入 JSON 数组字符串
      *
-     * @param jsonArrayString　JSON数组字符串
-     * @return int JSON数组字符串长度
+     * @param jsonArrayString　JSON 数组字符串
+     * @return int JSON 数组字符串长度
      */
     public static int getJsonArrayLength(String jsonArrayString) {
         return JSON.parseArray(jsonArrayString).size();

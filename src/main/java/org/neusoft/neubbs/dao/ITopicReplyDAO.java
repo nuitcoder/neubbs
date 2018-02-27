@@ -26,7 +26,7 @@ public interface ITopicReplyDAO {
     /**
      * 删除话题回复
      *
-     * @param replyId 回复id
+     * @param replyId 回复 id
      * @return int 删除行数
      */
     int removeTopicReplyById(int replyId);
@@ -34,7 +34,7 @@ public interface ITopicReplyDAO {
     /**
      * 测试删除指定 topicId 所有回复
      *
-     * @param topicId 话题id
+     * @param topicId 话题 id
      * @return int 删除行数
      */
     int removeTopicAllReplyByTopicId(int topicId);
@@ -49,7 +49,7 @@ public interface ITopicReplyDAO {
     /**
      * 统计用户回复数
      *
-     * @param userId 用户id
+     * @param userId 用户 id
      * @return int 用户回复数
      */
     int countReplyByUserId(int userId);
@@ -58,14 +58,14 @@ public interface ITopicReplyDAO {
      * 获取最大的话题回复 id
      *      - 最新插入的回复 id
      *
-     * @return int 话题回复id
+     * @return int 话题回复 id
      */
     int getMaxTopicReplyId();
 
     /**
      * 获取话题回复
      *
-     * @param replyId 回复id
+     * @param replyId 回复 id
      * @return TopicReplyDO 话题回复对象
      */
     TopicReplyDO getTopicReplyById(int replyId);
@@ -73,7 +73,7 @@ public interface ITopicReplyDAO {
     /**
      * 获取话题回复列表（指定话题 id）
      *
-     * @param topicId 话题id
+     * @param topicId 话题 id
      * @return List 话题回复列表
      */
     List<TopicReplyDO> listTopicReplyByTopicId(int topicId);
@@ -81,7 +81,7 @@ public interface ITopicReplyDAO {
     /**
      * 更新回复内容
      *
-     * @param replyId 回复id
+     * @param replyId 回复 id
      * @param content 新回复内容
      * @return int 更新行数
      */
@@ -90,7 +90,7 @@ public interface ITopicReplyDAO {
     /**
      * 更新点赞数（自动 +1）
      *
-     * @param replyId 回复id
+     * @param replyId 回复 id
      * @return int 更新行数
      */
     int updateAgreeAddOneById(int replyId);
@@ -98,7 +98,7 @@ public interface ITopicReplyDAO {
     /**
      * 更新点赞数（自动 -1）
      *
-     * @param replyId 回复id
+     * @param replyId 回复 id
      * @return int 更新行数
      */
     int updateAgreeCutOneById(int replyId);
@@ -106,7 +106,7 @@ public interface ITopicReplyDAO {
     /**
      * 更新反对数（自动 +1）
      *
-     * @param replyId 回复id
+     * @param replyId 回复 id
      * @return int 更新行数
      */
     int updateOpposeAddOneById(int replyId);
@@ -114,7 +114,7 @@ public interface ITopicReplyDAO {
     /**
      * 更新反对数（自动 -1）
      *
-     * @param replyId 回复id
+     * @param replyId 回复 id
      * @return int 更新行数
      */
     int updateOpposeCutOneById(int replyId);

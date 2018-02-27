@@ -26,7 +26,7 @@ public interface IUserDAO {
     /**
      * 删除用户
      *
-     * @param userId 用户id
+     * @param userId 用户 id
      * @return int 已删除行数
      */
     int removeUserById(int userId);
@@ -42,14 +42,14 @@ public interface IUserDAO {
      * 获取最大值用户 id
      *      - 最新插入用户 id
      *
-     * @return int 最新插入用户id
+     * @return int 最新插入用户 id
      */
     int getMaxUserId();
 
     /**
      * （id）获取用户
      *
-     * @param userId 用户id
+     * @param userId 用户 id
      * @return UserDO 用户对象
      */
     UserDO getUserById(int userId);

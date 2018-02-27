@@ -31,7 +31,7 @@ public class DynamicSwitchDataSourceHandler extends AbstractRoutingDataSource {
      *      - 定义当前线程数据源
      *      - 在 spring-mybatis-context.xml 内定义多数据源
      *
-     * @param dataSourceName 配置文件数据源id（应输入为全局静态变量数据源）
+     * @param dataSourceName 配置文件数据源 id（应输入为全局静态变量数据源）
      */
     public static void setDataSource(String dataSourceName) {
         currentThreadDataSource.set(dataSourceName);

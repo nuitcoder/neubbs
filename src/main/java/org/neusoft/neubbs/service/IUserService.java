@@ -76,7 +76,7 @@ public interface IUserService {
      *      - 不匹配则抛出“无权限”异常，无权进行非本用户操作
      *
      * @param inputUsername 输入用户名
-     * @param cookieUser Cookie用户对象
+     * @param cookieUser Cookie 用户对象
      */
     void confirmUserMatchCookieUser(String inputUsername, UserDO cookieUser);
 
@@ -91,7 +91,7 @@ public interface IUserService {
      * 统计用户发帖总数
      *      - userId 需验证存在性
      *
-     * @param userId 用户id
+     * @param userId 用户 id
      * @return int 用户发帖总数
      */
     int countUserTopicTotals(int userId);
@@ -100,7 +100,7 @@ public interface IUserService {
      * 统计用户回复总数
      *      - userId 需验证存在性
      *
-     * @param userId 用户id
+     * @param userId 用户 id
      * @return int 用户回复总数
      */
     int countUserReplyTotals(int userId);
@@ -109,7 +109,7 @@ public interface IUserService {
      * 统计用户喜欢话题总数
      *      - userId 需验证存在性
      *
-     * @param userId 用户id
+     * @param userId 用户 id
      * @return int 喜欢话题总数
      */
     int countUserLikeTopicTotals(int userId);
@@ -118,7 +118,7 @@ public interface IUserService {
      * 统计用户收藏话题总数
      *      - userId 需验证存在性
      *
-     * @param userId 用户id
+     * @param userId 用户 id
      * @return int 收藏话题总数
      */
     int countUserCollectTopicTotals(int userId);
@@ -127,7 +127,7 @@ public interface IUserService {
      * 统计用户关注话题总数
      *      - userId 需验证存在性
      *
-     * @param userId 用户id
+     * @param userId 用户 id
      * @return int 关注话题总数
      */
     int countUserAttentionTopicTotals(int userId);
@@ -136,7 +136,7 @@ public interface IUserService {
      * 统计用户关注人数（主动关注）
      *      - userId 需验证存在性
      *
-     * @param userId 用户id
+     * @param userId 用户 id
      * @return int 关注人总数
      */
     int countUserFollowingTotals(int userId);
@@ -145,7 +145,7 @@ public interface IUserService {
      * 统计用户被关注人数（被关注）
      *      - userId 需验证存在性
      *
-     * @param userId 用户id
+     * @param userId 用户 id
      * @return int 被关注人总数
      */
     int countUserFollowedTotals(int userId);
@@ -158,7 +158,7 @@ public interface IUserService {
      *
      * @param username 用户名
      * @param email 用户邮箱
-     * @return Map userInfoMap用户信息键值对
+     * @return Map userInfoMap 用户信息键值对
      */
     Map<String, Object> getUserInfoModelMap(String username, String email);
 
@@ -166,7 +166,7 @@ public interface IUserService {
      * id 获取用户信息
      *      - userId 需验证存在性
      *
-     * @param userId 用户id
+     * @param userId 用户 id
      * @return UserDO 用户对象
      */
     UserDO getUserInfoById(int userId);
@@ -193,14 +193,14 @@ public interface IUserService {
      * 获取用户信息 Model Map
      *
      * @param user 用户对象
-     * @return Map 已过滤过的用户信息Map
+     * @return Map 已过滤过的用户信息 Map
      */
     Map<String, Object> getUserInfoModelMap(UserDO user);
 
     /**
      * 获取所有主动关注人用户信息 Model List
      *
-     * @param userId 用户id
+     * @param userId 用户 id
      * @return List 用户主动关注用户信息列表
      */
     List<Map<String, Object>> listAllFollowingUserInfoModelList(int userId);
@@ -208,7 +208,7 @@ public interface IUserService {
     /**
      * 获取所有被关注用户信息列表 Model List
      *
-     * @param userId 用户id
+     * @param userId 用户 id
      * @return List 用户被关注用户信息列表
      */
     List<Map<String, Object>> listAllFollowedUserInfoModelList(int userId);
@@ -219,7 +219,7 @@ public interface IUserService {
      *
      * @param username 用户名
      * @param email 用户邮箱
-     * @return boolean 存在结果（true-存在，false-不存在）
+     * @return boolean 存在结果（true - 存在，false - 不存在）
      */
     boolean isUserExist(String username, String email);
 
@@ -228,7 +228,7 @@ public interface IUserService {
      *      - username 支持用户名 or 邮箱格式
      *
      * @param username 用户名
-     * @return boolean 激活状态（true-已激活，false-未激活）
+     * @return boolean 激活状态（true - 已激活，false - 未激活）
      */
     boolean isUserActivatedByName(String username);
 
@@ -236,7 +236,7 @@ public interface IUserService {
      * 判断用户激活状态
      *
      * @param userCurrentState 用户当前激活状态
-     * @return boolean 激活状态（true-激活，false-未激活）
+     * @return boolean 激活状态（true - 激活，false - 未激活）
      */
     boolean isUserActivatedByState(int userCurrentState);
 
@@ -244,9 +244,9 @@ public interface IUserService {
      * 判断用户是否喜欢话题
      *      - userId 需验证存在性
      *
-     * @param userId 用户id
-     * @param topicId 话题id
-     * @return boolean 是否点击过喜欢按钮（true-喜欢，false-未点击）
+     * @param userId 用户 id
+     * @param topicId 话题 id
+     * @return boolean 是否点击过喜欢按钮（true - 喜欢，false - 未点击）
      */
     boolean isUserLikeTopic(int userId, int topicId);
 
@@ -254,9 +254,9 @@ public interface IUserService {
      * 判断用户是否主动关注用户
      *      - currentUserId，followingUserI 需验证存在性
      *
-     * @param currentUserId 当前用户id
-     * @param followingUserId 主动关注用户id
-     * @return boolean 是否点击关注用户按钮（true-已关注，false-未关注）
+     * @param currentUserId 当前用户 id
+     * @param followingUserId 主动关注用户 id
+     * @return boolean 是否点击关注用户按钮（true - 已关注，false - 未关注）
      */
     boolean isFollowingUser(int currentUserId, int followingUserId);
 
@@ -269,7 +269,7 @@ public interface IUserService {
      * @param birthday 出生日期
      * @param position 所在地
      * @param description 个人描述
-     * @return Map 修改成功后，重新查询的用户信息Map
+     * @return Map 修改成功后，重新查询的用户信息 Map
      */
     Map<String, Object> alterUserProfile(String username, int sex, String birthday,
                                          String position, String description);
@@ -316,7 +316,7 @@ public interface IUserService {
      *      - 通过 Base64 加密 email token
      *      - 解密后 email token，得到待激活的邮箱，需验证邮箱是否已被激活
      *
-     * @param emailToken 邮件token（激活邮件内，激活链接）
+     * @param emailToken 邮件 token（激活邮件内，激活链接）
      * @return UserDO 激活后，重新查询用户信息
      */
     UserDO alterUserActivateStateByEmailToken(String emailToken);
@@ -325,9 +325,9 @@ public interface IUserService {
      * 操作喜欢话题
      *      - 可输入操作指令（inc-自增1，dec-自减1）
      *
-     * @param userId 用户id
-     * @param topicId 话题id
-     * @param command 操作指令（inc-自增1，dec-自减1）
+     * @param userId 用户 id
+     * @param topicId 话题 id
+     * @param command 操作指令（inc - 自增1，dec - 自减1）
      */
     void operateLikeTopic(int userId, int topicId, String command);
 
@@ -335,8 +335,8 @@ public interface IUserService {
      * 操作关注用户
      *
      * @param currentUserId 当前用户 id
-     * @param followingUserId 关注用户id
-     * @return List 用户目前主动关注用户id列表
+     * @param followingUserId 关注用户 id
+     * @return List 用户目前主动关注用户 id 列表
      */
     List<Integer> operateFollowUser(int currentUserId, int followingUserId);
 }

@@ -38,11 +38,11 @@ public interface ITopicService {
      * 保存话题
      *      - userId 无需判断存在性（用户必须登陆，才能访问相应接口，发布主题）
      *
-     * @param userId 用户id
+     * @param userId 用户 id
      * @param categoryNick 话题分类昵称
      * @param title 话题标题
      * @param topicContent 话题内容
-     * @return Map 保存（新增的话题id）
+     * @return Map 保存（新增的话题 id）
      */
     Map<String, Object> saveTopic(int userId, String categoryNick, String title, String topicContent);
 
@@ -51,10 +51,10 @@ public interface ITopicService {
      *      - userId 无需判断存在性
      *      - topicId 需判断存在性
      *
-     * @param userId 用户id
-     * @param topicId 话题id
+     * @param userId 用户 id
+     * @param topicId 话题 id
      * @param replyContent 话题内容
-     * @return Map 保存（新增的回复id）
+     * @return Map 保存（新增的回复 id）
      */
     Map<String, Object> saveReply(int userId, int topicId, String replyContent);
 
@@ -64,7 +64,7 @@ public interface ITopicService {
      *
      * @param categoryNick 话题分类昵称（英文）
      * @param categoryName 话题分类名称（中文）
-     * @return Map 话题分类Map（包含 id（原 nick，英文），name）
+     * @return Map 话题分类 Map（包含 id（原 nick，英文），name）
      */
     Map<String, Object> saveCategory(String categoryNick, String categoryName);
 
@@ -75,7 +75,7 @@ public interface ITopicService {
      *      - 删除话题行为（未实现）
      *      - 删除话题
      *
-     * @param topicId 要删除的话题id
+     * @param topicId 要删除的话题 id
      */
     void removeTopic(int topicId);
 
@@ -83,7 +83,7 @@ public interface ITopicService {
      * 删除回复
      *      - replyId 需验证存在性
      *
-     * @param replyId 回复id
+     * @param replyId 回复 id
      */
     void removeReply(int replyId);
 
@@ -115,7 +115,7 @@ public interface ITopicService {
     /**
      * 获取话题内容点赞数
      *
-     * @param topicId 话题id
+     * @param topicId 话题 id
      * @return int 当前话题点赞数量
      */
     int countTopicContentLike(int topicId);
@@ -126,7 +126,7 @@ public interface ITopicService {
      *      - 话题信息（基本信息 + 内容 + 分类）
      *      - 回复信息
      *
-     * @param topicId 话题id
+     * @param topicId 话题 id
      * @return Map 话题内容页信息
      */
     Map<String, Object> getTopicContentModelMap(int topicId);
@@ -135,7 +135,7 @@ public interface ITopicService {
      * 获取话题回复 Model Map
      *      - 单条回复
      *
-     * @param replyId 回复id
+     * @param replyId 回复 id
      * @return Map 回复信息
      */
     Map<String, Object> getTopicReplyModelMap(int replyId);
@@ -174,7 +174,7 @@ public interface ITopicService {
      * 修改话题内容
      *      - topicId，newCategoryNick 需验证存在性
      *
-     * @param topicId 话题id
+     * @param topicId 话题 id
      * @param newCategoryNick 话题分类昵称
      * @param newTitle 新标题
      * @param newTopicContent 新话题内容
@@ -185,7 +185,7 @@ public interface ITopicService {
      * 修改回复内容
      *      - replyId 需验证存在性
      *
-     * @param replyId 回复id
+     * @param replyId 回复 id
      * @param newReplyContent 新回复内容
      */
     void alterReplyContent(int replyId, String newReplyContent);
@@ -194,7 +194,7 @@ public interface ITopicService {
      * 增加话题阅读数（+1）
      *      - topicId 需验证存在性
      *
-     * @param topicId 话题id
+     * @param topicId 话题 id
      */
     void increaseTopicRead(int topicId);
 
@@ -204,8 +204,8 @@ public interface ITopicService {
      *      - param check service 将会检查指令是否为 'inc' or 'dec'
      *
      * @param isCurrentUserLikeTopic 当前用户是否喜欢该话题（是否已经点赞）
-     * @param topicId 话题id
-     * @param command 操作指令（INC-自增1，DEC-自减-）
+     * @param topicId 话题 id
+     * @param command 操作指令（inc - 自增1，dec- 自减1）
      * @return Map 保存（当前话题点赞数）
      */
      Map<String, Object> alterTopicLikeByInstruction(boolean isCurrentUserLikeTopic, int topicId, String command);
@@ -223,9 +223,9 @@ public interface ITopicService {
      * 是否喜欢话题
      *      - userId 和 topicId 需验证存在性
      *
-     * @param userId 用户id
-     * @param topicId 话题id
-     * @return boolean 判断结果（true-已喜欢，false-未喜欢）
+     * @param userId 用户 id
+     * @param topicId 话题 id
+     * @return boolean 判断结果（true - 已喜欢，false - 未喜欢）
      */
     boolean isLikeTopic(int userId, int topicId);
 
@@ -233,9 +233,9 @@ public interface ITopicService {
      * 判断用户是否收藏话题
      *      - userId 和 topicId 需验证存在性
      *
-     * @param userId 用户id
-     * @param topicId 话题id
-     * @return boolean 判断结果（true-已收藏，false-未关注）
+     * @param userId 用户 id
+     * @param topicId 话题 id
+     * @return boolean 判断结果（true - 已收藏，false - 未关注）
      */
     boolean isCollectTopic(int userId, int topicId);
 
@@ -243,9 +243,9 @@ public interface ITopicService {
      * 判断用户是否关注话题
      *      - userId 和 topicId 需验证存在性
      *
-     * @param userId 用户id
-     * @param topicId 话题id
-     * @return boolean 判断结果（true-已关注，false-未关注）
+     * @param userId 用户 id
+     * @param topicId 话题 id
+     * @return boolean 判断结果（true - 已关注，false - 未关注）
      */
     boolean isAttentionTopic(int userId, int topicId);
 
@@ -254,9 +254,9 @@ public interface ITopicService {
      *      - 操作取反（已喜欢 -> 未喜欢，未喜欢 -> 已喜欢）
      *      - controller 还要组装，所以返回 List
      *
-     * @param userId　用户id
-     * @param topicId 话题id
-     * @return List 用户目前喜欢话题id列表
+     * @param userId　用户 id
+     * @param topicId 话题 id
+     * @return List 用户目前喜欢话题 id 列表
      */
     List<Integer> operateLikeTopic(int userId, int topicId);
 
@@ -264,9 +264,9 @@ public interface ITopicService {
      * 操作收藏话题
      *      - 操作取反（已收藏 -> 未收藏，未收藏 -> 已收藏）
      *
-     * @param userId 用户id
-     * @param topicId 话题id
-     * @return Map (保存用户目前收藏话题id列表)
+     * @param userId 用户 id
+     * @param topicId 话题 id
+     * @return Map 保存用户目前收藏话题 id 列表
      */
     Map<String, Object> operateCollectTopic(int userId, int topicId);
 
@@ -274,9 +274,9 @@ public interface ITopicService {
      * 操作关注话题
      *      - 操作取反（已关注 -> 未关注， 未关注 -> 已关注）
      *
-     * @param userId 用户id
-     * @param topicId 话题id
-     * @return Map (保存用户目前关注话题id列表)
+     * @param userId 用户 id
+     * @param topicId 话题 id
+     * @return Map 保存用户目前关注话题 id 列表
      */
     Map<String, Object> operateAttentionTopic(int userId, int topicId);
 }

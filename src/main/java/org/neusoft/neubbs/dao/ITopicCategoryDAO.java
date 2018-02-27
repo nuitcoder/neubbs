@@ -26,7 +26,7 @@ public interface ITopicCategoryDAO {
     /**
      * 删除话题分类
      *
-     * @param categoryId 分类id
+     * @param categoryId 分类 id
      * @return int 删除行数
      */
     int removeTopicCategoryById(int categoryId);
@@ -34,7 +34,7 @@ public interface ITopicCategoryDAO {
     /**
      * （id）获取话题分类
      *
-     * @param categoryId 分类id
+     * @param categoryId 分类 id
      * @return TopicCategoryDO 话题分类对象
      */
     TopicCategoryDO getTopicCategoryById(int categoryId);

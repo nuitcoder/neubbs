@@ -59,23 +59,23 @@ public interface IHttpService {
     /**
      * 保存 Cookie
      *
-     * @param cookieName cookie名
-     * @param cookieValue cookie值
+     * @param cookieName cookie 名
+     * @param cookieValue cookie 值
      */
     void saveCookie(String cookieName, String cookieValue);
 
     /**
      * 删除 Cookie
      *
-     * @param cookieName Cookie名
+     * @param cookieName Cookie 名
      */
     void removeCookie(String cookieName);
 
     /**
      * 获取 Cookie 值
      *
-     * @param cookieName Cookie名
-     * @return String Cookie值
+     * @param cookieName Cookie 名
+     * @return String Cookie 值
      */
     String getCookieValue(String cookieName);
 
@@ -100,7 +100,7 @@ public interface IHttpService {
     /**
      * 获取用户登陆状态
      *
-     * @return boolean 用户登陆状态（true-已登录，false-未登录）
+     * @return boolean 用户登陆状态（true - 已登录，false - 未登录）
      */
     boolean isUserLoginState();
 
@@ -114,7 +114,7 @@ public interface IHttpService {
      * 保存验证码文本
      *      - 保存至 session
      *      - 当前用户的验证码
-     *      - 属性键值对: key=captcha, value= 输入参数
+     *      - 属性键值对: key = captcha, value = 输入参数
      *
      * @param captchaText 将存储验证码文本
      */
@@ -124,7 +124,7 @@ public interface IHttpService {
      * 获取验证码文本，来自 session
      *      - 从 session 获取
      *      - 当前用户的验证码
-     *      - 属性键值对：key=captcha, 获取 value
+     *      - 属性键值对：key = captcha, 获取 value
      *
      * @return String 取出的验证码文本
      */

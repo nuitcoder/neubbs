@@ -59,8 +59,8 @@ public class ApiExceptionHandler implements HandlerExceptionResolver {
     /**
      * 输出页面失败信息
      *
-     * @param response http响应
-     * @param failMessage 页面”message“字段的失败信息
+     * @param response http 响应
+     * @param failMessage 页面 ”message“ 字段的失败信息
      */
     private void outFailJsonMessage(HttpServletResponse response, String failMessage) {
         //set response headers

@@ -62,8 +62,8 @@ public class CountController {
      *      - 话题总数
      *      - 回复总数
      *
-     * @param request http默认请求
-     * @return ApiJsonDTO 接口JSON传输对象
+     * @param request http 默认请求
+     * @return ApiJsonDTO 接口 JSON 传输对象
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
     public ApiJsonDTO countForumBasicData(HttpServletRequest request) {
@@ -78,7 +78,7 @@ public class CountController {
      * 在线统计
      *      - 在线登陆人数
      *
-     * @return ApiJsonDTO 接口JSON传输对象
+     * @return ApiJsonDTO 接口 JSON 传输对象
      */
     @RequestMapping(value = "/online", method = RequestMethod.GET)
     public ApiJsonDTO countOnlineData() {
@@ -95,8 +95,8 @@ public class CountController {
      *      - 发帖数
      *      - 回复数
      *
-     * @param userId 用户id
-     * @return ApiJsonDTO 接口JSON传输对象
+     * @param userId 用户 id
+     * @return ApiJsonDTO 接口 JSON 传输对象
      */
     @RequestMapping(value = "user", method = RequestMethod.GET)
     public ApiJsonDTO countUser(@RequestParam(value = "userid", required = false) String userId) {

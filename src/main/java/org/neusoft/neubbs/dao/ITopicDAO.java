@@ -18,7 +18,7 @@ public interface ITopicDAO {
 
     /**
      * 保存话题
-     *      - userid, categoryid, title
+     *      - userId, categoryId, title
      *      - TopicDO 对象的 id 属性会注入新生成的自增 id
      *
      * @param topic 话题对象
@@ -29,7 +29,7 @@ public interface ITopicDAO {
     /**
      * 删除话题
      *
-     * @param topicId 话题id
+     * @param topicId 话题 id
      * @return int 删除行数
      */
     int removeTopicById(int topicId);
@@ -44,7 +44,7 @@ public interface ITopicDAO {
     /**
      * （分类）统计话题总数
      *
-     * @param categoryId 话题分类id
+     * @param categoryId 话题分类 id
      * @return int 话题总数
      */
     int countTopicByCategoryId(int categoryId);
@@ -52,7 +52,7 @@ public interface ITopicDAO {
     /**
      * （用户 id）统计话题总数
      *
-     * @param userId 用户id
+     * @param userId 用户 id
      * @return int 话题总数
      */
     int countTopicByUserId(int userId);
@@ -61,8 +61,8 @@ public interface ITopicDAO {
     /**
      * （话题分类 id，用户 id）统计话题总数
      *
-     * @param categoryId 话题分类id
-     * @param userId 用户id
+     * @param categoryId 话题分类 id
+     * @param userId 用户 id
      * @return int 话题总数
      */
     int countTopicByCategoryIdByUserId(int categoryId, int userId);
@@ -71,14 +71,14 @@ public interface ITopicDAO {
      * 获取最大话题 id
      *      - 最新发布话题 id
      *
-     * @return int 最新话题id
+     * @return int 最新话题 id
      */
     int getMaxTopicId();
 
     /**
      * 获取话题对象
      *
-     * @param topicId 话题id
+     * @param topicId 话题 id
      * @return TopicDO 话题对象
      */
     TopicDO getTopicById(int topicId);
@@ -111,7 +111,7 @@ public interface ITopicDAO {
      *
      * @param startRow 开始行数
      * @param count 指定显示数量
-     * @param categoryId 话题分类id
+     * @param categoryId 话题分类 id
      * @return List 话题列表
      */
     List<TopicDO> listTopicDESCByStartRowByCountByCategoryId(int startRow, int count, int categoryId);
@@ -122,7 +122,7 @@ public interface ITopicDAO {
      *
      * @param startRow 开始行数
      * @param count 指定显示数量
-     * @param userId 用户id
+     * @param userId 用户 id
      * @return List 话题列表
      */
     List<TopicDO> listTopicDESCByStartRowByCountByUserId(int startRow, int count, int userId);
@@ -133,8 +133,8 @@ public interface ITopicDAO {
      *
      * @param startRow 开始行数
      * @param count 指定显示数量
-     * @param categoryId 话题分类id
-     * @param userId 用户id
+     * @param categoryId 话题分类 id
+     * @param userId 用户 id
      * @return List 话题列表
      */
     List<TopicDO> listTopicDESCByStartRowByCountByCategoryIdByUserId(int startRow, int count,
@@ -142,8 +142,8 @@ public interface ITopicDAO {
     /**
      * 更新话题分类
      *
-     * @param topicId 话题id
-     * @param newCategoryId 新话题分类id
+     * @param topicId 话题 id
+     * @param newCategoryId 新话题分类 id
      * @return int 更新行数
      */
     int updateCategoryById(int topicId, int newCategoryId);
@@ -160,7 +160,7 @@ public interface ITopicDAO {
     /**
      * 更新评论回复数（自动 +1）
      *
-     * @param topicId 话题id
+     * @param topicId 话题 id
      * @return int 更新行数
      */
     int updateRepliesAddOneById(int topicId);
@@ -168,16 +168,16 @@ public interface ITopicDAO {
     /**
      * 更新评论回复数（自动 -1）
      *
-     * @param topicId 话题id
+     * @param topicId 话题 id
      * @return int 更新行数
      */
     int updateRepliesCutOneById(int topicId);
 
     /**
-     * 更新最后回复人id
+     * 更新最后回复人 id
      *
      * @param topicId 话题
-     * @param lastReplyUserId 最后回复人id
+     * @param lastReplyUserId 最后回复人 id
      * @return int 更新行数
      */
     int updateLastReplyUserIdById(int topicId, int lastReplyUserId);
@@ -185,7 +185,7 @@ public interface ITopicDAO {
     /**
      * 更新最后回复时间
      *
-     * @param topicId 话题id
+     * @param topicId 话题 id
      * @param lastReplyTime 最后回复时间
      * @return int 更新行数
      */

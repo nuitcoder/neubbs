@@ -26,8 +26,8 @@ public interface IMessageDAO {
     /**
      * （id）获取消息对象
      *
-     * @param messageId 消息id
-     * @return MessageDO消息对象
+     * @param messageId 消息 id
+     * @return MessageDO 消息对象
      */
     MessageDO getMessage(int messageId);
 
@@ -35,7 +35,7 @@ public interface IMessageDAO {
      * 更新消息接收时间（回复人接收）
      *      - MySQL 自动更新为当前时间
      *
-     * @param messageId 消息id
+     * @param messageId 消息 id
      * @return int 更新行数
      */
     int updateMessageReceiveTime(int messageId);

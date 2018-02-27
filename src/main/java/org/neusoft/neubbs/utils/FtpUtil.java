@@ -92,7 +92,7 @@ public final class FtpUtil {
      *
      * @param serverDirectoryPath 服务器目录路径
      * @return List 文件名集合
-     * @throws IOException IO异常
+     * @throws IOException IO 异常
      */
     public static List<String> listServerPathFileName(String serverDirectoryPath) throws IOException {
         connect();
@@ -119,7 +119,7 @@ public final class FtpUtil {
      * @param serverDirectoryPath 服务器目录路径（默认根路径为: /）
      * @param serverFileName 服务器文件名（上传后的文件名）
      * @param uploadFileInputStream 待上传文件的输入流（可传入 new FileInputStream(File)）
-     * @throws IOException IO异常
+     * @throws IOException IO 异常
      */
     public static void uploadFile(String serverDirectoryPath, String serverFileName,
                                   InputStream uploadFileInputStream) throws IOException {
@@ -141,13 +141,13 @@ public final class FtpUtil {
      *
      * @param serverDirectoryPath 服务器目录路径
      * @param serverFileName 服务器文件名
-     * @throws IOException IO异常
+     * @throws IOException IO 异常
      */
     public static void delete(String serverDirectoryPath, String serverFileName) throws IOException {
         connect();
         moveServerPath(serverDirectoryPath);
 
-        //complete around(before-after) sprit
+        //complete around(before-after) '/'
         serverDirectoryPath = StringUtil.completeAroundSprit(serverDirectoryPath);
 
         boolean deleteResult = serverFileName == null
@@ -168,7 +168,7 @@ public final class FtpUtil {
      *      - 不存在目录（会自动补全前后 “/”）则会抛出异常
      *
      * @param serverDirectoryPath 服务器目录路径
-     * @throws IOException IO异常
+     * @throws IOException IO 异常
      */
     public static void deleteDirectory(String serverDirectoryPath) throws IOException {
         connect();
@@ -193,7 +193,7 @@ public final class FtpUtil {
      *          4. 开通端口传输数据
      *          5. 判断响应码
      *
-     * @throws IOException IO异常
+     * @throws IOException IO 异常
      */
     private static void connect() throws IOException {
         ftpClient.connect(ftpIp, ftpPort);
@@ -212,7 +212,7 @@ public final class FtpUtil {
      * 退出连接
      *      - 【注意】每个工具方法，重新连接后，使用完毕，都需要断开连接，否则其余用户无法使用
      *
-     * @throws IOException IO异常
+     * @throws IOException IO 异常
      */
     private static void destroy() throws IOException {
         if (ftpClient != null) {
@@ -226,7 +226,7 @@ public final class FtpUtil {
      *      - （定位）移动到指定目录，若不存在，则抛出异常
      *
      * @param serverDirectoryPath 服务器目录
-     * @throws IOException IO异常
+     * @throws IOException IO 异常
      */
     private static void moveServerPath(String serverDirectoryPath) throws IOException {
         //no exist directory, return false
@@ -241,7 +241,7 @@ public final class FtpUtil {
      *      - 删除指定路径的子文件，及子目录
      *
      * @param path 删除路径
-     * @throws IOException IO异常
+     * @throws IOException IO 异常
      */
     private static void remove(String path) throws IOException {
         moveServerPath(path);

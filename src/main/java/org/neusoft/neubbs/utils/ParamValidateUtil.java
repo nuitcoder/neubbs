@@ -249,7 +249,7 @@ public final class ParamValidateUtil {
     /**
      * 正则检查
      *      - 反射加载 PatternUtil.java 类实例
-     *      - 反射执行类中方法（Class<?>-通配泛型，可代表任何类型，Class<T>在实例化的时候，T要替换成具体类）
+     *      - 反射执行类中方法（Class<?> - 通配泛型，可代表任何类型，Class<T> 在实例化的时候，T要替换成具体类）
      *      - method.invoke(null, param) 静态方法不需要借助实例运行，所以为 null
      *
      * @param type 参数类型

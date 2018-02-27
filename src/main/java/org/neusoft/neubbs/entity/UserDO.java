@@ -5,8 +5,7 @@ import org.neusoft.neubbs.constant.api.SetConst;
 import java.util.Date;
 
 /**
- *  forum_user表 领域对象
- *  【Domain Object】
+ *  forum_user 领域对象（Domain Object)
  *
  *  @author Suvan
  */

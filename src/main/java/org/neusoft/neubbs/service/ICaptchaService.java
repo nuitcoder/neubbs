@@ -14,7 +14,7 @@ public interface ICaptchaService {
 
     /**
      * 获取验证码文本
-     *      - 随机生成验证码（目前是使用 Kaptcha，在 spring-context.xml 内配置 DefaultKaptcha 对象）
+     *      - 随机生成验证码（目前是使用 Kaptcha 库，在 spring-context.xml 内配置 DefaultKaptcha 对象）
      *      - 5 位字符长度数字
      *
      * @return String 验证码文本字符串
@@ -35,7 +35,7 @@ public interface ICaptchaService {
      *      - 判断验输入验证码，是否匹配已生成的 session 验证码
      *
      * @param inputCaptcha 输入验证码
-     * @param sessionCaptcha session验证码
+     * @param sessionCaptcha session 验证码
      */
     void validate(String inputCaptcha, String sessionCaptcha);
 }

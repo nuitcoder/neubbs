@@ -26,7 +26,7 @@ public interface ITopicContentDAO {
     /**
      * 删除话题
      *
-     * @param topicId 话题id（ft_id）
+     * @param topicId 话题 id（ft_id）
      * @return int 删除行数
      */
     int removeTopicContentByTopicId(int topicId);
@@ -34,7 +34,7 @@ public interface ITopicContentDAO {
     /**
      * （话题 id）获取话题对象
      *
-     * @param topicId 话题id（ft_id）
+     * @param topicId 话题 id（ft_id）
      * @return TopicContentDO 话题对象
      */
     TopicContentDO getTopicContentByTopicId(int topicId);
@@ -42,7 +42,7 @@ public interface ITopicContentDAO {
     /**
      * 更新话题内容
      *
-     * @param topicId 话题id（ft_id）
+     * @param topicId 话题 id（ft_id）
      * @param content 新话题内容
      * @return int 更新行数
      */
@@ -51,7 +51,7 @@ public interface ITopicContentDAO {
     /**
      * 更新话题阅读数（自动 +1）
      *
-     * @param topicId 话题id（ft_id）
+     * @param topicId 话题 id（ft_id）
      * @return int 更新行数
      */
     int updateReadAddOneByTopicId(int topicId);
@@ -59,7 +59,7 @@ public interface ITopicContentDAO {
     /**
      * 更新话题内容喜欢人数（自动 +1）
      *
-     * @param topicId 话题id（ft_id）
+     * @param topicId 话题 id（ft_id）
      * @return int 更新行数
      */
     int updateLikeAddOneByTopicId(int topicId);
@@ -67,7 +67,7 @@ public interface ITopicContentDAO {
     /**
      * 更新话题内容喜欢人数（自动 -1）
      *
-     * @param topicId 话题id（ft_id）
+     * @param topicId 话题 id（ft_id）
      * @return int 更新行数
      */
     int updateLikeCutOneByTopicId(int topicId);

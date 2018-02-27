@@ -52,7 +52,7 @@ public final class StringUtil {
      * 空判断
      *
      * @param str 输入字符串
-     * @return boolean 检测结果（true-为空，false-不为空）
+     * @return boolean 检测结果（true - 为空，false - 不为空）
      */
     public static boolean isEmpty(String str) {
         return (str == null || str.length() == 0);
@@ -76,7 +76,7 @@ public final class StringUtil {
      *      - 与当前系统时间判断是否过期
      *
      * @param expireTime 待判断的时间（时间戳）
-     * @return boolean 检测结果（true-过期，false-不过期）
+     * @return boolean 检测结果（true - 过期，false - 不过期）
      */
     public static boolean isExpire(String expireTime) {
         return Long.parseLong(expireTime) <= System.currentTimeMillis();
@@ -86,7 +86,7 @@ public final class StringUtil {
      * 生成激活邮件 HTML 内容
      *
      * @param url 需加入的激活链接 URL
-     * @return String 激活邮件HTML内容
+     * @return String 激活邮件 HTML 内容
      */
     public static String generateActivateMailHtmlContent(String url) {
         return "<html><head></head><body><h1>Neubbs 帐号激活邮件，点击以下链接激活帐号</h1><br>"
@@ -116,7 +116,7 @@ public final class StringUtil {
     /**
      * 获取今天 24 时的时间戳
      *
-     * @return String 24时的时间戳
+     * @return String 24 时的时间戳
      */
     public static String getTodayTwentyFourClockTimestamp() {
         Calendar calendar = Calendar.getInstance();

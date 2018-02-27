@@ -31,7 +31,7 @@ public final class MapFilterUtil {
     *    - 拼接用户头像地址（key = avator)，包装成 HTTP 链接
     *    - 删除 id, name, password, rank
     *
-    * @param userInfoMap 用户信息Map
+    * @param userInfoMap 用户信息 Map
     */
    public static void filterUserInfo(Map<String, Object> userInfoMap) {
       userInfoMap.put(ParamConst.USER_ID, userInfoMap.get(ParamConst.ID));
@@ -63,7 +63,7 @@ public final class MapFilterUtil {
     * 过滤话题内容信息 Map
     *    - 删除 id，topicId
     *
-    * @param topicContentInfoMap 需过滤的话题内容信息Map
+    * @param topicContentInfoMap 需过滤的话题内容信息 Map
     */
    public static void filterTopicContentInfo(Map<String, Object> topicContentInfoMap) {
       removeKeys(topicContentInfoMap, new String[] {ParamConst.ID, ParamConst.TOPIC_ID});
@@ -71,10 +71,10 @@ public final class MapFilterUtil {
 
    /**
     * 过滤话题分类信息 Map
-    *    - 修改 nick（英文昵称） -> id
+    *    - 修改 nick（英文昵称）-> id
     *    - 删除 id(原有)
     *
-    * @param topicCategoryInfoMap 需过滤的话题分类信息Map
+    * @param topicCategoryInfoMap 需过滤的话题分类信息 Map
     */
    public static void filterTopicCategory(Map<String, Object> topicCategoryInfoMap) {
       topicCategoryInfoMap.put(ParamConst.ID, topicCategoryInfoMap.get(ParamConst.NICK));
@@ -87,10 +87,10 @@ public final class MapFilterUtil {
     *    - 仅用于 Topic Service
     *    - 仅保留 name, image，avator
     *    - 修改 name -> username
-    *    - 拼接用户头像地址（key=avator)，包装成 HTTP 链接
+    *    - 拼接用户头像地址（key = avator)，包装成 HTTP 链接
     *    - 删除 id， name
     *
-    * @param userInfoMap 需过滤的话题用户信息Map
+    * @param userInfoMap 需过滤的话题用户信息 Map
     */
    public static void filterTopicUserInfo(Map<String, Object> userInfoMap) {
       keepKeys(userInfoMap, new String[] {ParamConst.ID, ParamConst.NAME, ParamConst.AVATOR});
@@ -107,7 +107,7 @@ public final class MapFilterUtil {
     *    - 修改 id -> replyId
     *    - 删除 id，userId
     *
-    * @param topicReplyInfoMap 需过滤的话题回复信息Map
+    * @param topicReplyInfoMap 需过滤的话题回复信息 Map
     */
    public static void filterTopicReply(Map<String, Object> topicReplyInfoMap) {
       topicReplyInfoMap.put(ParamConst.REPLY_ID, topicReplyInfoMap.get(ParamConst.ID));
@@ -118,7 +118,7 @@ public final class MapFilterUtil {
    /**
     * 生成 Map
     *    - 构建新的 Map 对象（长度为 1 ）
-    *    - 注入唯一的 key-value
+    *    - 注入唯一的 key - value
     *
     * @param key 键
     * @param value 值
@@ -160,7 +160,7 @@ public final class MapFilterUtil {
     * 删除多个 Key
     *
     * @param map 传入键值对
-    * @param keys 需删除键值对Key数组
+    * @param keys 需删除键值对 Key 数组
     */
    private static void removeKeys(Map<String, Object> map, String[] keys) {
       for (String key : keys) {

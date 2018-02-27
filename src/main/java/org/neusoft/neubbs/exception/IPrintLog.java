@@ -4,7 +4,7 @@ import org.neusoft.neubbs.constant.log.LogWarnEnum;
 
 /**
  * 打印日志接口
- *      - 自定义异常，必须实现该 log 接口的函数
+ *      - neubbs 项目自定义的异常，请务必实现该接口，统一日志记录
  *
  * @author Suvan
  */
@@ -14,7 +14,7 @@ public interface IPrintLog {
      * 储存日志信息
      *
      * @param logWarnEnum 日志警告信息枚举实例
-     * @return this
+     * @return this 当前对象（实现该接口的类对象）
      */
     IPrintLog log(LogWarnEnum logWarnEnum);
 

@@ -27,7 +27,7 @@ public interface IUserDynamicDAO {
      * 获取用户动态
      *      - 可获取用户所有发布动态
      *
-     * @param userId 用户id
+     * @param userId 用户 id
      * @return UserDynamicDO 用户动态对象
      */
     UserDynamicDO getUserDynamic(int userId);
@@ -42,8 +42,8 @@ public interface IUserDynamicDAO {
      *              "visibilityType", ""  //可见性类型
      *             }
      *
-     * @param userId 用户id
-     * @param newUserDynamicJsonInfo 新用户动态JSON信息
+     * @param userId 用户 id
+     * @param newUserDynamicJsonInfo 新用户动态 JSON 信息
      * @return int 更新行数
      */
     int updatePublicInfoJsonArrayByOneDynamicInfoToAppendEnd(int userId, String newUserDynamicJsonInfo);
@@ -52,7 +52,7 @@ public interface IUserDynamicDAO {
      * 更新发布动态信息
      *      - 索引位置从 0 开始，可以是 $.[index].id -1（信息内 id 从 1 开始）
      *
-     * @param userId 用户id
+     * @param userId 用户 id
      * @param indexOfRemoveDynamicInfo 要删除动态信息的索引位置
      * @return int 更新行数
      */

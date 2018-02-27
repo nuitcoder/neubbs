@@ -68,11 +68,11 @@ public class TopicController {
     /**
      * 获取话题信息
      *      - 能够获取当前用户是否点赞该文章信息（访客用户默认为 false）
-     *      - hadread 口令决定是否增加阅读数（0-不增加, 1-增加）
+     *      - hadread 参数决定是否增加阅读数（0-不增加, 1-增加）
      *
-     * @param topicId 话题id
+     * @param topicId 话题 id
      * @param hadRead 阅读数是否增加（0-不增加，1-增加）
-     * @return ApiJsonDTO 接口JSON传输对象
+     * @return ApiJsonDTO 接口 JSON 传输对象
      */
     @RequestMapping(value = "/topic", method = RequestMethod.GET)
     public ApiJsonDTO getTopicInfo(@RequestParam(value = "topicid", required = false) String topicId,
@@ -110,8 +110,8 @@ public class TopicController {
     /**
      * 获取回复信息
      *
-     * @param replyId 回复id
-     * @return ApiJsonDTO 接口JSON传输对象
+     * @param replyId 回复 id
+     * @return ApiJsonDTO 接口 JSON 传输对象
      */
     @RequestMapping(value = "/topic/reply", method = RequestMethod.GET)
     public ApiJsonDTO getTopicReplyInfo(@RequestParam(value = "replyid", required = false) String replyId) {
@@ -122,7 +122,7 @@ public class TopicController {
     /**
      * 获取热议话题列表
      *
-     * @return ApiJsonDTO 接口JSON列输对象
+     * @return ApiJsonDTO 接口 JSON 传输对象
      */
     @RequestMapping(value = "/topics/hot", method = RequestMethod.GET)
     public ApiJsonDTO listTopicsInfo() {
@@ -136,7 +136,7 @@ public class TopicController {
      *
      * @param limit 每页显示数量
      * @param page 跳转到指定页数
-     * @return ApiJsonDTO 接口JSON传输对象
+     * @return ApiJsonDTO 接口 JSON 传输对象
      */
     @RequestMapping(value = "/topics", method = RequestMethod.GET)
     public ApiJsonDTO listTopics(@RequestParam(value = "limit", required = false) String limit,
@@ -160,7 +160,7 @@ public class TopicController {
      * 获取话题总页数
      *
      * @param limit 每页显示条数
-     * @return ApiJsonDTO 接口JSON传输对象
+     * @return ApiJsonDTO 接口 JSON 传输对象
      */
     @RequestMapping(value = "/topics/pages", method = RequestMethod.GET)
     public ApiJsonDTO countTopicTotalPages(@RequestParam(value = "limit", required = false) String limit,
@@ -179,7 +179,7 @@ public class TopicController {
     /**
      * 获取话题分类信息列表
      *
-     * @return ApiJsonDTO 接口JSON传输数据
+     * @return ApiJsonDTO 接口 JSON 传输数据
      */
     @RequestMapping(value = "/topics/categorys", method = RequestMethod.GET)
     public ApiJsonDTO listTopicCategories() {
@@ -189,8 +189,8 @@ public class TopicController {
     /**
      * 发布话题
      *
-     * @param requestBodyParamsMap request-body内JSON数据
-     * @return ApiJsonDTO 接口JSON传输数据
+     * @param requestBodyParamsMap request-body 内 JSON 数据
+     * @return ApiJsonDTO 接口 JSON 传输数据
      */
     @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/topic", method = RequestMethod.POST, consumes = "application/json")
@@ -212,12 +212,12 @@ public class TopicController {
     /**
      * 发布回复
      *
-     * @param requestBodyParamsMap request-body内JSON数据
-     * @return ApiJsonDTO 接口JSON传输对象
+     * @param requestBodyParamsMap request-body 内 JSON 数据
+     * @return ApiJsonDTO 接口 JSON 传输对象
      */
     @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/topic/reply", method = RequestMethod.POST, consumes = "application/json")
-    public ApiJsonDTO releaseTopciReply(@RequestBody Map<String, Object> requestBodyParamsMap) {
+    public ApiJsonDTO releaseTopicReply(@RequestBody Map<String, Object> requestBodyParamsMap) {
         Integer topicId = (Integer) requestBodyParamsMap.get(ParamConst.TOPIC_ID);
         String replyContent = (String) requestBodyParamsMap.get(ParamConst.CONTENT);
 
@@ -232,8 +232,8 @@ public class TopicController {
     /**
      * 删除话题
      *
-     * @param requestBodyParamsMap request-body内JSON数据
-     * @return ApiJsonDTO 接口Json传输对象
+     * @param requestBodyParamsMap request-body 内 JSON 数据
+     * @return ApiJsonDTO 接口 Json 传输对象
      */
     @LoginAuthorization @AccountActivation @AdminRank
     @RequestMapping(value = "/topic-remove", method = RequestMethod.POST, consumes = "application/json")
@@ -250,8 +250,8 @@ public class TopicController {
     /**
      * 删除回复
      *
-     * @param requestBodyParamsMap request-body内JSON数据
-     * @return ApiJsonDTO 接口JSON传输对象
+     * @param requestBodyParamsMap request-body 内 JSON 数据
+     * @return ApiJsonDTO 接口 JSON 传输对象
      */
     @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/topic/reply-remove", method = RequestMethod.POST, consumes = "application/json")
@@ -268,8 +268,8 @@ public class TopicController {
     /**
      * 编辑话题
      *
-     * @param requestBodyParamsMap request-body内JSON数据
-     * @return ApiJsonDTO 接口JSON传输对象
+     * @param requestBodyParamsMap request-body 内 JSON 数据
+     * @return ApiJsonDTO 接口 JSON 传输对象
      */
     @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/topic-update", method = RequestMethod.POST, consumes = "application/json")
@@ -292,8 +292,8 @@ public class TopicController {
     /**
      * 编辑回复
      *
-     * @param requestBodyParamsMap request-body内JSON数据
-     * @return ApiJsonDTO 接口JSON传输对象
+     * @param requestBodyParamsMap request-body 内 JSON 数据
+     * @return ApiJsonDTO 接口 JSON 传输对象
      */
    @LoginAuthorization @AccountActivation
    @RequestMapping(value = "/topic/reply-update", method = RequestMethod.POST, consumes = "application/json")
@@ -313,8 +313,8 @@ public class TopicController {
      * 点赞话题
      *      - 需要 command 命令（用于点赞 or 取消）
      *
-     * @param requestBodyParamsMap request-body内JSON数据
-     * @return ApiJsonDTO 接口JSON传输对象
+     * @param requestBodyParamsMap request-body 内 JSON 数据
+     * @return ApiJsonDTO 接口 JSON 传输对象
      */
    @LoginAuthorization @AccountActivation
    @RequestMapping(value = "/topic/like", method = RequestMethod.POST, consumes = "application/json")
@@ -329,7 +329,7 @@ public class TopicController {
        //record user like topic id array of user action
        userService.operateLikeTopic(cookieUser.getId(), topicId, command);
 
-       //judge cuurent user like topic, according the command('inc', 'dec'), alter like of topic
+       //judge current user like topic, according the command('inc', 'dec'), alter like of topic
        boolean isCurrentUserLikeTopic = userService.isUserLikeTopic(cookieUser.getId(), topicId);
 
        return new ApiJsonDTO().success()
@@ -340,8 +340,8 @@ public class TopicController {
      * 点赞话题（新接口）
      *      - 不需要 command 命令
      *
-     * @param requestBodyParamsMap request-body内JSON数据
-     * @return ApiJsonDTO 接口JSON传输对象
+     * @param requestBodyParamsMap request-body 内 JSON 数据
+     * @return ApiJsonDTO 接口 JSON 传输对象
      */
     @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/topic/newlike", method = RequestMethod.POST, consumes = "application/json")
@@ -361,8 +361,8 @@ public class TopicController {
     /**
      * 收藏话题
      *
-     * @param requestBodyParamsMap request-body内JSON数据
-     * @return ApiJsonDTO　接口JSON传输对象
+     * @param requestBodyParamsMap request-body 内 JSON 数据
+     * @return ApiJsonDTO　接口 JSON 传输对象
      */
     @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/topic/collect", method = RequestMethod.POST, consumes = "application/json")
@@ -379,8 +379,8 @@ public class TopicController {
     /**
      * 关注话题
      *
-     * @param requestBodyParamsMap request-body内JSON数据
-     * @return ApiJsonDTO 接口JSON传输对象
+     * @param requestBodyParamsMap request-body 内 JSON 数据
+     * @return ApiJsonDTO 接口 JSON 传输对象
      */
     @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/topic/attention", method = RequestMethod.POST, consumes = "application/json")

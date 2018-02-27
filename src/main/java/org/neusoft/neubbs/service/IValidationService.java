@@ -56,7 +56,7 @@ public interface IValidationService {
      *      - 【必须符合格式】格式 Key1, value1, key2, value2, key3, value3 ...
      *      - 若参数为 null，则不进行参数校验
      *
-     * @param params 可变参数key-value组合集
+     * @param params 可变参数 key-value 组合集
      */
     void checkOnlyNotNullParam(String... params);
 

@@ -33,7 +33,7 @@ public interface IUserActionDAO {
      *          - 关注用户 id 数组
      *          - 被关注用户 id 数组
      *
-     * @param userId 用户id
+     * @param userId 用户 id
      * @return UserActionDO 用户行为对象
      */
     UserActionDO getUserAction(int userId);
@@ -42,8 +42,8 @@ public interface IUserActionDAO {
      * 获取用户喜欢话题 id 数组
      *      - 'fua_like_ft_id_array' 字段
      *
-     * @param userId 用户id
-     * @return String 用户喜欢话题id，JSON数组字符串
+     * @param userId 用户 id
+     * @return String 用户喜欢话题 id，JSON 数组字符串
      */
     String getUserActionLikeTopicIdJsonArray(int userId);
 
@@ -51,8 +51,8 @@ public interface IUserActionDAO {
      * 获取用户收藏话题 id 数组
      *      - 'fua_collect_ft_id_array' 字段
      *
-     * @param userId 用户id
-     * @return String 用户收藏话题id，JSON数组字符串
+     * @param userId 用户 id
+     * @return String 用户收藏话题 id，JSON 数组字符串
      */
     String getUserActionCollectTopicIdJsonArray(int userId);
 
@@ -60,8 +60,8 @@ public interface IUserActionDAO {
      * 获取用户关注话题 id 数组
      *      - 'fua_attention_ft_id_array' 字段
      *
-     * @param userId 用户id
-     * @return String 用户关注话题id，JSON数组字符串
+     * @param userId 用户 id
+     * @return String 用户关注话题 id，JSON 数组字符串
      */
     String getUserActionAttentionTopicIdJsonArray(int userId);
 
@@ -69,8 +69,8 @@ public interface IUserActionDAO {
      * 获取用户主动关注用户 id 数组
      *      - 'fua_following_fu_id_array' 字段
      *
-     * @param userId 用户id
-     * @return String 主动关注用户id，JSON数组字符串
+     * @param userId 用户 id
+     * @return String 主动关注用户 id，JSON 数组字符串
      */
     String getUserActionFollowingUserIdJsonArray(int userId);
 
@@ -78,16 +78,16 @@ public interface IUserActionDAO {
      * 获取用户被关注用户 id 数组
      *      - 'fua_followed_fu_id_array' 字段
      *
-     * @param userId 用户id
-     * @return String 被关注用户id，JSON数组字符串
+     * @param userId 用户 id
+     * @return String 被关注用户 id，JSON 数组字符串
      */
     String getUserActionFollowedUserIdJsonArray(int userId);
 
     /**
      * 更新用户喜欢话题 id 数组，JSON 数组末尾追加 1 个话题 id
      *
-     * @param userId 用户id
-     * @param topicId 话题id
+     * @param userId 用户 id
+     * @param topicId 话题 id
      * @return int 更新行数
      */
     int updateLikeTopicIdJsonArrayByOneTopicIdToAppendEnd(int userId, int topicId);
@@ -95,8 +95,8 @@ public interface IUserActionDAO {
     /**
      * 更新用户收藏话题 id 数组，JSON 数组末尾追加 1 个话题 id
      *
-     * @param userId 用户id
-     * @param topicId 话题id
+     * @param userId 用户 id
+     * @param topicId 话题 id
      * @return int 更新行数
      */
     int updateCollectTopicIdJsonArrayByOneTopicIdToAppendEnd(int userId, int topicId);
@@ -104,8 +104,8 @@ public interface IUserActionDAO {
     /**
      * 更新用户关注话题 id 数组，JSON 数组末尾追加 1 个话题 id
      *
-     * @param userId 用户id
-     * @param topicId 话题id
+     * @param userId 用户 id
+     * @param topicId 话题 id
      * @return int 更新行数
      */
     int updateAttentionTopicIdJsonArrayByOneTopicIdToAppendEnd(int userId, int topicId);
@@ -113,8 +113,8 @@ public interface IUserActionDAO {
     /**
      * 更新用户主动关注用户 id 数组，JSON 数组末尾追加 1 个主动关注用户 id
      *
-     * @param userId 用户id
-     * @param followingUserId 主动关注用户id
+     * @param userId 用户 id
+     * @param followingUserId 主动关注用户 id
      * @return int 更新行数
      */
     int updateFollowingUserIdJsonArrayByOneUserIdToAppendEnd(int userId, int followingUserId);
@@ -122,8 +122,8 @@ public interface IUserActionDAO {
     /**
      * 更新用户被关注用户 id 数组，JSON 数组末尾追加 1 个被关注用户 id
      *
-     * @param userId 用户id
-     * @param followedUserId 被关注用户id
+     * @param userId 用户 id
+     * @param followedUserId 被关注用户 id
      * @return int 更新行数
      */
     int updateFollowedUserIdJsonArrayByOneUserIdToAppendEnd(int userId, int followedUserId);
@@ -132,8 +132,8 @@ public interface IUserActionDAO {
      * 更新用户喜欢话题 id 数组，JSON 数组 根据索引，删除话题 id
      *      - 索引下标从 0 开始
      *
-     * @param userId 用户id
-     * @param indexOfTopicId 话题id位于JSON数组内的索引位置
+     * @param userId 用户 id
+     * @param indexOfTopicId 话题 id 位于 JSON 数组内的索引位置
      * @return int 更新行数
      */
     int updateLikeTopicIdJsonArrayByIndexToRemoveOneTopicId(int userId, int indexOfTopicId);
@@ -141,8 +141,8 @@ public interface IUserActionDAO {
     /**
      * 更新用户收藏话题 id 数组，JSON 数组 根据索引，删除话题 id
      *
-     * @param userId 用户id
-     * @param indexOfTopicId 话题id位于JSON数组内的索引位置
+     * @param userId 用户 id
+     * @param indexOfTopicId 话题 id 位于 JSON 数组内的索引位置
      * @return int 更新行数
      */
     int updateCollectTopicIdJsonArrayByIndexToRemoveOneTopicId(int userId, int indexOfTopicId);
@@ -150,8 +150,8 @@ public interface IUserActionDAO {
     /**
      * 更新用户关注话题 id 数组，JSON 数组 根据索引，删除话题 id
      *
-     * @param userId 用户id
-     * @param indexOfTopicId 话题id位于JSON数组内的索引位置
+     * @param userId 用户 id
+     * @param indexOfTopicId 话题 id 位于 JSON 数组内的索引位置
      * @return int 更新行数
      */
     int updateAttentionTopicIdJsonArrayByIndexToRemoveOneTopicId(int userId, int indexOfTopicId);
@@ -159,8 +159,8 @@ public interface IUserActionDAO {
     /**
      * 更新用户主动关注用户 id 数组，JSON 数组 根据索引，删除用户 id
      *
-     * @param userId 用户id
-     * @param indexOfFollowingUserId 用户id位于JSON数组内的索引位置
+     * @param userId 用户 id
+     * @param indexOfFollowingUserId 用户 id 位于 JSON 数组内的索引位置
      * @return int 更新行数
      */
     int updateFollowingUserIdJsonArrayByIndexToRemoveOneUserId(int userId, int indexOfFollowingUserId);
@@ -168,8 +168,8 @@ public interface IUserActionDAO {
     /**
      * 更新用户被关注用户 id 数组，JSON 数组 根据索引，删除用户 id
      *
-     * @param userId 用户id
-     * @param indexOfFollowedUserId 用户id位于JSON数组内的索引位置
+     * @param userId 用户 id
+     * @param indexOfFollowedUserId 用户 id 位于 JSON 数组内的索引位置
      * @return int 更新行数
      */
     int updateFollowedUserIdJsonArrayByIndexToRemoveOneUserId(int userId, int indexOfFollowedUserId);

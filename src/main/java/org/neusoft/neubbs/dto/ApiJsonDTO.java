@@ -7,7 +7,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- *  Api Result 传输对象
+ *  Api JSON 传输对象
+ *      - Controller 层 -> 前端
+ *      - 仅能在 Controller 层使用
+ *      - 返回格式
+ *          - {
+ *              success: true (false)
+ *              message: ""
+ *              model: { }
+ *             }
  *
  *  @author Suvan
  */

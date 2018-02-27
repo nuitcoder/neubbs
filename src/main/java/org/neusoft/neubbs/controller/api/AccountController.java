@@ -93,7 +93,7 @@ public final class AccountController {
      *
      * @param username 用户名
      * @param email 用户邮箱
-     * @return ApiJsonDTO 接口JSON传输对象
+     * @return ApiJsonDTO 接口 JSON 传输对象
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
     public ApiJsonDTO getUserInfo(@RequestParam(value = "username", required = false) String username,
@@ -115,7 +115,7 @@ public final class AccountController {
      * 获取用户激活状态
      *
      * @param username 用户名
-     * @return ApiJsonDTO 接口JSON传输对象
+     * @return ApiJsonDTO 接口 JSON 传输对象
      */
     @RequestMapping(value = "/state", method = RequestMethod.GET)
     public ApiJsonDTO getUserActivateState(@RequestParam(value = "username", required = false) String username) {
@@ -126,8 +126,8 @@ public final class AccountController {
     /**
      * 获取用户所有主动关注人信息列表
      *
-     * @param userId 用户id
-     * @return ApiJsonDTO 接口JSON传输对象
+     * @param userId 用户 id
+     * @return ApiJsonDTO 接口 JSON 传输对象
      */
     @RequestMapping(value = "/following", method = RequestMethod.GET)
     public ApiJsonDTO listUserFollowingUsersInfo(@RequestParam(value = "userid", required = false) String userId) {
@@ -138,8 +138,8 @@ public final class AccountController {
     /**
      * 获取用户所有被关注信息列表
      *
-     * @param userId 用户id
-     * @return ApiJsonDTO 接口JSON传输对象
+     * @param userId 用户 id
+     * @return ApiJsonDTO 接口 JSON 传输对象
      */
     @RequestMapping(value = "/followed", method = RequestMethod.GET)
     public ApiJsonDTO listUserFollowedUsersInfo(@RequestParam(value = "userid", required = false) String userId) {
@@ -151,8 +151,8 @@ public final class AccountController {
      * 登录
      *      - username（支持用户名 or 邮箱格式）
      *
-     * @param requestBodyParamsMap  request-body内JSON数据
-     * @return ApiJsonDTO 接口JSON传输对象
+     * @param requestBodyParamsMap  request-body 内 JSON 数据
+     * @return ApiJsonDTO 接口 JSON 传输对象
      */
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public ApiJsonDTO loginAccount(@RequestBody Map<String, Object> requestBodyParamsMap) {
@@ -181,7 +181,7 @@ public final class AccountController {
     /**
      * 注销
      *
-     * @return ApiJsonDTO 接口JSON传输对象
+     * @return ApiJsonDTO 接口 JSON 传输对象
      */
     @LoginAuthorization
     @RequestMapping(value = "/logout", method = RequestMethod.GET)
@@ -196,8 +196,8 @@ public final class AccountController {
     /**
      * 注册
      *
-     * @param requestBodyParamsMap request-body内JSON数据
-     * @return ApiJsonDTO 接口JSON传输对象
+     * @param requestBodyParamsMap request-body 内 JSON 数据
+     * @return ApiJsonDTO 接口 JSON 传输对象
      */
     @RequestMapping(value = "/register", method = RequestMethod.POST, consumes = "application/json")
     public ApiJsonDTO registerAccount(@RequestBody Map<String, Object> requestBodyParamsMap) {
@@ -223,8 +223,8 @@ public final class AccountController {
      *      - sex 不能为空，且只能为 0 or 1
      *      - birthday, position, description 允许 "",但是不能为 null
      *
-     * @param requestBodyParamsMap request-body内JSON数据
-     * @return ApiJsonDTO 接口JSON传输对象
+     * @param requestBodyParamsMap request-body 内 JSON 数据
+     * @return ApiJsonDTO 接口 JSON 传输对象
      */
     @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/update-profile", method = RequestMethod.POST, consumes = "application/json")
@@ -250,8 +250,8 @@ public final class AccountController {
     /**
      * 修改密码
      *
-     * @param requestBodyParamsMap request-body内JSON数据
-     * @return ApiJsonDTO 页面JSON传输对象
+     * @param requestBodyParamsMap request-body 内 JSON数据
+     * @return ApiJsonDTO 页面 JSON 传输对象
      */
     @LoginAuthorization @AccountActivation
     @RequestMapping(value = "/update-password", method = RequestMethod.POST, consumes = "application/json")
@@ -274,8 +274,8 @@ public final class AccountController {
     /**
      * 修改邮箱
      *
-     * @param requestBodyParamsMap request-body内JSON数据
-     * @return ApiJsonDTO 接口JSON传输对象
+     * @param requestBodyParamsMap request-body 内 JSON 数据
+     * @return ApiJsonDTO 接口 JSON 传输对象
      */
     @LoginAuthorization
     @RequestMapping(value = "/update-email", method = RequestMethod.POST, consumes = "application/json")
@@ -299,8 +299,8 @@ public final class AccountController {
      * 激活账户
      *      - 发送激活 mail
      *
-     * @param requestBodyParamsMap request-body内JSON数据
-     * @return ApiJsonDTO 接口JSON传输对象
+     * @param requestBodyParamsMap request-body 内 JSON 数据
+     * @return ApiJsonDTO 接口 JSON 传输对象
      */
     @RequestMapping(value = "/activate", method = RequestMethod.POST, consumes = "application/json")
     public ApiJsonDTO activateAccount(@RequestBody Map<String, Object> requestBodyParamsMap) {
@@ -336,7 +336,7 @@ public final class AccountController {
      *      - 修改客户端 cookie (重新保存用户信息)
      *
      * @param token 传入的 token
-     * @return ApiJsonDTO 接口JSON传输对象
+     * @return ApiJsonDTO 接口 JSON 传输对象
      */
     @RequestMapping(value = "/validate", method = RequestMethod.GET)
     public ApiJsonDTO validateActivateToken(@RequestParam(value = "token", required = false) String token) {
@@ -377,7 +377,7 @@ public final class AccountController {
      *      - 比较用户输入验证，是否匹配 session 中储存 5 位随机验证码
      *
      * @param captcha 用户输入验证码
-     * @return ApiJsonDTO 接口JSON字符串
+     * @return ApiJsonDTO 接口 JSON 传输对象
      */
     @RequestMapping(value = "/validate-captcha", method = RequestMethod.GET)
     public ApiJsonDTO validateCaptcha(@RequestParam(value = "captcha", required = false)String captcha) {
@@ -394,8 +394,8 @@ public final class AccountController {
      *      - 生成随机临时密码，修改邮箱用户密码 - > 临时密码
      *      - 发送临时密码到指定 email
      *
-     * @param requestBodyParamsMap request-body内JSON数据
-     * @return ApiJsonDTO 接口JSON传输对象
+     * @param requestBodyParamsMap request-body 内 JSON 数据
+     * @return ApiJsonDTO 接口 JSON 传输对象
      */
     @RequestMapping(value = "/forget-password", method = RequestMethod.POST)
     public ApiJsonDTO forgetPassword(@RequestBody Map<String, Object> requestBodyParamsMap) {
@@ -418,8 +418,9 @@ public final class AccountController {
      *      - 主动关注其余用户
      *      - 自动切换：有 -> 无， 无 -> 有
      *
-     * @param requestBodyParams request-body内JSON数据
-     * @return ApiJsonDTO 页面JSON传输对象 */
+     * @param requestBodyParams request-body 内 JSON数据
+     * @return ApiJsonDTO 页面 JSON 传输对象
+     */
     @RequestMapping(value = "/following", method = RequestMethod.POST, consumes = "application/json")
     @LoginAuthorization @AccountActivation
     public ApiJsonDTO followingUser(@RequestBody Map<String, Object> requestBodyParams) {

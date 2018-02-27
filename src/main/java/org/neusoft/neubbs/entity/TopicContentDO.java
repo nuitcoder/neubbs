@@ -1,7 +1,7 @@
 package org.neusoft.neubbs.entity;
 
 /**
- * forum_topic_content 表领域对象
+ * forum_topic_content 领域对象
  *
  * @author Suvan
  */

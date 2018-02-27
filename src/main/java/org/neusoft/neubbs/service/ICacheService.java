@@ -11,7 +11,6 @@ public interface ICacheService {
 
     /**
      * 保存用户邮箱 Key
-     *      - 设置key=邮箱，value=mail send interval
      *      - 指定 60s 过期
      *
      * @param emailKey 用户邮箱（作为 key）

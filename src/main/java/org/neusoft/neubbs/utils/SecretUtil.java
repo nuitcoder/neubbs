@@ -38,7 +38,7 @@ public final class SecretUtil {
      *      - MD5 消息摘要算法
      *
      * @param plainText 明文
-     * @return String MD5密文
+     * @return String MD5 密文
      */
     public static String encryptMd5(String plainText) {
         checkParamNotNull(plainText);
@@ -57,7 +57,7 @@ public final class SecretUtil {
      * Base64 转码
      *
      * @param plainText 明文
-     * @return String Base64编码密文
+     * @return String Base64 编码密文
      */
     public static String encodeBase64(String plainText) {
         checkParamNotNull(plainText);
@@ -72,7 +72,7 @@ public final class SecretUtil {
     /**
      * Base64 解码
      *
-     * @param cipherText Base64编码密文
+     * @param cipherText Base64 编码密文
      * @return String 明文
      */
     public static String decodeBase64(String cipherText) {
@@ -88,7 +88,7 @@ public final class SecretUtil {
      *      - 只加密用户信息的（id，name，rank，state），使用 HS256 对称加密算法
      *
      * @param user 用户信息对象（至少 id，name，rank，state 属性不能为空）
-     * @return String 密文token
+     * @return String 密文 token
      */
     public static String generateUserInfoToken(UserDO user) {
         checkParamNotNull(user);
@@ -124,7 +124,7 @@ public final class SecretUtil {
      * 解密用户信息 Token
      *      - 解密 JWT 生成的用户信息 Token, 获取 UserDO 对象
      *
-     * @param token 密文token
+     * @param token 密文 token
      * @return UserDO 用户信息对象（包含 id，name，rank，state 属性）
      */
     public static UserDO decryptUserInfoToken(String token) {

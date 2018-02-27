@@ -6,7 +6,7 @@ import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 
 /**
  * 解密配置文件处理器
- *      - 继承 Spring 的 PropertyPlaceholderConfigurer, 读取配置文件时，会调用
+ *      - 继承 Spring 的 PropertyPlaceholderConfigurer, 读取配置文件（*.properties）时会调用
  *      - 加密内容解析（例如：密码）
  *
  * @author Suvan
