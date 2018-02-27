@@ -124,8 +124,8 @@ public final class FtpUtil {
     public static void uploadFile(String serverDirectoryPath, String serverFileName,
                                   InputStream uploadFileInputStream) throws IOException {
         connect();
+        moveServerPath(serverDirectoryPath);
 
-        ftpClient.changeWorkingDirectory(serverDirectoryPath);
         if (!ftpClient.storeFile(serverFileName, uploadFileInputStream)) {
             throw new FtpException(ApiMessage.FTP_SERVER_ERROR).log(LogWarnEnum.UC4);
         }

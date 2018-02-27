@@ -7,16 +7,15 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.neusoft.neubbs.constant.api.ApiMessage;
-import org.neusoft.neubbs.constant.api.ParamConst;
 import org.neusoft.neubbs.constant.api.SetConst;
+import org.neusoft.neubbs.controller.filter.ApiFilter;
 import org.neusoft.neubbs.controller.handler.DynamicSwitchDataSourceHandler;
-import org.neusoft.neubbs.exception.ServiceException;
-import org.neusoft.neubbs.exception.FtpException;
 import org.neusoft.neubbs.entity.UserDO;
+import org.neusoft.neubbs.exception.ParamsErrorException;
 import org.neusoft.neubbs.service.IUserService;
 import org.neusoft.neubbs.utils.FtpUtil;
-import org.neusoft.neubbs.utils.SecretUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.ContextHierarchy;
@@ -26,15 +25,16 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.util.NestedServletException;
 
-import javax.servlet.http.Cookie;
 import javax.transaction.Transactional;
 import java.util.List;
 
 /**
  * File api 测试
+ *      - 测试 /api/file/avatar
  *
  * @author Suvan
  */
@@ -51,21 +51,16 @@ public class FileControllerTest {
 
     private MockMvc mockMvc;
 
+    private ApiTestUtil util;
+
     @Autowired
     private IUserService userService;
 
-
-    /**
-     * 打印成功通过 Test 函数消息
+    /*
+     * ***********************************************
+     * init method
+     * ***********************************************
      */
-    public void printSuccessPassTestMehtodMessage() {
-        //current executing mehtod
-        String currentDoingMethod = Thread.currentThread().getStackTrace()[2].getMethodName();
-
-        System.out.println("*************************** 【"
-                + currentDoingMethod + "()】 "
-                + " pass all the tests ****************************");
-    }
 
     @BeforeClass
     public static void init() {
@@ -74,18 +69,31 @@ public class FileControllerTest {
 
     @Before
     public void setup() {
-        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+        this.mockMvc = MockMvcBuilders
+                .webAppContextSetup(this.webApplicationContext)
+                .addFilter(new ApiFilter())
+                .build();
+
+        this.util = ApiTestUtil.getInstance(this.mockMvc);
     }
 
+    /*
+     * ***********************************************
+     * api test method
+     * ***********************************************
+     */
+
     /**
-     * 【/api/file/image】 test upload user avator image success
+     * 测试 /api/file/avatar
+     *      - 测试上传用户头像成功
+     *      - 需要权限：@LoginAuthorization, @AccountActivation
      */
     @Test
     @Transactional
-    public void testUploadUserAvatorImageSuccess() throws Exception {
-        //build MultipartFile type(input name, 文件名，文件类型，内容字节)
-        String htmlInputName = "avatorImage";
-        String uploadFileName = "testUploadImage";
+    public void testUploadUserAvatarSuccess() throws Exception {
+        //build MultipartFile type(html <> name, file name，file type，size)
+        String htmlInputName = "avatarImageFile";
+        String uploadFileName = "testAvatarFile";
         byte [] fileBytes = new byte[1024 * 1];
         MockMultipartFile[] files = {
                 new MockMultipartFile(htmlInputName, uploadFileName + ".jpg", "image/jpg", fileBytes),
@@ -93,76 +101,77 @@ public class FileControllerTest {
                 new MockMultipartFile(htmlInputName, uploadFileName + ".jpeg", "image/jpeg", fileBytes),
         };
 
-        //build login token
-        String authentication = SecretUtil.generateUserInfoToken(userService.getUserInfoByName("suvan"));
-
-        //upload user image file
+        //upload user avatar image file
         for (MockMultipartFile file: files) {
             mockMvc.perform(
-                    MockMvcRequestBuilders.fileUpload("/api/file/avator")
+                    MockMvcRequestBuilders.fileUpload("/api/file/avatar")
                             .file(file)
-                            .cookie(new Cookie(ParamConst.AUTHENTICATION, authentication))
+                            .cookie(util.getAlreadyLoginUserCookie())
+                            .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
+                            .accept(MediaType.APPLICATION_JSON)
             ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
              .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(ApiMessage.UPLOAD_SUCCESS))
-             .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
+             .andExpect(MockMvcResultMatchers.jsonPath("$.model").value(CoreMatchers.notNullValue()));
 
            System.out.println("upload " + file.getOriginalFilename() + " success!");
         }
 
         /*
-         * delete already upload user image file
+         * delete already upload user avatar image file
+         *      - test local
+         *          - upload path: user.image.upload.path = ... (neubbs.properties)
+         *      - test ftp server
          */
-        //【local file】(path: /webapp/WEB-INF/file/user/image/....)
-//        String serverUploadFilePath = webApplicationContext.getServletContext()
-//                .getRealPath(neubbsConfig.getUserImageUploadPath());
-//        File directory = new File(serverUploadFilePath);
-//        File[] allFiles = directory.listFiles();
-//        for (File file: allFiles) {
-//            if (file.getName().contains("testUploadImage")) {
-//                file.deleteOnExit();
-//                System.out.println("delete " +file.getName() + " success!");
-//            }
-//        }
 
-        //【ftp server file】(path: ftp-url/user/userid-username/avator/)
+        //System.out.println("delete local has bean uploaded test avatar file ......");
+        //String localUploadPath = webApplicationContext.getServletContext()
+        //        .getRealPath(neubbsConfig.getUserImageUploadPath());
+        //File directory = new File(localUploadPath);
+        //File[] allFiles = directory.listFiles();
+        //for (File file: allFiles) {
+        //    if (file.getName().contains(uploadFileName)) {
+        //        file.deleteOnExit();
+        //        System.out.println("already delete " + file.getName());
+        //    }
+        //}
+        //System.out.println("all local test file delete finished!");
+
+        System.out.println("delete ftp server has bean uploaded test avatar file ......");
         UserDO user = userService.getUserInfoByName("suvan");
-        String ftpAvatorDirectoryPath = "/user/" + user.getId() + "-" + user.getName() + "/avator/";
-        List<String> listFileName = FtpUtil.listServerPathFileName(ftpAvatorDirectoryPath);
+        String ftpUserAvatarPath = "/user/" + user.getId() + "-" + user.getName() + "/avator/";
+
+        List<String> listFileName = FtpUtil.listServerPathFileName(ftpUserAvatarPath);
         for (String fName: listFileName) {
             if (fName.contains(uploadFileName)) {
-                FtpUtil.delete(ftpAvatorDirectoryPath, fName);
-                System.out.println("success delete " + fName + " !");
+                FtpUtil.delete(ftpUserAvatarPath, fName);
+                System.out.println("already delete " + fName);
             }
         }
+        System.out.println("all ftp server test file delete finished!");
 
-        printSuccessPassTestMehtodMessage();
+        util.printSuccessMessage();
     }
 
     /**
-     * 【/api/file/image】 test upload user avator image throw exception
+     * 测试 /api/file/avatar
+     *      - 测试上传用户头像异常
+     *          - [✔] no permission
+     *              - no login
+     *              - the account not activated
+     *          - [✔] upload file format incorrect (no norm)
      */
     @Test
     @Transactional
-    public void testUploadUserAvatorImageThrowException() throws Exception {
-        String apiUrl = "/api/file/avator";
-
+    public void testUploadUserAvatarException() throws Exception {
         //no login
-        try {
-            mockMvc.perform(
-                    MockMvcRequestBuilders.fileUpload(apiUrl)
-            ).andExpect(MockMvcResultMatchers.status().is(200))
-             .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
-             .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(ApiMessage.NO_PERMISSION))
-             .andExpect(MockMvcResultMatchers.jsonPath("$.success").exists());
+        util.testApiThrowNoPermissionException("/api/file/avatar", RequestMethod.POST, null);
 
-        }catch (NestedServletException ne) {
-            Assert.assertThat(ne.getRootCause(), CoreMatchers.instanceOf(ServiceException.class));
-            Assert.assertEquals(ne.getRootCause().getMessage(), ApiMessage.NO_PERMISSION);
-        }
+        //the account not activated
+        util.testApiThrowNoPermissionException("/api/file/avatar", RequestMethod.POST, util.getNoActivatedUserDO());
 
-        //alread login contain cookie, upload exception picture
-        String htmlInputName = "avatorImage";
-        String fileName = "exceptionImage.jpg";
+        //upload file format incorrect
+        String htmlInputName = "avatarImageFile";
+        String fileName = "testAvatarFile.jpg";
         String fileType = "image/jpg";
         byte[] fileBytes = new byte[1024 * 1024 * 1];
         MockMultipartFile[] files = {
@@ -173,29 +182,23 @@ public class FileControllerTest {
                 new MockMultipartFile(htmlInputName, fileName, fileType ,new byte[1024 * 1024 * 6])
         };
 
-        String authentication = SecretUtil.generateUserInfoToken(userService.getUserInfoByName("suvan"));
-
         for (MockMultipartFile file: files) {
             try {
                 mockMvc.perform(
-                       MockMvcRequestBuilders.fileUpload("/api/file/avator")
-                            .file(file)
-                            .cookie(new Cookie(ParamConst.AUTHENTICATION, authentication))
-                ).andExpect(MockMvcResultMatchers.status().is(200))
-                 .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
+                       MockMvcRequestBuilders.fileUpload("/api/file/avatar")
+                               .file(file)
+                               .cookie(util.getAlreadyLoginUserCookie())
+                               .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
+                               .accept(MediaType.APPLICATION_JSON)
+                ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
                  .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists())
                  .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
 
             } catch (NestedServletException ne) {
-                Assert.assertThat(ne.getRootCause(),
-                        CoreMatchers.anyOf(
-                                CoreMatchers.instanceOf(FtpException.class),
-                                CoreMatchers.instanceOf(ServiceException.class)
-                        )
-                );
+                Assert.assertThat(ne.getRootCause(), CoreMatchers.instanceOf(ParamsErrorException.class));
             }
         }
 
-        printSuccessPassTestMehtodMessage();
+        util.printSuccessMessage();
     }
 }

@@ -9,7 +9,6 @@ public enum LogWarnEnum {
 
     /**
      * 日志警告信息
-     *      FS - File Treat Service
      *      AI - Api Interceptor
      *      US - User Service
      *      ES - Email Service
@@ -18,11 +17,6 @@ public enum LogWarnEnum {
      *      VS - Validation Service
      *      UC - util class
      */
-    FS1(1, "用户没有选择上传文件"),
-    FS2(2, " 文件类型不符合头像类型（jpg | png | jpeg）"),
-    FS3(3, "服务器不存在指定上传文件目录"),
-    FS4(4, "IO异常，文件复制到服务器指定目录失败"),
-    FS5(5, "用户上传头像过大（超过 5MB）"),
 
     AT1(1, "token 已经过期，需重新登录"),
     AT2(2, "无权访问 api，需登录"),
@@ -79,6 +73,11 @@ public enum LogWarnEnum {
 
     VS1(1, " 需按规定输入相应参数，不能输入空参数"),
     VS2(2, " 指令无效，请根据相应约定，输入运行范围内指令"),
+    VS3(3, "用户没有选择上传文件"),
+    VS4(4, " 文件类型不符合头像类型（jpg | png | jpeg）"),
+    VS5(5, "服务器不存在指定上传文件目录"),
+    VS6(6, "IO异常，文件复制到服务器指定目录失败"),
+    VS7(7, "用户上传头像过大（超过 5MB）"),
 
     UC1(1, " MD5 加密失败"),
     UC2(2, " Base64 转码失败"),

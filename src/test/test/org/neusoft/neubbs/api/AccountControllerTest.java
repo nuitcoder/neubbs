@@ -122,7 +122,7 @@ public class AccountControllerTest {
                 .addFilter(new ApiFilter())
                 .build();
 
-        this.util = ApiTestUtil.getInstance(mockMvc);
+        this.util = ApiTestUtil.getInstance(this.mockMvc);
 
         //method 2, custom default environment
         //AccountController accountController = (AccountController) webApplicationContext.getBean("accountController");

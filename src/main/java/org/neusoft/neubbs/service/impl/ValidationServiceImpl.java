@@ -9,6 +9,7 @@ import org.neusoft.neubbs.service.IValidationService;
 import org.neusoft.neubbs.utils.ParamValidateUtil;
 import org.neusoft.neubbs.utils.PatternUtil;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * IValidationService 实现类
@@ -73,5 +74,23 @@ public class ValidationServiceImpl implements IValidationService {
         }
 
         throw new ParamsErrorException(ApiMessage.PARAM_ERROR).log(LogWarnEnum.VS1);
+    }
+
+    @Override
+    public void checkUserUploadAvatarNorm(MultipartFile avatarFile) {
+        //no empty
+        if (avatarFile.isEmpty()) {
+            throw new ParamsErrorException(ApiMessage.NO_CHOICE_PICTURE).log(LogWarnEnum.VS3);
+        }
+
+        //match file type(.xxx)
+        if (!PatternUtil.matchUserAvatarType(avatarFile.getContentType())) {
+            throw new ParamsErrorException(ApiMessage.PICTURE_FORMAT_WRONG).log(LogWarnEnum.VS4);
+        }
+
+        //no exceed 5MB
+        if (avatarFile.getSize() >  SetConst.USER_AVATOR_MAX_SIZE_FIVE_MB) {
+            throw new ParamsErrorException(ApiMessage.PICTURE_TOO_LARGE).log(LogWarnEnum.VS7);
+        }
     }
 }

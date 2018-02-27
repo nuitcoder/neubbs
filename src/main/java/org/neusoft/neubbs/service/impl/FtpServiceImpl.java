@@ -22,9 +22,8 @@ public class FtpServiceImpl implements IFtpService {
     @Override
     public void createUserPersonalDirectory(UserDO user) {
         try {
-            String userPath = "/user/" + user.getId() + "-" + user.getName();
-            FtpUtil.createDirectory(userPath);
-            FtpUtil.createDirectory(userPath + "/avatar");
+            String userAvatarImageFilePath = "/user/" + user.getId() + "-" + user.getName() + "/avator";
+            FtpUtil.createDirectory(userAvatarImageFilePath);
         } catch (IOException ioe) {
             throw new ServiceException(ApiMessage.FTP_SERVICE_EXCEPTION).log(LogWarnEnum.FTPS1);
         }
@@ -33,7 +32,7 @@ public class FtpServiceImpl implements IFtpService {
     @Override
     public void uploadUserAvatar(UserDO user, MultipartFile avatarFile) {
         try {
-            String serverUploadPath = "/user/" + user.getId() + "-" + user.getName() + "/avatar/";
+            String serverUploadPath = "/user/" + user.getId() + "-" + user.getName() + "/avator/";
             String serverFileName = this.generateServerAvatarFileName(avatarFile);
 
             FtpUtil.uploadFile(serverUploadPath, serverFileName, avatarFile.getInputStream());

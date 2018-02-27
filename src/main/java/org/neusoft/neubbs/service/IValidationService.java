@@ -1,5 +1,7 @@
 package org.neusoft.neubbs.service;
 
+import org.springframework.web.multipart.MultipartFile;
+
 /**
  * 验证服务接口
  *      - 参数验证
@@ -8,6 +10,8 @@ package org.neusoft.neubbs.service;
  *          - 检查命令
  *          - 只检查非空参数
  *          - 检查参数集不能全部为空
+ *      - 文件验证
+ *          - 检查用户上传头像规范
  *
  * @author Suvan
  */
@@ -15,7 +19,7 @@ public interface IValidationService {
 
     /*
      * ***********************************************
-     * param validation
+     * param validate
      * ***********************************************
      */
 
@@ -67,4 +71,21 @@ public interface IValidationService {
      * @param params 可变参数集
      */
     void checkParamsNotAllNull(String... params);
+
+
+    /*
+     * ***********************************************
+     * file validate
+     * ***********************************************
+     */
+
+    /**
+     * 检查上传头像规范（图片）
+     *      - 是否为空
+     *      - 是否匹配指定类型
+     *      - 是否超过指定大小
+     *
+     * @param avatarFile 头像文件对象
+     */
+    void checkUserUploadAvatarNorm(MultipartFile avatarFile);
 }

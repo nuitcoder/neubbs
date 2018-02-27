@@ -10,6 +10,7 @@ import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.exception.PermissionException;
 import org.neusoft.neubbs.utils.SecretUtil;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -148,7 +149,18 @@ public class ApiTestUtil {
             mockRequest = MockMvcRequestBuilders.post(apiUrl);
         }
 
-        //no login
+        //set content type
+        mockRequest.contentType(MediaType.APPLICATION_JSON);
+
+        //upload file type, to change http request
+        if (apiUrl.contains("/api/file/")) {
+            mockRequest = MockMvcRequestBuilders
+                    .fileUpload(apiUrl)
+                    .file(new MockMultipartFile("avatarImageFile", "testAvatarFile.jpg", "image/jpg", new byte[0]));
+            mockRequest.contentType(MediaType.MULTIPART_FORM_DATA_VALUE);
+        }
+
+        //login, but the account not activate
         if (user != null) {
             mockRequest.cookie(new Cookie(ParamConst.AUTHENTICATION, SecretUtil.generateUserInfoToken(user)));
         }
@@ -156,7 +168,6 @@ public class ApiTestUtil {
         try {
             mockMvc.perform(
                     mockRequest
-                        .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
             ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
              .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(ApiMessage.NO_PERMISSION))

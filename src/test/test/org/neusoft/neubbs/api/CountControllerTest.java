@@ -61,11 +61,11 @@ public class CountControllerTest {
         this.webApplicationContext.getServletContext().setAttribute(ParamConst.LOGIN_USER, 50);
 
         this.mockMvc = MockMvcBuilders
-                .webAppContextSetup(webApplicationContext)
+                .webAppContextSetup(this.webApplicationContext)
                 .addFilter(new ApiFilter())
                 .build();
 
-        this.util = ApiTestUtil.getInstance(mockMvc);
+        this.util = ApiTestUtil.getInstance(this.mockMvc);
     }
 
     /*
