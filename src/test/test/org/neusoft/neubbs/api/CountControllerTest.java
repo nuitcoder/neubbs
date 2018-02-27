@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.neusoft.neubbs.constant.api.ParamConst;
 import org.neusoft.neubbs.constant.api.SetConst;
+import org.neusoft.neubbs.controller.filter.ApiFilter;
 import org.neusoft.neubbs.controller.handler.DynamicSwitchDataSourceHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -13,15 +14,18 @@ import org.springframework.test.context.ContextHierarchy;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import javax.servlet.ServletContext;
-
 /**
  * Count api 测试
+ *      - 测试 /api/count
+ *      - 测试 /api/count/online
+ *      - 测试 /api/count/user
  *
  * @author Suvan
  */
@@ -38,18 +42,13 @@ public class CountControllerTest {
 
     private MockMvc mockMvc;
 
+    private ApiTestUtil util;
 
-    /**
-     * 打印成功通过 Test 函数消息
+    /*
+     * ***********************************************
+     * init method
+     * ***********************************************
      */
-    public void printSuccessPassTestMehtodMessage() {
-        //current executing mehtod
-        String currentDoingMethod = Thread.currentThread().getStackTrace()[2].getMethodName();
-
-        System.out.println("*************************** 【"
-                + currentDoingMethod + "()】 "
-                + " pass all the tests ****************************");
-    }
 
     @BeforeClass
     public static void init() {
@@ -58,21 +57,32 @@ public class CountControllerTest {
 
     @Before
     public void setup() {
-        //set servlet context online visit user and loin user
-        ServletContext context = webApplicationContext.getServletContext();
-            context.setAttribute(ParamConst.LOGIN_USER, 50);
+        //set web application attribute loginUser = 50
+        this.webApplicationContext.getServletContext().setAttribute(ParamConst.LOGIN_USER, 50);
 
-        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+        this.mockMvc = MockMvcBuilders
+                .webAppContextSetup(webApplicationContext)
+                .addFilter(new ApiFilter())
+                .build();
+
+        this.util = ApiTestUtil.getInstance(mockMvc);
     }
 
+    /*
+     * ***********************************************
+     * api test method
+     * ***********************************************
+     */
+
     /**
-     * 【/api/count】 test count totals success
-     *      - user totals
-     *      - topic totals
-     *      - reply totals
+     * 测试 /api/count
+     *      - 测试论坛基数统计成功
+     *          - user totals
+     *          - topic totals
+     *          - reply totals
      */
     @Test
-    public void testCountTotalsSuccess() throws Exception {
+    public void testCountForumBasicDataSuccess() throws Exception {
         mockMvc.perform(
                 MockMvcRequestBuilders.get("/api/count")
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
@@ -82,23 +92,51 @@ public class CountControllerTest {
          .andExpect(MockMvcResultMatchers.jsonPath("$.model.topic").exists())
          .andExpect(MockMvcResultMatchers.jsonPath("$.model.reply").exists());
 
-        printSuccessPassTestMehtodMessage();
+        util.printSuccessMessage();
     }
 
     /**
-     * 【/api/count/visit】test count online count success
-     *      - visit user
-     *      - login user
+     * 测试 /api/count/online
+     *      - 测试在线统计成功
+     *          - login user
      */
     @Test
-    public void testCountOnlineCountSuccess() throws Exception {
-       mockMvc.perform(
-               MockMvcRequestBuilders.get("/api/count/online")
-       ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
-        .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
-        .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
-        .andExpect(MockMvcResultMatchers.jsonPath("$.model." + ParamConst.LOGIN_USER).value(50));
+    public void testCountOnlineDataSuccess() throws Exception {
+        //@Before already set application attribute loginUser = 50
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/api/count/online")
+        ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model." + ParamConst.LOGIN_USER).value(50))
+        .andDo(MockMvcResultHandlers.print());
 
-       printSuccessPassTestMehtodMessage();
+       util.printSuccessMessage();
+    }
+
+    /**
+     * 测试 /api/count/user
+     *      - 测试用户统计成功
+     *          - following
+     *          - followed
+     *          - like
+     *          - collect
+     *          - attention
+     *          - topic
+     *          - reply
+     */
+    @Test
+    public void testCountUserData() throws Exception {
+        MvcResult mvcResult = mockMvc.perform(
+                MockMvcRequestBuilders.get("/api/count/user")
+                        .param("userid", "6")
+        ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
+                .andReturn();
+
+        util.isExistKeyItems(mvcResult, "following", "followed", "like", "collect", "attention", "topic", "reply");
+
+        util.printSuccessMessage();
     }
 }

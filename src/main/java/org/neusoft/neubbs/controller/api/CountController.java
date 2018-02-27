@@ -98,8 +98,8 @@ public class CountController {
      * @param userId 用户 id
      * @return ApiJsonDTO 接口 JSON 传输对象
      */
-    @RequestMapping(value = "user", method = RequestMethod.GET)
-    public ApiJsonDTO countUser(@RequestParam(value = "userid", required = false) String userId) {
+    @RequestMapping(value = "/user", method = RequestMethod.GET)
+    public ApiJsonDTO countUserData(@RequestParam(value = "userid", required = false) String userId) {
         validationService.check(ParamConst.USER_ID, userId);
 
         int userIdInt = Integer.valueOf(userId);
@@ -111,6 +111,7 @@ public class CountController {
             modelMap.put(ParamConst.ATTENTION, userService.countUserAttentionTopicTotals(userIdInt));
             modelMap.put(ParamConst.TOPIC, userService.countUserTopicTotals(userIdInt));
             modelMap.put(ParamConst.REPLY, userService.countUserReplyTotals(userIdInt));
+
         return new ApiJsonDTO().success().model(modelMap);
     }
 }
