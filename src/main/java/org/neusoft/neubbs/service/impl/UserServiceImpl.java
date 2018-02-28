@@ -254,9 +254,7 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public boolean isUserLikeTopic(int userId, int topicId) {
-        this.getUserDONotNull(userId);
-
-        String userLikeTopicIdIntJsonArrayString = userActionDAO.getUserAction(userId).getLikeTopicIdJsonArray();
+        String userLikeTopicIdIntJsonArrayString = userActionDAO.getUserActionLikeTopicIdJsonArray(userId);
         return JsonUtil.isExistIntElement(userLikeTopicIdIntJsonArrayString, topicId);
     }
 

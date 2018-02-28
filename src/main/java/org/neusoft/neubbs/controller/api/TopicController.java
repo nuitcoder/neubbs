@@ -68,10 +68,10 @@ public class TopicController {
     /**
      * 获取话题信息
      *      - 能够获取当前用户是否点赞该文章信息（访客用户默认为 false）
-     *      - hadread 参数决定是否增加阅读数（0-不增加, 1-增加）
+     *      - hadread 参数决定是否增加阅读数（0 - 不增加, 1 - 增加）
      *
      * @param topicId 话题 id
-     * @param hadRead 阅读数是否增加（0-不增加，1-增加）
+     * @param hadRead 阅读数是否增加（0 - 不增加，1 - 增加）
      * @return ApiJsonDTO 接口 JSON 传输对象
      */
     @RequestMapping(value = "/topic", method = RequestMethod.GET)
@@ -89,13 +89,13 @@ public class TopicController {
         int topicIdInt = Integer.parseInt(topicId);
         Map<String, Object> topicContentPageModelMap = topicService.getTopicContentModelMap(topicIdInt);
 
-        //judge current user like topic state(visit user default value of false)
-        boolean isCurrentUserLikeThisTopic = false;
+        //judge current user is like this topic (visit user default value of 'false')
+        boolean isLikeTopicForCurrentUser = false;
         if (httpService.isUserLoginState()) {
             UserDO currentUser = secretService.getUserInfoByAuthentication(httpService.getAuthenticationCookieValue());
-
-            isCurrentUserLikeThisTopic = userService.isUserLikeTopic(currentUser.getId(), topicIdInt);
+            isLikeTopicForCurrentUser = userService.isUserLikeTopic(currentUser.getId(), topicIdInt);
         }
+        topicContentPageModelMap.put(ParamConst.IS_LIKE_TOPIC, isLikeTopicForCurrentUser);
 
         //read + 1 (default no add)
         if (isAddTopicRead) {
@@ -103,7 +103,6 @@ public class TopicController {
             topicContentPageModelMap.put(ParamConst.READ, (int) topicContentPageModelMap.get(ParamConst.READ) + 1);
         }
 
-        topicContentPageModelMap.put(ParamConst.IS_LIKE_TOPIC, isCurrentUserLikeThisTopic);
         return new ApiJsonDTO().success().model(topicContentPageModelMap);
     }
 

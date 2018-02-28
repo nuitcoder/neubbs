@@ -242,7 +242,6 @@ public interface IUserService {
 
     /**
      * 判断用户是否喜欢话题
-     *      - userId 需验证存在性
      *
      * @param userId 用户 id
      * @param topicId 话题 id

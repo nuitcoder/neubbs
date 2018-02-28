@@ -9,8 +9,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.neusoft.neubbs.constant.api.ApiMessage;
-import org.neusoft.neubbs.constant.api.ParamConst;
 import org.neusoft.neubbs.constant.api.SetConst;
+import org.neusoft.neubbs.controller.filter.ApiFilter;
 import org.neusoft.neubbs.controller.handler.DynamicSwitchDataSourceHandler;
 import org.neusoft.neubbs.dao.ITopicActionDAO;
 import org.neusoft.neubbs.dao.ITopicCategoryDAO;
@@ -22,9 +22,8 @@ import org.neusoft.neubbs.entity.TopicCategoryDO;
 import org.neusoft.neubbs.entity.TopicContentDO;
 import org.neusoft.neubbs.entity.TopicDO;
 import org.neusoft.neubbs.entity.TopicReplyDO;
-import org.neusoft.neubbs.entity.UserDO;
-import org.neusoft.neubbs.exception.ServiceException;
 import org.neusoft.neubbs.exception.ParamsErrorException;
+import org.neusoft.neubbs.exception.ServiceException;
 import org.neusoft.neubbs.service.ITopicService;
 import org.neusoft.neubbs.utils.SecretUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +44,6 @@ import javax.servlet.http.Cookie;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Topic api 测试
@@ -64,6 +62,8 @@ public class TopicControllerTest {
     private WebApplicationContext webApplicationContext;
 
     private MockMvc mockMvc;
+
+    private ApiTestUtil util;
 
     @Autowired
     private IUserActionDAO userActionDAO;
@@ -86,64 +86,11 @@ public class TopicControllerTest {
     @Autowired
     private ITopicService topicService;
 
-
-    /**
-     * 打印成功通过 Test 函数消息
+    /*
+     * ***********************************************
+     * init method
+     * ***********************************************
      */
-    private void printSuccessPassTestMehtodMessage() {
-        //current executing mehtod
-        String currentDoingMethod = Thread.currentThread().getStackTrace()[2].getMethodName();
-
-        System.out.println("*************************** 【"
-                + currentDoingMethod + "()】"
-                + " pass all the tests ****************************");
-    }
-
-    /**
-     * 确认结果集 Model Map 应该拥有以下 Key 选项
-     *
-     * @param map 需要判断的键值对
-     * @param keyItems key选项
-     * @throws Exception 所有异常
-     */
-    private void confirmMapShouldHavaKeyItems(Map map, String... keyItems) throws Exception {
-
-        //compare length and judge exist item
-        Assert.assertEquals(keyItems.length, map.size());
-        Assert.assertThat((Set<String>) map.keySet(), CoreMatchers.hasItems(keyItems));
-    }
-
-    /**
-     * 获取已经登陆用户 Cookie
-     *
-     * @return Cookie 已经登录用户Cookie
-     */
-    public Cookie getAlreadLoginUserCookie() {
-        //cookie user, explain alreay login and activated
-        UserDO user = new UserDO();
-            user.setId(6);
-            user.setName("suvan");
-            user.setRank("admin");
-            user.setState(1);
-
-        return new Cookie(ParamConst.AUTHENTICATION, SecretUtil.generateUserInfoToken(user));
-    }
-
-    /**
-     * 生成 JSON 字段
-     *
-     * @param key 字符串键
-     * @param value Object值
-     * @return String JSON字段
-     */
-    public String getJsonField(String key, Object value) {
-        if (value == null) {
-            value = null;
-        } else if (value instanceof String) {
-            value = "\"" + value + "\"";
-        }
-        return "\"" + key + "\":" + value;
-    }
 
     @BeforeClass
     public static void init() {
@@ -152,62 +99,83 @@ public class TopicControllerTest {
 
     @Before
     public void setup() {
-        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+        this.mockMvc = MockMvcBuilders
+                .webAppContextSetup(this.webApplicationContext)
+                .addFilter(new ApiFilter())
+                .build();
+
+        this.util = ApiTestUtil.getInstance(mockMvc);
     }
 
+    /*
+     * ***********************************************
+     * api test method
+     * ***********************************************
+     */
+
     /**
-     * 【/api/topic (http get)】 test get topic information success
+     * 测试 /api/topic
+     *      - 获取话题信息接口成功
+     *          - 阅读数增加
+     *          - 当前登陆 cookie 用户 'suvan' 并未点赞过 topicId = 1 的话题，所以期望 isliketopic = false
      */
     @Test
-    public void testGetTopicInformationSuccess() throws Exception {
+    @Transactional
+    public void testGetTopicInfoSuccessOfAddRead() throws Exception {
         String topicId = "1";
 
         MvcResult result = mockMvc.perform(
                 MockMvcRequestBuilders.get("/api/topic")
+                        .cookie(util.getAlreadyLoginUserCookie())
                         .param("topicid", topicId)
+                        .param("hadread", "1")
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
          .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
          .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
-            .andReturn();
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model.isliketopic").value(false))
+                .andReturn();
 
         Map resultMap = (Map) JSON.parse(result.getResponse().getContentAsString());
 
         //judge $.model
         Map modelMap = (Map) resultMap.get("model");
-        this.confirmMapShouldHavaKeyItems(modelMap,
+        util.confirmMapShouldHavaKeyItems(modelMap,
                 "title", "replies", "lastreplytime", "createtime", "topicid" ,"content",
                 "read", "like", "category", "user", "lastreplyuser", "replylist", "isliketopic");
 
         //judge $.model.category
-        this.confirmMapShouldHavaKeyItems((Map) modelMap.get("category"), "id", "name", "description");
+        util.confirmMapShouldHavaKeyItems((Map) modelMap.get("category"), "id", "name", "description");
+
         //judge $.model.user
-        Map modelUserMap = (Map) modelMap.get("user");
-        this.confirmMapShouldHavaKeyItems((Map) modelMap.get("user"), "username", "avator");
+        util.confirmMapShouldHavaKeyItems((Map) modelMap.get("user"), "avator", "username");
 
         //judge $.model.lastreplyuser
-        this.confirmMapShouldHavaKeyItems((Map) modelMap.get("lastreplyuser"), "username", "avator");
+        util.confirmMapShouldHavaKeyItems((Map) modelMap.get("lastreplyuser"), "avator", "username");
 
-        //judge $.model.replys
-        List modelReplysList = (List) modelMap.get("replylist");
-        if (modelReplysList.size() > 0) {
+        //judge $.model.replylist
+        List modelReplyList = (List) modelMap.get("replylist");
+        if (modelReplyList.size() > 0) {
             //get first reply map
-            Map firstReplyMap = (Map) modelReplysList.get(0);
-            this.confirmMapShouldHavaKeyItems(firstReplyMap,
+            Map firstReplyMap = (Map) modelReplyList.get(0);
+            util.confirmMapShouldHavaKeyItems(firstReplyMap,
                     "topicid", "content", "agree", "oppose", "createtime", "replyid", "user");
 
             //judge $.model.replys[0].user
-            this.confirmMapShouldHavaKeyItems( (Map) firstReplyMap.get("user"), "username", "avator");
+            util.confirmMapShouldHavaKeyItems( (Map) firstReplyMap.get("user"), "avator", "username");
         }
 
-        printSuccessPassTestMehtodMessage();
+        util.printSuccessMessage();
     }
 
     /**
-     * 【/api/topic (http get)】 test get topic information read no add success
-     *      - if no request param hadread, default no add read
+     * 测试 /api/topic
+     *      - 测试获取话题信息成功
+     *          - 阅读数不增加
+     *          - 访客用户默认不喜欢话题（若用户已登陆，则要判断用户是否喜欢话题）
      */
     @Test
-    public void testGetTopicInformationReadNoAddSuccess() throws Exception {
+    @Transactional
+    public void testGetTopicInfoSuccessOfNotAddRead() throws Exception {
         String topicId = "1";
         int beforeTopicRead = topicContentDAO.getTopicContentByTopicId(Integer.parseInt(topicId)).getRead();
 
@@ -217,58 +185,35 @@ public class TopicControllerTest {
                         .param("hadread", "0")
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
          .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
-         .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model.isliketopic").value(false));
 
+        //compare before and after read the same
         int afterTopicRead = topicContentDAO.getTopicContentByTopicId(Integer.parseInt(topicId)).getRead();
         Assert.assertEquals(beforeTopicRead, afterTopicRead);
 
-        printSuccessPassTestMehtodMessage();
+        util.printSuccessMessage();
     }
 
     /**
-     * 【/api/topic (http get)】 test get topic information read add success
-     *      - add read (+1)
+     * 测试 /api/topic
+     *      - 获取话题信息异常
+     *          - [✔] request param error, no norm
+     *              - null
+     *              - topicid error
+     *          - [✔] service exception
+     *              - no topic
      */
     @Test
-    public void testGetTopicInformationReadAddSuccess() throws Exception {
-        String topicId = "1";
-        int beforeTopicRead = topicContentDAO.getTopicContentByTopicId(Integer.parseInt(topicId)).getRead();
+    public void testGetTopicInfoException() throws Exception{
+        //request param error
+        String[] params = {null, "1111111111111111", "abc123*", "10000000"};
 
-        mockMvc.perform(
-                MockMvcRequestBuilders.get("/api/topic")
-                        .param("topicid", topicId)
-                        .param("hadread", "1")
-        ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
-         .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
-         .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
-
-        int afterTopicRead = topicContentDAO.getTopicContentByTopicId(Integer.parseInt(topicId)).getRead();
-        Assert.assertEquals(beforeTopicRead + 1, afterTopicRead);
-
-        printSuccessPassTestMehtodMessage();
-    }
-
-    /**
-     * 【/api/topic (http get)】 test get topic information throw exception
-     *      - request param error
-     *          - [✔] null exception
-     *          - [✔] topicid norm error
-     *          - [ ] hadread norm error
-     *      - database exception
-     *          - [✔] no topic
-     */
-    @Test
-    public void testGetTopicInformationThrowException() throws Exception{
-        //check length, format, database data no exist
-        String[] params = {
-             null, "1111111111111111", "asdfa*1-", "10000000"
-        };
-
-        for (String param: params) {
+        for (String topicId: params) {
             try {
                 mockMvc.perform(
                         MockMvcRequestBuilders.get("/api/topic")
-                                .param("topicid", param)
+                                .param("topicid", topicId)
                 ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
                  .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists())
                  .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
@@ -283,7 +228,7 @@ public class TopicControllerTest {
             }
         }
 
-        printSuccessPassTestMehtodMessage();
+        util.printSuccessMessage();
     }
 
     /**
@@ -306,13 +251,13 @@ public class TopicControllerTest {
 
         //judge $.model
         Map modelMap = (Map) resultMap.get("model");
-        this.confirmMapShouldHavaKeyItems(modelMap,
+        util.confirmMapShouldHavaKeyItems(modelMap,
                 "topicid", "content", "agree", "oppose", "createtime", "user");
 
         //judge $.model.user
-        this.confirmMapShouldHavaKeyItems((Map) modelMap.get("user"), "username", "avator");
+        util.confirmMapShouldHavaKeyItems((Map) modelMap.get("user"), "username", "avator");
 
-        printSuccessPassTestMehtodMessage();
+        util.printSuccessMessage();
     }
 
     /**
@@ -345,7 +290,7 @@ public class TopicControllerTest {
             }
         }
 
-        printSuccessPassTestMehtodMessage();
+        util.printSuccessMessage();
     }
 
     /**
@@ -365,17 +310,17 @@ public class TopicControllerTest {
         Assert.assertEquals(10, modelList.size());
         Map firstModelListMap = (Map) modelList.get(0);
 
-        this.confirmMapShouldHavaKeyItems(firstModelListMap,
+        util.confirmMapShouldHavaKeyItems(firstModelListMap,
                 "title", "replies", "lastreplytime", "createtime", "topicid", "category", "user", "lastreplyuser");
 
         //judge $.mode.category
-        this.confirmMapShouldHavaKeyItems((Map) firstModelListMap.get("category"), "id", "name", "description");
+        util.confirmMapShouldHavaKeyItems((Map) firstModelListMap.get("category"), "id", "name", "description");
 
         //judge $.model.user
-        this.confirmMapShouldHavaKeyItems((Map) firstModelListMap.get("user"), "username", "avator");
+        util.confirmMapShouldHavaKeyItems((Map) firstModelListMap.get("user"), "username", "avator");
 
         //$judge $.model.lastreplyuser
-        this.confirmMapShouldHavaKeyItems((Map) firstModelListMap.get("lastreplyuser"), "username", "avator");
+        util.confirmMapShouldHavaKeyItems((Map) firstModelListMap.get("lastreplyuser"), "username", "avator");
     }
 
     /**
@@ -420,20 +365,20 @@ public class TopicControllerTest {
 
         Map firstModelListMap = (Map) modelList.get(0);
 
-        this.confirmMapShouldHavaKeyItems(firstModelListMap,
+        util.confirmMapShouldHavaKeyItems(firstModelListMap,
                 "title", "replies", "lastreplytime", "createtime", "topicid",
                 "content", "read", "like", "category", "user", "lastreplyuser");
 
         //judge $.mode.category
-        this.confirmMapShouldHavaKeyItems((Map) firstModelListMap.get("category"), "id", "name", "description");
+        util.confirmMapShouldHavaKeyItems((Map) firstModelListMap.get("category"), "id", "name", "description");
 
         //judge $.model.user
-        this.confirmMapShouldHavaKeyItems((Map) firstModelListMap.get("user"), "username", "avator");
+        util.confirmMapShouldHavaKeyItems((Map) firstModelListMap.get("user"), "username", "avator");
 
         //$judge $.model.lastreplyuser
-        this.confirmMapShouldHavaKeyItems((Map) firstModelListMap.get("lastreplyuser"), "username", "avator");
+        util.confirmMapShouldHavaKeyItems((Map) firstModelListMap.get("lastreplyuser"), "username", "avator");
 
-        printSuccessPassTestMehtodMessage();
+        util.printSuccessMessage();
     }
 
     /**
@@ -479,7 +424,7 @@ public class TopicControllerTest {
             }
         }
 
-        printSuccessPassTestMehtodMessage();
+        util.printSuccessMessage();
     }
 
     /**
@@ -552,7 +497,7 @@ public class TopicControllerTest {
          .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
          .andExpect(MockMvcResultMatchers.jsonPath("$.model.totalpages").exists());
 
-        printSuccessPassTestMehtodMessage();
+        util.printSuccessMessage();
     }
 
     /**
@@ -594,7 +539,7 @@ public class TopicControllerTest {
             Assert.assertEquals(ne.getRootCause().getMessage(), ApiMessage.NO_USER);
         }
 
-        printSuccessPassTestMehtodMessage();
+        util.printSuccessMessage();
     }
 
     /**
@@ -616,9 +561,9 @@ public class TopicControllerTest {
 
         //judge $.model[0], is map
         Map firstModelListCategoryMap = (Map) modelList.get(1);
-        this.confirmMapShouldHavaKeyItems(firstModelListCategoryMap, "id", "name", "description");
+        util.confirmMapShouldHavaKeyItems(firstModelListCategoryMap, "id", "name", "description");
 
-        printSuccessPassTestMehtodMessage();
+        util.printSuccessMessage();
     }
 
     /**
@@ -641,7 +586,7 @@ public class TopicControllerTest {
 
         MvcResult result = mockMvc.perform(
                 MockMvcRequestBuilders.post("/api/topic")
-                        .cookie(this.getAlreadLoginUserCookie())
+                        .cookie(util.getAlreadyLoginUserCookie())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBodyJson)
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
@@ -665,7 +610,7 @@ public class TopicControllerTest {
         Assert.assertEquals(title, topic.getTitle());
         Assert.assertEquals(content, topicContentDAO.getTopicContentByTopicId(topicId).getContent());
 
-        printSuccessPassTestMehtodMessage();
+        util.printSuccessMessage();
     }
 
     /**
@@ -721,15 +666,15 @@ public class TopicControllerTest {
                 param[2] = sb.toString();
             }
 
-            String requestBody = "{" + this.getJsonField("category", param[0]) + ","
-                    + this.getJsonField("title", param[1]) + ","
-                    + this.getJsonField("content", param[2]) + "}";
+            String requestBody = "{" + util.getJsonField("category", param[0]) + ","
+                    + util.getJsonField("title", param[1]) + ","
+                    + util.getJsonField("content", param[2]) + "}";
             System.out.println("input request-body: " + requestBody);
 
             try {
                 mockMvc.perform(
                         MockMvcRequestBuilders.post(apiUrl)
-                                .cookie(this.getAlreadLoginUserCookie())
+                                .cookie(util.getAlreadyLoginUserCookie())
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(requestBody)
                 ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
@@ -742,7 +687,7 @@ public class TopicControllerTest {
         }
 
 
-        printSuccessPassTestMehtodMessage();
+        util.printSuccessMessage();
     }
 
     /**
@@ -753,8 +698,8 @@ public class TopicControllerTest {
     public void testPublishTopicReplySuccess() throws Exception {
         int topicId = 1;
         String content = "new reply content";
-        String requestBodyJson = "{" + this.getJsonField("topicid", topicId) + ","
-                + this.getJsonField("content", content) + "}";
+        String requestBodyJson = "{" + util.getJsonField("topicid", topicId) + ","
+                + util.getJsonField("content", content) + "}";
         System.out.println("input request-body: " + requestBodyJson);
 
         //before publish reply
@@ -763,7 +708,7 @@ public class TopicControllerTest {
 
         MvcResult result = mockMvc.perform(
                 MockMvcRequestBuilders.post("/api/topic/reply")
-                    .cookie(this.getAlreadLoginUserCookie())
+                    .cookie(util.getAlreadyLoginUserCookie())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(requestBodyJson)
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
@@ -793,7 +738,7 @@ public class TopicControllerTest {
 
         Assert.assertEquals(reply.getCreatetime(), afterTopic.getLastreplytime());
 
-        printSuccessPassTestMehtodMessage();
+        util.printSuccessMessage();
     }
 
     /**
@@ -817,12 +762,12 @@ public class TopicControllerTest {
     @Transactional
     public void testRemoveTopicSuccess() throws Exception {
         int topicId = 1;
-        String requestBodyJson = "{" + this.getJsonField("topicid", topicId) + "}";
+        String requestBodyJson = "{" + util.getJsonField("topicid", topicId) + "}";
         System.out.println("input reqeust-body: " + requestBodyJson);
 
         mockMvc.perform(
                 MockMvcRequestBuilders.post("/api/topic-remove")
-                    .cookie(this.getAlreadLoginUserCookie())
+                    .cookie(util.getAlreadyLoginUserCookie())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(requestBodyJson)
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
@@ -835,7 +780,7 @@ public class TopicControllerTest {
         List<TopicReplyDO> topicReplyList = topicReplyDAO.listTopicReplyByTopicId(topicId);
         Assert.assertEquals(topicReplyList.size(), 0);
 
-        printSuccessPassTestMehtodMessage();
+        util.printSuccessMessage();
     }
 
     /**
@@ -859,7 +804,7 @@ public class TopicControllerTest {
     @Transactional
     public void testRemoveTopicReplySuccess() throws Exception {
         int replyId = 43;
-        String requestBodyJson = "{" + this.getJsonField("replyid", replyId) + "}";
+        String requestBodyJson = "{" + util.getJsonField("replyid", replyId) + "}";
         System.out.println("input reqeust-body: " + requestBodyJson);
 
         TopicReplyDO beforeReply = topicReplyDAO.getTopicReplyById(replyId);
@@ -869,12 +814,12 @@ public class TopicControllerTest {
 
         mockMvc.perform(
                 MockMvcRequestBuilders.post("/api/topic/reply-remove")
-                        .cookie(this.getAlreadLoginUserCookie())
+                        .cookie(util.getAlreadyLoginUserCookie())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBodyJson)
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
-         .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
-         .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
 
         //confirm database already remove reply and related topic replies-1
         Assert.assertNull(topicReplyDAO.getTopicReplyById(replyId));
@@ -884,7 +829,7 @@ public class TopicControllerTest {
         Integer afterTopicReplies = afterTopic.getReplies();
         Assert.assertEquals(beforeTopicReplies - 1, (int) afterTopicReplies);
 
-        printSuccessPassTestMehtodMessage();
+        util.printSuccessMessage();
     }
 
     /**
@@ -912,15 +857,15 @@ public class TopicControllerTest {
         String newTitle = "new title";
         String newContent = "update new content";
 
-        String requestBodyJson = "{" + this.getJsonField("topicid", topicId) + ","
-                + this.getJsonField("category", newCategoryNick) + ","
-                + this.getJsonField("title", newTitle) + ","
-                + this.getJsonField("content", newContent) + "}";
+        String requestBodyJson = "{" + util.getJsonField("topicid", topicId) + ","
+                + util.getJsonField("category", newCategoryNick) + ","
+                + util.getJsonField("title", newTitle) + ","
+                + util.getJsonField("content", newContent) + "}";
         System.out.println("input request-body: " + requestBodyJson);
 
          mockMvc.perform(
                 MockMvcRequestBuilders.post("/api/topic-update")
-                    .cookie(this.getAlreadLoginUserCookie())
+                    .cookie(util.getAlreadyLoginUserCookie())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(requestBodyJson)
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
@@ -939,7 +884,7 @@ public class TopicControllerTest {
         Assert.assertEquals(newTitle, afterTitle);
         Assert.assertEquals(newContent, afterContent);
 
-        printSuccessPassTestMehtodMessage();
+        util.printSuccessMessage();
     }
 
     /**
@@ -964,13 +909,13 @@ public class TopicControllerTest {
     public void testUpdateTopicReplySuccess() throws Exception {
         int replyId = 43;
         String content = "new reply content";
-        String requestBodyJson = "{" + this.getJsonField("replyid", replyId) + ","
-                + this.getJsonField("content", content) + "}";
+        String requestBodyJson = "{" + util.getJsonField("replyid", replyId) + ","
+                + util.getJsonField("content", content) + "}";
         System.out.println("input reqeust-body: " + requestBodyJson);
 
         mockMvc.perform(
                 MockMvcRequestBuilders.post("/api/topic/reply-update")
-                    .cookie(this.getAlreadLoginUserCookie())
+                    .cookie(util.getAlreadyLoginUserCookie())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(requestBodyJson)
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
@@ -981,7 +926,7 @@ public class TopicControllerTest {
         TopicReplyDO beforeReply = topicReplyDAO.getTopicReplyById(replyId);
         Assert.assertEquals(content, beforeReply.getContent());
 
-        printSuccessPassTestMehtodMessage();
+        util.printSuccessMessage();
     }
 
     /**
@@ -1007,11 +952,11 @@ public class TopicControllerTest {
     public void testUpdateTopicContentLikeIncSuccess() throws Exception {
         int topicId = 1;
         String command = "inc";
-        String requestBody = "{" + this.getJsonField("topicid", topicId) + ", "
-                + this.getJsonField("command", command) + "}";
+        String requestBody = "{" + util.getJsonField("topicid", topicId) + ", "
+                + util.getJsonField("command", command) + "}";
         System.out.println("input request-body: "  + requestBody);
 
-        Cookie cookie = this.getAlreadLoginUserCookie();
+        Cookie cookie = util.getAlreadyLoginUserCookie();
         int userId = SecretUtil.decryptUserInfoToken(cookie.getValue()).getId();
         int beforeTopicContentLike = topicContentDAO.getTopicContentByTopicId(topicId).getLike();
 
@@ -1033,7 +978,7 @@ public class TopicControllerTest {
         JSONArray jsonArray = JSON.parseArray(userActionDAO.getUserAction(userId).getLikeTopicIdJsonArray());
         Assert.assertEquals(topicId, (int) jsonArray.get(jsonArray.size() - 1));
 
-        printSuccessPassTestMehtodMessage();
+        util.printSuccessMessage();
     }
 
     /**
@@ -1044,12 +989,12 @@ public class TopicControllerTest {
     public void testUpdateTopicContentLikeDecSuccess() throws Exception {
         int topicId = 1;
         String command = "dec";
-        String requestBody = "{" + this.getJsonField("topicid", topicId) + ", "
-                + this.getJsonField("command", command) + "}";
+        String requestBody = "{" + util.getJsonField("topicid", topicId) + ", "
+                + util.getJsonField("command", command) + "}";
         System.out.println("input request-body: "  + requestBody);
 
         //set user already like, get userId from cookie user
-        Cookie cookie = this.getAlreadLoginUserCookie();
+        Cookie cookie = util.getAlreadyLoginUserCookie();
         int userId = SecretUtil.decryptUserInfoToken(cookie.getValue()).getId();
 
         Assert.assertEquals(1, topicContentDAO.updateLikeAddOneByTopicId(topicId));
@@ -1075,7 +1020,7 @@ public class TopicControllerTest {
         JSONArray jsonArray = JSON.parseArray(userActionDAO.getUserAction(userId).getLikeTopicIdJsonArray());
         Assert.assertTrue(jsonArray.indexOf(topicId) == -1);
 
-        printSuccessPassTestMehtodMessage();
+        util.printSuccessMessage();
     }
 
     /**
@@ -1106,11 +1051,11 @@ public class TopicControllerTest {
     public void testUserCollectTopicSuccess() throws Exception {
         // cookie userId = 6
         int topicId = 5;
-        String requestBody = "{" + this.getJsonField("topicid", topicId) + "}";
+        String requestBody = "{" + util.getJsonField("topicid", topicId) + "}";
 
         mockMvc.perform(
                 MockMvcRequestBuilders.post("/api/topic/collect")
-                    .cookie(this.getAlreadLoginUserCookie())
+                    .cookie(util.getAlreadyLoginUserCookie())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(requestBody)
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
@@ -1126,7 +1071,7 @@ public class TopicControllerTest {
         Assert.assertNotEquals(-1 , JSON.parseArray(userCollectTopicIdJsonArrayString).indexOf(topicId));
         Assert.assertNotEquals(-1, JSON.parseArray(topicCollectUserIdJsonArrayString).indexOf(cookieUserId));
 
-        printSuccessPassTestMehtodMessage();
+        util.printSuccessMessage();
     }
 
     /**

@@ -136,6 +136,19 @@ public class ApiTestUtil {
     }
 
     /**
+     * 确认结果集 Model Map 应该拥有以下 Key 选项
+     *
+     * @param map 需要判断的键值对
+     * @param keyItems key选项
+     * @throws Exception 所有异常
+     */
+    void confirmMapShouldHavaKeyItems(Map map, String... keyItems) throws Exception {
+        //compare length and judge exist item
+        Assert.assertEquals(keyItems.length, map.size());
+        Assert.assertThat((Set<String>) map.keySet(), CoreMatchers.hasItems(keyItems));
+    }
+
+    /**
      * 访问 api，抛出用户无权限异常
      *
      * @param apiUrl api地址
