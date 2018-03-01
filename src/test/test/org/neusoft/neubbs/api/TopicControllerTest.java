@@ -35,6 +35,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -114,7 +115,7 @@ public class TopicControllerTest {
      */
 
     /**
-     * 测试 /api/topic
+     * 测试 /api/topic （GET）
      *      - 获取话题信息接口成功
      *          - 阅读数增加
      *          - 当前登陆 cookie 用户 'suvan' 并未点赞过 topicId = 1 的话题，所以期望 isliketopic = false
@@ -168,7 +169,7 @@ public class TopicControllerTest {
     }
 
     /**
-     * 测试 /api/topic
+     * 测试 /api/topic （GET）
      *      - 测试获取话题信息成功
      *          - 阅读数不增加
      *          - 访客用户默认不喜欢话题（若用户已登陆，则要判断用户是否喜欢话题）
@@ -196,7 +197,7 @@ public class TopicControllerTest {
     }
 
     /**
-     * 测试 /api/topic
+     * 测试 /api/topic （GET）
      *      - 获取话题信息异常
      *          - [✔] request param error, no norm
      *              - null
@@ -232,19 +233,21 @@ public class TopicControllerTest {
     }
 
     /**
-     * 【/api/topic/reply (http get)】 test get topic reply information success
-     *      - select latest reply
+     * 测试 /api/topic/reply （GET）
+     *      - 获取回复信息成功
      */
     @Test
-    public void testGetTopicReplyInformationSuccess() throws Exception {
-        String replyId = String.valueOf(topicReplyDAO.getMaxTopicReplyId());
+    public void getTopicReplyInfoSuccess() throws Exception {
+        String replyId = "1";
 
         MvcResult result = mockMvc.perform(
-                MockMvcRequestBuilders.get("/api/topic/reply").param("replyid", replyId)
+                MockMvcRequestBuilders.get("/api/topic/reply")
+                        .param("replyid", replyId)
         ).andExpect(MockMvcResultMatchers.status().isOk())
          .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
          .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
          .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
+                .andDo(MockMvcResultHandlers.print())
                 .andReturn();
 
         Map resultMap = (Map) JSON.parse(result.getResponse().getContentAsString());
@@ -252,30 +255,32 @@ public class TopicControllerTest {
         //judge $.model
         Map modelMap = (Map) resultMap.get("model");
         util.confirmMapShouldHavaKeyItems(modelMap,
-                "topicid", "content", "agree", "oppose", "createtime", "user");
+                "topicid", "content", "agree", "oppose", "createtime", "replyid", "user");
 
         //judge $.model.user
-        util.confirmMapShouldHavaKeyItems((Map) modelMap.get("user"), "username", "avator");
+        util.confirmMapShouldHavaKeyItems((Map) modelMap.get("user"), "avator", "username");
 
         util.printSuccessMessage();
     }
 
     /**
-     * 【/api/topic/reply (http get)】 test get topic reply information throw exception
-     *      - request param error, no param
-     *      - database exception
-     *          - no reply
+     * 测试 /api/topic/reply （GET）
+     *      - 获取回复信息异常
+     *          - [✔] request param error, no param
+     *          - [✔] service exception
+     *              - no reply
      */
     @Test
-    public void testGetTopicReplyInformationThrowException() throws Exception {
-        String[] params = {null, "*12+", "abc", "11111111111", "11123k3k"};
+    public void testGetTopicReplyInfoException() throws Exception {
+        String[] params = {null, "*123", "abc", "11111111111", "10000000"};
 
-        for (String param: params) {
-            System.out.println("input replyid=" + param);
+        for (String replyId: params) {
+            System.out.println("input replyid = " + replyId);
 
             try {
                 mockMvc.perform(
-                        MockMvcRequestBuilders.get("/api/topic/reply").param("replyid", param)
+                        MockMvcRequestBuilders.get("/api/topic/reply")
+                                .param("replyid", replyId)
                 ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
                  .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists())
                  .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
