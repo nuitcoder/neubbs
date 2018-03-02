@@ -299,10 +299,11 @@ public class TopicControllerTest {
     }
 
     /**
-     * 【/api/topics/hot】 test get hot talk topic list success
+     * 测试 /api/topics/hot
+     *      - 获取热议话题列表成功
      */
     @Test
-    public void testGetHotTalkTopicListSuccess() throws Exception {
+    public void testListTopicInfoSuccess() throws Exception {
         MvcResult result = mockMvc.perform(
                 MockMvcRequestBuilders.get("/api/topics/hot")
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
@@ -313,8 +314,9 @@ public class TopicControllerTest {
         Map resultMap = (Map) JSON.parse(result.getResponse().getContentAsString());
         List modelList = (List) resultMap.get("model");
         Assert.assertEquals(10, modelList.size());
-        Map firstModelListMap = (Map) modelList.get(0);
 
+        //judge $.mode.[0]
+        Map firstModelListMap = (Map) modelList.get(0);
         util.confirmMapShouldHavaKeyItems(firstModelListMap,
                 "title", "replies", "lastreplytime", "createtime", "topicid", "category", "user", "lastreplyuser");
 
@@ -322,29 +324,28 @@ public class TopicControllerTest {
         util.confirmMapShouldHavaKeyItems((Map) firstModelListMap.get("category"), "id", "name", "description");
 
         //judge $.model.user
-        util.confirmMapShouldHavaKeyItems((Map) firstModelListMap.get("user"), "username", "avator");
+        util.confirmMapShouldHavaKeyItems((Map) firstModelListMap.get("user"), "avator", "username");
 
         //$judge $.model.lastreplyuser
-        util.confirmMapShouldHavaKeyItems((Map) firstModelListMap.get("lastreplyuser"), "username", "avator");
+        util.confirmMapShouldHavaKeyItems((Map) firstModelListMap.get("lastreplyuser"), "avator", "username");
+
+        util.printSuccessMessage();
     }
 
     /**
-     * 【/api/topics】test get topic list basic information by filter params success
-     *      - get topic list (pass params: limit, page, category, username)
-     *      - if no input limit param, neubbs.properties hava default value
-     *      - page topic list desc display
-     *
-     *      - input param test
-     *          - [ ] input page
-     *          - [✔] input limit, page
-     *          - [ ] input page, category
-     *          - [ ] input limit, page category
-     *          - [ ] input page, category
-     *          - [ ] input limit, page, username
-     *          - [ ] input page, username
-     *          - [ ] input limit, page, category, username
-     *          - [ ] input page, category, username
-     *          - [ ] input limit, page, category, username
+     * 测试 /api/topics
+     *      - 获取热议话题成功
+     *          - input param test
+     *              - [ ] input page
+     *              - [✔] input limit, page
+     *              - [ ] input page, category
+     *              - [ ] input limit, page category
+     *              - [ ] input page, category
+     *              - [ ] input limit, page, username
+     *              - [ ] input page, username
+     *              - [ ] input limit, page, category, username
+     *              - [ ] input page, category, username
+     *              - [ ] input limit, page, category, username
      */
     @Test
     public void testGetTopicListBasicInformationByFilterParamsSuccess() throws Exception {
