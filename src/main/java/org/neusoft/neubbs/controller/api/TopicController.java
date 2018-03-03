@@ -27,7 +27,7 @@ import java.util.Map;
  *      获取话题信息
  *      获取回复信息
  *      获取热议话题信息列表
- *      获取话题信息列表
+ *      获取首页话题信息列表
  *      获取话题总页数
  *      获取话题分类信息列表
  *      发布话题
@@ -129,19 +129,23 @@ public class TopicController {
     }
 
     /**
-     * 获取话题信息列表
-     *      - 分页，指定数量
-     *      - 未输入 limit 参数，使用 neubbs.properties 参数文件内指定的默认值
+     * 获取首页话题信息列表
+     *      - 首页话题基本信息，最新发布，最新回复自动置顶
+     *      - 可设置分页，每页显示数量
+     *      - limit 参数具备默认值（neubbs.properties 配置文件中可设置）
+     *      - 可设置筛选条件（category 和 username）
      *
      * @param limit 每页显示数量
      * @param page 跳转到指定页数
+     * @param category 话题分类 id（英文昵称）
+     * @param username 用户名
      * @return ApiJsonDTO 接口 JSON 传输对象
      */
     @RequestMapping(value = "/topics", method = RequestMethod.GET)
-    public ApiJsonDTO listTopics(@RequestParam(value = "limit", required = false) String limit,
-                                      @RequestParam(value = "page", required = false) String page,
-                                      @RequestParam(value = "category", required = false) String category,
-                                      @RequestParam(value = "username", required = false) String username) {
+    public ApiJsonDTO listHomeTopics(@RequestParam(value = "limit", required = false) String limit,
+                                     @RequestParam(value = "page", required = false) String page,
+                                     @RequestParam(value = "category", required = false) String category,
+                                     @RequestParam(value = "username", required = false) String username) {
         validationService.check(ParamConst.NUMBER, page);
         validationService.checkOnlyNotNullParam(
                 ParamConst.NUMBER, limit,

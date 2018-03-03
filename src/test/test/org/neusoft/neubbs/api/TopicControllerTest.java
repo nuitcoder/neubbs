@@ -334,8 +334,8 @@ public class TopicControllerTest {
 
     /**
      * 测试 /api/topics
-     *      - 获取热议话题成功
-     *          - input param test
+     *      - 获取首页话题信息列表成功
+     *          - input different param
      *              - [ ] input page
      *              - [✔] input limit, page
      *              - [ ] input page, category
@@ -348,29 +348,26 @@ public class TopicControllerTest {
      *              - [ ] input limit, page, category, username
      */
     @Test
-    public void testGetTopicListBasicInformationByFilterParamsSuccess() throws Exception {
-        String apiUrl = "/api/topics";
-
+    @Transactional
+    public void testListHomeTopicSuccess() throws Exception {
         //input limit, page
-        String limit = "1";
-        String page = "1";
         MvcResult result = mockMvc.perform(
-                MockMvcRequestBuilders.get(apiUrl)
-                        .param("limit", limit)
-                        .param("page", page)
+                MockMvcRequestBuilders.get("/api/topics")
+                        .param("limit", "1")
+                        .param("page", "1")
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
          .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
          .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
+         .andDo(MockMvcResultHandlers.print())
                 .andReturn();
 
+        //get model.[0] element map
         Map resultMap = (Map) JSON.parse(result.getResponse().getContentAsString());
-
-        //judge $.model, because limit=1, so assert list.size()
         List modelList = (List) resultMap.get("model");
         Assert.assertEquals(1, modelList.size());
-
         Map firstModelListMap = (Map) modelList.get(0);
 
+        //judge $.model
         util.confirmMapShouldHavaKeyItems(firstModelListMap,
                 "title", "replies", "lastreplytime", "createtime", "topicid",
                 "content", "read", "like", "category", "user", "lastreplyuser");
@@ -379,37 +376,37 @@ public class TopicControllerTest {
         util.confirmMapShouldHavaKeyItems((Map) firstModelListMap.get("category"), "id", "name", "description");
 
         //judge $.model.user
-        util.confirmMapShouldHavaKeyItems((Map) firstModelListMap.get("user"), "username", "avator");
+        util.confirmMapShouldHavaKeyItems((Map) firstModelListMap.get("user"), "avator", "username");
 
         //$judge $.model.lastreplyuser
-        util.confirmMapShouldHavaKeyItems((Map) firstModelListMap.get("lastreplyuser"), "username", "avator");
+        util.confirmMapShouldHavaKeyItems((Map) firstModelListMap.get("lastreplyuser"), "avator", "username");
 
         util.printSuccessMessage();
     }
 
     /**
-     * 【/api/topics】test get topic list information by page and limit throw exception
-     *      - request param eroorn, no norm
-     *      - database exception
-     *          - [✔] input page exceed topic max page
-     *          - [ ] no query topics
-     *          - [ ] no category
-     *          - [ ] no username
+     * 测试 /api/topics
+     *      - 获取首页话题信息列表异常
+     *          - [✔] request param error, no norm
+     *          - [ ] service exception
+     *              - [✔] input page exceed topic max page
+     *              - [ ] no query topics
+     *              - [ ] no category
+     *              - [ ] no username
      */
     @Test
-    public void testGetTopicListInformationByPageAndLimitThrowException() throws Exception {
-        //page and limit, two param
+    public void testListHomeTopicsException() throws Exception {
         String[][] params = {
                 {null, null}, {"1", null},
-                {"1111111111111", "213"}, {"12", "1111111111111"}, {"11111111111111", "1111111111"},
-                {"*-+", "1"}, {"1", "-=="}, {"-&&*%", "****("}, {"asdfasdf*123", "___jhjh123"},
+                {"1111111111111", "123"}, {"123", "1111111111111"}, {"11111111111111", "1111111111"},
+                {"*-+", "1"}, {"1", "-=="}, {"-&&*%", "****("}, {"abc*123", "___abc123"},
                 {"10000","1"}
         };
 
         for (String[] param: params) {
             String limit = param[0];
             String page = param[1];
-            System.out.println("input param: limit=" + limit + ", page=" + page);
+            System.out.println("input param: limit = " + limit + ", page = " + page);
 
             try {
                 mockMvc.perform(
@@ -417,7 +414,7 @@ public class TopicControllerTest {
                                 .param("limit", limit)
                                 .param("page", page)
                 ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(CoreMatchers.is("false")))
-                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(CoreMatchers.notNullValue()))
+                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
                  .andExpect(MockMvcResultMatchers.jsonPath("$.model").value(CoreMatchers.notNullValue()));
 
             } catch (NestedServletException ne) {
