@@ -182,6 +182,7 @@ public class TopicController {
 
     /**
      * 获取话题分类信息列表
+     *      - 所有分类信息
      *
      * @return ApiJsonDTO 接口 JSON 传输数据
      */

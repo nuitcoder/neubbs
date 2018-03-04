@@ -510,7 +510,7 @@ public class TopicControllerTest {
      *              - no username
      */
     @Test
-    public void testGetTopicTotalPagesThrowException() throws Exception {
+    public void testCountTopicTotalPagesException() throws Exception {
         String apiUrl = "/api/topics/pages";
 
         //input category, but category no exist
@@ -545,7 +545,8 @@ public class TopicControllerTest {
     }
 
     /**
-     * 【/api/topic/categorys】 test get topic category list success
+     * 测试 /api/topics/categorys
+     *      - 获取话题分类信息成功
      */
     @Test
     public void testGetTopicCategoryListSuccess() throws Exception {
@@ -558,10 +559,8 @@ public class TopicControllerTest {
 
         Map resultMap = (Map) JSON.parse(result.getResponse().getContentAsString());
 
-        //judge $.model, is list
+        //judge $.model.[0]
         List modelList = (List) resultMap.get("model");
-
-        //judge $.model[0], is map
         Map firstModelListCategoryMap = (Map) modelList.get(1);
         util.confirmMapShouldHavaKeyItems(firstModelListCategoryMap, "id", "name", "description");
 
