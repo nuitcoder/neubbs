@@ -28,7 +28,7 @@ import java.util.Map;
  *      获取回复信息
  *      获取热议话题信息列表
  *      获取首页话题信息列表
- *      获取话题总页数
+ *      获取首页话题总页数
  *      获取话题分类信息列表
  *      发布话题
  *      发布回复
@@ -161,14 +161,15 @@ public class TopicController {
 
     /**
      * 获取话题总页数
+     *      - 首页显示，各分类
      *
      * @param limit 每页显示条数
      * @return ApiJsonDTO 接口 JSON 传输对象
      */
     @RequestMapping(value = "/topics/pages", method = RequestMethod.GET)
     public ApiJsonDTO countTopicTotalPages(@RequestParam(value = "limit", required = false) String limit,
-                                            @RequestParam(value = "category", required = false) String category,
-                                            @RequestParam(value = "username", required = false) String username) {
+                                           @RequestParam(value = "category", required = false) String category,
+                                           @RequestParam(value = "username", required = false) String username) {
         validationService.checkOnlyNotNullParam(
                 ParamConst.NUMBER, limit,
                 ParamConst.TOPIC_CATEGORY_NICK, category,

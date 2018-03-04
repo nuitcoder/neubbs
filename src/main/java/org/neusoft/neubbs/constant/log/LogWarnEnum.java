@@ -39,7 +39,8 @@ public enum LogWarnEnum {
     US14(14, " IO异常，生成 captcha 图片验证码失败"),
     US15(15, " （用户）行为失败"),
     US16(16, " 数据库中不存在该用户 "),
-    US17(17, "账户未激活，无权调用 api"),
+    US17(17, " 账户未激活，无权调用 api"),
+    US18(18, " 不存在用户"),
 
     ES1(1, " 配置文件 'account.api.validate.url' 字段为空，请补充完整！"),
 

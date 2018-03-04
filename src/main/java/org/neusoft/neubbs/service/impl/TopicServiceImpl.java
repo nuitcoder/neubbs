@@ -1036,7 +1036,7 @@ public class TopicServiceImpl implements ITopicService {
      * @param userId 用户id
      */
     private void throwNoUserExceptionById(int userId) {
-        throw new ServiceException(ApiMessage.NO_USER).log(LogWarnEnum.US1);
+        throw new ServiceException(ApiMessage.NO_USER).log(LogWarnEnum.US18);
     }
 
     /**
@@ -1045,7 +1045,7 @@ public class TopicServiceImpl implements ITopicService {
      * @param username 用户名
      */
     private void throwNoUserExceptionByName(String username) {
-        throw new ServiceException(ApiMessage.NO_USER).log(LogWarnEnum.US1);
+        throw new ServiceException(ApiMessage.NO_USER).log(LogWarnEnum.US18);
     }
 
     /**

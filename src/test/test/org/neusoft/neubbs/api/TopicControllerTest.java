@@ -431,18 +431,17 @@ public class TopicControllerTest {
     }
 
     /**
-     * 【/api/topics/pages】test get topic total pages success
-     *      - if no input limit param, neubbs.properties hava default value
-     *
-     *      - input param test
-     *          - [✔] no input (default limit = 25)
-     *          - [✔] input limit,
-     *          - [✔] input category
-     *          - [ ] input limit, category
-     *          - [✔] input username
-     *          - [ ] input limit, username
-     *          - [✔] input category, username
-     *          - [ ] input limit, category, username
+     * 测试 /api/topics/pages
+     *      - 获取话题总页数成功
+     *          - input different param
+     *              - [✔] no input (default limit = 25)
+     *              - [✔] input limit,
+     *              - [✔] input category
+     *              - [ ] input limit, category
+     *              - [✔] input username
+     *              - [ ] input limit, username
+     *              - [✔] input category, username
+     *              - [ ] input limit, category, username
      */
     @Test
     public void testGetTopicTotalPagesSuccess() throws Exception {
@@ -452,14 +451,13 @@ public class TopicControllerTest {
         String category;
         String username;
 
-        //no input, use default limit = 25
+        //no input any params, use default limit = 25
         mockMvc.perform(
                 MockMvcRequestBuilders.get(apiUrl)
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
          .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
          .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
          .andExpect(MockMvcResultMatchers.jsonPath("$.model.totalpages").exists());
-
 
         //input limit
         limit = "5";
@@ -488,7 +486,7 @@ public class TopicControllerTest {
          .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
          .andExpect(MockMvcResultMatchers.jsonPath("$.model.totalpages").exists());
 
-        //input category,username
+        //input category, username
         category = "game";
         username = "suvan";
         mockMvc.perform(
@@ -504,13 +502,12 @@ public class TopicControllerTest {
     }
 
     /**
-     * 【/api/topics/pages】test get topic total pages throw exception
-     *      - prompt: if throw exception, will no to do .andExpect(...)
-     *
-     *  - [ ] reqeust param error, no norm
-     *  - [ ] database exception
-     *          - [✔] no category
-     *          - [✔] no username
+     * 测试 /api/topics/pages
+     *      - 获取话题总页数异常
+     *          - [ ] request param error, no norm
+     *          - [✔] service exception
+     *              - no category
+     *              - no username
      */
     @Test
     public void testGetTopicTotalPagesThrowException() throws Exception {
@@ -519,7 +516,8 @@ public class TopicControllerTest {
         //input category, but category no exist
         try {
             mockMvc.perform(
-                    MockMvcRequestBuilders.get(apiUrl).param("category", "noExistCategory")
+                    MockMvcRequestBuilders.get(apiUrl)
+                            .param("category", "noExistCategory")
             ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
              .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(ApiMessage.NO_CATEGORY))
              .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
@@ -532,7 +530,8 @@ public class TopicControllerTest {
         //input username, but username no exist
         try {
             mockMvc.perform(
-                    MockMvcRequestBuilders.get(apiUrl).param("username", "noExistUser")
+                    MockMvcRequestBuilders.get(apiUrl)
+                            .param("username", "noExistUser")
             ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
              .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("asd"))
              .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
