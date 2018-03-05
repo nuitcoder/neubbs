@@ -38,6 +38,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.util.NestedServletException;
 
@@ -568,98 +569,92 @@ public class TopicControllerTest {
     }
 
     /**
-     * 【/api/topic (http post)】 test publish topic success
-     *      - get user cookie
-     *          - already login
-     *          - account activated
+     * 测试 /api/topic （Post）
+     *      - 测试发布话题成功
+     *      - 需要权限：@LoginAuthorization @AccountActivation
      */
     @Test
     @Transactional
-    public void testPublishTopicSuccess() throws Exception {
+    public void testReleaseTopicSuccess() throws Exception {
+        //build request-body
         String categoryNick = "game";
         String title = "new topic title";
-        String content = "new topic Contentn";
-
-        String requestBodyJson = "{\"category\":\"" + categoryNick + "\","
+        String content = "new topic content";
+        String requestBody = "{\"category\":\"" + categoryNick + "\","
                 + "\"title\":\"" + title + "\","
                 + "\"content\":\"" + content + "\"}";
-        System.out.println("input request-body: " + requestBodyJson);
+        System.out.println("input request-body: " + requestBody);
 
         MvcResult result = mockMvc.perform(
                 MockMvcRequestBuilders.post("/api/topic")
                         .cookie(util.getAlreadyLoginUserCookie())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestBodyJson)
+                        .content(requestBody)
+                        .accept(MediaType.APPLICATION_JSON)
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
          .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
          .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
                 .andReturn();
 
+        //judge $.model.topicid
         Map resultMap = (Map) JSON.parse(result.getResponse().getContentAsString());
-
-        //jduge $.model.topicid
         Map modelMap = (Map) resultMap.get("model");
-        int topicId = (Integer) modelMap.get("topicid");
-        Assert.assertTrue(topicId >= 0);
-        System.out.println("new insert test topic, topicid = " + topicId);
 
-        //compare database topic information
+        int topicId = (Integer) modelMap.get("topicid");
+
+        //validate topic information
         TopicDO topic = topicDAO.getTopicById(topicId);
-        int categoryId = topic.getCategoryid();
         Assert.assertNotNull(topic);
-        Assert.assertEquals(categoryNick, topicCategoryDAO.getTopicCategoryById(categoryId).getNick());
         Assert.assertEquals(title, topic.getTitle());
         Assert.assertEquals(content, topicContentDAO.getTopicContentByTopicId(topicId).getContent());
+
+        //validate category
+        int categoryId = topic.getCategoryid();
+        Assert.assertEquals(categoryNick, topicCategoryDAO.getTopicCategoryById(categoryId).getNick());
+
+        //validate topic action
+        Assert.assertNotNull(topicActionDAO.getTopicAction(topicId));
 
         util.printSuccessMessage();
     }
 
     /**
-     * 【/api/topic (http post)】 test publish topic throw exception
-     *      - permission exception
-     *          - [✔] no login
-     *          - [ ] account no activate
-     *      - reqest param error, no norm
-     *          - [✔] null check
-     *          - [ ] param norm
+     * 测试 /api/topic （Post）
+     *      - 测试发布话题异常
+     *          - permission exception
+     *              - [✔] no login
+     *              - [✔] the account no activated
+     *          - request param error, no norm
+     *              - [✔] null check
      *              - [✔] topic category nick no is pure english
-     *              - [ ] topic length length limit(5 <= lenth <= 50)
-     *              - [✔] topic content length limit(50 <= lenth <= 100000)
-     *      - database exception
-     *          - [ ] no user (get user from cookie)
-     *          - [ ] no category
+     *              - [ ] topic title length limit(1 <= length <= 50)
+     *              - [✔] topic content length limit(1 <= length <= 100000)
+     *          - server exception
+     *              - [ ] no user (get user from cookie)
+     *              - [ ] no category
      */
     @Test
-    public void testPublishTopicThrowException() throws Exception {
+    public void testReleaseTopicException() throws Exception {
         String apiUrl = "/api/topic";
 
         //no login
-        try {
-            mockMvc.perform(
-                    MockMvcRequestBuilders.post(apiUrl)
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content("{}")
-            ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
-             .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(ApiMessage. NO_PERMISSION));
+        util.testApiThrowNoPermissionException("/api/topic", RequestMethod.POST, null);
 
-        } catch (NestedServletException ne) {
-            Assert.assertTrue(ne.getRootCause() instanceof ServiceException);
-            Assert.assertEquals(ne.getRootCause().getMessage(), ApiMessage.NO_PERMISSION);
-        }
+        //the account no activated
+        util.testApiThrowNoPermissionException("/api/topic", RequestMethod.POST, util.getNoActivatedUserDO());
 
-        //reqest param error, no norm
+        //request param error, no norm
         String category = "testCategory";
         String title = "test title";
         String content = "test content";
         String[][] params = {
                 {null, null, null}, {null, title, content}, {category, null, content}, {category, title, null},
-                {"moive 123", title, content},
-                {category, title, "testContentLength"}
+                {"no category", title, content}, {category, "", content}, {category, title, ""}
         };
 
         for (String[] param: params) {
-            if ("testContentLength".equals(param[2])) {
-                //test 100001 topic content length
+            if ("".equals(param[2])) {
+                //test topic content length > 100000 error
                 StringBuilder sb = new StringBuilder();
                 for (int i = 1; i <= 100001; i++) {
                     sb.append("a");
@@ -667,6 +662,7 @@ public class TopicControllerTest {
                 param[2] = sb.toString();
             }
 
+            //build request-body
             String requestBody = "{" + util.getJsonField("category", param[0]) + ","
                     + util.getJsonField("title", param[1]) + ","
                     + util.getJsonField("content", param[2]) + "}";
@@ -678,15 +674,15 @@ public class TopicControllerTest {
                                 .cookie(util.getAlreadyLoginUserCookie())
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(requestBody)
+                                .accept(MediaType.APPLICATION_JSON)
                 ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
                  .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(ApiMessage.PARAM_ERROR))
-                 .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
+                 .andExpect(MockMvcResultMatchers.jsonPath("$.model").value(CoreMatchers.notNullValue()));
 
             } catch (NestedServletException ne) {
                 Assert.assertThat(ne.getRootCause(), CoreMatchers.instanceOf(ParamsErrorException.class));
             }
         }
-
 
         util.printSuccessMessage();
     }

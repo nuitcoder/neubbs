@@ -76,21 +76,23 @@ public class TopicServiceImpl implements ITopicService {
             topic.setCategoryid(category.getId());
             topic.setTitle(title);
 
-        TopicContentDO topicContentDO = new TopicContentDO();
-            topicContentDO.setTopicid(topic.getId());
-            topicContentDO.setContent(topicContent);
-
-        TopicActionDO topicAction = new TopicActionDO();
-            topicAction.setTopicId(topic.getId());
-
-        //insert forum_topic, forum_topic_content, forum_topic_action
+        //insert forum_topic, get new topic id
         if (topicDAO.saveTopic(topic) == 0) {
             throw new ServiceException(ApiMessage.DATABASE_EXCEPTION).log(LogWarnEnum.TS1);
         }
 
+        //insert forum_topic_content
+        TopicContentDO topicContentDO = new TopicContentDO();
+            topicContentDO.setTopicid(topic.getId());
+            topicContentDO.setContent(topicContent);
+
         if (topicContentDAO.saveTopicContent(topicContentDO) == 0) {
             throw new ServiceException(ApiMessage.DATABASE_EXCEPTION).log(LogWarnEnum.TS2);
         }
+
+        //insert forum_topic_action
+        TopicActionDO topicAction = new TopicActionDO();
+            topicAction.setTopicId(topic.getId());
 
         if (topicActionDAO.saveTopicAction(topicAction) == 0) {
             throw new ServiceException(ApiMessage.DATABASE_EXCEPTION).log(LogWarnEnum.TS24);
