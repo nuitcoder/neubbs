@@ -16,6 +16,10 @@
         VALUES (#{topicId, jdbcType = INTEGER}, '[]', '[]', '[]', '[]')
     </insert>
 
+    <delete id="removeTopicAction" parameterType="java.lang.Integer">
+        DELETE FROM forum_topic_action WHERE ft_id = #{param1, jdbcType = INTEGER}
+    </delete>
+
     <select id="getTopicAction" parameterType="java.lang.Integer" resultMap="TopicActionMap">
         SELECT fta_id, ft_id, fta_reply_fu_id_array,
                fta_like_fu_id_array, fta_collect_fu_id_array, fta_attention_fu_id_array

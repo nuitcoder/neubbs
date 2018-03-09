@@ -149,9 +149,13 @@ public class TopicServiceImpl implements ITopicService {
     public void removeTopic(int topicId) {
         this.getTopicNotNull(topicId);
 
-        //delete forum_topic_reply, forum_topic_content, forum_topic
+        //delete forum_topic_reply -> forum_topic_Action -> forum_topic_content -> forum_topic
         if (topicReplyDAO.removeTopicAllReplyByTopicId(topicId) == 0) {
             throw new ServiceException(ApiMessage.DATABASE_EXCEPTION).log(LogWarnEnum.TS6);
+        }
+
+        if (topicActionDAO.removeTopicAction(topicId) == 0) {
+            throw new ServiceException(ApiMessage.DATABASE_EXCEPTION).log(LogWarnEnum.TS25);
         }
 
         if (topicContentDAO.removeTopicContentByTopicId(topicId) == 0) {

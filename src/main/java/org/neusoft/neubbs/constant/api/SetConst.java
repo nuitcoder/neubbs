@@ -72,9 +72,11 @@ public final class SetConst {
 
     /**
      * 权限
-     *      - 管理员权限
+     *      - 管理员
+     *      - 普通用户
      */
     public static final String RANK_ADMIN = "admin";
+    public static final String RANK_USER = "user";
 
 
     /*

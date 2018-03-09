@@ -71,6 +71,17 @@ public class TopicActionDAOTest {
     }
 
     /**
+     * 测试删除话题行为
+     */
+    @Test
+    @Transactional
+    public void testRemoveTopicAction() {
+        TopicActionDO topicActionDO = this.saveTestTopicActionDOToDatabase();
+        Assert.assertEquals(1, topicActionDAO.removeTopicAction(topicActionDO.getId()));
+        System.out.println("success remove topic action topicId = "+ topicActionDO.getId());
+    }
+
+    /**
      * 测试获取话题行为用户 id 数组
      *      - 回复用户 id 数组
      *      - 喜欢用户 id 数组

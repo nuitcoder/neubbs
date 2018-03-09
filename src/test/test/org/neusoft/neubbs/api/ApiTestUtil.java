@@ -57,6 +57,7 @@ public class ApiTestUtil {
     /**
      * 获取已经登陆用户 Cookie
      *      - 设置 Suvan 账户
+     *      - 具备已激活和管理员权限
      *
      * @return Cookie 已经登录用户Cookie
      */
@@ -64,7 +65,7 @@ public class ApiTestUtil {
         UserDO user = new UserDO();
             user.setId(6);
             user.setName("suvan");
-            user.setRank("admin");
+            user.setRank(SetConst.RANK_ADMIN);
             user.setState(SetConst.ACCOUNT_ACTIVATED_STATE);
 
         return new Cookie(ParamConst.AUTHENTICATION, SecretUtil.generateUserInfoToken(user));
@@ -77,10 +78,25 @@ public class ApiTestUtil {
      */
     UserDO getNoActivatedUserDO() {
         UserDO user = new UserDO();
-            user.setId(5);
+            user.setId(6);
             user.setName("suvan");
-            user.setRank("user");
+            user.setRank(SetConst.RANK_ADMIN);
             user.setState(SetConst.ACCOUNT_NO_ACTIVATED_STATE);
+
+        return user;
+    }
+
+    /**
+     * 获取非管理员的用户对象
+     *
+     * @return UserDO 非管理员的用户对象
+     */
+    UserDO getNoAdminRankUserDO() {
+        UserDO user = new UserDO();
+            user.setId(6);
+            user.setName("suvan");
+            user.setRank(SetConst.RANK_USER);
+            user.setState(SetConst.ACCOUNT_ACTIVATED_STATE);
 
         return user;
     }
@@ -94,8 +110,8 @@ public class ApiTestUtil {
     Cookie getOtherAlreadyLoginUserCookie() {
         UserDO otherUser = new UserDO();
             otherUser.setId(123);
-            otherUser.setName("noMatchUser");
-            otherUser.setRank("user");
+            otherUser.setName("noExistUser");
+            otherUser.setRank(SetConst.RANK_USER);
             otherUser.setState(SetConst.ACCOUNT_ACTIVATED_STATE);
 
         return new Cookie(ParamConst.AUTHENTICATION, SecretUtil.generateUserInfoToken(otherUser));
@@ -150,6 +166,8 @@ public class ApiTestUtil {
 
     /**
      * 访问 api，抛出用户无权限异常
+     *      - 主要测试三个权限: @LoginAuthorization @AccountActivation @AdminRank
+     *      - 若未抛出指定异常，则可能访问到空页面（Controller 的接口设定了访问限制，例如：consumes 和 参数列表）
      *
      * @param apiUrl api地址
      * @param requestMethod http请求方式
@@ -173,7 +191,6 @@ public class ApiTestUtil {
             mockRequest.contentType(MediaType.MULTIPART_FORM_DATA_VALUE);
         }
 
-        //login, but the account not activate
         if (user != null) {
             mockRequest.cookie(new Cookie(ParamConst.AUTHENTICATION, SecretUtil.generateUserInfoToken(user)));
         }
@@ -188,7 +205,7 @@ public class ApiTestUtil {
         } catch (NestedServletException ne) {
             Assert.assertTrue(ne.getRootCause() instanceof PermissionException);
 
-            //account no activated
+            //the account no activated
             if (user != null && user.getState() == SetConst.ACCOUNT_NO_ACTIVATED_STATE) {
                 Assert.assertEquals(ApiMessage.NO_ACTIVATE, ne.getRootCause().getMessage());
             } else {

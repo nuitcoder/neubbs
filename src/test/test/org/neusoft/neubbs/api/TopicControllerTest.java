@@ -751,7 +751,7 @@ public class TopicControllerTest {
      */
     @Test
     @Transactional
-    public void testReleaseTopicTopicReply() throws Exception {
+    public void testReleaseTopicTopicReplyException() throws Exception {
         //no login
         util.testApiThrowNoPermissionException("/api/topic/reply", RequestMethod.POST, null);
 
@@ -823,46 +823,89 @@ public class TopicControllerTest {
     }
 
     /**
-     * 【/api/topic-remove】test remove topic success
+     * 测试 /api/topic-remove
+     *      - 测试删除话题成功
+     *      - 需要权限：@LoginAuthorization @AccountActivation @AdminRank
      */
     @Test
     @Transactional
     public void testRemoveTopicSuccess() throws Exception {
         int topicId = 1;
-        String requestBodyJson = "{" + util.getJsonField("topicid", topicId) + "}";
-        System.out.println("input reqeust-body: " + requestBodyJson);
+        String requestBody = "{" + util.getJsonField("topicid", topicId) + "}";
+        System.out.println("input request-body: " + requestBody);
 
         mockMvc.perform(
                 MockMvcRequestBuilders.post("/api/topic-remove")
                     .cookie(util.getAlreadyLoginUserCookie())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(requestBodyJson)
+                    .content(requestBody)
+                    .accept(MediaType.APPLICATION_JSON)
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
          .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
          .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
 
-        //confirm database already remove topic related (topic information, reply)
+        //confirm already remove topic information(forum_topic, forum_topic_action, forum_topic_content, forum_topic_reply)
         Assert.assertNull(topicDAO.getTopicById(topicId));
         Assert.assertNull(topicContentDAO.getTopicContentByTopicId(topicId));
-        List<TopicReplyDO> topicReplyList = topicReplyDAO.listTopicReplyByTopicId(topicId);
-        Assert.assertEquals(topicReplyList.size(), 0);
+        Assert.assertNull(topicActionDAO.getTopicAction(topicId));
+        Assert.assertEquals(topicReplyDAO.listTopicReplyByTopicId(topicId).size(), 0);
 
         util.printSuccessMessage();
     }
 
     /**
-     * 【undone】
-     * 【/api/topic-remove】test remove topic throw exception
-     *      - permission exception
-     *          - [ ] no login
-     *          - [ ] account no activate
-     *          - [ ] rank is 'admin'
-     *      - request param error, no norm
-     *          - [ ] null
-     *          - [ ] param norm
-     *      - database exception
-     *          - [ ] no topic
+     * 测试 /api/topic-remove
+     *      - 测试删除话题异常
+     *          - no permission
+     *              - [✔] no login
+     *              - [✔] the account not activated
+     *              - [✔] rank not 'admin'
+     *          - request param error, no norm
+     *              - [✔] null
+     *              - [✔] param norm
+     *          - service exception
+     *              - [✔] no topic
      */
+    @Test
+    @Transactional
+    public void testRemoveTopicException() throws Exception {
+        //no login
+        util.testApiThrowNoPermissionException("/api/topic-remove", RequestMethod.POST, null);
+
+        //the account the activated
+        util.testApiThrowNoPermissionException("/api/topic-remove", RequestMethod.POST, util.getNoActivatedUserDO());
+        
+        //rank not 'admin'
+        util.testApiThrowNoPermissionException("/api/topic-remove", RequestMethod.POST, util.getNoAdminRankUserDO());
+
+        //request param error
+        Object[] params = {null, "123", "kkk", "123**-", 100000000};
+
+        for (Object topicId: params) {
+            String requestBody = "{" + util.getJsonField("topicid", topicId) + "}";
+            System.out.println("input request-body: " + requestBody);
+
+            try {
+                mockMvc.perform(
+                        MockMvcRequestBuilders.post("/api/topic-remove")
+                                .cookie(util.getAlreadyLoginUserCookie())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(requestBody)
+                                .accept(MediaType.APPLICATION_JSON)
+                ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
+                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(ApiMessage.PARAM_ERROR))
+                 .andExpect(MockMvcResultMatchers.jsonPath("$.model").value(CoreMatchers.notNullValue()));
+            } catch (NestedServletException ne) {
+                Assert.assertThat(ne.getRootCause(), CoreMatchers.anyOf(
+                        CoreMatchers.instanceOf(ParamsErrorException.class),
+                        CoreMatchers.instanceOf(ClassCastException.class),
+                        CoreMatchers.instanceOf(ServiceException.class)
+                ));
+            }
+        }
+
+        util.printSuccessMessage();
+    }
 
     /**
      * 【/api/topic-remove】test remove topic reply success

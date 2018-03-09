@@ -24,6 +24,14 @@ public interface ITopicActionDAO {
     int saveTopicAction(TopicActionDO topicAction);
 
     /**
+     * 删除话题行为
+     *
+     * @param topicId 话题 id
+     * @return int 删除行数
+     */
+    int removeTopicAction(int topicId);
+
+    /**
      * 获取所有话题行为
      *      - 回复用户 id 数组
      *      - 喜欢用户 id 数组
