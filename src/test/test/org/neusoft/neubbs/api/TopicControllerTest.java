@@ -908,53 +908,95 @@ public class TopicControllerTest {
     }
 
     /**
-     * 【/api/topic-remove】test remove topic reply success
+     * 测试 /api/topic/reply-remove
+     *      - 删除回复成功
+     *      - 需要权限：@LoginAuthorization @AccountActivation
      */
     @Test
     @Transactional
-    public void testRemoveTopicReplySuccess() throws Exception {
-        int replyId = 43;
-        String requestBodyJson = "{" + util.getJsonField("replyid", replyId) + "}";
-        System.out.println("input reqeust-body: " + requestBodyJson);
+    public void testRemoveTopicReply() throws Exception {
+        int replyId = 1;
+        String requestBody = "{" + util.getJsonField("replyid", replyId) + "}";
+        System.out.println("input request-body: " + requestBody);
 
-        TopicReplyDO beforeReply = topicReplyDAO.getTopicReplyById(replyId);
-        Assert.assertNotNull(beforeReply);
-        TopicDO beforeTopic = topicDAO.getTopicById(beforeReply.getTopicid());
-        Integer beforeTopicReplies = beforeTopic.getReplies();
+        //save reply before to remove
+        TopicReplyDO reply = topicReplyDAO.getTopicReplyById(replyId);
+        Assert.assertNotNull(reply);
+        int replyTopicId = reply.getTopicid();
+        TopicDO beforeTopic = topicDAO.getTopicById(replyTopicId);
 
         mockMvc.perform(
                 MockMvcRequestBuilders.post("/api/topic/reply-remove")
                         .cookie(util.getAlreadyLoginUserCookie())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestBodyJson)
+                        .content(requestBody)
+                        .accept(MediaType.APPLICATION_JSON)
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
+         .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model").value(CoreMatchers.notNullValue()));
 
-        //confirm database already remove reply and related topic replies-1
+        //confirm database already remove reply and related topic 'replies' - 1
         Assert.assertNull(topicReplyDAO.getTopicReplyById(replyId));
-
-        int beforeTopicId = beforeTopic.getId();
-        TopicDO afterTopic = topicDAO.getTopicById(beforeTopicId);
-        Integer afterTopicReplies = afterTopic.getReplies();
-        Assert.assertEquals(beforeTopicReplies - 1, (int) afterTopicReplies);
+        TopicDO afterTopic = topicDAO.getTopicById(replyTopicId);
+        Assert.assertEquals(beforeTopic.getReplies() - 1, (int) afterTopic.getReplies());
 
         util.printSuccessMessage();
     }
 
     /**
-     * 【undone】
-     * 【/api/topic/reply-remove】test remove topic reply throw exception
-     *      - permission exception
-     *          - [ ] no login
-     *          - [ ] account no activate
-     *          - [ ] rank is 'admin'
-     *      - request param error, no norm
-     *          - [ ] null
-     *          - [ ] param norm
-     *      - database exception
-     *          - [ ] no topic
+     * 测试 /api/topic/reply-remove
+     *      - 测试删除话题回复异常
+     *          - no permission
+     *              - [✔] no login
+     *              - [✔] the account not activated
+     *              - [✔] rank not 'admin'
+     *          - request param error, no norm
+     *              - [✔] null
+     *              - [✔] param norm
+     *          - service exception
+     *              - [✔] no reply
      */
+    @Test
+    @Transactional
+    public void testRemoveTopicReplyException() throws Exception {
+        //no login
+        util.testApiThrowNoPermissionException("/api/topic/reply-remove", RequestMethod.POST, null);
+
+        //the account not activated
+        util.testApiThrowNoPermissionException("/api/topic/reply-remove", RequestMethod.POST, util.getNoActivatedUserDO());
+
+        //the rank not 'admin'
+        util.testApiThrowNoPermissionException("/api/topic/reply-remove", RequestMethod.POST, util.getNoAdminRankUserDO());
+
+        //request param error, no norm
+        Object[] params = {null, "123", "k", "1 + ", 100000000};
+
+        for (Object replyId: params) {
+            String requestBody = "{" + util.getJsonField("replyid", replyId) + "}";
+            System.out.println("input request-body: " + requestBody);
+
+            try {
+                mockMvc.perform(
+                        MockMvcRequestBuilders.post("/api/topic/reply-remove")
+                                .cookie(util.getAlreadyLoginUserCookie())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(requestBody)
+                                .accept(MediaType.APPLICATION_JSON)
+                ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
+                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(ApiMessage.PARAM_ERROR))
+                 .andExpect(MockMvcResultMatchers.jsonPath("$.model").value(CoreMatchers.notNullValue()));
+
+            } catch (NestedServletException ne) {
+                Assert.assertThat(ne.getRootCause(), CoreMatchers.anyOf(
+                        CoreMatchers.instanceOf(ParamsErrorException.class),
+                        CoreMatchers.instanceOf(ClassCastException.class),
+                        CoreMatchers.instanceOf(ServiceException.class)
+                ));
+            }
+        }
+
+        util.printSuccessMessage();
+    }
 
     /**
      * 【/api/topic-update】test update topic success

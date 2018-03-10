@@ -258,7 +258,7 @@ public class TopicController {
      * @param requestBodyParamsMap request-body 内 JSON 数据
      * @return ApiJsonDTO 接口 JSON 传输对象
      */
-    @LoginAuthorization @AccountActivation
+    @LoginAuthorization @AccountActivation @AdminRank
     @RequestMapping(value = "/topic/reply-remove", method = RequestMethod.POST, consumes = "application/json")
     public ApiJsonDTO removeTopicReply(@RequestBody Map<String, Object> requestBodyParamsMap) {
         Integer replyId = (Integer) requestBodyParamsMap.get(ParamConst.REPLY_ID);
