@@ -999,7 +999,9 @@ public class TopicControllerTest {
     }
 
     /**
-     * 【/api/topic-update】test update topic success
+     * 测试 /api/topic-update
+     *      - 编辑话题成功
+     *      - 需要权限：@LoginAuthorization @AccountActivation
      */
     @Test
     @Transactional
@@ -1009,22 +1011,23 @@ public class TopicControllerTest {
         String newTitle = "new title";
         String newContent = "update new content";
 
-        String requestBodyJson = "{" + util.getJsonField("topicid", topicId) + ","
+        String requestBody = "{" + util.getJsonField("topicid", topicId) + ","
                 + util.getJsonField("category", newCategoryNick) + ","
                 + util.getJsonField("title", newTitle) + ","
                 + util.getJsonField("content", newContent) + "}";
-        System.out.println("input request-body: " + requestBodyJson);
+        System.out.println("input request-body: " + requestBody);
 
          mockMvc.perform(
                 MockMvcRequestBuilders.post("/api/topic-update")
                     .cookie(util.getAlreadyLoginUserCookie())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(requestBodyJson)
+                    .content(requestBody)
+                    .accept(MediaType.APPLICATION_JSON)
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
          .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
          .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
 
-        //compare database data, confirm already alter
+        //compare database data, topic content, topic title and topic content
         TopicDO afterTopic = topicDAO.getTopicById(topicId);
         TopicContentDO afterTopicContent = topicContentDAO.getTopicContentByTopicId(topicId);
         TopicCategoryDO afterTopicCategory = topicCategoryDAO.getTopicCategoryById(afterTopic.getCategoryid());
@@ -1040,18 +1043,69 @@ public class TopicControllerTest {
     }
 
     /**
-     * 【undone】
-     * 【/api/topic-update】test update topic throw exception
-     *      - permission exception
-     *          - [ ] no login
-     *          - [ ] account no activate
-     *          - [ ] rank is 'admin'
+     * 测试 /api/topic-update
+     *      - no permission
+     *          - [✔] no login
+     *          - [✔] the account no activated
      *      - request param error, no norm
-     *          - [ ] null
-     *          - [ ] param norm
-     *      - database exception
-     *          - [ ] no topic
+     *          - [✔] null
+     *          - [✔] param norm
+     *      - service exception
+     *          - [✔] no topic
      */
+    @Test
+    @Transactional
+    public void testUpdateTopicException() throws Exception {
+        //no login
+        util.testApiThrowNoPermissionException("/api/topic-update", RequestMethod.POST, null);
+
+        //the account not activated
+        util.testApiThrowNoPermissionException("/api/topic-update", RequestMethod.POST, util.getNoActivatedUserDO());
+
+        //request param error, no norm
+        int topicId = 1;
+        String newCategoryNick = "school";
+        String newTitle = "new title";
+        String newContent = "update new content";
+        Object[][] params = {
+                {null, null, null, null}, {topicId, null, null, null}, {null, newCategoryNick, null, null},
+                {null, null, newTitle, null}, {null, null ,null, newContent}, {topicId, newCategoryNick, null, null},
+                {null, newCategoryNick, newTitle, newContent},
+                {"kkk", newCategoryNick, newTitle, newContent}, {topicId, "123", newTitle, newContent},
+                {topicId, newCategoryNick, "", newContent}, {topicId, newCategoryNick, newTitle, ""},
+                {1000000000, newCategoryNick, newTitle, newContent}
+        };
+
+        for (Object[] param: params) {
+                String requestBody = "{" + util.getJsonField("topicid", param[0]) + ","
+                    + util.getJsonField("category", param[1]) + ","
+                    + util.getJsonField("title", param[2]) + ","
+                    + util.getJsonField("content", param[3]) + "}";
+                System.out.println("input request-body: " + requestBody);
+
+                try {
+                    mockMvc.perform(
+                           MockMvcRequestBuilders.post("/api/topic-update")
+                                .cookie(util.getAlreadyLoginUserCookie())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(requestBody)
+                                .accept(MediaType.APPLICATION_JSON)
+                    ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
+                     .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
+                     .andExpect(MockMvcResultMatchers.jsonPath("$.mode").value(CoreMatchers.notNullValue()));
+
+                } catch (NestedServletException ne) {
+                    Assert.assertThat(ne.getRootCause(),
+                            CoreMatchers.anyOf(CoreMatchers.instanceOf(ParamsErrorException.class),
+                                               CoreMatchers.instanceOf(ClassCastException.class),
+                                               CoreMatchers.instanceOf(ServiceException.class))
+                    );
+                }
+
+        }
+
+        util.printSuccessMessage();
+    }
 
     /**
      * 【/api/topic/reply-update】test update topic reply success
