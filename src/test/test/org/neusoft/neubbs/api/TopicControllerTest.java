@@ -1096,9 +1096,11 @@ public class TopicControllerTest {
 
                 } catch (NestedServletException ne) {
                     Assert.assertThat(ne.getRootCause(),
-                            CoreMatchers.anyOf(CoreMatchers.instanceOf(ParamsErrorException.class),
-                                               CoreMatchers.instanceOf(ClassCastException.class),
-                                               CoreMatchers.instanceOf(ServiceException.class))
+                            CoreMatchers.anyOf(
+                                    CoreMatchers.instanceOf(ParamsErrorException.class),
+                                    CoreMatchers.instanceOf(ClassCastException.class),
+                                    CoreMatchers.instanceOf(ServiceException.class)
+                            )
                     );
                 }
 
@@ -1108,46 +1110,93 @@ public class TopicControllerTest {
     }
 
     /**
-     * 【/api/topic/reply-update】test update topic reply success
+     * 测试 /topic/reply-update
+     *      - 编辑回复成功
+     *      - 需要权限：@LoginAuthorization, @AccountActivation
      */
     @Test
     @Transactional
     public void testUpdateTopicReplySuccess() throws Exception {
-        int replyId = 43;
-        String content = "new reply content";
-        String requestBodyJson = "{" + util.getJsonField("replyid", replyId) + ","
-                + util.getJsonField("content", content) + "}";
-        System.out.println("input reqeust-body: " + requestBodyJson);
+        int replyId = 1;
+        String newReplyContent = "new reply content";
+        String requestBody = "{" + util.getJsonField("replyid", replyId) + ","
+                + util.getJsonField("content", newReplyContent) + "}";
+        System.out.println("input request-body: " + requestBody);
 
         mockMvc.perform(
                 MockMvcRequestBuilders.post("/api/topic/reply-update")
                     .cookie(util.getAlreadyLoginUserCookie())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(requestBodyJson)
+                    .content(requestBody)
+                    .accept(MediaType.APPLICATION_JSON)
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
          .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
-         .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists());
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model").value(CoreMatchers.notNullValue()));
 
-        //compare database data, confirm already alter
-        TopicReplyDO beforeReply = topicReplyDAO.getTopicReplyById(replyId);
-        Assert.assertEquals(content, beforeReply.getContent());
+        //compare database data, before and after modification
+        Assert.assertEquals(newReplyContent, topicReplyDAO.getTopicReplyById(replyId).getContent());
 
         util.printSuccessMessage();
     }
 
     /**
-     * 【undone】
-     * 【/api/topic/reply-update】test update topic reply throw exception
-     *      - permission exception
-     *          - [ ] no login
-     *          - [ ] account no activate
-     *          - [ ] rank is 'admin'
+     * 测试 /topic/reply-update
+     *      - no permission
+     *          - [✔] no login
+     *          - [✔] the account not activated
      *      - request param error, no norm
-     *          - [ ] null
-     *          - [ ] param norm
-     *      - database exception
-     *          - [ ] no topic
+     *          - [✔] null
+     *          - [✔] param norm
+     *      - service exception
+     *          - [✔] no topic
      */
+    @Test
+    @Transactional
+    public void testUpdateTopicReplyException() throws Exception {
+        //no login
+        util.testApiThrowNoPermissionException("/api/topic/reply-update", RequestMethod.POST, null);
+
+        //the account not activated
+        util.testApiThrowNoPermissionException("/api/topic/reply-update", RequestMethod.POST, util.getNoActivatedUserDO());
+
+        //request param error
+        int replyId = 1;
+        String newReplyContent = "new reply content";
+        Object[][] params = {
+                {null, null}, {null, newReplyContent}, {replyId, null},
+                {"kkkkk", newReplyContent}, {replyId, ""},
+                {100000000, newReplyContent}
+        };
+
+        for (Object[] param: params) {
+            String requestBody = "{" + util.getJsonField("replyid", param[0]) + ","
+                    + util.getJsonField("content", param[1]) + "}";
+            System.out.println("input request-body: " + requestBody);
+
+            try {
+                mockMvc.perform(
+                        MockMvcRequestBuilders.post("/api/topic/reply-update")
+                                .cookie(util.getAlreadyLoginUserCookie())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(requestBody)
+                                .accept(MediaType.APPLICATION_JSON)
+                ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
+                        .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
+                        .andExpect(MockMvcResultMatchers.jsonPath("$.model").value(CoreMatchers.notNullValue()));
+
+            } catch (NestedServletException ne) {
+                Assert.assertThat(ne.getRootCause(),
+                        CoreMatchers.anyOf(
+                                CoreMatchers.instanceOf(ParamsErrorException.class),
+                                CoreMatchers.instanceOf(ClassCastException.class),
+                                CoreMatchers.instanceOf(ServiceException.class)
+                        )
+                );
+            }
+        }
+
+        util.printSuccessMessage();
+    }
 
     /**
      * 【/api/topic/like】test update topic content like 'inc' success
