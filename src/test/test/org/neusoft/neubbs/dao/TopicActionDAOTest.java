@@ -94,12 +94,10 @@ public class TopicActionDAOTest {
         TopicActionDO topicAction = this.saveTestTopicActionDOToDatabase();
         int topicId = topicAction.getTopicId();
 
-        Assert.assertNotNull(topicActionDAO.getTopicActionReplyUserIdJsonArray(topicId).getReplyUserIdJsonArray());
-        Assert.assertNotNull(topicActionDAO.getTopicActionLikeUserIdJsonArray(topicId).getLikeUserIdJsonArray());
-        Assert.assertNotNull(topicActionDAO.getTopicActionCollectUserIdJsonArray(topicId).getCollectUserIdJsonArray());
-        Assert.assertNotNull(
-                topicActionDAO.getTopicActionAttentionUserIdJsonArray(topicId).getAttentionUserIdJsonArray()
-        );
+        Assert.assertNotNull(topicActionDAO.getTopicActionReplyUserIdJsonArray(topicId));
+        Assert.assertNotNull(topicActionDAO.getTopicActionLikeUserIdJsonArray(topicId));
+        Assert.assertNotNull(topicActionDAO.getTopicActionCollectUserIdJsonArray(topicId));
+        Assert.assertNotNull(topicActionDAO.getTopicActionAttentionUserIdJsonArray(topicId));
 
         System.out.println("test alone get reply, like, collect, attention topic action success!");
     }

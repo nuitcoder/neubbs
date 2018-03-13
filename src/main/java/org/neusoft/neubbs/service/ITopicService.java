@@ -205,10 +205,12 @@ public interface ITopicService {
      *
      * @param isCurrentUserLikeTopic 当前用户是否喜欢该话题（是否已经点赞）
      * @param topicId 话题 id
+     * @param userId 用户 id（已登陆用户 id）
      * @param command 操作指令（inc - 自增1，dec- 自减1）
-     * @return Map 保存（当前话题点赞数）
+     * @return int 最新的话题点赞数
      */
-     Map<String, Object> alterTopicLikeByInstruction(boolean isCurrentUserLikeTopic, int topicId, String command);
+     int alterTopicLikeByCommand(boolean isCurrentUserLikeTopic, int topicId,
+                                                 int userId, String command);
 
     /**
      * 修改话题分类描述

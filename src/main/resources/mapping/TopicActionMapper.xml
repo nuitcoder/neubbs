@@ -25,17 +25,17 @@
                fta_like_fu_id_array, fta_collect_fu_id_array, fta_attention_fu_id_array
         FROM forum_topic_action WHERE ft_id = #{param1, jdbcType = INTEGER}
     </select>
-    <select id="getTopicActionReplyUserIdJsonArray" parameterType="java.lang.Integer" resultMap="TopicActionMap">
-        SELECT ft_id, fta_reply_fu_id_array FROM forum_topic_action WHERE ft_id = #{param1, jdbcType = INTEGER}
+    <select id="getTopicActionReplyUserIdJsonArray" parameterType="java.lang.Integer" resultType="java.lang.String">
+        SELECT fta_reply_fu_id_array FROM forum_topic_action WHERE ft_id = #{param1, jdbcType = INTEGER}
     </select>
-    <select id="getTopicActionLikeUserIdJsonArray" parameterType="java.lang.Integer" resultMap="TopicActionMap">
-        SELECT ft_id, fta_like_fu_id_array FROM forum_topic_action WHERE ft_id = #{param1, jdbcType = INTEGER}
+    <select id="getTopicActionLikeUserIdJsonArray" parameterType="java.lang.Integer" resultType="java.lang.String">
+        SELECT fta_like_fu_id_array FROM forum_topic_action WHERE ft_id = #{param1, jdbcType = INTEGER}
     </select>
-    <select id="getTopicActionCollectUserIdJsonArray" parameterType="java.lang.Integer" resultMap="TopicActionMap">
-        SELECT ft_id, fta_collect_fu_id_array FROM forum_topic_action WHERE ft_id = #{param1, jdbcType = INTEGER}
+    <select id="getTopicActionCollectUserIdJsonArray" parameterType="java.lang.Integer" resultType="java.lang.String">
+        SELECT fta_collect_fu_id_array FROM forum_topic_action WHERE ft_id = #{param1, jdbcType = INTEGER}
     </select>
-    <select id="getTopicActionAttentionUserIdJsonArray" parameterType="java.lang.Integer" resultMap="TopicActionMap">
-        SELECT ft_id, fta_attention_fu_id_array FROM forum_topic_action WHERE ft_id = #{param1, jdbcType = INTEGER}
+    <select id="getTopicActionAttentionUserIdJsonArray" parameterType="java.lang.Integer" resultType="java.lang.String">
+        SELECT fta_attention_fu_id_array FROM forum_topic_action WHERE ft_id = #{param1, jdbcType = INTEGER}
     </select>
 
     <update id="updateReplyUserIdJsonArrayByOneUserIdToAppendEnd">

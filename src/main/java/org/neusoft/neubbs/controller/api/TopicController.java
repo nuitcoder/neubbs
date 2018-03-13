@@ -316,7 +316,7 @@ public class TopicController {
 
     /**
      * 点赞话题
-     *      - 需要 command 命令（用于点赞 or 取消）
+     *      - 需要 command 命令（inc - 点赞 | dec - 取消）
      *
      * @param requestBodyParamsMap request-body 内 JSON 数据
      * @return ApiJsonDTO 接口 JSON 传输对象
@@ -331,14 +331,17 @@ public class TopicController {
        validationService.checkCommand(command, SetConst.COMMAND_INC, SetConst.COMMAND_DEC);
 
        UserDO cookieUser = secretService.getUserInfoByAuthentication(httpService.getAuthenticationCookieValue());
-       //record user like topic id array of user action
-       userService.operateLikeTopic(cookieUser.getId(), topicId, command);
 
        //judge current user like topic, according the command('inc', 'dec'), alter like of topic
        boolean isCurrentUserLikeTopic = userService.isUserLikeTopic(cookieUser.getId(), topicId);
 
-       return new ApiJsonDTO().success()
-               .model(topicService.alterTopicLikeByInstruction(isCurrentUserLikeTopic, topicId, command));
+       //record user like topic id array of user action
+       userService.operateLikeTopic(cookieUser.getId(), topicId, command);
+
+       int latestTopicLike
+               = topicService.alterTopicLikeByCommand(isCurrentUserLikeTopic, topicId, cookieUser.getId(), command);
+
+       return new ApiJsonDTO().success().buildMap(ParamConst.LIKE, latestTopicLike);
    }
 
     /**

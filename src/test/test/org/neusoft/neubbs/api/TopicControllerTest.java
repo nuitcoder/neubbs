@@ -22,9 +22,11 @@ import org.neusoft.neubbs.entity.TopicCategoryDO;
 import org.neusoft.neubbs.entity.TopicContentDO;
 import org.neusoft.neubbs.entity.TopicDO;
 import org.neusoft.neubbs.entity.TopicReplyDO;
+import org.neusoft.neubbs.entity.UserDO;
 import org.neusoft.neubbs.exception.ParamsErrorException;
 import org.neusoft.neubbs.exception.ServiceException;
 import org.neusoft.neubbs.service.ITopicService;
+import org.neusoft.neubbs.utils.JsonUtil;
 import org.neusoft.neubbs.utils.SecretUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -1199,20 +1201,25 @@ public class TopicControllerTest {
     }
 
     /**
-     * 【/api/topic/like】test update topic content like 'inc' success
-     *      - need  @LoginAuthorization @AccountActivation
+     * 测试 /api/topic/like
+     *      - 话题点赞 + 1 成功 & 话题点赞 - 1 成功
+     *      - 需要权限：@LoginAuthorization @AccountActivation
+     *      - 旧接口，需要输入 command 命令参数（inc - 点赞 or dec - 取消）
      */
     @Test
     @Transactional
-    public void testUpdateTopicContentLikeIncSuccess() throws Exception {
+    public void testLikeTopicSuccess() throws Exception {
         int topicId = 1;
+
+        //topic like + 1
         String command = "inc";
         String requestBody = "{" + util.getJsonField("topicid", topicId) + ", "
                 + util.getJsonField("command", command) + "}";
-        System.out.println("input request-body: "  + requestBody);
+        System.out.println("input dec request-body: "  + requestBody);
 
         Cookie cookie = util.getAlreadyLoginUserCookie();
-        int userId = SecretUtil.decryptUserInfoToken(cookie.getValue()).getId();
+        UserDO cookieUser = SecretUtil.decryptUserInfoToken(cookie.getValue());
+        int cookieUserId = cookieUser.getId();
         int beforeTopicContentLike = topicContentDAO.getTopicContentByTopicId(topicId).getLike();
 
         mockMvc.perform(
@@ -1220,81 +1227,113 @@ public class TopicControllerTest {
                         .cookie(cookie)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody)
+                        .accept(MediaType.APPLICATION_JSON)
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.model.like")
                         .value(CoreMatchers.is(beforeTopicContentLike + 1)));
 
-        //compare database data
+        //judge 'forum_topic_content'  -> 'ftc_like + 1
         int afterTopicContentLike = topicContentDAO.getTopicContentByTopicId(topicId).getLike();
         Assert.assertEquals(beforeTopicContentLike + 1, afterTopicContentLike);
 
-        JSONArray jsonArray = JSON.parseArray(userActionDAO.getUserAction(userId).getLikeTopicIdJsonArray());
+        //judge 'forum_user_action' new insert topicId
+        JSONArray jsonArray = JSON.parseArray(userActionDAO.getUserActionLikeTopicIdJsonArray(cookieUserId));
         Assert.assertEquals(topicId, (int) jsonArray.get(jsonArray.size() - 1));
 
-        util.printSuccessMessage();
-    }
+        //judge 'forum_topic_action' new insert userId
+        jsonArray = JSON.parseArray(topicActionDAO.getTopicActionLikeUserIdJsonArray(topicId));
+        Assert.assertEquals(cookieUserId, jsonArray.get(jsonArray.size() - 1));
 
-    /**
-     * 【/api/topic/like】test update topic content like 'dec' success
-     */
-    @Test
-    @Transactional
-    public void testUpdateTopicContentLikeDecSuccess() throws Exception {
-        int topicId = 1;
-        String command = "dec";
-        String requestBody = "{" + util.getJsonField("topicid", topicId) + ", "
+
+        //topic like - 1
+        command = "dec";
+        requestBody = "{" + util.getJsonField("topicid", topicId) + ", "
                 + util.getJsonField("command", command) + "}";
-        System.out.println("input request-body: "  + requestBody);
-
-        //set user already like, get userId from cookie user
-        Cookie cookie = util.getAlreadyLoginUserCookie();
-        int userId = SecretUtil.decryptUserInfoToken(cookie.getValue()).getId();
-
-        Assert.assertEquals(1, topicContentDAO.updateLikeAddOneByTopicId(topicId));
-        Assert.assertEquals(1, userActionDAO.updateLikeTopicIdJsonArrayByOneTopicIdToAppendEnd(userId, topicId));
-
-        int beforeTopicContentLike = topicContentDAO.getTopicContentByTopicId(topicId).getLike();
+        System.out.println("input 'dec' request-body: "  + requestBody);
 
         mockMvc.perform(
                 MockMvcRequestBuilders.post("/api/topic/like")
-                    .cookie(cookie)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(requestBody)
+                        .cookie(cookie)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody)
+                        .accept(MediaType.APPLICATION_JSON)
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
-         .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
-         .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
-         .andExpect(MockMvcResultMatchers.jsonPath("$.model.like").value(CoreMatchers.is(beforeTopicContentLike - 1)));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.model.like")
+                        .value(CoreMatchers.is(beforeTopicContentLike)));
 
-        //compare database data
-        TopicContentDO afterTopicContent = topicContentDAO.getTopicContentByTopicId(topicId);
-        int afterTopicContentLike = afterTopicContent.getLike();
-        Assert.assertEquals(beforeTopicContentLike - 1, afterTopicContentLike);
-
-        JSONArray jsonArray = JSON.parseArray(userActionDAO.getUserAction(userId).getLikeTopicIdJsonArray());
-        Assert.assertTrue(jsonArray.indexOf(topicId) == -1);
+        Assert.assertEquals(beforeTopicContentLike, (int) topicContentDAO.getTopicContentByTopicId(topicId).getLike());
+        Assert.assertEquals(-1, JsonUtil.getIntElementIndex(userActionDAO.getUserActionLikeTopicIdJsonArray(cookieUserId), topicId));
+        Assert.assertEquals(-1, JsonUtil.getIntElementIndex(topicActionDAO.getTopicActionLikeUserIdJsonArray(topicId), cookieUserId));
 
         util.printSuccessMessage();
     }
 
+
     /**
-     * 【/api/topic/like】test update topic content like throw exception
-     *      - permission exception
-     *          - [ ] no login
-     *          - [ ] account no activate
+     * 测试 /topic/like
+     *      - 点赞接口异常
+     *      - no permission
+     *          - [✔] no login
+     *          - [✔] the account not activated
      *      - request param error, no norm
-     *          - [ ] null
-     *          - [ ] instruction error
-     *          - [ ] param norm
-     *      - database exception
-     *          - [ ] no topic
-     *          - [ ] alter forum_topic_content 'like' field fail
-     *          - [ ] alter forum_user_action 'fua_liketopic_ft_id_array' fail
-     *          - [ ] user already like topic, input 'inc'
-     *          - [ ] user no like topic, input 'dec'
-     *          - [ ] repeat input 'inc' or 'dec'
+     *          - [✔] null
+     *          - [✔] param norm
+     *          - [✔] command error
+     *      - service exception
+     *          - [✔] no topic
      */
+    @Test
+    @Transactional
+    public void testLikeTopicException() throws Exception {
+        //no login
+        util.testApiThrowNoPermissionException("/api/topic/like", RequestMethod.POST, null);
+
+        //the account not activated
+        util.testApiThrowNoPermissionException("/api/topic/like", RequestMethod.POST, util.getNoActivatedUserDO());
+
+        //request param error
+        int topicId = 1;
+        String command = "inc";
+        Object [][] params = {
+                {null, null}, {null, command}, {topicId, null},
+                {"kk", command}, {"100000000", command}, {"123-+-", command},
+                {topicId, "ttt"}, {topicId, "---"}, {topicId, "123"},
+                {1000000, command}
+        };
+
+        for (Object[] param: params) {
+            String requestBody = "{" + util.getJsonField("topicid", param[0]) + ", "
+                    + util.getJsonField("command", param[1]) + "}";
+            System.out.println("input 'dec' request-body: "  + requestBody);
+
+            try {
+                mockMvc.perform(
+                        MockMvcRequestBuilders.post("/api/topic/like")
+                            .cookie(util.getAlreadyLoginUserCookie())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(requestBody)
+                            .accept(MediaType.APPLICATION_JSON)
+                ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
+                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(CoreMatchers.notNullValue()))
+                 .andExpect(MockMvcResultMatchers.jsonPath("$.model").value(CoreMatchers.notNullValue()));
+
+            } catch (NestedServletException ne) {
+                Assert.assertThat(ne.getRootCause(),
+                        CoreMatchers.anyOf(
+                                CoreMatchers.instanceOf(ParamsErrorException.class),
+                                CoreMatchers.instanceOf(ClassCastException.class),
+                                CoreMatchers.instanceOf(ServiceException.class)
+                        )
+                );
+            }
+        }
+
+        util.printSuccessMessage();
+    }
 
     /**
      * 【/api/topic/collect】 test user collect topic success
@@ -1321,7 +1360,7 @@ public class TopicControllerTest {
         //database
         int cookieUserId = 6;
         String userCollectTopicIdJsonArrayString = userActionDAO.getUserActionCollectTopicIdJsonArray(cookieUserId);
-        String topicCollectUserIdJsonArrayString = topicActionDAO.getTopicActionCollectUserIdJsonArray(topicId).getCollectUserIdJsonArray();
+        String topicCollectUserIdJsonArrayString = topicActionDAO.getTopicActionCollectUserIdJsonArray(topicId);
 
         Assert.assertNotEquals(-1 , JSON.parseArray(userCollectTopicIdJsonArrayString).indexOf(topicId));
         Assert.assertNotEquals(-1, JSON.parseArray(topicCollectUserIdJsonArrayString).indexOf(cookieUserId));

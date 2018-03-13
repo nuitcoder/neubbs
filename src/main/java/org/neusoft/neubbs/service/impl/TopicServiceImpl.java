@@ -373,27 +373,38 @@ public class TopicServiceImpl implements ITopicService {
     }
 
     @Override
-    public Map<String, Object> alterTopicLikeByInstruction(boolean isCurrentUserLikeTopic, int topicId,
-                                                           String command) {
+    public int alterTopicLikeByCommand(boolean isCurrentUserLikeTopic, int topicId,
+                                       int userId, String command) {
         //judge current user whether repeat operation(no repeat input 'inc' or 'dec')
-        boolean isIncOfInstruction = command.equals(SetConst.COLLECT_INC);
-        if (isCurrentUserLikeTopic && isIncOfInstruction) {
+        boolean isIncOfCommand = command.equals(SetConst.COMMAND_INC);
+        if (isCurrentUserLikeTopic && isIncOfCommand) {
+            //like topic & command equals 'inc'
             throw new ServiceException(ApiMessage.NO_REPEAT_INC_TOPIC_LIKE).log(LogWarnEnum.TS19);
-        } else if (!isCurrentUserLikeTopic && !isIncOfInstruction) {
+        } else if (!isCurrentUserLikeTopic && !isIncOfCommand) {
+            //no like topic & command no equals 'inc'
             throw new ServiceException(ApiMessage.NO_REPEAT_DEC_TOPIC_LIKE).log(LogWarnEnum.TS20);
         }
 
         //update forum_topic_content 'like'
         TopicContentDO topicContent = this.getTopicContentNotNull(topicId);
-        int effectRow = isIncOfInstruction
+        int effectRow = isIncOfCommand
                 ? topicContentDAO.updateLikeAddOneByTopicId(topicId)
                 : topicContentDAO.updateLikeCutOneByTopicId(topicId);
         if (effectRow == 0) {
             throw new ServiceException(ApiMessage.DATABASE_EXCEPTION).log(LogWarnEnum.TS7);
         }
 
-        int currentTopicLike = isIncOfInstruction ? topicContent.getLike() + 1 : topicContent.getLike() - 1;
-        return MapFilterUtil.generateMap(ParamConst.LIKE, currentTopicLike);
+        //update forum_topic_action 'fta_like_fu_id_array'
+        effectRow = !isCurrentUserLikeTopic
+                ? topicActionDAO.updateLikeUserIdJsonArrayByOneUserIdToAppendEnd(topicId, userId)
+                : topicActionDAO.updateLikeUserIdJsonArrayByIndexToRemoveOneUserId(topicId,
+                    JsonUtil.getIntElementIndex(topicActionDAO.getTopicActionLikeUserIdJsonArray(topicId), userId)
+                  );
+        if (effectRow == 0) {
+            throw new ServiceException(ApiMessage.DATABASE_EXCEPTION).log(LogWarnEnum.TS26);
+        }
+
+        return isIncOfCommand ? topicContent.getLike() + 1 : topicContent.getLike() - 1;
     }
 
     @Override
@@ -891,7 +902,7 @@ public class TopicServiceImpl implements ITopicService {
      * @return String 话题被喜欢用户idJSON数组字符串
      */
     private String getTopicLikeUserIdJsonArrayStringByTopicId(int topicId) {
-        return topicActionDAO.getTopicActionLikeUserIdJsonArray(topicId).getLikeUserIdJsonArray();
+        return topicActionDAO.getTopicActionLikeUserIdJsonArray(topicId);
     }
 
     /**
@@ -901,7 +912,7 @@ public class TopicServiceImpl implements ITopicService {
      * @return String 话题被收藏用户idJSON数组字符串
      */
     private String getTopicCollectUserIdJsonArrayStringByTopicId(int topicId) {
-        return topicActionDAO.getTopicActionCollectUserIdJsonArray(topicId).getCollectUserIdJsonArray();
+        return topicActionDAO.getTopicActionCollectUserIdJsonArray(topicId);
     }
 
     /**
@@ -911,7 +922,7 @@ public class TopicServiceImpl implements ITopicService {
      * @return String 话题被关注用户idJSON数组字符串
      */
     private String getTopicAttentionUserIdJsonArrayStringByTopicId(int topicId) {
-        return topicActionDAO.getTopicActionAttentionUserIdJsonArray(topicId).getAttentionUserIdJsonArray();
+        return topicActionDAO.getTopicActionAttentionUserIdJsonArray(topicId);
     }
 
     /*

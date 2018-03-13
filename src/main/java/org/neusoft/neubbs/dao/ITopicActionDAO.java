@@ -48,36 +48,36 @@ public interface ITopicActionDAO {
      *      - 注入 TopicActionDO 对象 replyUserIdJsonArray 属性
      *
      * @param  topicId 话题 id
-     * @return TopicActionDO 用户行为对象
+     * @return String 回复话题的用户 id，JSON 数组字符串
      */
-    TopicActionDO getTopicActionReplyUserIdJsonArray(int topicId);
+    String getTopicActionReplyUserIdJsonArray(int topicId);
 
     /**
      * 获取话题行为喜欢用户 id 数组
      *      - 注入 TopicActionDO 对象 likeUserIdJsonArray 属性
      *
      * @param topicId 话题 id
-     * @return TopicActionDO 用户行为对象
+     * @return String 点赞话题的用户 id，JSON 数组字符串
      */
-    TopicActionDO getTopicActionLikeUserIdJsonArray(int topicId);
+    String getTopicActionLikeUserIdJsonArray(int topicId);
 
     /**
      * 获取话题行为收藏用户 id 数组
      *      - 注入 TopicActionDO 对象 collectUserIdJsonArray 属性
      *
      * @param topicId 话题 id
-     * @return TopicActionDO 用户行为对象
+     * @return String 收藏话题的用户 id，JSON 数组字符串
      */
-    TopicActionDO getTopicActionCollectUserIdJsonArray(int topicId);
+    String getTopicActionCollectUserIdJsonArray(int topicId);
 
     /**
      * 获取话题行为关注用户 id 数组
      *      - 注入 TopicActionDO 对象 attentionUserIdJsonArray 属性
      *
      * @param topicId 话题 id
-     * @return TopicActionDO 用户行为对象
+     * @return String 关注话题的用户 id，JSON 数组字符串
      */
-    TopicActionDO getTopicActionAttentionUserIdJsonArray(int topicId);
+    String getTopicActionAttentionUserIdJsonArray(int topicId);
 
     /**
      * 更新话题回复用户 id 数组，JSON 数组末尾追加 1 个用户 id
