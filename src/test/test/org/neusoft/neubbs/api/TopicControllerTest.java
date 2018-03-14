@@ -1046,6 +1046,7 @@ public class TopicControllerTest {
 
     /**
      * 测试 /api/topic-update
+     *      - 话题更新异常
      *      - no permission
      *          - [✔] no login
      *          - [✔] the account no activated
@@ -1143,6 +1144,7 @@ public class TopicControllerTest {
 
     /**
      * 测试 /topic/reply-update
+     *      - 更新回复异常
      *      - no permission
      *          - [✔] no login
      *          - [✔] the account not activated
@@ -1234,10 +1236,6 @@ public class TopicControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.model.like")
                         .value(CoreMatchers.is(beforeTopicContentLike + 1)));
 
-        //judge 'forum_topic_content'  -> 'ftc_like + 1
-        int afterTopicContentLike = topicContentDAO.getTopicContentByTopicId(topicId).getLike();
-        Assert.assertEquals(beforeTopicContentLike + 1, afterTopicContentLike);
-
         //judge 'forum_user_action' new insert topicId
         JSONArray jsonArray = JSON.parseArray(userActionDAO.getUserActionLikeTopicIdJsonArray(cookieUserId));
         Assert.assertEquals(topicId, (int) jsonArray.get(jsonArray.size() - 1));
@@ -1245,7 +1243,6 @@ public class TopicControllerTest {
         //judge 'forum_topic_action' new insert userId
         jsonArray = JSON.parseArray(topicActionDAO.getTopicActionLikeUserIdJsonArray(topicId));
         Assert.assertEquals(cookieUserId, jsonArray.get(jsonArray.size() - 1));
-
 
         //topic like - 1
         command = "dec";
@@ -1275,6 +1272,7 @@ public class TopicControllerTest {
 
     /**
      * 测试 /topic/like
+     *      - 旧接口，需要输入 command 命令参数（inc - 点赞 or dec - 取消）
      *      - 点赞接口异常
      *      - no permission
      *          - [✔] no login
@@ -1308,7 +1306,7 @@ public class TopicControllerTest {
         for (Object[] param: params) {
             String requestBody = "{" + util.getJsonField("topicid", param[0]) + ", "
                     + util.getJsonField("command", param[1]) + "}";
-            System.out.println("input 'dec' request-body: "  + requestBody);
+            System.out.println("input request-body: "  + requestBody);
 
             try {
                 mockMvc.perform(
@@ -1334,6 +1332,120 @@ public class TopicControllerTest {
 
         util.printSuccessMessage();
     }
+
+    /**
+     * 测试 /topic/newlike
+     *      - 点赞话题新接口
+     *      - 需要权限：@LoginAuthorization @AccountActivation
+     *      - 新接口，不需要输入 command（inc | dec）,重复调用即自判断点暂（or 取消）
+     */
+    @Test
+    @Transactional
+    public void testNewLikeTopicSuccess() throws Exception {
+        int topicId = 1;
+        Cookie cookie = util.getAlreadyLoginUserCookie();
+        UserDO cookieUser = SecretUtil.decryptUserInfoToken(cookie.getValue());
+        int cookieUserId = cookieUser.getId();
+        String requestBody = "{" + util.getJsonField("topicid", topicId) + "}";
+
+        //like topic + 1
+        TopicContentDO topicContent = topicContentDAO.getTopicContentByTopicId(topicId);
+        int beforeTopicLike = topicContent.getLike();
+
+        System.out.println("request 'inc' request-body: " + requestBody);
+        mockMvc.perform(
+                MockMvcRequestBuilders.post("/api/topic/newlike")
+                    .cookie(cookie)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(requestBody)
+                    .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
+            .andExpect(MockMvcResultMatchers.jsonPath("$.model.userLikeTopicId").isArray())
+            .andExpect(MockMvcResultMatchers.jsonPath("$.model.like").value(beforeTopicLike + 1));
+
+        //judge forum_user_action 'fua_like_ft_id_array'
+        JSONArray jsonArray = JSON.parseArray(userActionDAO.getUserActionLikeTopicIdJsonArray(cookieUserId));
+        Assert.assertEquals(topicId, jsonArray.get(jsonArray.size() - 1));
+
+        //judge forum_topic_action 'fta_like_fu_id_array'
+        jsonArray = JSON.parseArray(topicActionDAO.getTopicActionLikeUserIdJsonArray(topicId));
+        Assert.assertEquals(cookieUserId, jsonArray.get(jsonArray.size() - 1));
+
+        //like topic - 1
+        System.out.println("request 'dec' request-body: " + requestBody);
+        mockMvc.perform(
+                MockMvcRequestBuilders.post("/api/topic/newlike")
+                    .cookie(util.getAlreadyLoginUserCookie())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(requestBody)
+                    .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
+            .andExpect(MockMvcResultMatchers.jsonPath("$.model.userLikeTopicId").isArray())
+            .andExpect(MockMvcResultMatchers.jsonPath("$.model.like").value(beforeTopicLike));
+
+        Assert.assertEquals(-1, JsonUtil.getIntElementIndex(userActionDAO.getUserActionLikeTopicIdJsonArray(cookieUserId), topicId));
+        Assert.assertEquals(-1, JsonUtil.getIntElementIndex(topicActionDAO.getTopicActionLikeUserIdJsonArray(topicId), cookieUserId));
+
+        util.printSuccessMessage();
+    }
+
+    /**
+     * 测试 /api/topic/newlike
+     *      - 新接口，不需要 command，自动处理话题用户喜欢话题状态，取反（已喜欢 -> 未喜欢， 未喜欢 -> 已喜欢）
+     *      - no permission
+     *          - [✔] no login
+     *          - [✔] the account not activated
+     *      - request param error, no norm
+     *          - [✔] null
+     *          - [✔] param norm
+     *      - service exception
+     *          - [✔] no topic
+     */
+    @Test
+    @Transactional
+    public void testNewLikeTopicException() throws Exception {
+        //no login
+        util.testApiThrowNoPermissionException("/api/topic/newlike", RequestMethod.POST, null);
+
+        //the account not activated
+        util.testApiThrowNoPermissionException("/api/topic/newlike", RequestMethod.POST, util.getNoActivatedUserDO());
+
+        //request param error
+        Object[] params = {null, "123", "kk", "123-+-", 1000000};
+
+        for (Object topicId: params) {
+            String requestBody = "{" + util.getJsonField("topicid", topicId) + "}";
+            System.out.println("input request-body: "  + requestBody);
+
+            try {
+                mockMvc.perform(
+                        MockMvcRequestBuilders.post("/api/topic/newlike")
+                            .cookie(util.getAlreadyLoginUserCookie())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(requestBody)
+                            .accept(MediaType.APPLICATION_JSON)
+                ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
+                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(CoreMatchers.notNullValue()))
+                 .andExpect(MockMvcResultMatchers.jsonPath("$.model").value(CoreMatchers.notNullValue()));
+
+            } catch (NestedServletException ne) {
+                Assert.assertThat(ne.getRootCause(),
+                        CoreMatchers.anyOf(
+                                CoreMatchers.instanceOf(ParamsErrorException.class),
+                                CoreMatchers.instanceOf(ClassCastException.class),
+                                CoreMatchers.instanceOf(ServiceException.class)
+                        )
+                );
+            }
+        }
+
+        util.printSuccessMessage();
+    }
+
 
     /**
      * 【/api/topic/collect】 test user collect topic success

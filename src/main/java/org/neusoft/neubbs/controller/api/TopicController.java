@@ -346,7 +346,7 @@ public class TopicController {
 
     /**
      * 点赞话题（新接口）
-     *      - 不需要 command 命令
+     *      - 自动处理用户喜欢话题状态，取反（已喜欢 -> 未喜欢， 未喜欢 -> 已喜欢）
      *
      * @param requestBodyParamsMap request-body 内 JSON 数据
      * @return ApiJsonDTO 接口 JSON 传输对象
