@@ -155,9 +155,9 @@ public class FileControllerTest {
     /**
      * 测试 /api/file/avatar
      *      - 测试上传用户头像异常
-     *          - [✔] no permission
-     *              - no login
-     *              - the account not activated
+     *          - no permission
+     *              - [✔] no login
+     *              - [✔] the account not activated
      *          - [✔] upload file format incorrect (no norm)
      */
     @Test

@@ -202,11 +202,11 @@ public class TopicControllerTest {
     /**
      * 测试 /api/topic （GET）
      *      - 获取话题信息异常
-     *          - [✔] request param error, no norm
-     *              - null
-     *              - topicid error
-     *          - [✔] service exception
-     *              - no topic
+     *          - request param erro
+     *              - [✔] null
+     *              - [✔] format not norm
+     *          - service exception
+     *              - [✔] no topic
      */
     @Test
     public void testGetTopicInfoException() throws Exception{
@@ -269,9 +269,11 @@ public class TopicControllerTest {
     /**
      * 测试 /api/topic/reply （GET）
      *      - 获取回复信息异常
-     *          - [✔] request param error, no param
-     *          - [✔] service exception
-     *              - no reply
+     *          - request param error
+     *              - [✔] null
+     *              - [✔] format not norm
+     *          - service exception
+     *              - [✔] no reply
      */
     @Test
     public void testGetTopicReplyInfoException() throws Exception {
@@ -390,8 +392,10 @@ public class TopicControllerTest {
     /**
      * 测试 /api/topics
      *      - 获取首页话题信息列表异常
-     *          - [✔] request param error, no norm
-     *          - [ ] service exception
+     *          - request param error
+     *              - [✔] null
+     *              - [✔] format not norm
+     *          - service exception
      *              - [✔] input page exceed topic max page
      *              - [ ] no query topics
      *              - [ ] no category
@@ -507,10 +511,13 @@ public class TopicControllerTest {
     /**
      * 测试 /api/topics/pages
      *      - 获取话题总页数异常
-     *          - [ ] request param error, no norm
-     *          - [✔] service exception
-     *              - no category
-     *              - no username
+     *          - request param error
+     *              - [ ] null
+     *              - [ ] type error
+     *              - [ ] format not norm
+     *          - service exception
+     *              - [✔] no category
+     *              - [✔] no username
      */
     @Test
     public void testCountTopicTotalPagesException() throws Exception {
@@ -626,11 +633,13 @@ public class TopicControllerTest {
      *          - permission exception
      *              - [✔] no login
      *              - [✔] the account no activated
-     *          - request param error, no norm
-     *              - [✔] null check
-     *              - [✔] topic category nick no is pure english
-     *              - [ ] topic title length limit(1 <= length <= 50)
-     *              - [✔] topic content length limit(1 <= length <= 100000)
+     *          - request param error
+     *              - [✔] null
+     *              - [ ] type error
+     *              - format not norm
+     *                  - [✔] topic category nick no is pure english
+     *                  - [ ] topic title length limit(1 <= length <= 50)
+     *                  - [✔] topic content length limit(1 <= length <= 100000)
      *          - server exception
      *              - [ ] no user (get user from cookie)
      *              - [ ] no category
@@ -645,7 +654,7 @@ public class TopicControllerTest {
         //the account no activated
         util.testApiThrowNoPermissionException("/api/topic", RequestMethod.POST, util.getNoActivatedUserDO());
 
-        //request param error, no norm
+        //request param error
         String category = "testCategory";
         String title = "test title";
         String content = "test content";
@@ -744,9 +753,10 @@ public class TopicControllerTest {
      *          - no permission
      *              - [✔] no login
      *              - [✔] the account not activated
-     *          - request param error, no norm
+     *          - request param error
      *              - [✔] null
-     *              - [✔] param norm
+     *              - [✔] type error
+     *              - [✔] format not norm
      *          - service exception
      *              - [ ] no topic
      *              - [ ] no user (get user from cookie)
@@ -862,9 +872,10 @@ public class TopicControllerTest {
      *              - [✔] no login
      *              - [✔] the account not activated
      *              - [✔] rank not 'admin'
-     *          - request param error, no norm
+     *          - request param error
      *              - [✔] null
-     *              - [✔] param norm
+     *              - [✔] type error
+     *              - [✔] format not norm
      *          - service exception
      *              - [✔] no topic
      */
@@ -952,9 +963,10 @@ public class TopicControllerTest {
      *              - [✔] no login
      *              - [✔] the account not activated
      *              - [✔] rank not 'admin'
-     *          - request param error, no norm
+     *          - request param error
      *              - [✔] null
-     *              - [✔] param norm
+     *              - [✔] type error
+     *              - [✔] format not norm
      *          - service exception
      *              - [✔] no reply
      */
@@ -970,7 +982,7 @@ public class TopicControllerTest {
         //the rank not 'admin'
         util.testApiThrowNoPermissionException("/api/topic/reply-remove", RequestMethod.POST, util.getNoAdminRankUserDO());
 
-        //request param error, no norm
+        //request param error
         Object[] params = {null, "123", "k", "1 + ", 100000000};
 
         for (Object replyId: params) {
@@ -1050,9 +1062,10 @@ public class TopicControllerTest {
      *      - no permission
      *          - [✔] no login
      *          - [✔] the account no activated
-     *      - request param error, no norm
+     *      - request param error
      *          - [✔] null
-     *          - [✔] param norm
+     *          - [✔] type error
+     *          - [✔] format not norm
      *      - service exception
      *          - [✔] no topic
      */
@@ -1065,7 +1078,7 @@ public class TopicControllerTest {
         //the account not activated
         util.testApiThrowNoPermissionException("/api/topic-update", RequestMethod.POST, util.getNoActivatedUserDO());
 
-        //request param error, no norm
+        //request param error
         int topicId = 1;
         String newCategoryNick = "school";
         String newTitle = "new title";
@@ -1148,9 +1161,10 @@ public class TopicControllerTest {
      *      - no permission
      *          - [✔] no login
      *          - [✔] the account not activated
-     *      - request param error, no norm
+     *      - request param error
      *          - [✔] null
-     *          - [✔] param norm
+     *          - [✔] type error
+     *          - [✔] format not norm
      *      - service exception
      *          - [✔] no topic
      */
@@ -1277,10 +1291,10 @@ public class TopicControllerTest {
      *      - no permission
      *          - [✔] no login
      *          - [✔] the account not activated
-     *      - request param error, no norm
+     *      - request param error
      *          - [✔] null
-     *          - [✔] param type error
-     *          - [✔] param norm
+     *          - [✔] type error
+     *          - [✔] format not norm
      *          - [✔] command error
      *      - service exception
      *          - [✔] no topic
@@ -1400,10 +1414,10 @@ public class TopicControllerTest {
      *      - no permission
      *          - [✔] no login
      *          - [✔] the account not activated
-     *      - request param error, no norm
+     *      - request param error
      *          - [✔] null
-     *          - [✔] param type error
-     *          - [✔] param norm
+     *          - [✔] type error
+     *          - [✔] format not norm
      *      - service exception
      *          - [✔] no topic
      */
@@ -1509,10 +1523,10 @@ public class TopicControllerTest {
      *      - no permission
      *          - [✔] no login
      *          - [✔] the account not activated
-     *      - request param error, no norm
+     *      - request param error
      *          - [✔] null
-     *          - [✔] param type error
-     *          - [✔] param no norm
+     *          - [✔] type error
+     *          - [✔] format not norm
      *      - service exception
      *          - [✔] no topic
      */

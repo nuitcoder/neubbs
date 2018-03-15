@@ -173,7 +173,7 @@ public class AccountControllerTest {
 
     /**
      * 测试 /api/account
-     *      - [✔] 获取用户信息，常同时输入两个不同参数，其中之一出现异常
+     *      - 获取用户信息，常同时输入两个不同参数，其中之一出现异常
      */
     @Test
     public void testGetUserInfoSameInputTwoParamException() throws Exception {
@@ -198,8 +198,11 @@ public class AccountControllerTest {
     /**
      * 测试 /api/account
      *      - 获取用户信息异常
-     *          - [✔] request param error, no norm
-     *          - [✔] service exception
+     *          - request param error
+     *              - [✔] null
+     *              - [✔] format not norm
+     *          - service exception
+     *              - [ ] no user
      */
     @Test
     public void testGetUserInfoException () throws Exception {
@@ -214,7 +217,7 @@ public class AccountControllerTest {
             alist.add(new Param("email", "suvan@liushuwei.cn"));
 
         for (Param param : alist) {
-            System.out.println("params: " + param.key + " = " + param.value);
+            System.out.println("input params: " + param.key + " = " + param.value);
 
             try {
                 mockMvc.perform(
@@ -225,12 +228,7 @@ public class AccountControllerTest {
                  .andExpect(MockMvcResultMatchers.jsonPath("$.model").value(CoreMatchers.notNullValue()));
 
             } catch (NestedServletException ne) {
-                Assert.assertThat(ne.getRootCause(),
-                        CoreMatchers.anyOf(
-                                CoreMatchers.is(CoreMatchers.instanceOf(ParamsErrorException.class)),
-                                CoreMatchers.is(CoreMatchers.instanceOf(ServiceException.class))
-                        )
-                );
+                Assert.assertThat(ne.getRootCause(), CoreMatchers.is(CoreMatchers.instanceOf(ParamsErrorException.class)));
             }
         }
 
@@ -257,8 +255,11 @@ public class AccountControllerTest {
     /**
      * 测试 /api/account/state
      *      - 获取用户激活状态异常
-     *          - [✔] request param error, no norm
-     *          - [✔] service exception
+     *          - request param error
+     *              - [✔] null
+     *              - [✔] format not norm
+     *          - service exception
+     *              - [✔] no user
      */
     @Test
     public void testGetUserActivateStateException() throws Exception {
@@ -308,8 +309,11 @@ public class AccountControllerTest {
     /**
      * 测试 /api/account/following
      *      - 获取用户所有主动关注人信息列表异常
-     *          - [✔] request param error, no norm
-     *          - [✔] service exception
+     *          - request param error
+     *              - [✔] null
+     *              - [✔] format not norm
+     *          - service exception
+     *              - [✔] no user
      */
     @Test
     public void testListUserFollowingUserInfoException() throws Exception {
@@ -360,8 +364,11 @@ public class AccountControllerTest {
     /**
      * 测试 /api/account/followed
      *      - 获取所有用户所有被关注人信息列表异常
-     *          - [✔] request param error, no norm
-     *          - [✔] service exception
+     *          - request param error
+     *              - [✔] null
+     *              - [✔] format not norm
+     *          - service exception
+     *              - [✔] no user
      */
     @Test
     public void testListUserFollowedUserInfoException() throws Exception {
@@ -422,8 +429,11 @@ public class AccountControllerTest {
     /**
      * 测试 /api/account/login
      *      - 账户登陆异常
-     *          - [✔] request param error, no norm
-     *          - [✔] service exception
+     *          - request param error
+     *              - [✔] null
+     *              - [✔] format not norm
+     *          - service exception
+     *              - [✔] no user
      */
     @Test
     public void testLoginAccountException() throws Exception {
@@ -431,10 +441,9 @@ public class AccountControllerTest {
                 {null, null}, {"suvan", null}, {null, "123456"},
                 {"s", "123456"}, {"suvan*-=", "123456"}, {"noUser", "123456"},
                 {"test@gmail.com", "123456"}, {"liushuwei0925@gmail.com", "xxxxxxx"},
-                {"suvan", "123"}, {"suvan", "xxxxx"}};
+                {"suvan", "123"}, {"suvan", "xxxxx"}, {"noUser", "123456"}};
 
         for (String[] param : params) {
-            //build request-body
             String username = param[0];
             String password = param[1];
             String requestBody = "{\"username\":\"" + username + "\"," + "\"password\":\"" + password + "\"}";
@@ -484,7 +493,9 @@ public class AccountControllerTest {
     /**
      * 测试 /api/account/logout
      *      - 注销账户异常
-     *          - [✔] no login
+     *          - no permission
+     *              - [✔] no login
+     *
      */
     @Test
     public void testLogoutThrowException() throws Exception {
@@ -548,8 +559,12 @@ public class AccountControllerTest {
     /**
      * 测试 /api/account/register
      *      - 注册账户异常
-     *          - [✔] request param error, no norm
-     *          - [✔] service exception
+     *          - request param error
+     *              - [✔] null
+     *              - [✔] format not norm
+     *          - service exception
+     *              - [✔] username already occupied
+     *              - [✔] email already occupied
      */
     @Test
     @Transactional
@@ -638,9 +653,14 @@ public class AccountControllerTest {
     /**
      * 测试 /api/account/update-profile
      *      - 修改用户基本信息异常
-     *          - [✔] no permission（@LoginAuthorization, @AccountActivation）
-     *          - [✔] request param error, no norm
-     *          - [✔] service exception
+     *          - no permission
+     *              - [✔] no login
+     *              - [✔] the account not activated
+     *          - request param error
+     *              - [✔] null
+     *              - [✔] format not norm
+     *          - service exception
+     *              - [ ] no user
      */
     @Test
     @Transactional
@@ -653,7 +673,7 @@ public class AccountControllerTest {
         //account no activated
         util.testApiThrowNoPermissionException(apiUrl, RequestMethod.POST, util.getNoActivatedUserDO());
 
-        //request
+        //request param error
         String[][] params = {
                 {null, null, null, null}, {null, "1996-09-25", "深圳", "描述"},
                 {"12", "1996-09-25", "深圳", "描述"}, {"1", "1996-02-25 错误的时间", "深圳", "描述"}
@@ -682,15 +702,11 @@ public class AccountControllerTest {
                  .andExpect(MockMvcResultMatchers.jsonPath("$.model").value(CoreMatchers.notNullValue()));
 
             } catch (NestedServletException ne) {
-                Throwable throwable = ne.getRootCause();
-                Assert.assertThat(throwable,
-                        CoreMatchers.anyOf(
-                                CoreMatchers.instanceOf(ParamsErrorException.class),
-                                CoreMatchers.instanceOf(ServiceException.class)
-                        )
-                );
+                Assert.assertThat(ne.getRootCause(), CoreMatchers.instanceOf(ParamsErrorException.class));
             }
         }
+
+        util.printSuccessMessage();
     }
 
 
@@ -728,11 +744,13 @@ public class AccountControllerTest {
     /**
      * 测试 /api/account/update-password
      *      - 修改账户密码异常
-     *          - [✔] no permission (@LoginAuthorization, @AccountActivation)
-     *              - no login
-     *              - account no activated
-     *              - input user not match cookie user
-     *          - [✔] request param error, no norm
+     *          - no permission
+     *              - [✔] no login
+     *              - [✔] the account not activated
+     *              - [✔] input user not match cookie user
+     *          - request param error
+     *              - [✔] null
+     *              - [✔] format not norm
      */
     @Test
     @Transactional
@@ -760,7 +778,7 @@ public class AccountControllerTest {
             Assert.assertEquals(ApiMessage.NO_PERMISSION, ne.getRootCause().getMessage());
         }
 
-        //request params error, no norm
+        //request params error
         String[][] params = {
                 {null, null}, {null, "123456"}, {"suvan", null},
                 {"s", "123456"}, {"suvan*--0", "123456"},
@@ -826,10 +844,14 @@ public class AccountControllerTest {
     /**
      *  测试 /api/account/update-email
      *      - 修改用户邮箱异常
-     *          - [✔] no permission
-     *              - no login
-     *              - input user not match cookie user
-     *          - [✔] request param error, no norm
+     *          - no permission
+     *              - [✔] no login
+     *              - [✔] input user not match cookie user
+     *          - request param error
+     *              - [✔] null
+     *              - [✔] format not norm
+     *          - service exception
+     *              - [ ] no user
      */
     @Test
     @Transactional
@@ -837,7 +859,7 @@ public class AccountControllerTest {
         //no login
         util.testApiThrowNoPermissionException("/api/account/update-email", RequestMethod.POST, null);
 
-        //request param error, no norm
+        //request param error
         String[][] params = {
                 {null, null}, {null, "test@test.com"}, {"test", null},
                 {"t", "test@test.com"}, {"test*~", "test@test.com"}, {"test", "test@"}
@@ -930,14 +952,17 @@ public class AccountControllerTest {
     /**
      * 测试 /api/account/activate
      *      - 测试激活账户异常
-     *          - [✔] request param error, no norm
-     *          - [✔] service exception
+     *          - request param error
+     *              - [✔] null
+     *              - [✔] format not norm
+     *          - service exception
+     *              - [✔] no user
      *          - [✔] 60s send mail interval time for the same account
      */
     @Test
     @Transactional
     public void testActivateAccountException() throws Exception{
-        //request param error, no norm
+        //request param error
        String [] params = {null, "123", "test@", "liushuwei0925@gmail.com"};
 
         for (String email: params) {
@@ -1018,10 +1043,13 @@ public class AccountControllerTest {
     /**
      * 测试 /api/account/validate
      *      - 验证 Token（来自激活邮件），激活用户出现异常
-     *          - [✔] util class exception
-     *              - encode Base64 failure
-     *          - [✔] request param error, no norm
-     *          - [✔] service exception
+     *          -  util class exception
+     *              - [✔] encode Base64 failure
+     *          - request param error
+     *              - [✔] null
+     *              - [✔] format not norm
+     *          - service exception
+     *              - [✔] user has activated, no need to again activate
      */
     @Test
     @Transactional
@@ -1105,8 +1133,11 @@ public class AccountControllerTest {
     /**
      * 测试 /api/account/check-captcha
      *      - 检查用户输入验证码匹配异常
-     *          - [✔] request param error, no norm
-     *          - [✔] not pass '/api/account/captcha' api to generate captcha picture, session not exist captcha text
+     *          - request param error
+     *              - [✔] null
+     *              - [✔] format not norm
+     *          - service exception
+     *              - [✔] not pass '/api/account/captcha' api to generate captcha picture, session not exist captcha text
      */
     @Test
     public void testValidateCaptchaException() throws Exception {
@@ -1192,8 +1223,11 @@ public class AccountControllerTest {
     /**
      * 测试 /api/account/forget-password
      *      - 测试忘记密码异常
-     *          - [✔] request param error, no norm
-     *          - [✔] service exception
+     *          - request param error
+     *              - [✔] null
+     *              - [✔] format not norm
+     *          - service exception
+     *              - [✔] no user
      */
     @Test
     @Transactional
@@ -1229,8 +1263,7 @@ public class AccountControllerTest {
 
     /**
      * 测试 /api/account/following
-     *      - 测试关注用户成功
-     *          - 【自动变化】未关注 -> 关注，关注 -> 未关注
+     *      - 测试关注用户成功 ,自动处理变化（未关注 -> 关注，关注 -> 未关注）
      *      - 需要权限：@LoginAuthorization，@AccountActivation
      */
     @Test
@@ -1279,12 +1312,14 @@ public class AccountControllerTest {
     /**
      * 测试 /api/account/following
      *      - 测试关注用户异常
-     *          - [✔] no permission
-     *              - no login
-     *              - the account not activated
-     *          - [✔] request param error, no norm
-     *          - [✔] server exception
-     *              - following user no exist
+     *          - no permission
+     *              - [✔] no login
+     *              - [✔] the account not activated
+     *          - request param error
+     *              - [✔] null
+     *              - [✔] format not norm
+     *          - server exception
+     *              - [✔] following user no exist
      */
     @Test
     @Transactional
@@ -1295,7 +1330,7 @@ public class AccountControllerTest {
         //the account not activate
         util.testApiThrowNoPermissionException("/api/account/following", RequestMethod.POST, util.getNoActivatedUserDO());
 
-        //request param error, no norm
+        //request param error
         String[] params = {null, "kkk", "****", "123test", "888888888888888888"};
         for (String userId: params) {
             String requestBody = "{" + util.getJsonField("userid", userId) + "}";
