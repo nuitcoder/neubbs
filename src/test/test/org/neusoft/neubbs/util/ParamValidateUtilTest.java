@@ -23,7 +23,7 @@ public class ParamValidateUtilTest {
         ParamValidateUtil.check(ParamConst.USER_ID, String.valueOf(1));
         ParamValidateUtil.check(ParamConst.USERNAME, "suvan");
         ParamValidateUtil.check(ParamConst.EMAIL, "test@test.com");
-        ParamValidateUtil.check(ParamConst.BIRTHDAY, "");
+        ParamValidateUtil.check(ParamConst.BIRTHDAY, null);
     }
 
     /**

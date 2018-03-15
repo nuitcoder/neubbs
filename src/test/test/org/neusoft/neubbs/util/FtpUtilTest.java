@@ -2,6 +2,7 @@ package test.org.neusoft.neubbs.util;
 
 import com.sun.xml.internal.messaging.saaj.util.ByteInputStream;
 import org.junit.Ignore;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.neusoft.neubbs.exception.FtpException;
@@ -22,6 +23,14 @@ import java.util.List;
  */
 @RunWith(JUnit4.class)
 public class FtpUtilTest {
+
+    /**
+     * 空测试，说明
+     */
+    @Test
+    public void testNull() {
+        System.out.println("FtpUtilTest not suite test! Please single to perform test method!");
+    }
 
     /**
      * 测试 createDirectory()

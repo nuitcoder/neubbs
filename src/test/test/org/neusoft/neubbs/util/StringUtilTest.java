@@ -9,7 +9,6 @@ import org.neusoft.neubbs.utils.SecretUtil;
 import org.neusoft.neubbs.utils.StringUtil;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
@@ -138,13 +137,11 @@ public class StringUtilTest {
         Date today = new Date();
         Assert.assertEquals("今天", StringUtil.judgeSeparateDay(today.getTime(), System.currentTimeMillis()));
 
-        //past time
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        Date pastTime = sdf.parse("2015-12-11");
-        Assert.assertEquals("795 天前", StringUtil.judgeSeparateDay(today.getTime(), pastTime.getTime()));
-
-        pastTime = sdf.parse("2018-02-10");
-        Assert.assertEquals("3 天前",StringUtil.judgeSeparateDay(today.getTime(), pastTime.getTime()));
+        //past time = 3 day age
+        Calendar calendar = Calendar.getInstance();
+            calendar.setTime(today);
+            calendar.set(Calendar.DATE, calendar.get(Calendar.DATE) - 3);
+        Assert.assertEquals("3 天前", StringUtil.judgeSeparateDay(today.getTime(), calendar.getTimeInMillis()));
     }
 
     /**

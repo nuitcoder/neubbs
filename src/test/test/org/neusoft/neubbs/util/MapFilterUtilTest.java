@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.neusoft.neubbs.constant.api.ParamConst;
+import org.neusoft.neubbs.constant.api.SetConst;
 import org.neusoft.neubbs.entity.TopicCategoryDO;
 import org.neusoft.neubbs.entity.TopicContentDO;
 import org.neusoft.neubbs.entity.TopicDO;
@@ -42,6 +43,7 @@ public class MapFilterUtilTest {
             user.setPassword("123456");
             user.setAvator("myAvatar.jpg");
             user.setRank("user");
+            user.setState(SetConst.ACCOUNT_ACTIVATED_STATE);
 
         Map<String, Object> userInfoMap = JsonUtil.toMapByObject(user);
         String beforeAvatar = StringUtil.generateUserAvatarUrl(userInfoMap);
