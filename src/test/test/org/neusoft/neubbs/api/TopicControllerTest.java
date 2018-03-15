@@ -51,6 +51,21 @@ import java.util.Map;
 
 /**
  * Topic api 测试
+ *      - 测试 /api/topic (GET)
+ *      - 测试 /api/topic/reply (GET)
+ *      - 测试 /api/topic/hot
+ *      - 测试 /api/topics
+ *      - 测试 /api/topics/pages
+ *      - 测试 /api/topics/categorys
+ *      - 测试 /api/topic (POST)
+ *      - 测试 /api/topic/reply (POST)
+ *      - 测试 /api/topic-remove
+ *      - 测试 /api/topic-update
+ *      - 测试 /api/reply-update
+ *      - 测试 /api/topic/like
+ *      - 测试 /api/topic/newlike
+ *      - 测试 /api/topic/collect
+ *      - 测试 /api/topic/attention
  *
  * @author Suvan
  */
@@ -103,6 +118,9 @@ public class TopicControllerTest {
 
     @Before
     public void setup() {
+        //prevent execute this api test class, appear unexpected exception
+        DynamicSwitchDataSourceHandler.setDataSource(SetConst.LOCALHOST_DATA_SOURCE_MYSQL);
+
         this.mockMvc = MockMvcBuilders
                 .webAppContextSetup(this.webApplicationContext)
                 .addFilter(new ApiFilter())
@@ -110,6 +128,7 @@ public class TopicControllerTest {
 
         this.util = ApiTestUtil.getInstance(mockMvc);
     }
+
 
     /*
      * ***********************************************
@@ -202,7 +221,7 @@ public class TopicControllerTest {
     /**
      * 测试 /api/topic （GET）
      *      - 获取话题信息异常
-     *          - request param erro
+     *          - request param error
      *              - [✔] null
      *              - [✔] format not norm
      *          - service exception
@@ -451,6 +470,7 @@ public class TopicControllerTest {
      *              - [ ] input limit, category, username
      */
     @Test
+    @Transactional
     public void testGetTopicTotalPagesSuccess() throws Exception {
         String apiUrl = "/api/topics/pages";
 
@@ -1518,7 +1538,7 @@ public class TopicControllerTest {
     }
 
     /**
-     * 测试 /topic/collect
+     * 测试 /api/topic/collect
      *      - 收藏话题异常
      *      - no permission
      *          - [✔] no login
@@ -1534,10 +1554,10 @@ public class TopicControllerTest {
     @Transactional
     public void testCollectTopicException() throws Exception {
         //no login
-        util.testApiThrowNoPermissionException("/api/topic/collect", RequestMethod.POST, null);
+        util.testApiThrowNoPermissionException("/api/topic/attention", RequestMethod.POST, null);
 
         //the account not activated
-        util.testApiThrowNoPermissionException("/api/topic/collect", RequestMethod.POST, util.getNoActivatedUserDO());
+        util.testApiThrowNoPermissionException("/api/topic/attention", RequestMethod.POST, util.getNoActivatedUserDO());
 
         //request param error & service exception
         Object [] params = {null, "kk", "123-+-", "123", 10000000};
@@ -1556,6 +1576,114 @@ public class TopicControllerTest {
                  .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(CoreMatchers.notNullValue()))
                  .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
                         .andExpect(MockMvcResultMatchers.jsonPath("$.model.userCollectTopicId").isArray());
+
+            } catch (NestedServletException ne) {
+                Assert.assertThat(ne.getRootCause(),
+                        CoreMatchers.anyOf(
+                                CoreMatchers.instanceOf(ParamsErrorException.class),
+                                CoreMatchers.instanceOf(ClassCastException.class),
+                                CoreMatchers.instanceOf(ServiceException.class)
+                        )
+                );
+            }
+        }
+
+        util.printSuccessMessage();
+    }
+
+    /**
+     * 测试 /api/topic/attention
+     *      - 关注话题成功 + 1 和 -1
+     *      - 需要权限: @LoginAuthorization @AccountActivation
+     */
+    @Test
+    @Transactional
+    public void testAttentionTopicSuccess() throws Exception {
+        int topicId = 1;
+        Cookie cookie = util.getAlreadyLoginUserCookie();
+        UserDO cookieUser = SecretUtil.decryptUserInfoToken(cookie.getValue());
+        int cookieUserId = cookieUser.getId();
+        String requestBody = "{" + util.getJsonField("topicid", topicId) + "}";
+
+        //attention topic + 1
+        System.out.println("input 'inc' request-body: " + requestBody);
+        mockMvc.perform(
+                MockMvcRequestBuilders.post("/api/topic/attention")
+                    .cookie(cookie)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(requestBody)
+                    .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model.userAttentionTopicId").value(CoreMatchers.hasItem(topicId)));
+
+        //compare forum_topic_action 'fta_attention_fu_id_array'
+        JSONArray jsonArray = JSON.parseArray(topicActionDAO.getTopicActionAttentionUserIdJsonArray(topicId));
+        Assert.assertEquals(cookieUserId, jsonArray.get(jsonArray.size() - 1));
+
+        //compare forum_user_action 'fua_following_fu_id_array'
+        jsonArray = JSON.parseArray(userActionDAO.getUserActionAttentionTopicIdJsonArray(cookieUserId));
+        Assert.assertEquals(topicId, jsonArray.get(jsonArray.size() - 1));
+
+        //collect topic - 1
+        System.out.println("input 'dec' request-body: " + requestBody);
+        mockMvc.perform(
+                MockMvcRequestBuilders.post("/api/topic/attention")
+                    .cookie(cookie)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(requestBody)
+                    .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists())
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model.userAttentionTopicId").isArray());
+
+        Assert.assertEquals(-1, JsonUtil.getIntElementIndex(topicActionDAO.getTopicActionAttentionUserIdJsonArray(topicId), cookieUserId));
+        Assert.assertEquals(-1, JsonUtil.getIntElementIndex(userActionDAO.getUserActionAttentionTopicIdJsonArray(cookieUserId), topicId));
+
+        util.printSuccessMessage();
+    }
+
+    /**
+     * 测试 /api/topic/attention
+     *      - 关注话题异常
+     *      - no permission
+     *          - [✔] no login
+     *          - [✔] the account not activated
+     *      - request param error
+     *          - [✔] null
+     *          - [✔] type error
+     *          - [✔] format not norm
+     *      - service exception
+     *          - [✔] no topic
+     */
+    @Test
+    @Transactional
+    public void testAttentionTopicException() throws Exception {
+        //no login
+        util.testApiThrowNoPermissionException("/api/topic/attention", RequestMethod.POST, null);
+
+        //the account not activated
+        util.testApiThrowNoPermissionException("/api/topic/attention", RequestMethod.POST, util.getNoActivatedUserDO());
+
+        //request param error & service exception
+        Object [] params = {null, "kk", "123-+-", "123", 10000000};
+        for (Object topicId: params) {
+            String requestBody = "{" + util.getJsonField("topicid", topicId) + "}";
+            System.out.println("input request-body: " + requestBody);
+
+            try {
+                mockMvc.perform(
+                        MockMvcRequestBuilders.post("/api/topic/attention")
+                            .cookie(util.getAlreadyLoginUserCookie())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(requestBody)
+                            .contentType(MediaType.APPLICATION_JSON)
+                ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
+                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(CoreMatchers.notNullValue()))
+                 .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
+                        .andExpect(MockMvcResultMatchers.jsonPath("$.model.userAttentionTopicId").isArray());
 
             } catch (NestedServletException ne) {
                 Assert.assertThat(ne.getRootCause(),

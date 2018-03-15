@@ -76,9 +76,10 @@ public class TopicActionDAOTest {
     @Test
     @Transactional
     public void testRemoveTopicAction() {
-        TopicActionDO topicActionDO = this.saveTestTopicActionDOToDatabase();
-        Assert.assertEquals(1, topicActionDAO.removeTopicAction(topicActionDO.getId()));
-        System.out.println("success remove topic action topicId = "+ topicActionDO.getId());
+        TopicActionDO topicAction = this.saveTestTopicActionDOToDatabase();
+        System.out.println(topicAction.toString());
+        Assert.assertEquals(1, topicActionDAO.removeTopicAction(topicAction.getTopicId()));
+        System.out.println("success remove topic action topicId = "+ topicAction.getTopicId());
     }
 
     /**
