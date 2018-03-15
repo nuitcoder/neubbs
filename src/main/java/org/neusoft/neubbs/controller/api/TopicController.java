@@ -368,6 +368,7 @@ public class TopicController {
 
     /**
      * 收藏话题
+     *      - 自动处理用户喜欢话题状态，取反（已收藏 -> 未收藏， 未收藏 -> 已收藏）
      *
      * @param requestBodyParamsMap request-body 内 JSON 数据
      * @return ApiJsonDTO　接口 JSON 传输对象

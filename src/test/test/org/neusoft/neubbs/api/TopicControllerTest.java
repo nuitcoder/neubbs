@@ -1279,6 +1279,7 @@ public class TopicControllerTest {
      *          - [✔] the account not activated
      *      - request param error, no norm
      *          - [✔] null
+     *          - [✔] param type error
      *          - [✔] param norm
      *          - [✔] command error
      *      - service exception
@@ -1335,7 +1336,7 @@ public class TopicControllerTest {
 
     /**
      * 测试 /topic/newlike
-     *      - 点赞话题新接口
+     *      - 点赞话题新接口成功 + 1 和 -1
      *      - 需要权限：@LoginAuthorization @AccountActivation
      *      - 新接口，不需要输入 command（inc | dec）,重复调用即自判断点暂（or 取消）
      */
@@ -1401,6 +1402,7 @@ public class TopicControllerTest {
      *          - [✔] the account not activated
      *      - request param error, no norm
      *          - [✔] null
+     *          - [✔] param type error
      *          - [✔] param norm
      *      - service exception
      *          - [✔] no topic
@@ -1448,49 +1450,110 @@ public class TopicControllerTest {
 
 
     /**
-     * 【/api/topic/collect】 test user collect topic success
-     *      - [✔] (forum_user_action)collect topic 'inc' and (forum_topic_action) collect user 'inc'
-     *      - [ ] (forum_user_action) collect topic dec  abd (forum_topic_action) collect user 'dec'
+     * 测试 /api/topic/collect
+     *      - 收藏话题成功 + 1 和 -1
+     *      - 需要权限: @LoginAuthorization @AccountActivation
      */
     @Test
     @Transactional
-    public void testUserCollectTopicSuccess() throws Exception {
-        // cookie userId = 6
-        int topicId = 5;
+    public void testCollectTopicSuccess() throws Exception {
+        int topicId = 1;
+        Cookie cookie = util.getAlreadyLoginUserCookie();
+        UserDO cookieUser = SecretUtil.decryptUserInfoToken(cookie.getValue());
+        int cookieUserId = cookieUser.getId();
         String requestBody = "{" + util.getJsonField("topicid", topicId) + "}";
 
+        //collect topic + 1
+        System.out.println("input 'inc' request-body: " + requestBody);
         mockMvc.perform(
                 MockMvcRequestBuilders.post("/api/topic/collect")
-                    .cookie(util.getAlreadyLoginUserCookie())
+                    .cookie(cookie)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(requestBody)
+                    .accept(MediaType.APPLICATION_JSON)
         ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
          .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
          .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
          .andExpect(MockMvcResultMatchers.jsonPath("$.model.userCollectTopicId").value(CoreMatchers.hasItem(topicId)));
 
-        //database
-        int cookieUserId = 6;
-        String userCollectTopicIdJsonArrayString = userActionDAO.getUserActionCollectTopicIdJsonArray(cookieUserId);
-        String topicCollectUserIdJsonArrayString = topicActionDAO.getTopicActionCollectUserIdJsonArray(topicId);
+        //compare forum_topic_action 'fta_collect_fu_id_array'
+        JSONArray jsonArray = JSON.parseArray(topicActionDAO.getTopicActionCollectUserIdJsonArray(topicId));
+        Assert.assertEquals(cookieUserId, jsonArray.get(jsonArray.size() - 1));
 
-        Assert.assertNotEquals(-1 , JSON.parseArray(userCollectTopicIdJsonArrayString).indexOf(topicId));
-        Assert.assertNotEquals(-1, JSON.parseArray(topicCollectUserIdJsonArrayString).indexOf(cookieUserId));
+        //compare forum_user_action 'fua_following_fu_id_array'
+        jsonArray = JSON.parseArray(userActionDAO.getUserActionCollectTopicIdJsonArray(cookieUserId));
+        Assert.assertEquals(topicId, jsonArray.get(jsonArray.size() - 1));
+
+        //collect topic - 1
+        System.out.println("input 'dec' request-body: " + requestBody);
+        mockMvc.perform(
+                MockMvcRequestBuilders.post("/api/topic/collect")
+                    .cookie(cookie)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(requestBody)
+                    .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""))
+         .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists())
+         .andExpect(MockMvcResultMatchers.jsonPath("$.model.userCollectTopicId").isArray());
+
+        Assert.assertEquals(-1, JsonUtil.getIntElementIndex(topicActionDAO.getTopicActionCollectUserIdJsonArray(topicId), cookieUserId));
+        Assert.assertEquals(-1, JsonUtil.getIntElementIndex(userActionDAO.getUserActionCollectTopicIdJsonArray(cookieUserId), topicId));
 
         util.printSuccessMessage();
     }
 
     /**
-     * 【/api/topic/collect】test update topic content like throw exception
-     *      - permission exception
-     *          - [ ] no login
-     *          - [ ] account no activate
+     * 测试 /topic/collect
+     *      - 收藏话题异常
+     *      - no permission
+     *          - [✔] no login
+     *          - [✔] the account not activated
      *      - request param error, no norm
-     *          - [ ] null
-     *          - [ ] param norm
-     *      - database exception
-     *          - [ ] no topic
-     *          - [ ] alter forum_user_action  'fua_collect_ft_id_array' field fail
-     *          - [ ] alter forum_topic_action 'fta_collect_fu_id_array' field fail
+     *          - [✔] null
+     *          - [✔] param type error
+     *          - [✔] param no norm
+     *      - service exception
+     *          - [✔] no topic
      */
+    @Test
+    @Transactional
+    public void testCollectTopicException() throws Exception {
+        //no login
+        util.testApiThrowNoPermissionException("/api/topic/collect", RequestMethod.POST, null);
+
+        //the account not activated
+        util.testApiThrowNoPermissionException("/api/topic/collect", RequestMethod.POST, util.getNoActivatedUserDO());
+
+        //request param error & service exception
+        Object [] params = {null, "kk", "123-+-", "123", 10000000};
+        for (Object topicId: params) {
+            String requestBody = "{" + util.getJsonField("topicid", topicId) + "}";
+            System.out.println("input request-body: " + requestBody);
+
+            try {
+                mockMvc.perform(
+                        MockMvcRequestBuilders.post("/api/topic/collect")
+                            .cookie(util.getAlreadyLoginUserCookie())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(requestBody)
+                            .contentType(MediaType.APPLICATION_JSON)
+                ).andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
+                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(CoreMatchers.notNullValue()))
+                 .andExpect(MockMvcResultMatchers.jsonPath("$.model").exists())
+                        .andExpect(MockMvcResultMatchers.jsonPath("$.model.userCollectTopicId").isArray());
+
+            } catch (NestedServletException ne) {
+                Assert.assertThat(ne.getRootCause(),
+                        CoreMatchers.anyOf(
+                                CoreMatchers.instanceOf(ParamsErrorException.class),
+                                CoreMatchers.instanceOf(ClassCastException.class),
+                                CoreMatchers.instanceOf(ServiceException.class)
+                        )
+                );
+            }
+        }
+
+        util.printSuccessMessage();
+    }
 }
